@@ -1,15 +1,20 @@
 #!/usr/bin/perl -w
 
-use strict;
-use warnings;
-use Carp;
+use perl5i::2;
 
 use Bio::SeqIO;
 use Bio::Chado::Schema;
 use Memoize;
 use Try::Tiny;
-use Method::Signatures;
 use Getopt::Std;
+
+BEGIN {
+  push @INC, 'lib';
+};
+
+use PomBase;
+use PomBase::Chado;
+use PomBase::Load;
 
 my $verbose = 0;
 my $quiet = 0;
@@ -37,9 +42,7 @@ if ($opts{d}) {
 
 my $database = shift;
 
-my $chado = Bio::Chado::Schema->connect("dbi:Pg:database=$database",
-                                        'kmr44', 'kmr44',
-                                        { auto_savepoint => 1 });
+my $chado = PomBase::Chado::connect($database, 'kmr44', 'kmr44');
 
 my %go_evidence_codes = (
   EXP => 'Inferred from Experiment',
@@ -144,21 +147,7 @@ my $null_pub = $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
 my $orthologous_to_cvterm =
   $chado->resultset('Cv::Cvterm')->find({ name => 'orthologous_to' });
 
-my $human_organism =
-  $chado->resultset('Organism::Organism')->create({
-    genus => 'Homo',
-    species => 'sapiens',
-    common_name => 'human',
-    abbreviation => 'human',
-  });
-
-my $scerevisiae_organism =
-  $chado->resultset('Organism::Organism')->create({
-    genus => 'Saccharomyces',
-    species => 'cerevisiae',
-    common_name => 'Scerevisiae',
-    abbreviation => 'Scerevisiae',
-  });
+my $new_objects = PomBase::Load::init_objects($chado);
 
 sub _dump_feature {
   my $feature = shift;
@@ -172,13 +161,13 @@ sub _dump_feature {
 }
 
 
-memoize ('_find_cv_by_name');
 func _find_cv_by_name($cv_name) {
   die 'no $cv_name' unless defined $cv_name;
 
   return ($chado->resultset('Cv::Cv')->find({ name => $cv_name })
     or die "no cv with name: $cv_name\n");
 }
+memoize ('_find_cv_by_name');
 
 
 my %new_cvterm_ids = ();
@@ -193,16 +182,15 @@ func _get_cvterm_id($db_name) {
 }
 
 
-memoize ('_find_or_create_pub');
 func _find_or_create_pub($pubmed_identifier) {
   my $pub_rs = $chado->resultset('Pub::Pub');
 
   return $pub_rs->find_or_create({ uniquename => $pubmed_identifier,
                                    type_id => $unfetched_pub_cvterm->cvterm_id() });
 }
+memoize ('_find_or_create_pub');
 
 
-#memoize ('_find_cvterm');
 func _find_cvterm($cv, $term_name) {
   warn "  _find_cvterm(", $cv->name(), ", $term_name)\n" if $verbose;
 
@@ -232,9 +220,9 @@ func _find_cvterm($cv, $term_name) {
     }
   }
 }
+#memoize ('_find_cvterm');
 
 
-memoize ('_find_or_create_cvterm');
 func _find_or_create_cvterm($cv, $term_name) {
   my $cvterm = _find_cvterm($cv, $term_name);
 
@@ -273,13 +261,14 @@ func _find_or_create_cvterm($cv, $term_name) {
 
   return $cvterm;
 }
+memoize ('_find_or_create_cvterm');
 
-memoize ('_find_chado_feature');
 func _find_chado_feature ($systematic_id) {
   my $rs = $chado->resultset('Sequence::Feature');
   return $rs->find({ uniquename => $systematic_id })
     or die "can't find feature for: $systematic_id\n";
 }
+memoize ('_find_chado_feature');
 
 
 my %stored_cvterms = ();
