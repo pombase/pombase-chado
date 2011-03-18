@@ -36,11 +36,36 @@ under the same terms as Perl itself.
 
 =cut
 
-use PomBase;
 use perl5i::2;
 
+use PomBase::External;
+
+func _load_genes($chado, $organism) {
+  my $gene_type = $chado->resultset('Cv::Cvterm')->find({ name => 'gene' });
+
+  my $org_name = $organism->genus() . ' ' . $organism->species();
+  my @res = PomBase::External::get_genes($org_name);
+
+  my %seen_symbols = ();
+
+  for my $gene (@res) {
+    my $symbol = $gene->{symbol};
+    my $primary_identifier = $gene->{primary_identifier};
+    if (exists $seen_symbols{lc $symbol}) {
+      croak "seen symbol twice: $symbol(from $primary_identifier) and from "
+        . $seen_symbols{lc $symbol};
+    }
+    $chado->resultset('Sequence::Feature')->create({
+      uniquename => $primary_identifier,
+      name => $symbol,
+      organism_id => $organism->organism_id(),
+      type_id => $gene_type->cvterm_id()
+    });
+  }
+}
+
 func init_objects($chado) {
-  my $human_organism =
+  my $human =
     $chado->resultset('Organism::Organism')->create({
       genus => 'Homo',
       species => 'sapiens',
@@ -48,7 +73,7 @@ func init_objects($chado) {
       abbreviation => 'human',
     });
 
-  my $scerevisiae_organism =
+  my $scerevisiae =
     $chado->resultset('Organism::Organism')->create({
       genus => 'Saccharomyces',
       species => 'cerevisiae',
@@ -56,10 +81,13 @@ func init_objects($chado) {
       abbreviation => 'Scerevisiae',
     });
 
+  _load_genes($chado, $human);
+  _load_genes($chado, $scerevisiae);
+
   return {
     organisms => {
-      human => $human_organism,
-      scerevisiae => $scerevisiae_organism,
+      human => $human,
+      scerevisiae => $scerevisiae,
     },
   }
 }
