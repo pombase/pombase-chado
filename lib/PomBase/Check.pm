@@ -45,6 +45,30 @@ use PomBase::Chado;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 
+method _do_query_checks() {
+  my @query_checks = @{$self->config()->{query_checks}};
+
+  my $dbh = $self->chado()->storage()->dbh();
+
+  for my $check (@query_checks) {
+    my $name = $check->{name};
+    my $query = $check->{query};
+    my $expected = $check->{expected};
+    say "running $name: $query\n";
+
+    my $sth = $dbh->prepare($query);
+    $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+
+    my @data = $sth->fetchrow_array();
+
+    die "query ('$query') didn't exactly one row" if @data != 1;
+
+    if ($data[0] ne $expected) {
+      say "  - FAILED: expected $expected but got $data[0]\n";
+    }
+  }
+}
+
 method run() {
   my @check_modules = usesub PomBase::Check;
 
@@ -56,6 +80,8 @@ method run() {
       warn "failed test: ", $obj->description(), "\n";
     }
   }
+
+  $self->_do_query_checks();
 }
 
 1;

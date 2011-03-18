@@ -1,2 +1,9 @@
 'PomBase::Check::FeatureCount':
   min_count: 10000
+query_checks:
+  - name: pombe_genes
+    expected: 5874
+    query: |
+      select count(*) from feature f, cvterm cvt, organism o where
+      f.type_id = cvt.cvterm_id and f.organism_id = o.organism_id and
+      o.common_name = 'Spombe' and cvt.name = 'gene';
