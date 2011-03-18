@@ -15,10 +15,6 @@ my $verbose = 0;
 my $quiet = 0;
 my $dry_run = 0;
 
-my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-with-genes-2',
-                                        'kmr44', 'kmr44',
-                                        { auto_savepoint => 1 });
-
 sub usage {
   die "$0 [-v] [-d] <embl_file> ...\n";
 }
@@ -38,6 +34,12 @@ if ($opts{q}) {
 if ($opts{d}) {
   $dry_run = 1;
 }
+
+my $database = shift;
+
+my $chado = Bio::Chado::Schema->connect("dbi:Pg:database=$database",
+                                        'kmr44', 'kmr44',
+                                        { auto_savepoint => 1 });
 
 my %go_evidence_codes = (
   EXP => 'Inferred from Experiment',
