@@ -205,7 +205,7 @@ memoize ('_find_db_by_name');
 my %new_cvterm_ids = ();
 
 # return an ID for a new term in the CV with the given name
-func _get_cvterm_id($db_name) {
+func _get_dbxref_id($db_name) {
   if (!exists $new_cvterm_ids{$db_name}) {
     $new_cvterm_ids{$db_name} = 1_000_000;
   }
@@ -281,7 +281,7 @@ func _find_or_create_cvterm($cv, $term_name) {
       die "no db name for ", $cv->name();
     }
 
-    my $new_ont_id = _get_cvterm_id($db_name);
+    my $new_ont_id = _get_dbxref_id($db_name);
     my $formatted_id = sprintf "%07d", $new_ont_id;
 
     my $dbxref_rs = $chado->resultset('General::Dbxref');
