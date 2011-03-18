@@ -207,7 +207,7 @@ my %new_cvterm_ids = ();
 # return an ID for a new term in the CV with the given name
 func _get_dbxref_id($db_name) {
   if (!exists $new_cvterm_ids{$db_name}) {
-    $new_cvterm_ids{$db_name} = 1_000_000;
+    $new_cvterm_ids{$db_name} = 1;
   }
 
   return $new_cvterm_ids{$db_name}++;
