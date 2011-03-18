@@ -430,7 +430,17 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
   my $featurecvterm = _create_feature_cvterm($pombe_gene, $cvterm, $pub);
 
   if (_is_go_cv_name($cv_name)) {
-    my $evidence = $go_evidence_codes{delete $sub_qual_map->{evidence}};
+    my $evidence_code = delete $sub_qual_map->{evidence};
+
+    my $evidence;
+
+    if (defined $evidence_code) {
+      $evidence = $go_evidence_codes{$evidence_code};
+    } else {
+      warn "no evidence for: $term in ", $pombe_gene->uniquename(), "\n";
+      $evidence = "NO EVIDENCE";
+    }
+
     if (defined $sub_qual_map->{with}) {
       $evidence .= " with " . delete $sub_qual_map->{with};
     }
