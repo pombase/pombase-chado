@@ -357,6 +357,12 @@ func _add_cvterm($systematic_id, $cv_name, $term, $sub_qual_map) {
                             evidence => $evidence);
     _add_feature_cvtermprop($featurecvterm,
                             date => delete $sub_qual_map->{date});
+
+    if (defined $sub_qual_map->{residue}) {
+      _add_feature_cvtermprop($featurecvterm,
+                              residue => delete $sub_qual_map->{residue});
+    }
+
   } else {
     if (defined $sub_qual_map->{qualifier}) {
       _add_feature_cvtermprop($featurecvterm,
