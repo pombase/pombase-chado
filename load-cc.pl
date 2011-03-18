@@ -85,6 +85,7 @@ my %cv_alt_names = (
   DNA_binding_specificity => [],
   subunit_composition => [],
   cat_act => ['catalytic activity'],
+  disease_associated => ['disease associated'],
 );
 
 my %cv_long_names = (
@@ -100,6 +101,7 @@ my %cv_long_names = (
   'name description' => 'name_derivation',
   'catalytic activity' => 'cat_act',
   'phenotype' => 'phenotype',
+  'disease associated' => 'disease_associated',
 );
 
 my $guard = $chado->txn_scope_guard;
