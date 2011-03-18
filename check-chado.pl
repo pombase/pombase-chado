@@ -14,7 +14,7 @@ use PomBase::Check;
 
 if (@ARGV != 4) {
   die "$0: needs four arguments:
-  eg. $0 config_file database_name user_name and password\n";
+  eg. $0 config_file database_name user_name password\n";
 }
 
 my $config_file = shift;
