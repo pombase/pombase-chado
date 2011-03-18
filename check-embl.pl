@@ -7,24 +7,21 @@ use Carp;
 use Bio::SeqIO;
 use Bio::Chado::Schema;
 
+sub _dump_feature {
+  my $feature = shift;
+
+  for my $tag ($feature->get_all_tags) {
+    print "  tag: ", $tag, "\n";
+    for my $value ($feature->get_tag_values($tag)) {
+      print "    value: ", $value, "\n";
+    }
+  }
+}
 
 while (defined (my $file = shift)) {
-
   my $io = Bio::SeqIO->new(-file => $file, -format => "embl" );
   my $seq_obj = $io->next_seq;
   my $anno_collection = $seq_obj->annotation;
-
-  sub _dump_feature
-    {
-      my $feature = shift;
-
-      for my $tag ($feature->get_all_tags) {
-        print "  tag: ", $tag, "\n";
-        for my $value ($feature->get_tag_values($tag)) {
-          print "    value: ", $value, "\n";
-        }
-      }
-    }
 
   my %seen_ids = ();
 
@@ -32,6 +29,8 @@ while (defined (my $file = shift)) {
     my $type = $feature->primary_tag();
 
     next unless $type =~ /UTR/;
+
+    next unless $feature->has_tag("systematic_id");
 
     my @systematic_ids = $feature->get_tag_values("systematic_id");
 
@@ -48,7 +47,7 @@ while (defined (my $file = shift)) {
       warn "duplicated id for $type: $systematic_id\n";
     }
 
-    $seen_ids{$type}->{$systematic_id} = 1;
+    $seen_ids{$type}->{$systematic_id}++;
 
     #  print "$type: $systematic_id\n";
   }
