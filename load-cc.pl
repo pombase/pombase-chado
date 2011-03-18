@@ -484,7 +484,7 @@ func _process_one_go_qual($systematic_id, $bioperl_feature, $qualifier) {
     warn "  loaded: $qualifier\n" if $verbose;
   } else {
     warn "  no aspect for: $qualifier\n";
-     return ();
+    return ();
   }
 
   return %qual_map;
