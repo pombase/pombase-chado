@@ -196,11 +196,12 @@ func _get_cvterm_id($db_name) {
 }
 
 
-func _find_or_create_pub($pubmed_identifier) {
+func _find_or_create_pub($identifier) {
   my $pub_rs = $chado->resultset('Pub::Pub');
 
-  return $pub_rs->find_or_create({ uniquename => $pubmed_identifier,
-                                   type_id => $unfetched_pub_cvterm->cvterm_id() });
+  return $pub_rs->find_or_create({ uniquename => $identifier,
+                                   type_id => $unfetched_pub_cvterm->cvterm_id()
+                                 });
 }
 memoize ('_find_or_create_pub');
 
