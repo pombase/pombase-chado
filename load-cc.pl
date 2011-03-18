@@ -220,6 +220,8 @@ sub _process_one_cc {
 }
 
 
+# main loop:
+#  process all features from the input files
 while (defined (my $file = shift)) {
 
   my $io = Bio::SeqIO->new(-file => $file, -format => "embl" );
