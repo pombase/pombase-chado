@@ -590,6 +590,10 @@ func _split_sub_qualifiers($cc_qualifier) {
       if ($name eq 'cv' && $value =~ / /) {
         warn "  cv name ('$value') contains a space\n" unless $quiet;
       }
+
+      if ($name eq 'db_xref' && $value =~ /\|/) {
+        warn "  annotation should be split into two qualifier: $name=$value\n";
+      }
     }
   }
 
