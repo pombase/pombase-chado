@@ -93,11 +93,13 @@ my %cv_long_names = (
   'sequence feature' => 'sequence_feature',
   'species distribution' => 'species_dist',
   'localisation' => 'localization',
+  'localization' => 'localization',
   'modification' => 'pt_mod',
   'expression' => 'gene_ex',
   'misc functional group' => 'm_f_g',
   'name description' => 'name_derivation',
   'catalytic activity' => 'cat_act',
+  'phenotype' => 'phenotype',
 );
 
 my $guard = $chado->txn_scope_guard;
