@@ -422,7 +422,6 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
 
       if ($qual_map{term} =~ s/$long_name, *//) {
         my $short_cv_name = $cv_long_names{$long_name};
-        $qual_map{cv} = $short_cv_name;
         $cv_name = $short_cv_name;
       }
     } keys %cv_long_names;
