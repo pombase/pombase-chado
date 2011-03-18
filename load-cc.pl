@@ -72,6 +72,8 @@ my %cv_alt_names = (
   species_dist => ['species distribution'],
   localisation => ['localization'],
   phenotype => [],
+  pt_mod => ['modification'],
+  gene_ex => ['expression'],
 );
 
 my %cv_long_names = (
@@ -79,7 +81,9 @@ my %cv_long_names = (
   'genome organization' => 'genome_org',
   'sequence feature' => 'sequence_feature',
   'species distribution' => 'species_dist',
-  'localization' => 'localisation'
+  'localization' => 'localisation',
+  'modification' => 'pt_mod',
+  'expression' => 'gene_ex',
 );
 
 my $guard = $chado->txn_scope_guard;
