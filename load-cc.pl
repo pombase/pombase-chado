@@ -297,8 +297,15 @@ func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
 
   my $pub;
 
-  if (defined $sub_qual_map->{db_xref} && $sub_qual_map->{db_xref} =~ /^(PMID:(.*))/) {
-    $pub = _find_or_create_pub($1);
+  if (defined $sub_qual_map->{db_xref}) {
+    if ($sub_qual_map->{db_xref} =~ /^(PMID:(.*))/) {
+      $pub = _find_or_create_pub($1);
+    } else {
+      warn "  qualifier for ", $sub_qual_map->{term},
+        " has unknown format db_xref (", $sub_qual_map->{db_xref},
+          ") - using null publication\n";
+      $pub = $null_pub;
+    }
   } else {
     warn "  qualifier for ", $sub_qual_map->{term},
       " has no db_xref - using null publication\n";
