@@ -550,7 +550,10 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
       $ortholog_feature = _find_chado_feature($ortholog_name, 1);
     };
 
-    return unless defined $ortholog_feature;
+    if (!defined $ortholog_feature) {
+      warn "  ortholog ($ortholog_name) not found\n";
+      return 0;
+    }
 
     my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
 
