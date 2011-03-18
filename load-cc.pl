@@ -293,6 +293,8 @@ func _is_go_cv_name($cv_name) {
 func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
   my $cv = _find_cv_by_name($cv_name);
   my $term = $sub_qual_map->{term};
+  delete $sub_qual_map->{term};
+
   my $db_accession;
 
   if (_is_go_cv_name($cv_name)) {
@@ -307,20 +309,23 @@ func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
 
   my $pub;
 
-  if (defined $sub_qual_map->{db_xref}) {
-    if ($sub_qual_map->{db_xref} =~ /^(PMID:(.*))/) {
+  my $db_xref = $sub_qual_map->{db_xref};
+
+  if (defined $db_xref) {
+    if ($db_xref =~ /^(PMID:(.*))/) {
       $pub = _find_or_create_pub($1);
     } else {
-      warn "  qualifier for ", $sub_qual_map->{term},
-        " has unknown format db_xref (", $sub_qual_map->{db_xref},
+      warn "  qualifier for $term ",
+        " has unknown format db_xref (", $db_xref,
           ") - using null publication\n" unless $quiet;
       $pub = $null_pub;
     }
   } else {
-    warn "  qualifier for ", $sub_qual_map->{term},
+    warn "  qualifier for $term ",
       " has no db_xref - using null publication\n" unless $quiet;
     $pub = $null_pub;
   }
+
 
   my $featurecvterm = _add_feature_cvterm($systematic_id, $cvterm, $pub);
 
@@ -334,10 +339,23 @@ func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
     }
     _add_feature_cvtermprop($featurecvterm, evidence => $evidence);
     _add_feature_cvtermprop($featurecvterm, date => $sub_qual_map->{date});
+
+    delete $sub_qual_map->{date};
+    delete $sub_qual_map->{evidence};
   } else {
     if (defined $sub_qual_map->{qualifier}) {
       _add_feature_cvtermprop($featurecvterm,
                               qualifier => $sub_qual_map->{qualifier});
+      delete $sub_qual_map->{qualifier};
+    }
+  }
+
+  if ($verbose) {
+    if (scalar(keys %$sub_qual_map) > 0) {
+      warn "  unprocessed sub qualifiers:\n";
+      while (my ($key, $value) = each %$sub_qual_map) {
+        warn "     $key => $value\n";
+      }
     }
   }
 }
