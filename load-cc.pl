@@ -263,19 +263,29 @@ func _find_or_create_cvterm($cv, $term_name) {
 }
 memoize ('_find_or_create_cvterm');
 
-func _find_chado_feature ($systematic_id) {
+func _find_chado_feature ($systematic_id, $try_name) {
   my $rs = $chado->resultset('Sequence::Feature');
-  return $rs->find({ uniquename => $systematic_id })
-    or die "can't find feature for: $systematic_id\n";
+  my $feature = $rs->find({ uniquename => $systematic_id });
+
+  return $feature if defined $feature;
+
+  if ($try_name) {
+    $feature = $rs->find({ name => $systematic_id });
+
+    return $feature if defined $feature;
+  }
+
+  die "can't find feature for: $systematic_id\n";
 }
 memoize ('_find_chado_feature');
 
 
 my %stored_cvterms = ();
 
-func _add_feature_cvterm($systematic_id, $cvterm, $pub) {
-  my $chado_feature = _find_chado_feature($systematic_id);
+func _add_feature_cvterm($pombe_gene, $cvterm, $pub) {
   my $rs = $chado->resultset('Sequence::FeatureCvterm');
+
+  my $systematic_id = $pombe_gene->uniquename();
 
   if (!exists $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}) {
     $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()} = 0;
@@ -284,7 +294,7 @@ func _add_feature_cvterm($systematic_id, $cvterm, $pub) {
   my $rank =
     $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}++;
 
-  return $rs->create({ feature_id => $chado_feature->feature_id(),
+  return $rs->create({ feature_id => $pombe_gene->feature_id(),
                        cvterm_id => $cvterm->cvterm_id(),
                        pub_id => $pub->pub_id(),
                        rank => $rank });
@@ -316,7 +326,7 @@ func _is_go_cv_name($cv_name) {
   return grep { $_ eq $cv_name } values %go_cv_map;
 }
 
-func _add_cvterm($systematic_id, $cv_name, $term, $sub_qual_map) {
+func _add_cvterm($pombe_gene, $cv_name, $term, $sub_qual_map) {
   my $cv = _find_cv_by_name($cv_name);
 
   my $db_accession;
@@ -325,6 +335,8 @@ func _add_cvterm($systematic_id, $cv_name, $term, $sub_qual_map) {
     $db_accession = $sub_qual_map->{GOid};
 
     if (!defined $db_accession) {
+      my $systematic_id = $pombe_gene->uniquename();
+
       warn "  no GOid for $systematic_id annotation $term\n";
     }
   }
@@ -351,7 +363,7 @@ func _add_cvterm($systematic_id, $cv_name, $term, $sub_qual_map) {
   }
 
 
-  my $featurecvterm = _add_feature_cvterm($systematic_id, $cvterm, $pub);
+  my $featurecvterm = _add_feature_cvterm($pombe_gene, $cvterm, $pub);
 
   if (_is_go_cv_name($cv_name)) {
     my $evidence = $go_evidence_codes{delete $sub_qual_map->{evidence}};
@@ -409,7 +421,7 @@ func _split_sub_qualifiers($cc_qualifier) {
   return %map;
 }
 
-func _process_ortholog($systematic_id, $bioperl_feature, $term, $sub_qual_map) {
+func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
   my $org_name;
   my $gene_bit;
 
@@ -419,7 +431,7 @@ func _process_ortholog($systematic_id, $bioperl_feature, $term, $sub_qual_map) {
     if ($term =~ /^human\s+(.*?)\s+ortholog$/) {
       $gene_bit = $1;
     } else {
-      # not recognised as an ortholog
+      warn "not recognised as an ortholog curation: $term\n";
       return 0;
     }
   }
@@ -436,21 +448,26 @@ func _process_ortholog($systematic_id, $bioperl_feature, $term, $sub_qual_map) {
     }
   }
 
-  my $pombe_chado_feature = _find_chado_feature($systematic_id);
-
   for my $ortholog_name (@gene_names) {
-    my $ortholog_feature = _find_chado_feature($ortholog_name);
+    warn "creating ortholog from ", $pombe_gene->uniquename(),
+      " to $ortholog_name\n";
 
-    # FIXME: create a feature_relationship between the feature and it's
-    # ortholog (which should be pre-loaded)
-    # $orthologous_to_cvterm;
+    my $ortholog_feature = _find_chado_feature($ortholog_name, 1);
+
+    my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
+
+    $rel_rs->create({ object_id => $pombe_gene->feature_id(),
+                      subject_id => $ortholog_feature->feature_id(),
+                      type_id => $orthologous_to_cvterm });
   }
 
   return 1;
 }
 
 
-func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
+func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
+  my $systematic_id = $pombe_gene->uniquename();
+
   warn "  _process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
     if $verbose;
 
@@ -495,7 +512,7 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
 
     if (grep { $_ eq $cv_name } keys %cv_alt_names) {
       try {
-        _add_cvterm($systematic_id, $cv_name, $term, \%qual_map);
+        _add_cvterm($pombe_gene, $cv_name, $term, \%qual_map);
       } catch {
         warn "  $_: failed to load qualifier '$qualifier' from $systematic_id\n";
         _dump_feature($bioperl_feature) if $verbose;
@@ -507,7 +524,7 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
 
     warn "  unknown cv $cv_name: $qualifier\n";
   } else {
-    if (!_process_ortholog($systematic_id, $bioperl_feature, \%qual_map)) {
+    if (!_process_ortholog($pombe_gene, $term, \%qual_map)) {
       warn "  no cv name for: $qualifier\n";
       return ();
     }
@@ -516,7 +533,7 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
   return %qual_map;
 }
 
-func _process_one_go_qual($systematic_id, $bioperl_feature, $qualifier) {
+func _process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
   warn "    go qualifier: $qualifier\n" if $verbose;
 
   my %qual_map = ();
@@ -540,8 +557,9 @@ func _process_one_go_qual($systematic_id, $bioperl_feature, $qualifier) {
     my $term = delete $qual_map{term};
 
     try {
-      _add_cvterm($systematic_id, $cv_name, $term, \%qual_map);
+      _add_cvterm($pombe_gene, $cv_name, $term, \%qual_map);
     } catch {
+      my $systematic_id = $pombe_gene->uniquename();
       warn "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
       _dump_feature($bioperl_feature) if $verbose;
       return ();
@@ -559,7 +577,6 @@ sub _check_unused_quals
 {
   return if $quiet;
 
-  my $systematic_id = shift;
   my $qual_text = shift;
   my %quals = @_;
 
@@ -595,23 +612,25 @@ while (defined (my $file = shift)) {
 
     my $systematic_id = $systematic_ids[0];
 
+    my $pombe_gene = _find_chado_feature($systematic_id);
+
     warn "processing $type $systematic_id\n";
 
     if ($bioperl_feature->has_tag("controlled_curation")) {
       for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
-        my %unused_quals = _process_one_cc($systematic_id, $bioperl_feature, $value);
+        my %unused_quals = _process_one_cc($pombe_gene, $bioperl_feature, $value);
         warn "\n" if $verbose;
 
-        _check_unused_quals($systematic_id, $value, %unused_quals);
+        _check_unused_quals($value, %unused_quals);
       }
     }
 
     if ($bioperl_feature->has_tag("GO")) {
       for my $value ($bioperl_feature->get_tag_values("GO")) {
-        my %unused_quals = _process_one_go_qual($systematic_id, $bioperl_feature, $value);
+        my %unused_quals = _process_one_go_qual($pombe_gene, $bioperl_feature, $value);
         warn "\n" if $verbose;
 
-        _check_unused_quals($systematic_id, $value, %unused_quals);
+        _check_unused_quals($value, %unused_quals);
       }
     }
   }
