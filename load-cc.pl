@@ -406,8 +406,7 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
       map { $qual_map{term} =~ s/$_, *//; } @{$cv_alt_names{$cv_name}};
     }
 
-    if (grep { $_ eq $cv_name }
-          qw(phenotype genome_org sequence_feature species_dist)) {
+    if (grep { $_ eq $cv_name } keys %cv_alt_names) {
       try {
         _add_cvterm($systematic_id, $cv_name, \%qual_map);
       } catch {
