@@ -111,6 +111,12 @@ my %cv_long_names = (
   'disease associated' => 'disease_associated',
 );
 
+for my $cv_name (keys %cv_alt_names) {
+  if (!exists $cv_long_names{$cv_name}) {
+    $cv_long_names{$cv_name} = $cv_name;
+  }
+}
+
 my $guard = $chado->txn_scope_guard;
 
 my $cv_rs = $chado->resultset('Cv::Cv');
