@@ -19,6 +19,9 @@ my $quiet = 0;
 my $dry_run = 0;
 my $test = 0;
 
+# if true ".. from=foo|bar" will create two qualifiers rather than one
+my $split_piped_qualifiers = 0;
+
 sub usage {
   die "$0 [-v] [-d] <embl_file> ...\n";
 }
@@ -338,12 +341,25 @@ func _create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not) {
                        rank => $rank });
 }
 
-func _add_feature_cvtermprop($feature_cvterm, $name, $value) {
+func _add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
   if (!defined $name) {
     die "no name for property\n";
   }
   if (!defined $value) {
     die "no value for $name\n";
+  }
+
+  if (!defined $rank) {
+    $rank = 0;
+  }
+
+  if (ref $value eq 'ARRAY') {
+    my @ret = ();
+    for (my $i = 0; $i < @$value; $i++) {
+      push @ret, _add_feature_cvtermprop($feature_cvterm,
+                                         $name, $value->[$i], $i);
+    }
+    return @ret;
   }
 
   my $type = _find_or_create_cvterm($feature_cvtermprop_type_cv,
@@ -357,7 +373,7 @@ func _add_feature_cvtermprop($feature_cvterm, $name, $value) {
                          $feature_cvterm->feature_cvterm_id(),
                        type_id => $type->cvterm_id(),
                        value => $value,
-                       rank => 0 });
+                       rank => $rank });
 }
 
 func _add_feature_relationshipprop($feature_relationship, $name, $value) {
@@ -555,6 +571,14 @@ func _split_sub_qualifiers($cc_qualifier) {
       if (exists $map{$name}) {
         die "duplicated sub-qualifier '$name' from:
 /controlled_curation=\"$cc_qualifier\"\n";
+      }
+
+      if ($split_piped_qualifiers) {
+        my @bits = split /\|/, $value;
+
+        if (@bits > 1) {
+          $value = [@bits];
+        }
       }
 
       $map{$name} = $value;
