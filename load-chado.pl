@@ -407,23 +407,21 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
     }
     _add_feature_cvtermprop($featurecvterm,
                             evidence => $evidence);
-    my $date = _get_and_check_date($sub_qual_map);
-    _add_feature_cvtermprop($featurecvterm, date => $date);
 
     if (defined $sub_qual_map->{residue}) {
       _add_feature_cvtermprop($featurecvterm,
                               residue => delete $sub_qual_map->{residue});
     }
+  }
 
-  } else {
-    my $qualifier = delete $sub_qual_map->{qualifier};
-    if (defined $qualifier) {
-      _add_feature_cvtermprop($featurecvterm, qualifier => $qualifier);
-    }
-    my $date = _get_and_check_date($sub_qual_map);
-    if (defined $date) {
-      _add_feature_cvtermprop($featurecvterm, date => $date);
-    }
+  my $qualifier = delete $sub_qual_map->{qualifier};
+  if (defined $qualifier) {
+    _add_feature_cvtermprop($featurecvterm, qualifier => $qualifier);
+  }
+
+  my $date = _get_and_check_date($sub_qual_map);
+  if (defined $date) {
+    _add_feature_cvtermprop($featurecvterm, date => $date);
   }
 }
 
