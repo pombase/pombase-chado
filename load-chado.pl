@@ -466,13 +466,13 @@ func _get_pub_from_db_xref($term, $db_xref) {
 
       return $pub;
     } else {
-      warn "    qualifier for $term ",
+      warn "    qualifier for $term",
         " has unknown format db_xref (", $db_xref,
           ") - using null publication\n" unless $quiet;
       return $null_pub;
     }
   } else {
-    warn "    qualifier for $term ",
+    warn "    qualifier for $term",
       " has no db_xref - using null publication\n" unless $quiet;
     return $null_pub;
   }
