@@ -757,6 +757,21 @@ while (defined (my $file = shift)) {
         _check_unused_quals($value, %unused_quals);
       }
     }
+
+    if ($type eq 'CDS') {
+      if ($bioperl_feature->has_tag("product")) {
+        my @products = $bioperl_feature->get_tag_values("product");
+        if (@products > 1) {
+          warn "$systematic_id has more than one product\n";
+        } else {
+          if (length $products[0] == 0) {
+            warn "zero length product for $systematic_id\n";
+          }
+        }
+      } else {
+        warn "no product for $systematic_id\n";
+      }
+    }
   }
 }
 
