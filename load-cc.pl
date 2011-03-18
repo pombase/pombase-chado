@@ -9,15 +9,56 @@ use Bio::Chado::Schema;
 use Memoize;
 use Try::Tiny;
 use Method::Signatures;
+use Getopt::Std;
 
 my $verbose = 0;
+my $dry_run = 0;
 
-if (@ARGV && $ARGV[0] eq '-v') {
-  shift;
-  $verbose = 1;
+sub usage {
+  die "$0 [-v] [-d] <embl_file> ...\n";
 }
 
-my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-kmr-qual-dev-1',
+my %opts = ();
+
+if (!getopts('vd', \%opts)) {
+  usage();
+}
+
+if ($opts{v}) {
+  $verbose = 1;
+}
+if ($opts{d}) {
+  $dry_run = 1;
+}
+
+my %go_evidence_codes = (
+  EXP => 'Inferred from Experiment',
+  IDA => 'Inferred from Direct Assay',
+  IPI => 'Inferred from Physical Interaction',
+  IMP => 'Inferred from Mutant Phenotype',
+  IGI => 'Inferred from Genetic Interaction',
+  IEP => 'Inferred from Expression Pattern',
+  ISS => 'Inferred from Sequence or Structural Similarity',
+  ISO => 'Inferred from Sequence Orthology',
+  ISA => 'Inferred from Sequence Alignment',
+  ISM => 'Inferred from Sequence Model',
+  IGC => 'Inferred from Genomic Context',
+  RCA => 'inferred from Reviewed Computational Analysis',
+  TAS => 'Traceable Author Statement',
+  NAS => 'Non-traceable Author Statement',
+  IC => 'Inferred by Curator',
+  ND => 'No biological Data available',
+  IEA => 'Inferred from Electronic Annotation',
+  NR => 'Not Recorded',
+);
+
+my %go_cv_map = (
+  P => 'biological_process',
+  F => 'molecular_function',
+  C => 'cellular_component',
+);
+
+my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-kmr-qual-dev-2',
                                         'kmr44', 'kmr44');
 
 my $guard = $chado->txn_scope_guard;
@@ -60,6 +101,8 @@ sub _dump_feature {
 memoize ('_find_cv_by_name');
 sub _find_cv_by_name {
   my $cv_name = shift;
+
+  die 'no $cv_name' unless defined $cv_name;
 
   return ($chado->resultset('Cv::Cv')->find({ name => $cv_name })
     or die "no cv with name: $cv_name\n");
@@ -141,48 +184,74 @@ func _add_feature_cvterm($systematic_id, $cvterm, $pub) {
 }
 
 func _add_feature_cvtermprop($feature_cvterm, $name, $value) {
+  if (!defined $name) {
+    die "no name for $feature_cvterm\n";
+  }
+  if (!defined $value) {
+    die "no value for $name\n";
+  }
+
   my $type = _find_or_create_cvterm($feature_cvtermprop_type_cv,
-                                    'qualifier');
+                                    $name);
 
   my $rs = $chado->resultset('Sequence::FeatureCvtermprop');
 
-  return $rs->create({ feature_cvterm_id => $feature_cvterm->feature_cvterm_id(),
+  return $rs->create({ feature_cvterm_id =>
+                         $feature_cvterm->feature_cvterm_id(),
                        type_id => $type->cvterm_id(),
                        value => $value,
                        rank => 0 });
 }
 
+func _is_go_cv_name($cv_name) {
+  return grep { $_ eq $cv_name } values %go_cv_map;
+}
+
 sub _add_cvterm {
   my $systematic_id = shift;
+  my $cv_name = shift;
   my $cc_map = shift;
 
-  $cc_map->{term} =~ s/$cc_map->{cv}, //;
+  my $cv = _find_cv_by_name($cv_name);
 
-  my $cv = _find_cv_by_name($cc_map->{cv});
+  my $term = $cc_map->{term};
 
-  my $cvterm = _find_or_create_cvterm($cv, $cc_map->{term});
+  my $db_accession;
+
+  if (_is_go_cv_name($cv_name)) {
+    $db_accession = $cc_map->{GOid};
+
+    if (!defined $db_accession) {
+      warn "no GOid for $systematic_id annotation $term\n";
+    }
+  }
+
+  my $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
 
   if (defined $cc_map->{db_xref} && $cc_map->{db_xref} =~ /^(PMID:(.*))/) {
     my $pub = _find_or_create_pub($1);
 
     my $featurecvterm = _add_feature_cvterm($systematic_id, $cvterm, $pub);
 
-    _add_feature_cvtermprop($featurecvterm, qualifier => $cc_map->{qualifier});
+    warn "\n============== $cv_name\n";
+
+    if (_is_go_cv_name($cv_name)) {
+      my $evidence = $go_evidence_codes{$cc_map->{evidence}};
+      _add_feature_cvtermprop($featurecvterm, evidence => $evidence);
+      _add_feature_cvtermprop($featurecvterm, date => $cc_map->{date});
+    } else {
+      _add_feature_cvtermprop($featurecvterm,
+                              qualifier => $cc_map->{qualifier});
+    }
   } else {
     die "qualifier has no db_xref\n";
   }
 }
 
-sub _process_one_cc {
-  my $systematic_id = shift;
-  my $bioperl_feature = shift;
-  my $cc_qualifier = shift;
-
-  print "  cc:\n" if $verbose;
+func _split_sub_qualifiers($cc_qualifier) {
+  my %map = ();
 
   my @bits = split /;/, $cc_qualifier;
-
-  my %cc_map = ();
 
   for my $bit (@bits) {
     if ($bit =~ /\s*([^=]+?)\s*=\s*([^=]+?)\s*$/) {
@@ -191,19 +260,37 @@ sub _process_one_cc {
 
       print "    $name => $value\n" if $verbose;
 
-      if (exists $cc_map{$name}) {
-        warn "duplicated sub-qualifier '$name' in $systematic_id from:
+      if (exists $map{$name}) {
+        die "duplicated sub-qualifier '$name' from:
 /controlled_curation=\"$cc_qualifier\"\n";
       }
 
-      $cc_map{$name} = $value;
+      $map{$name} = $value;
     }
   }
+
+  return %map;
+}
+
+func _process_one_cc($systematic_id, $bioperl_feature, $cc_qualifier) {
+  print "  cc: $cc_qualifier\n" if $verbose;
+
+  my %cc_map;
+
+  try {
+    %cc_map = _split_sub_qualifiers($cc_qualifier);
+  } catch {
+    warn "$_: failed to process sub-qualifiers from $cc_qualifier, feature:\n";
+    _dump_feature($bioperl_feature);
+    return;
+  };
+
+  $cc_map{term} =~ s/$cc_map{cv}, //;
 
   if (defined $cc_map{cv}) {
     if ($cc_map{cv} eq 'phenotype') {
       try {
-        _add_cvterm($systematic_id, \%cc_map);
+        _add_cvterm($systematic_id, $cc_map{cv}, \%cc_map);
       } catch {
         warn "$_: failed to load qualifier from $cc_qualifier, feature:\n";
         _dump_feature($bioperl_feature);
@@ -217,6 +304,38 @@ sub _process_one_cc {
   } else {
     warn "no cv name for: $cc_qualifier\n";
   }
+}
+
+func _process_one_go_qual($systematic_id, $bioperl_feature, $go_qualifier) {
+  print "  go qualifier: $go_qualifier\n" if $verbose;
+
+  my %qual_map;
+
+  try {
+    %qual_map = _split_sub_qualifiers($go_qualifier);
+  } catch {
+    warn "$_: failed to process sub-qualifiers from $go_qualifier, feature:\n";
+    _dump_feature($bioperl_feature);
+    return;
+  };
+
+  my $aspect = $qual_map{aspect};
+
+  if (defined $aspect) {
+    my $cv_name = $go_cv_map{$aspect};
+
+    try {
+      _add_cvterm($systematic_id, $cv_name, \%qual_map);
+    } catch {
+      warn "$_: failed to load qualifier from $go_qualifier, feature:\n";
+      _dump_feature($bioperl_feature);
+      exit(1);
+    };
+    warn "loaded: $go_qualifier\n" if $verbose;
+  } else {
+    warn "no aspect for: $go_qualifier\n";
+  }
+
 }
 
 
@@ -245,15 +364,19 @@ while (defined (my $file = shift)) {
     my $systematic_id = $systematic_ids[0];
 
     print "$type: $systematic_id\n" if $verbose;
+
     if ($bioperl_feature->has_tag("controlled_curation")) {
       for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
         _process_one_cc($systematic_id, $bioperl_feature, $value);
       }
     }
+
+    if ($bioperl_feature->has_tag("GO")) {
+      for my $value ($bioperl_feature->get_tag_values("GO")) {
+        _process_one_go_qual($systematic_id, $bioperl_feature, $value);
+      }
+    }
   }
-
-  #exit (1);
-
 }
 
-$guard->commit;
+$guard->commit unless $dry_run;
