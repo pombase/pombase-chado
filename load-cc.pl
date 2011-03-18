@@ -307,6 +307,12 @@ func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
 
   if (_is_go_cv_name($cv_name)) {
     my $evidence = $go_evidence_codes{$sub_qual_map->{evidence}};
+    if (defined $sub_qual_map->{with}) {
+      $evidence .= " with $sub_qual_map->{with}";
+    }
+    if (defined $sub_qual_map->{from}) {
+      $evidence .= " from $sub_qual_map->{from}";
+    }
     _add_feature_cvtermprop($featurecvterm, evidence => $evidence);
     _add_feature_cvtermprop($featurecvterm, date => $sub_qual_map->{date});
   } else {
