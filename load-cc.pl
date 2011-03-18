@@ -65,6 +65,15 @@ my %go_cv_map = (
 my %cv_alt_names = (
   genome_org => ['genome organisation', 'genome organization'],
   sequence_feature => ['sequence feature'],
+  species_dist => ['species distribution'],
+  phenotype => [],
+);
+
+my %cv_long_names = (
+  'genome organisation' => 'genome_org',
+  'genome organization' => 'genome_org',
+  'sequence feature' => 'sequence_feature',
+  'species distribution' => 'species_dist',
 );
 
 my $guard = $chado->txn_scope_guard;
@@ -72,7 +81,6 @@ my $guard = $chado->txn_scope_guard;
 my $cv_rs = $chado->resultset('Cv::Cv');
 
 my $genedb_literature_cv = $cv_rs->find({ name => 'genedb_literature' });
-my $phenotype_cv = $cv_rs->create({ name => 'phenotype' });
 my $feature_cvtermprop_type_cv =
   $cv_rs->create({ name => 'feature_cvtermprop_type' });
 
@@ -94,6 +102,16 @@ $pombase_dbs{feature_cvtermprop_type} = $pombase_db;
 $pombase_dbs{$go_cv_map{P}} = $pombase_db;
 $pombase_dbs{$go_cv_map{F}} = $pombase_db;
 $pombase_dbs{$go_cv_map{C}} = $pombase_db;
+
+for my $extra_cv_name (keys %cv_alt_names) {
+  $cv_rs->create({ name => $extra_cv_name });
+
+  if (!defined $pombase_dbs{$extra_cv_name}) {
+    $pombase_dbs{$extra_cv_name} = $pombase_db;
+  }
+}
+
+my $null_pub = $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
 
 sub _dump_feature {
   my $feature = shift;
@@ -273,23 +291,27 @@ func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
 
   my $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
 
+  my $pub;
+
   if (defined $sub_qual_map->{db_xref} && $sub_qual_map->{db_xref} =~ /^(PMID:(.*))/) {
-    my $pub = _find_or_create_pub($1);
-
-    my $featurecvterm = _add_feature_cvterm($systematic_id, $cvterm, $pub);
-
-    if (_is_go_cv_name($cv_name)) {
-      my $evidence = $go_evidence_codes{$sub_qual_map->{evidence}};
-      _add_feature_cvtermprop($featurecvterm, evidence => $evidence);
-      _add_feature_cvtermprop($featurecvterm, date => $sub_qual_map->{date});
-    } else {
-      if (defined $sub_qual_map->{qualifier}) {
-        _add_feature_cvtermprop($featurecvterm,
-                                qualifier => $sub_qual_map->{qualifier});
-      }
-    }
+    $pub = _find_or_create_pub($1);
   } else {
-    warn "  qualifier for ", $sub_qual_map->{term}, " has no db_xref\n";
+    warn "  qualifier for ", $sub_qual_map->{term},
+      " has no db_xref - using null publication\n";
+    $pub = $null_pub;
+  }
+
+  my $featurecvterm = _add_feature_cvterm($systematic_id, $cvterm, $pub);
+
+  if (_is_go_cv_name($cv_name)) {
+    my $evidence = $go_evidence_codes{$sub_qual_map->{evidence}};
+    _add_feature_cvtermprop($featurecvterm, evidence => $evidence);
+    _add_feature_cvtermprop($featurecvterm, date => $sub_qual_map->{date});
+  } else {
+    if (defined $sub_qual_map->{qualifier}) {
+      _add_feature_cvtermprop($featurecvterm,
+                              qualifier => $sub_qual_map->{qualifier});
+    }
   }
 }
 
@@ -330,6 +352,18 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
 
   my $cv_name = $qual_map{cv};
 
+  if (!defined $cv_name) {
+    map {
+      my $long_name = $_;
+
+      if ($qual_map{term} =~ s/$long_name, *//) {
+        my $short_cv_name = $cv_long_names{$long_name};
+        $qual_map{cv} = $short_cv_name;
+        $cv_name = $short_cv_name;
+      }
+    } keys %cv_long_names;
+  }
+
   if (defined $cv_name) {
     $qual_map{term} =~ s/$cv_name, *//;
 
@@ -337,7 +371,8 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
       map { $qual_map{term} =~ s/$_, *//; } @{$cv_alt_names{$cv_name}};
     }
 
-    if ($cv_name eq 'phenotype') {
+    if (grep { $_ eq $cv_name }
+          qw(phenotype genome_org sequence_feature species_dist)) {
       try {
         _add_cvterm($systematic_id, $cv_name, \%qual_map);
       } catch {
