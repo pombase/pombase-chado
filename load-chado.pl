@@ -188,7 +188,7 @@ func _find_cv_by_name($cv_name) {
   die 'no $cv_name' unless defined $cv_name;
 
   return ($chado->resultset('Cv::Cv')->find({ name => $cv_name })
-    or die "no cv with name: $cv_name\n");
+    or die "no cv with name: $cv_name");
 }
 memoize ('_find_cv_by_name');
 
@@ -197,7 +197,7 @@ func _find_db_by_name($db_name) {
   die 'no $db_name' unless defined $db_name;
 
   return ($chado->resultset('General::Db')->find({ name => $db_name })
-    or die "no db with name: $db_name\n");
+    or die "no db with name: $db_name");
 }
 memoize ('_find_db_by_name');
 
@@ -267,7 +267,7 @@ func _find_or_create_cvterm($cv, $term_name) {
 
     my $db_name = $pombase_dbs{$cv->name()};
     if (!defined $db_name) {
-      die "no db name for ", $cv->name(), "\n";
+      die "no db name for ", $cv->name();
     }
 
     my $new_ont_id = _get_cvterm_id($db_name);
@@ -571,7 +571,7 @@ func _split_sub_qualifiers($cc_qualifier) {
       my $value = $2;
       if (exists $map{$name}) {
         die "duplicated sub-qualifier '$name' from:
-/controlled_curation=\"$cc_qualifier\"\n";
+/controlled_curation=\"$cc_qualifier\"";
       }
 
       if ($split_piped_qualifiers) {
