@@ -657,7 +657,7 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
   my $term = delete $qual_map{term};
 
   if (!defined $term || length $term == 0) {
-    warn "no term for: $qualifier\n";
+    warn "  no term for: $qualifier\n";
     return ();
   }
 
