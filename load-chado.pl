@@ -184,6 +184,15 @@ func _find_cv_by_name($cv_name) {
 memoize ('_find_cv_by_name');
 
 
+func _find_db_by_name($db_name) {
+  die 'no $db_name' unless defined $db_name;
+
+  return ($chado->resultset('General::Db')->find({ name => $db_name })
+    or die "no db with name: $db_name\n");
+}
+memoize ('_find_db_by_name');
+
+
 my %new_cvterm_ids = ();
 
 # return an ID for a new term in the CV with the given name
@@ -196,14 +205,11 @@ func _get_cvterm_id($db_name) {
 }
 
 
-func _find_or_create_pub($identifier) {
+func _find_pub($identifier) {
   my $pub_rs = $chado->resultset('Pub::Pub');
 
-  return $pub_rs->find_or_create({ uniquename => $identifier,
-                                   type_id => $unfetched_pub_cvterm->cvterm_id()
-                                 });
+  return $pub_rs->find({ uniquename => $identifier });
 }
-memoize ('_find_or_create_pub');
 
 
 func _find_cvterm($cv, $term_name) {
@@ -397,12 +403,46 @@ func _get_and_check_date($sub_qual_map) {
   return undef;
 }
 
-func _get_pub_from_dbxref($term, $sub_qual_map) {
-  my $db_xref = delete $sub_qual_map->{db_xref};
 
+func _find_or_create_dbxref($db, $accession) {
+  my $dbxref_rs = $chado->resultset('General::Dbxref');
+  return $dbxref_rs->find_or_create({ db_id => $db->db_id(),
+                                      accession => $accession });
+}
+
+
+func _get_pub_from_db_xref($term, $db_xref) {
   if (defined $db_xref) {
-    if ($db_xref =~ /^(PMID:(.*))/) {
-      return _find_or_create_pub($1);
+    if ($db_xref =~ /^((.*):(.*))/) {
+      my $db_name = $2;
+      my $accession = $3;
+
+      my $db = _find_db_by_name($db_name);
+
+
+      warn "finding pub for $db_xref\n" if $verbose;
+
+      my $pub = _find_pub($db_xref);
+
+      if (!defined $pub) {
+
+        warn "pub not found for: $db_xref  ($db);\n";
+
+        my $pub_rs = $chado->resultset('Pub::Pub');
+        $pub = $pub_rs->create({
+          uniquename => $db_xref,
+          type_id => $unfetched_pub_cvterm->cvterm_id()
+        });
+        my $dbxref = _find_or_create_dbxref($db, $accession);
+        my $pub_dbxref_rs = $chado->resultset('Pub::PubDbxref');
+        $pub_dbxref_rs->create({ pub_id => $pub->pub_id(),
+                                 dbxref_id => $dbxref->dbxref_id() });
+        warn "created new dbxref and pub for: $db_xref\n" if $verbose;
+      }
+
+      warn "using existing dbxref and pub for: $db_xref\n" if $verbose;
+
+      return $pub;
     } else {
       warn "  qualifier for $term ",
         " has unknown format db_xref (", $db_xref,
@@ -433,7 +473,10 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
   }
 
   my $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
-  my $pub = _get_pub_from_dbxref($term, $sub_qual_map);
+  my $db_xref = delete $sub_qual_map->{db_xref};
+
+  warn "getting db_xref for: $db_xref\n" if $verbose;
+  my $pub = _get_pub_from_db_xref($term, $db_xref);
 
   my $featurecvterm = _create_feature_cvterm($pombe_gene, $cvterm, $pub);
 
@@ -569,7 +612,8 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
                                   type_id => $orthologous_to_cvterm->cvterm_id()
                                 });
       _add_feature_relationshipprop($rel, 'date', $date);
-      my $pub = _get_pub_from_dbxref($term, $sub_qual_map);
+      my $db_xref = delete $sub_qual_map->{db_xref};
+      my $pub = _get_pub_from_db_xref($term, $db_xref);
       _add_feature_relationship_pub($rel, $pub);
       $orth_guard->commit();
     } catch {
