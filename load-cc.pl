@@ -462,7 +462,7 @@ while (defined (my $file = shift)) {
   for my $bioperl_feature ($seq_obj->get_SeqFeatures) {
     my $type = $bioperl_feature->primary_tag();
 
-    next unless $type eq 'CDS';
+    next unless $bioperl_feature->has_tag("systematic_id");
 
     my @systematic_ids = $bioperl_feature->get_tag_values("systematic_id");
 
