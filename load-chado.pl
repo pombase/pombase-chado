@@ -679,9 +679,8 @@ while (defined (my $file = shift)) {
     if ($bioperl_feature->has_tag("controlled_curation")) {
       for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
         my %unused_quals = _process_one_cc($pombe_gene, $bioperl_feature, $value);
-        warn "\n" if $verbose;
-
         _check_unused_quals($value, %unused_quals);
+        warn "\n" if $verbose;
       }
     }
 
