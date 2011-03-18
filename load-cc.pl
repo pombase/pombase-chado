@@ -62,6 +62,11 @@ my %go_cv_map = (
   C => 'cellular_component',
 );
 
+my %cv_alt_names = (
+  genome_org => ['genome organisation', 'genome organization'],
+  sequence_feature => ['sequence feature'],
+);
+
 my $guard = $chado->txn_scope_guard;
 
 my $cv_rs = $chado->resultset('Cv::Cv');
@@ -323,12 +328,18 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
     return;
   };
 
-  if (defined $qual_map{cv}) {
-    $qual_map{term} =~ s/$qual_map{cv}, //;
+  my $cv_name = $qual_map{cv};
 
-    if ($qual_map{cv} eq 'phenotype') {
+  if (defined $cv_name) {
+    $qual_map{term} =~ s/$cv_name, *//;
+
+    if (exists $cv_alt_names{$cv_name}) {
+      map { $qual_map{term} =~ s/$_, *//; } @{$cv_alt_names{$cv_name}};
+    }
+
+    if ($cv_name eq 'phenotype') {
       try {
-        _add_cvterm($systematic_id, $qual_map{cv}, \%qual_map);
+        _add_cvterm($systematic_id, $cv_name, \%qual_map);
       } catch {
         warn "  $_: failed to load qualifier '$qualifier' from $systematic_id\n";
         _dump_feature($bioperl_feature) if $verbose;
