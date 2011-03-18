@@ -26,16 +26,24 @@ my $cv_rs = $chado->resultset('Cv::Cv');
 
 my $genedb_literature_cv = $cv_rs->find({ name => 'genedb_literature' });
 my $phenotype_cv = $cv_rs->create({ name => 'phenotype' });
+my $feature_cvtermprop_type_cv =
+  $cv_rs->create({ name => 'feature_cvtermprop_type' });
 
 my $cvterm_rs = $chado->resultset('Cv::Cvterm');
 
-my $unfetched_pub_cvterm = $cvterm_rs->find({ name => 'unfetched',
-                                              cv_id => $genedb_literature_cv->cv_id() });
+my $unfetched_pub_cvterm =
+  $cvterm_rs->find({ name => 'unfetched',
+                     cv_id => $genedb_literature_cv->cv_id() });
 
 my %pombase_dbs = ();
 
 $pombase_dbs{phenotype} =
   $chado->resultset('General::Db')->create({ name => 'PomBase phenotype' });
+
+my $pombase_db =
+  $chado->resultset('General::Db')->create({ name => 'PomBase' });
+
+$pombase_dbs{feature_cvtermprop_type} = $pombase_db;
 
 sub _dump_feature {
   my $feature = shift;
@@ -53,13 +61,14 @@ memoize ('_find_cv_by_name');
 sub _find_cv_by_name {
   my $cv_name = shift;
 
-  return $chado->resultset('Cv::Cv')->find({ name => $cv_name })
-    or die "no cv with name: $cv_name\n";
+  return ($chado->resultset('Cv::Cv')->find({ name => $cv_name })
+    or die "no cv with name: $cv_name\n");
 }
 
 
 my %new_cc_ids = ();
 
+# return an ID for a new term in the CV with the given name
 func _get_cc_id($cv_name) {
   if (!exists $new_cc_ids{$cv_name}) {
     $new_cc_ids{$cv_name} = 0;
@@ -79,26 +88,30 @@ func _find_or_create_pub($pubmed_identifier) {
 
 
 memoize ('_find_cvterm');
-func _find_cvterm($cv_name, $term_name) {
-  my $cv = _find_cv_by_name($cv_name);
+func _find_cvterm($cv, $term_name) {
+  warn "_find_cvterm(", $cv->name(), ", $term_name)\n";
 
-  return $chado->resultset('Cv::Cvterm')->find({ name => $cv_name, cv => $cv });
+  return $chado->resultset('Cv::Cvterm')->find({ name => $term_name,
+                                                 cv_id => $cv->cv_id() });
 }
 
 
 memoize ('_find_or_create_cvterm');
-func _find_or_create_cvterm ($cv_name, $term_name) {
-  my $cv = _find_cv_by_name($cv_name);
-
-  my $cvterm = _find_cvterm($cv_name, $term_name);
+func _find_or_create_cvterm($cv, $term_name) {
+  my $cvterm = _find_cvterm($cv, $term_name);
 
   if (!defined $cvterm) {
-    my $new_ont_id = _get_cc_id($cv_name);
+    my $new_ont_id = _get_cc_id($cv->name());
     my $formatted_id = sprintf "%07d", $new_ont_id;
 
     my $dbxref_rs = $chado->resultset('General::Dbxref');
-    my $dbxref = $dbxref_rs->create({ db_id => $pombase_dbs{phenotype}->db_id(),
-                                      accession => $formatted_id });
+    my $db = $pombase_dbs{$cv->name()};
+
+    die "no db for ", $cv->name(), "\n" if !defined $db;
+
+    my $dbxref =
+      $dbxref_rs->create({ db_id => $db->db_id(),
+                           accession => $formatted_id });
 
     my $cvterm_rs = $chado->resultset('Cv::Cvterm');
     $cvterm = $cvterm_rs->create({ name => $term_name,
@@ -119,14 +132,24 @@ func _find_chado_feature ($systematic_id) {
 
 
 func _add_feature_cvterm($systematic_id, $cvterm, $pub) {
-
   my $chado_feature = _find_chado_feature($systematic_id);
-
   my $rs = $chado->resultset('Sequence::FeatureCvterm');
 
-  $rs->create({ feature_id => $chado_feature->feature_id(),
-                cvterm_id => $cvterm->cvterm_id(),
-                pub_id => $pub->pub_id() });
+  return $rs->create({ feature_id => $chado_feature->feature_id(),
+                       cvterm_id => $cvterm->cvterm_id(),
+                       pub_id => $pub->pub_id() });
+}
+
+func _add_feature_cvtermprop($feature_cvterm, $name, $value) {
+  my $type = _find_or_create_cvterm($feature_cvtermprop_type_cv,
+                                    'qualifier');
+
+  my $rs = $chado->resultset('Sequence::FeatureCvtermprop');
+
+  return $rs->create({ feature_cvterm_id => $feature_cvterm->feature_cvterm_id(),
+                       type_id => $type->cvterm_id(),
+                       value => $value,
+                       rank => 0 });
 }
 
 sub _add_cvterm {
@@ -135,14 +158,16 @@ sub _add_cvterm {
 
   $cc_map->{term} =~ s/$cc_map->{cv}, //;
 
-  my $cvterm = _find_or_create_cvterm($cc_map->{cv}, $cc_map->{term});
+  my $cv = _find_cv_by_name($cc_map->{cv});
+
+  my $cvterm = _find_or_create_cvterm($cv, $cc_map->{term});
 
   if (defined $cc_map->{db_xref} && $cc_map->{db_xref} =~ /^(PMID:(.*))/) {
     my $pub = _find_or_create_pub($1);
 
-    _add_feature_cvterm($systematic_id, $cvterm, $pub,
-                        $cc_map->{qualifier});
+    my $featurecvterm = _add_feature_cvterm($systematic_id, $cvterm, $pub);
 
+    _add_feature_cvtermprop($featurecvterm, qualifier => $cc_map->{qualifier});
   } else {
     die "qualifier has no db_xref\n";
   }
@@ -229,4 +254,4 @@ while (defined (my $file = shift)) {
 
 }
 
-#$guard->commit;
+$guard->commit;
