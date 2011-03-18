@@ -58,7 +58,7 @@ my %go_cv_map = (
   C => 'cellular_component',
 );
 
-my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-kmr-qual-dev-2',
+my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-kmr-qual-dev-4',
                                         'kmr44', 'kmr44');
 
 my $guard = $chado->txn_scope_guard;
@@ -99,9 +99,7 @@ sub _dump_feature {
 
 
 memoize ('_find_cv_by_name');
-sub _find_cv_by_name {
-  my $cv_name = shift;
-
+func _find_cv_by_name($cv_name) {
   die 'no $cv_name' unless defined $cv_name;
 
   return ($chado->resultset('Cv::Cv')->find({ name => $cv_name })
@@ -134,8 +132,31 @@ memoize ('_find_cvterm');
 func _find_cvterm($cv, $term_name) {
   warn "_find_cvterm(", $cv->name(), ", $term_name)\n";
 
-  return $chado->resultset('Cv::Cvterm')->find({ name => $term_name,
-                                                 cv_id => $cv->cv_id() });
+  my $cvterm_rs = $chado->resultset('Cv::Cvterm');
+  my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id() });
+
+  if (defined $cvterm) {
+    return $cvterm;
+  } else {
+    my $synonym_type_cv = _find_cv_by_name('synonym_type');
+    my $exact = _find_cvterm($synonym_type_cv, 'exact');
+
+    my $synonym_rs = $chado->resultset('Cv::Cvtermsynonym');
+    my $search_rs = $synonym_rs->search({ synonym => $term_name,
+                                          type_id => $exact->cvterm_id() });
+
+    if ($search_rs->count() > 1) {
+      die "more than one cvtermsynonym found for $term_name\n";
+    } else {
+      my $synonym = $search_rs->next();
+
+      if (defined $synonym) {
+        return $cvterm_rs->find($synonym->cvterm_id());
+      } else {
+        return undef;
+      }
+    }
+  }
 }
 
 
@@ -143,7 +164,12 @@ memoize ('_find_or_create_cvterm');
 func _find_or_create_cvterm($cv, $term_name) {
   my $cvterm = _find_cvterm($cv, $term_name);
 
-  if (!defined $cvterm) {
+  if (defined $cvterm) {
+    warn "found ", $cvterm->cvterm_id(), " for $term_name in ",
+      $cv->name(),"\n";
+  } else {
+    warn "failed to find: $term_name in ", $cv->name(), "\n" if $verbose;
+
     my $new_ont_id = _get_cc_id($cv->name());
     my $formatted_id = sprintf "%07d", $new_ont_id;
 
