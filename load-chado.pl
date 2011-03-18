@@ -17,6 +17,7 @@ use PomBase::Load;
 my $verbose = 0;
 my $quiet = 0;
 my $dry_run = 0;
+my $test = 0;
 
 sub usage {
   die "$0 [-v] [-d] <embl_file> ...\n";
@@ -24,7 +25,7 @@ sub usage {
 
 my %opts = ();
 
-if (!getopts('vdq', \%opts)) {
+if (!getopts('vdqt', \%opts)) {
   usage();
 }
 
@@ -36,6 +37,9 @@ if ($opts{q}) {
 }
 if ($opts{d}) {
   $dry_run = 1;
+}
+if ($opts{t}) {
+  $test = 1;
 }
 
 my $database = shift;
@@ -146,7 +150,11 @@ my $orthologous_to_cvterm =
   $chado->resultset('Cv::Cvterm')->find({ name => 'orthologous_to' });
 
 warn "loading genes ...\n" unless $quiet;
-my $new_objects = PomBase::Load::init_objects($chado);
+my $new_objects;
+
+if (!$test) {
+  $new_objects = PomBase::Load::init_objects($chado);
+}
 
 sub _dump_feature {
   my $feature = shift;
