@@ -197,6 +197,7 @@ memoize ('_find_or_create_cvterm');
 func _find_or_create_cvterm($cv, $term_name) {
   my $cvterm = _find_cvterm($cv, $term_name);
 
+  # nested transaction
   my $cvterm_guard = $chado->txn_scope_guard();
 
   if (defined $cvterm) {
