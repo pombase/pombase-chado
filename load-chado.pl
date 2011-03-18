@@ -288,7 +288,11 @@ func _find_chado_feature ($systematic_id, $try_name) {
   my $rs = $chado->resultset('Sequence::Feature');
   my $feature = $rs->find({ uniquename => $systematic_id });
 
-  return $feature if defined $feature;
+  if (defined $feature) {
+    return $feature;
+  } else {
+    warn "no feature found using $systematic_id as uniquename\n" if $verbose;
+  }
 
   if ($try_name) {
     $feature = $rs->find({ name => $systematic_id });
