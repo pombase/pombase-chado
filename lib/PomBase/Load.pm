@@ -46,22 +46,39 @@ func _load_genes($chado, $organism) {
   my $org_name = $organism->genus() . ' ' . $organism->species();
   my @res = PomBase::External::get_genes($org_name);
 
-  my %seen_symbols = ();
+  my %seen_names = ();
 
   for my $gene (@res) {
-    my $symbol = $gene->{symbol};
     my $primary_identifier = $gene->{primary_identifier};
-    if (exists $seen_symbols{lc $symbol}) {
-      croak "seen symbol twice: $symbol(from $primary_identifier) and from "
-        . $seen_symbols{lc $symbol};
+
+    my $name;
+
+    if ($org_name eq 'Saccharomyces cerevisiae') {
+      $name = $gene->{secondary_identifier};
+    } else {
+      $name = $gene->{symbol};
     }
+
+    if (defined $name and length $name > 0) {
+      if (exists $seen_names{lc $name}) {
+        croak "seen name twice: $name(from $primary_identifier) and from "
+          . $seen_names{lc $name};
+      }
+    } else {
+      $name = $primary_identifier;
+    }
+
+    $seen_names{lc $name} = $primary_identifier;
+
     $chado->resultset('Sequence::Feature')->create({
       uniquename => $primary_identifier,
-      name => $symbol,
+      name => $name,
       organism_id => $organism->organism_id(),
       type_id => $gene_type->cvterm_id()
     });
   }
+
+  warn "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
 }
 
 func init_objects($chado) {
