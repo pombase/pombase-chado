@@ -431,7 +431,7 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
     if ($term =~ /^human\s+(.*?)\s+ortholog$/) {
       $gene_bit = $1;
     } else {
-      warn "not recognised as an ortholog curation: $term\n" if $verbose;
+      warn "  not recognised as an ortholog curation: $term\n" if $verbose;
       return 0;
     }
   }
