@@ -308,10 +308,8 @@ func _is_go_cv_name($cv_name) {
   return grep { $_ eq $cv_name } values %go_cv_map;
 }
 
-func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
+func _add_cvterm($systematic_id, $cv_name, $term, $sub_qual_map) {
   my $cv = _find_cv_by_name($cv_name);
-  my $term = $sub_qual_map->{term};
-  delete $sub_qual_map->{term};
 
   my $db_accession;
 
@@ -327,7 +325,7 @@ func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
 
   my $pub;
 
-  my $db_xref = $sub_qual_map->{db_xref};
+  my $db_xref = delete $sub_qual_map->{db_xref};
 
   if (defined $db_xref) {
     if ($db_xref =~ /^(PMID:(.*))/) {
@@ -348,32 +346,22 @@ func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
   my $featurecvterm = _add_feature_cvterm($systematic_id, $cvterm, $pub);
 
   if (_is_go_cv_name($cv_name)) {
-    my $evidence = $go_evidence_codes{$sub_qual_map->{evidence}};
+    my $evidence = $go_evidence_codes{delete $sub_qual_map->{evidence}};
     if (defined $sub_qual_map->{with}) {
-      $evidence .= " with $sub_qual_map->{with}";
+      $evidence .= " with " . delete $sub_qual_map->{with};
     }
     if (defined $sub_qual_map->{from}) {
-      $evidence .= " from $sub_qual_map->{from}";
+      $evidence .= " from " . delete $sub_qual_map->{from};
     }
-    _add_feature_cvtermprop($featurecvterm, evidence => $evidence);
-    _add_feature_cvtermprop($featurecvterm, date => $sub_qual_map->{date});
-
-    delete $sub_qual_map->{date};
-    delete $sub_qual_map->{evidence};
+    _add_feature_cvtermprop($featurecvterm,
+                            evidence => $evidence);
+    _add_feature_cvtermprop($featurecvterm,
+                            date => delete $sub_qual_map->{date});
   } else {
     if (defined $sub_qual_map->{qualifier}) {
       _add_feature_cvtermprop($featurecvterm,
                               qualifier => $sub_qual_map->{qualifier});
       delete $sub_qual_map->{qualifier};
-    }
-  }
-
-  if ($verbose) {
-    if (scalar(keys %$sub_qual_map) > 0) {
-      warn "  unprocessed sub qualifiers:\n";
-      while (my ($key, $value) = each %$sub_qual_map) {
-        warn "     $key => $value\n";
-      }
     }
   }
 }
@@ -413,50 +401,54 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
   };
 
   if ((scalar(keys %qual_map)) == 0) {
-    return;
+    return ();
   }
 
-  my $cv_name = $qual_map{cv};
+  my $cv_name = delete $qual_map{cv};
+  my $term = delete $qual_map{term};
+
+  if (!defined $term || length $term == 0) {
+    warn "no term for: $qualifier\n";
+    return ();
+  }
 
   if (!defined $cv_name) {
     map {
       my $long_name = $_;
 
-      if ($qual_map{term} =~ s/$long_name, *//) {
+      if ($term =~ s/$long_name, *//) {
         my $short_cv_name = $cv_long_names{$long_name};
         $cv_name = $short_cv_name;
       }
     } keys %cv_long_names;
   }
 
-  if (!defined $qual_map{term} || length $qual_map{term} == 0) {
-    warn "no term for: $qualifier\n" if $verbose;
-    return;
-  }
-
   if (defined $cv_name) {
-    $qual_map{term} =~ s/$cv_name, *//;
+    $term =~ s/$cv_name, *//;
 
     if (exists $cv_alt_names{$cv_name}) {
-      map { $qual_map{term} =~ s/$_, *//; } @{$cv_alt_names{$cv_name}};
+      map { $term =~ s/$_, *//; } @{$cv_alt_names{$cv_name}};
     }
 
     if (grep { $_ eq $cv_name } keys %cv_alt_names) {
       try {
-        _add_cvterm($systematic_id, $cv_name, \%qual_map);
+        _add_cvterm($systematic_id, $cv_name, $term, \%qual_map);
       } catch {
         warn "  $_: failed to load qualifier '$qualifier' from $systematic_id\n";
         _dump_feature($bioperl_feature) if $verbose;
-        return;
+        return ();
       };
       warn "  loaded: $qualifier\n" unless $quiet;
-      return;
+      return ();
     }
 
     warn "  unknown cv $cv_name: $qualifier\n";
   } else {
     warn "  no cv name for: $qualifier\n";
+    return ();
   }
+
+  return %qual_map;
 }
 
 func _process_one_go_qual($systematic_id, $bioperl_feature, $qualifier) {
@@ -472,31 +464,50 @@ func _process_one_go_qual($systematic_id, $bioperl_feature, $qualifier) {
   };
 
   if ((scalar(keys %qual_map)) == 0) {
-    return;
+    return ();
   }
 
-  my $aspect = $qual_map{aspect};
+  my $aspect = delete $qual_map{aspect};
 
   if (defined $aspect) {
     my $cv_name = $go_cv_map{$aspect};
 
+    my $term = delete $qual_map{term};
+
     try {
-      _add_cvterm($systematic_id, $cv_name, \%qual_map);
+      _add_cvterm($systematic_id, $cv_name, $term, \%qual_map);
     } catch {
       warn "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
       _dump_feature($bioperl_feature) if $verbose;
-      return;
+      return ();
     };
     warn "  loaded: $qualifier\n" if $verbose;
   } else {
     warn "  no aspect for: $qualifier\n";
+     return ();
   }
 
+  return %qual_map;
 }
 
+sub _check_unused_quals
+{
+  return if $quiet;
+
+  my $systematic_id = shift;
+  my $qual_text = shift;
+  my %quals = @_;
+
+  if (scalar(keys %quals) > 0) {
+    warn "  unprocessed sub qualifiers:\n";
+    while (my ($key, $value) = each %quals) {
+      warn "     $key => $value\n";
+    }
+  }
+}
 
 # main loop:
-#  process all features from the input files
+#process all features from the input files
 while (defined (my $file = shift)) {
 
   my $io = Bio::SeqIO->new(-file => $file, -format => "embl" );
@@ -523,15 +534,19 @@ while (defined (my $file = shift)) {
 
     if ($bioperl_feature->has_tag("controlled_curation")) {
       for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
-        _process_one_cc($systematic_id, $bioperl_feature, $value);
+        my %unused_quals = _process_one_cc($systematic_id, $bioperl_feature, $value);
         warn "\n" if $verbose;
+
+        _check_unused_quals($systematic_id, $value, %unused_quals);
       }
     }
 
     if ($bioperl_feature->has_tag("GO")) {
       for my $value ($bioperl_feature->get_tag_values("GO")) {
-        _process_one_go_qual($systematic_id, $bioperl_feature, $value);
+        my %unused_quals = _process_one_go_qual($systematic_id, $bioperl_feature, $value);
         warn "\n" if $verbose;
+
+        _check_unused_quals($systematic_id, $value, %unused_quals);
       }
     }
   }
