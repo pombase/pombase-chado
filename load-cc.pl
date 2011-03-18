@@ -146,6 +146,7 @@ my $null_pub = $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
 my $orthologous_to_cvterm =
   $chado->resultset('Cv::Cvterm')->find({ name => 'orthologous_to' });
 
+warn "loading genes ...\n" unless $quiet;
 my $new_objects = PomBase::Load::init_objects($chado);
 
 sub _dump_feature {
