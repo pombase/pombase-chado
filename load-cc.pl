@@ -141,6 +141,25 @@ for my $extra_cv_name (keys %cv_alt_names) {
 
 my $null_pub = $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
 
+my $orthologous_to_cvterm =
+  $chado->resultset('Cv::Cvterm')->find({ name => 'orthologous_to' });
+
+my $human_organism =
+  $chado->resultset('Organism::Organism')->create({
+    genus => 'Homo',
+    species => 'sapiens',
+    common_name => 'human',
+    abbreviation => 'human',
+  });
+
+my $scerevisiae_organism =
+  $chado->resultset('Organism::Organism')->create({
+    genus => 'Saccharomyces',
+    species => 'cerevisiae',
+    common_name => 'Scerevisiae',
+    abbreviation => 'Scerevisiae',
+  });
+
 sub _dump_feature {
   my $feature = shift;
 
@@ -401,6 +420,47 @@ func _split_sub_qualifiers($cc_qualifier) {
   return %map;
 }
 
+func _process_ortholog($systematic_id, $bioperl_feature, $term, $sub_qual_map) {
+  my $org_name;
+  my $gene_bit;
+
+  if ($term =~ /^orthologous to S\. cerevisiae (.*)/) {
+    $gene_bit = $1;
+  } else {
+    if ($term =~ /^human\s+(.*?)\s+ortholog$/) {
+      $gene_bit = $1;
+    } else {
+      # not recognised as an ortholog
+      return 0;
+    }
+  }
+
+  my @gene_names = ();
+
+  if ($gene_bit =~ /^\S+$/) {
+    push @gene_names, $gene_bit;
+  } else {
+    if ($gene_bit =~ /^(\S+) and (\S+)/) {
+      push @gene_names, $1, $2;
+    } else {
+      die "can't parse: $gene_bit from $term\n";
+    }
+  }
+
+  my $pombe_chado_feature = _find_chado_feature($systematic_id);
+
+  for my $ortholog_name (@gene_names) {
+    my $ortholog_feature = _find_chado_feature($ortholog_name);
+
+    # FIXME: create a feature_relationship between the feature and it's
+    # ortholog (which should be pre-loaded)
+    # $orthologous_to_cvterm;
+  }
+
+  return 1;
+}
+
+
 func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
   warn "  _process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
     if $verbose;
@@ -458,8 +518,10 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
 
     warn "  unknown cv $cv_name: $qualifier\n";
   } else {
-    warn "  no cv name for: $qualifier\n";
-    return ();
+    if (!_try_process_ortholog($systematic_id, $bioperl_feature, \%qual_map)) {
+      warn "  no cv name for: $qualifier\n";
+      return ();
+    }
   }
 
   return %qual_map;
