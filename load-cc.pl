@@ -66,6 +66,7 @@ my %cv_alt_names = (
   genome_org => ['genome organisation', 'genome organization'],
   sequence_feature => ['sequence feature'],
   species_dist => ['species distribution'],
+  localisation => ['localization'],
   phenotype => [],
 );
 
@@ -74,6 +75,7 @@ my %cv_long_names = (
   'genome organization' => 'genome_org',
   'sequence feature' => 'sequence_feature',
   'species distribution' => 'species_dist',
+  'localization' => 'localisation'
 );
 
 my $guard = $chado->txn_scope_guard;
