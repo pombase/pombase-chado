@@ -87,11 +87,6 @@ func get_genes($species) {
   );
 
   $query->add_constraint(
-    path  => 'Gene.symbol',
-    op    => 'IS NOT NULL',
-  );
-
-  $query->add_constraint(
     path  => 'Gene.organism.name',
     op    => '=',
     value => $species,
@@ -100,9 +95,10 @@ func get_genes($species) {
   my $res = $query->results(as => 'hashrefs');
 
   return map {
+    my $secondary_identifier = $_->{$secondary_tag} // $_->{$primary_tag};
     {
       primary_identifier => $_->{$primary_tag},
-      secondary_identifier => $_->{$secondary_tag},
+      secondary_identifier => $secondary_identifier,
       name => $_->{$name_tag},
       symbol => $_->{$symbol_tag},
     }
