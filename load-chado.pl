@@ -732,10 +732,9 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
         _dump_feature($bioperl_feature) if $verbose;
       };
       warn "    loaded: $qualifier\n" if $verbose;
-      return ();
+    } else {
+      warn "  unknown cv $cv_name: $qualifier\n";
     }
-
-    warn "  unknown cv $cv_name: $qualifier\n";
   } else {
     if (!_process_ortholog($pombe_gene, $term, \%qual_map)) {
       warn "  didn't process: $qualifier\n";
