@@ -213,7 +213,7 @@ func _find_pub($identifier) {
 
 
 func _find_cvterm($cv, $term_name) {
-  warn "  _find_cvterm(", $cv->name(), ", $term_name)\n" if $verbose;
+  warn "    _find_cvterm(", $cv->name(), ", $term_name)\n" if $verbose;
 
   my $cvterm_rs = $chado->resultset('Cv::Cvterm');
   my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id() });
@@ -251,10 +251,10 @@ func _find_or_create_cvterm($cv, $term_name) {
   my $cvterm_guard = $chado->txn_scope_guard();
 
   if (defined $cvterm) {
-    warn "  found cvterm_id ", $cvterm->cvterm_id(),
+    warn "    found cvterm_id ", $cvterm->cvterm_id(),
       " when looking for $term_name in ", $cv->name(),"\n" if $verbose;
   } else {
-    warn "  failed to find: $term_name in ", $cv->name(), "\n" if $verbose;
+    warn "    failed to find: $term_name in ", $cv->name(), "\n" if $verbose;
 
     my $db_name = $pombase_dbs{$cv->name()};
     if (!defined $db_name) {
@@ -269,7 +269,7 @@ func _find_or_create_cvterm($cv, $term_name) {
 
     die "no db for ", $cv->name(), "\n" if !defined $db;
 
-    warn "  creating dbxref $formatted_id, ", $cv->name(), "\n" if $verbose;
+    warn "    creating dbxref $formatted_id, ", $cv->name(), "\n" if $verbose;
 
     my $dbxref =
       $dbxref_rs->create({ db_id => $db->db_id(),
@@ -280,7 +280,7 @@ func _find_or_create_cvterm($cv, $term_name) {
                                    dbxref_id => $dbxref->dbxref_id(),
                                    cv_id => $cv->cv_id() });
 
-    warn "  created new cvterm, id: ", $cvterm->cvterm_id(), "\n" if $verbose;
+    warn "    created new cvterm, id: ", $cvterm->cvterm_id(), "\n" if $verbose;
   }
 
   $cvterm_guard->commit();
@@ -297,7 +297,7 @@ func _find_chado_feature ($systematic_id, $try_name) {
   if (defined $feature) {
     return $feature;
   } else {
-    warn "no feature found using $systematic_id as uniquename\n" if $verbose;
+    warn "    no feature found using $systematic_id as uniquename\n" if $verbose;
   }
 
   if ($try_name) {
@@ -420,13 +420,13 @@ func _get_pub_from_db_xref($term, $db_xref) {
 
       my $db = _find_db_by_name($db_name);
 
-      warn "finding pub for $db_xref\n" if $verbose;
+      warn "    finding pub for $db_xref\n" if $verbose;
 
       my $pub = _find_pub($db_xref);
 
       if (!defined $pub) {
 
-        warn "pub not found for: $db_xref  ($db);\n" if $verbose;
+        warn "    pub not found for: $db_xref  ($db);\n" if $verbose;
 
         my $pub_rs = $chado->resultset('Pub::Pub');
         $pub = $pub_rs->create({
@@ -437,20 +437,20 @@ func _get_pub_from_db_xref($term, $db_xref) {
         my $pub_dbxref_rs = $chado->resultset('Pub::PubDbxref');
         $pub_dbxref_rs->create({ pub_id => $pub->pub_id(),
                                  dbxref_id => $dbxref->dbxref_id() });
-        warn "created new dbxref and pub for: $db_xref\n" if $verbose;
+        warn "    created new dbxref and pub for: $db_xref\n" if $verbose;
       }
 
-      warn "using existing dbxref and pub for: $db_xref\n" if $verbose;
+      warn "    using existing dbxref and pub for: $db_xref\n" if $verbose;
 
       return $pub;
     } else {
-      warn "  qualifier for $term ",
+      warn "    qualifier for $term ",
         " has unknown format db_xref (", $db_xref,
           ") - using null publication\n" unless $quiet;
       return $null_pub;
     }
   } else {
-    warn "  qualifier for $term ",
+    warn "    qualifier for $term ",
       " has no db_xref - using null publication\n" unless $quiet;
     return $null_pub;
   }
@@ -579,7 +579,7 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
     if ($term =~ /^human\s+(.*?)\s+ortholog$/) {
       $gene_bit = $1;
     } else {
-      warn "  not recognised as an ortholog curation: $term\n" if $verbose;
+      warn "    not recognised as an ortholog curation: $term\n" if $verbose;
       return 0;
     }
   }
@@ -598,7 +598,7 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
   }
 
   for my $ortholog_name (@gene_names) {
-    warn "  creating ortholog from ", $pombe_gene->uniquename(),
+    warn "    creating ortholog from ", $pombe_gene->uniquename(),
       " to $ortholog_name\n" if $verbose;
 
     my $ortholog_feature = undef;
@@ -625,7 +625,7 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
       _add_feature_relationship_pub($rel, $pub);
       $orth_guard->commit();
     } catch {
-      warn "failed to create ortholog relation: $_\n";
+      warn "  failed to create ortholog relation: $_\n";
       return 0;
     };
   }
@@ -637,7 +637,7 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
 func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
   my $systematic_id = $pombe_gene->uniquename();
 
-  warn "  _process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
+  warn "    _process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
     if $verbose;
 
   my %qual_map = ();
@@ -683,10 +683,10 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
       try {
         _add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map);
       } catch {
-        warn "  $_: failed to load qualifier '$qualifier' from $systematic_id\n";
+        warn "    $_: failed to load qualifier '$qualifier' from $systematic_id\n";
         _dump_feature($bioperl_feature) if $verbose;
       };
-      warn "  loaded: $qualifier\n" if $verbose;
+      warn "    loaded: $qualifier\n" if $verbose;
       return ();
     }
 
@@ -732,7 +732,7 @@ func _process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
       _dump_feature($bioperl_feature) if $verbose;
       return ();
     };
-    warn "  loaded: $qualifier\n" if $verbose;
+    warn "    loaded: $qualifier\n" if $verbose;
   } else {
     warn "  no aspect for: $qualifier\n";
     return ();
@@ -751,7 +751,7 @@ sub _check_unused_quals
   if (scalar(keys %quals) > 0) {
     warn "  unprocessed sub qualifiers:\n";
     while (my ($key, $value) = each %quals) {
-      warn "     $key => $value\n";
+      warn "   $key => $value\n";
     }
   }
 }
@@ -778,7 +778,7 @@ while (defined (my $file = shift)) {
 
     if (@systematic_ids != 1) {
       my $systematic_id_count = scalar(@systematic_ids);
-      warn "\n  expected 1 systematic_id, got $systematic_id_count, for:";
+      warn "  expected 1 systematic_id, got $systematic_id_count, for:";
       _dump_feature($bioperl_feature);
       exit(1);
     }
@@ -792,7 +792,7 @@ while (defined (my $file = shift)) {
     try {
       $pombe_gene = _find_chado_feature($systematic_id);
     } catch {
-      warn "no feature found for $type $systematic_id\n";
+      warn "  no feature found for $type $systematic_id\n";
     };
 
     next if not defined $pombe_gene;
@@ -818,14 +818,14 @@ while (defined (my $file = shift)) {
       if ($bioperl_feature->has_tag("product")) {
         my @products = $bioperl_feature->get_tag_values("product");
         if (@products > 1) {
-          warn "$systematic_id has more than one product\n";
+          warn "  $systematic_id has more than one product\n";
         } else {
           if (length $products[0] == 0) {
-            warn "zero length product for $systematic_id\n";
+            warn "  zero length product for $systematic_id\n";
           }
         }
       } else {
-        warn "no product for $systematic_id\n";
+        warn "  no product for $systematic_id\n";
       }
     }
   }
