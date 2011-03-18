@@ -431,7 +431,7 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
     if ($term =~ /^human\s+(.*?)\s+ortholog$/) {
       $gene_bit = $1;
     } else {
-      warn "not recognised as an ortholog curation: $term\n";
+      warn "not recognised as an ortholog curation: $term\n" if $verbose;
       return 0;
     }
   }
@@ -532,7 +532,7 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     warn "  unknown cv $cv_name: $qualifier\n";
   } else {
     if (!_process_ortholog($pombe_gene, $term, \%qual_map)) {
-      warn "  no cv name for: $qualifier\n";
+      warn "  don't know how to process: $qualifier\n";
       return ();
     }
   }
