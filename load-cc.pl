@@ -134,7 +134,7 @@ func _find_or_create_pub($pubmed_identifier) {
 
 memoize ('_find_cvterm');
 func _find_cvterm($cv, $term_name) {
-  warn "  _find_cvterm(", $cv->name(), ", $term_name)\n";
+  warn "  _find_cvterm(", $cv->name(), ", $term_name)\n" if $verbose;
 
   my $cvterm_rs = $chado->resultset('Cv::Cvterm');
   my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id() });
@@ -310,7 +310,7 @@ func _split_sub_qualifiers($cc_qualifier) {
 }
 
 func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
-  warn "    _process_one_cc($systematic_id, $bioperl_feature, $qualifier)\n"
+  warn "  _process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
     if $verbose;
 
   my %qual_map;
@@ -338,7 +338,7 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
       return;
     }
 
-    warn "  didn't process, unknown cv $qual_map{cv}: $qualifier\n";
+    warn "  unknown cv $cv_name: $qualifier\n";
   } else {
     warn "  no cv name for: $qualifier\n";
   }
@@ -406,12 +406,14 @@ while (defined (my $file = shift)) {
     if ($bioperl_feature->has_tag("controlled_curation")) {
       for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
         _process_one_cc($systematic_id, $bioperl_feature, $value);
+        warn "\n" if $verbose;
       }
     }
 
     if ($bioperl_feature->has_tag("GO")) {
       for my $value ($bioperl_feature->get_tag_values("GO")) {
         _process_one_go_qual($systematic_id, $bioperl_feature, $value);
+        warn "\n" if $verbose;
       }
     }
   }
