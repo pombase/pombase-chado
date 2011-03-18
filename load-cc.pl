@@ -12,7 +12,6 @@ BEGIN {
   push @INC, 'lib';
 };
 
-use PomBase;
 use PomBase::Chado;
 use PomBase::Load;
 
