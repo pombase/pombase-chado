@@ -1,0 +1,61 @@
+package PomBase::Check;
+
+=head1 NAME
+
+PomBase::Check - Code for checking database integrity
+
+=head1 SYNOPSIS
+
+=head1 AUTHOR
+
+Kim Rutherford C<< <kmr44@cam.ac.uk> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<kmr44@cam.ac.uk>.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc PomBase::Check
+
+=over 4
+
+=back
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2009 Kim Rutherford, all rights reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=head1 FUNCTIONS
+
+=cut
+
+use perl5i::2;
+use Moose;
+
+use Module::Find;
+
+use PomBase::Chado;
+
+with 'PomBase::Role::ConfigUser';
+with 'PomBase::Role::ChadoUser';
+
+method run() {
+  my @check_modules = usesub PomBase::Check;
+
+  for my $module (@check_modules) {
+    my $obj = $module->new(config => $self->config(),
+                           chado => $self->chado());
+
+    if (!$obj->check()) {
+      warn "failed test: ", $obj->description(), "\n";
+    }
+  }
+}
+
+1;

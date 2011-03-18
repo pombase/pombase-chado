@@ -1,0 +1,2 @@
+'PomBase::Check::FeatureCount':
+  min_count: 10000
