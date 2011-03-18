@@ -390,6 +390,26 @@ func _get_and_check_date($sub_qual_map) {
   return undef;
 }
 
+func _get_pub_from_dbxref($term, $sub_qual_map) {
+  my $db_xref = delete $sub_qual_map->{db_xref};
+
+  if (defined $db_xref) {
+    if ($db_xref =~ /^(PMID:(.*))/) {
+      return _find_or_create_pub($1);
+    } else {
+      warn "  qualifier for $term ",
+        " has unknown format db_xref (", $db_xref,
+          ") - using null publication\n" unless $quiet;
+      return $null_pub;
+    }
+  } else {
+    warn "  qualifier for $term ",
+      " has no db_xref - using null publication\n" unless $quiet;
+    return $null_pub;
+  }
+
+}
+
 func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
   my $cv = _find_cv_by_name($cv_name);
 
@@ -406,26 +426,7 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
   }
 
   my $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
-
-  my $pub;
-
-  my $db_xref = delete $sub_qual_map->{db_xref};
-
-  if (defined $db_xref) {
-    if ($db_xref =~ /^(PMID:(.*))/) {
-      $pub = _find_or_create_pub($1);
-    } else {
-      warn "  qualifier for $term ",
-        " has unknown format db_xref (", $db_xref,
-          ") - using null publication\n" unless $quiet;
-      $pub = $null_pub;
-    }
-  } else {
-    warn "  qualifier for $term ",
-      " has no db_xref - using null publication\n" unless $quiet;
-    $pub = $null_pub;
-  }
-
+  my $pub = _get_pub_from_dbxref($term, $sub_qual_map);
 
   my $featurecvterm = _create_feature_cvterm($pombe_gene, $cvterm, $pub);
 
