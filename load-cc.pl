@@ -86,6 +86,9 @@ my $pombase_db =
   $chado->resultset('General::Db')->create({ name => 'PomBase' });
 
 $pombase_dbs{feature_cvtermprop_type} = $pombase_db;
+$pombase_dbs{$go_cv_map{P}} = $pombase_db;
+$pombase_dbs{$go_cv_map{F}} = $pombase_db;
+$pombase_dbs{$go_cv_map{C}} = $pombase_db;
 
 sub _dump_feature {
   my $feature = shift;
@@ -111,12 +114,12 @@ func _find_cv_by_name($cv_name) {
 my %new_cc_ids = ();
 
 # return an ID for a new term in the CV with the given name
-func _get_cc_id($cv_name) {
-  if (!exists $new_cc_ids{$cv_name}) {
-    $new_cc_ids{$cv_name} = 0;
+func _get_cc_id($db_name) {
+  if (!exists $new_cc_ids{$db_name}) {
+    $new_cc_ids{$db_name} = 1_000_000;
   }
 
-  return $new_cc_ids{$cv_name}++;
+  return $new_cc_ids{$db_name}++;
 }
 
 
@@ -165,19 +168,23 @@ memoize ('_find_or_create_cvterm');
 func _find_or_create_cvterm($cv, $term_name) {
   my $cvterm = _find_cvterm($cv, $term_name);
 
+  my $cvterm_guard = $chado->txn_scope_guard();
+
   if (defined $cvterm) {
-    warn "found ", $cvterm->cvterm_id(), " for $term_name in ",
-      $cv->name(),"\n";
+    warn "found cvterm_id ", $cvterm->cvterm_id(),
+      " when looking for $term_name in ", $cv->name(),"\n" if $verbose;
   } else {
     warn "failed to find: $term_name in ", $cv->name(), "\n" if $verbose;
 
-    my $new_ont_id = _get_cc_id($cv->name());
+    my $new_ont_id = _get_cc_id($pombase_dbs{$cv->name()});
     my $formatted_id = sprintf "%07d", $new_ont_id;
 
     my $dbxref_rs = $chado->resultset('General::Dbxref');
     my $db = $pombase_dbs{$cv->name()};
 
     die "no db for ", $cv->name(), "\n" if !defined $db;
+
+    warn "creating dbxref $formatted_id, ", $cv->name(), "\n" if $verbose;
 
     my $dbxref =
       $dbxref_rs->create({ db_id => $db->db_id(),
@@ -188,6 +195,9 @@ func _find_or_create_cvterm($cv, $term_name) {
                                    dbxref_id => $dbxref->dbxref_id(),
                                    cv_id => $cv->cv_id() });
   }
+
+  $cvterm_guard->commit();
+
 
   return $cvterm;
 }
@@ -201,13 +211,23 @@ func _find_chado_feature ($systematic_id) {
 }
 
 
+my %stored_cvterms = ();
+
 func _add_feature_cvterm($systematic_id, $cvterm, $pub) {
   my $chado_feature = _find_chado_feature($systematic_id);
   my $rs = $chado->resultset('Sequence::FeatureCvterm');
 
+  if (!exists $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}) {
+    $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()} = 0;
+  }
+
+  my $rank =
+    $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}++;
+
   return $rs->create({ feature_id => $chado_feature->feature_id(),
                        cvterm_id => $cvterm->cvterm_id(),
-                       pub_id => $pub->pub_id() });
+                       pub_id => $pub->pub_id(),
+                       rank => $rank });
 }
 
 func _add_feature_cvtermprop($feature_cvterm, $name, $value) {
@@ -260,18 +280,18 @@ sub _add_cvterm {
 
     my $featurecvterm = _add_feature_cvterm($systematic_id, $cvterm, $pub);
 
-    warn "\n============== $cv_name\n";
-
     if (_is_go_cv_name($cv_name)) {
       my $evidence = $go_evidence_codes{$cc_map->{evidence}};
       _add_feature_cvtermprop($featurecvterm, evidence => $evidence);
       _add_feature_cvtermprop($featurecvterm, date => $cc_map->{date});
     } else {
-      _add_feature_cvtermprop($featurecvterm,
-                              qualifier => $cc_map->{qualifier});
+      if (defined $cc_map->{qualifier}) {
+        _add_feature_cvtermprop($featurecvterm,
+                                qualifier => $cc_map->{qualifier});
+      }
     }
   } else {
-    die "qualifier has no db_xref\n";
+    warn "qualifier for ", $cc_map->{term}, " has no db_xref\n";
   }
 }
 
@@ -312,16 +332,16 @@ func _process_one_cc($systematic_id, $bioperl_feature, $cc_qualifier) {
     return;
   };
 
-  $cc_map{term} =~ s/$cc_map{cv}, //;
-
   if (defined $cc_map{cv}) {
+    $cc_map{term} =~ s/$cc_map{cv}, //;
+
     if ($cc_map{cv} eq 'phenotype') {
       try {
         _add_cvterm($systematic_id, $cc_map{cv}, \%cc_map);
       } catch {
-        warn "$_: failed to load qualifier from $cc_qualifier, feature:\n";
-        _dump_feature($bioperl_feature);
-        exit(1);
+        warn "$_: failed to load qualifier '$cc_qualifier' from $systematic_id\n";
+        _dump_feature($bioperl_feature) if $verbose;
+        return;
       };
       warn "loaded: $cc_qualifier\n";
       return;
@@ -354,9 +374,9 @@ func _process_one_go_qual($systematic_id, $bioperl_feature, $go_qualifier) {
     try {
       _add_cvterm($systematic_id, $cv_name, \%qual_map);
     } catch {
-      warn "$_: failed to load qualifier from $go_qualifier, feature:\n";
-      _dump_feature($bioperl_feature);
-      exit(1);
+      warn "$_: failed to load qualifier '$go_qualifier' from $systematic_id:\n";
+      _dump_feature($bioperl_feature) if $verbose;
+      return;
     };
     warn "loaded: $go_qualifier\n" if $verbose;
   } else {
