@@ -633,7 +633,6 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
       } catch {
         warn "  $_: failed to load qualifier '$qualifier' from $systematic_id\n";
         _dump_feature($bioperl_feature) if $verbose;
-        return ();
       };
       warn "  loaded: $qualifier\n" unless $quiet;
       return ();
