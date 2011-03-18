@@ -644,7 +644,7 @@ func _process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
   my $aspect = delete $qual_map{aspect};
 
   if (defined $aspect) {
-    my $cv_name = $go_cv_map{$aspect};
+    my $cv_name = $go_cv_map{uc $aspect};
 
     my $term = delete $qual_map{term};
 
