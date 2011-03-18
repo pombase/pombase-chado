@@ -224,10 +224,11 @@ func _find_or_create_cvterm($cv, $term_name) {
     $cvterm = $cvterm_rs->create({ name => $term_name,
                                    dbxref_id => $dbxref->dbxref_id(),
                                    cv_id => $cv->cv_id() });
+
+    warn "  created new cvterm, id: ", $cvterm->cvterm_id(), "\n" if $verbose;
   }
 
   $cvterm_guard->commit();
-
 
   return $cvterm;
 }
