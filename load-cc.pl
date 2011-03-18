@@ -357,15 +357,18 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
   warn "  _process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
     if $verbose;
 
-  my %qual_map;
+  my %qual_map = ();
 
   try {
     %qual_map = _split_sub_qualifiers($qualifier);
   } catch {
     warn "  $_: failed to process sub-qualifiers from $qualifier, feature:\n";
     _dump_feature($bioperl_feature);
-    return;
   };
+
+  if ((scalar(keys %qual_map)) == 0) {
+    return;
+  }
 
   my $cv_name = $qual_map{cv};
 
@@ -410,15 +413,18 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
 func _process_one_go_qual($systematic_id, $bioperl_feature, $qualifier) {
   warn "    go qualifier: $qualifier\n" if $verbose;
 
-  my %qual_map;
+  my %qual_map = ();
 
   try {
     %qual_map = _split_sub_qualifiers($qualifier);
   } catch {
     warn "  $_: failed to process sub-qualifiers from $qualifier, feature:\n";
     _dump_feature($bioperl_feature);
-    return;
   };
+
+  if ((scalar(keys %qual_map)) == 0) {
+    return;
+  }
 
   my $aspect = $qual_map{aspect};
 
