@@ -116,6 +116,8 @@ my $cv_rs = $chado->resultset('Cv::Cv');
 my $genedb_literature_cv = $cv_rs->find({ name => 'genedb_literature' });
 my $feature_cvtermprop_type_cv =
   $cv_rs->create({ name => 'feature_cvtermprop_type' });
+my $feature_relationshipprop_type_cv =
+  $cv_rs->create({ name => 'feature_relationshipprop_type' });
 
 my $cvterm_rs = $chado->resultset('Cv::Cvterm');
 
@@ -310,7 +312,7 @@ func _create_feature_cvterm($pombe_gene, $cvterm, $pub) {
 
 func _add_feature_cvtermprop($feature_cvterm, $name, $value) {
   if (!defined $name) {
-    die "no name for $feature_cvterm\n";
+    die "no name for property\n";
   }
   if (!defined $value) {
     die "no value for $name\n";
@@ -325,6 +327,28 @@ func _add_feature_cvtermprop($feature_cvterm, $name, $value) {
 
   return $rs->create({ feature_cvterm_id =>
                          $feature_cvterm->feature_cvterm_id(),
+                       type_id => $type->cvterm_id(),
+                       value => $value,
+                       rank => 0 });
+}
+
+func _add_feature_relationshipprop($feature_relationship, $name, $value) {
+  if (!defined $name) {
+    die "no name for property\n";
+  }
+  if (!defined $value) {
+    die "no value for $name\n";
+  }
+
+  my $type = _find_or_create_cvterm($feature_relationshipprop_type_cv,
+                                    $name);
+
+  my $rs = $chado->resultset('Sequence::FeatureRelationshipprop');
+
+  warn "    adding feature_relationshipprop $name => $value\n" if $verbose;
+
+  return $rs->create({ feature_relationship_id =>
+                         $feature_relationship->feature_relationship_id(),
                        type_id => $type->cvterm_id(),
                        value => $value,
                        rank => 0 });
@@ -458,6 +482,8 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
   my $org_name;
   my $gene_bit;
 
+  my $date = delete $sub_qual_map->{date};
+
   if ($term =~ /^orthologous to S\. cerevisiae (.*)/) {
     $gene_bit = $1;
   } else {
@@ -497,9 +523,11 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
 
     try {
       my $orth_guard = $chado->txn_scope_guard;
-      $rel_rs->create({ object_id => $pombe_gene->feature_id(),
-                        subject_id => $ortholog_feature->feature_id(),
-                        type_id => $orthologous_to_cvterm->cvterm_id() });
+      my $rel = $rel_rs->create({ object_id => $pombe_gene->feature_id(),
+                                  subject_id => $ortholog_feature->feature_id(),
+                                  type_id => $orthologous_to_cvterm->cvterm_id()
+                                });
+      _add_feature_relationshipprop($rel, 'date', $date);
       $orth_guard->commit();
     } catch {
       warn "failed to create ortholog relation: $_\n";
