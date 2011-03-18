@@ -497,6 +497,18 @@ func _split_sub_qualifiers($cc_qualifier) {
   return %map;
 }
 
+func _add_feature_relationship_pub($relationship, $pub) {
+  my $rs = $chado->resultset('Sequence::FeatureRelationshipPub');
+
+  warn "    adding pub ", $pub->pub_id(), " to feature_relationship ",
+    $relationship->feature_relationship_id() , "\n" if $verbose;
+
+  return $rs->create({ feature_relationship_id =>
+                         $relationship->feature_relationship_id(),
+                       pub_id => $pub->pub_id() });
+
+}
+
 func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
   my $org_name;
   my $gene_bit;
@@ -547,6 +559,8 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
                                   type_id => $orthologous_to_cvterm->cvterm_id()
                                 });
       _add_feature_relationshipprop($rel, 'date', $date);
+      my $pub = _get_pub_from_dbxref($term, $sub_qual_map);
+      _add_feature_relationship_pub($rel, $pub);
       $orth_guard->commit();
     } catch {
       warn "failed to create ortholog relation: $_\n";
