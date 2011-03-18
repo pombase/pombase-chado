@@ -348,7 +348,7 @@ func _split_sub_qualifiers($cc_qualifier) {
   my @bits = split /;/, $cc_qualifier;
 
   for my $bit (@bits) {
-    if ($bit =~ /\s*([^=]+?)\s*=\s*([^=]+?)\s*$/) {
+    if ($bit =~ /\s*([^=]+?)\s*=\s*(.*?)\s*$/) {
       my $name = $1;
       my $value = $2;
       if (exists $map{$name}) {
@@ -392,6 +392,11 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
         $cv_name = $short_cv_name;
       }
     } keys %cv_long_names;
+  }
+
+  if (!defined $qual_map{term} || length $qual_map{term} == 0) {
+    warn "no term for: $qualifier\n" if $verbose;
+    return;
   }
 
   if (defined $cv_name) {
