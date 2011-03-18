@@ -420,14 +420,13 @@ func _get_pub_from_db_xref($term, $db_xref) {
 
       my $db = _find_db_by_name($db_name);
 
-
       warn "finding pub for $db_xref\n" if $verbose;
 
       my $pub = _find_pub($db_xref);
 
       if (!defined $pub) {
 
-        warn "pub not found for: $db_xref  ($db);\n";
+        warn "pub not found for: $db_xref  ($db);\n" if $verbose;
 
         my $pub_rs = $chado->resultset('Pub::Pub');
         $pub = $pub_rs->create({
@@ -476,7 +475,6 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
   my $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
   my $db_xref = delete $sub_qual_map->{db_xref};
 
-  warn "getting db_xref for: $db_xref\n" if $verbose;
   my $pub = _get_pub_from_db_xref($term, $db_xref);
 
   my $qualifier = delete $sub_qual_map->{qualifier};
@@ -688,7 +686,7 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
         warn "  $_: failed to load qualifier '$qualifier' from $systematic_id\n";
         _dump_feature($bioperl_feature) if $verbose;
       };
-      warn "  loaded: $qualifier\n" unless $quiet;
+      warn "  loaded: $qualifier\n" if $verbose;
       return ();
     }
 
