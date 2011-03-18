@@ -463,7 +463,8 @@ func _get_pub_from_db_xref($term, $db_xref) {
 
 }
 
-func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
+func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
+                       $create_cvterm) {
   my $cv = _find_cv_by_name($cv_name);
 
   my $db_accession;
@@ -478,7 +479,17 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
     }
   }
 
-  my $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
+  my $cvterm;
+
+  if ($create_cvterm) {
+    $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
+  } else {
+    $cvterm = _find_cvterm($cv, $term);
+    if (!defined $cvterm) {
+      die "can't find cvterm of $term\n";
+    }
+  }
+
   my $db_xref = delete $sub_qual_map->{db_xref};
 
   my $pub = _get_pub_from_db_xref($term, $db_xref);
@@ -687,7 +698,7 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
 
     if (grep { $_ eq $cv_name } keys %cv_alt_names) {
       try {
-        _add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map);
+        _add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 1);
       } catch {
         warn "    $_: failed to load qualifier '$qualifier' from $systematic_id\n";
         _dump_feature($bioperl_feature) if $verbose;
@@ -731,7 +742,7 @@ func _process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
     my $term = delete $qual_map{term};
 
     try {
-      _add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map);
+      _add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 0);
     } catch {
       my $systematic_id = $pombe_gene->uniquename();
       warn "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
