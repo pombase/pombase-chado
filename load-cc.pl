@@ -14,6 +14,10 @@ use Getopt::Std;
 my $verbose = 0;
 my $dry_run = 0;
 
+my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-with-genes-2',
+                                        'kmr44', 'kmr44',
+                                        { auto_savepoint => 1 });
+
 sub usage {
   die "$0 [-v] [-d] <embl_file> ...\n";
 }
@@ -57,9 +61,6 @@ my %go_cv_map = (
   F => 'molecular_function',
   C => 'cellular_component',
 );
-
-my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-kmr-qual-dev-4',
-                                        'kmr44', 'kmr44');
 
 my $guard = $chado->txn_scope_guard;
 
