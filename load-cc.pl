@@ -387,6 +387,14 @@ func _split_sub_qualifiers($cc_qualifier) {
       }
 
       $map{$name} = $value;
+
+      if ($name =~ / /) {
+        warn "  qualifier name ('$name') contains a space\n" unless $quiet;
+      }
+
+      if ($name eq 'cv' && $value =~ / /) {
+        warn "  cv name ('$value') contains a space\n" unless $quiet;
+      }
     }
   }
 
