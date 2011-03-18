@@ -130,6 +130,10 @@ my $unfetched_pub_cvterm =
 my %pombase_dbs = ();
 
 my $db_rs = $chado->resultset('General::Db');
+
+$db_rs->create({ name => 'KOG',
+                 description => 'EuKaryotic Orthologous Groups' });
+
 $pombase_dbs{phenotype} = $db_rs->create({ name => 'PomBase phenotype' });
 my $pombase_db = $db_rs->create({ name => 'PomBase' });
 
