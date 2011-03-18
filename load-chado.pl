@@ -852,9 +852,8 @@ while (defined (my $file = shift)) {
     if ($bioperl_feature->has_tag("GO")) {
       for my $value ($bioperl_feature->get_tag_values("GO")) {
         my %unused_quals = _process_one_go_qual($pombe_gene, $bioperl_feature, $value);
-        warn "\n" if $verbose;
-
         _check_unused_quals($value, %unused_quals);
+        warn "\n" if $verbose;
       }
     }
 
