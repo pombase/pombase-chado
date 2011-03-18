@@ -94,9 +94,9 @@ sub _dump_feature {
   my $feature = shift;
 
   for my $tag ($feature->get_all_tags) {
-    warn "  tag: ", $tag, "\n";
+    warn "    tag: ", $tag, "\n";
     for my $value ($feature->get_tag_values($tag)) {
-      warn "    value: ", $value, "\n";
+      warn "      value: ", $value, "\n";
     }
   }
 }
@@ -134,7 +134,7 @@ func _find_or_create_pub($pubmed_identifier) {
 
 memoize ('_find_cvterm');
 func _find_cvterm($cv, $term_name) {
-  warn "_find_cvterm(", $cv->name(), ", $term_name)\n";
+  warn "  _find_cvterm(", $cv->name(), ", $term_name)\n";
 
   my $cvterm_rs = $chado->resultset('Cv::Cvterm');
   my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id() });
@@ -171,10 +171,10 @@ func _find_or_create_cvterm($cv, $term_name) {
   my $cvterm_guard = $chado->txn_scope_guard();
 
   if (defined $cvterm) {
-    warn "found cvterm_id ", $cvterm->cvterm_id(),
+    warn "  found cvterm_id ", $cvterm->cvterm_id(),
       " when looking for $term_name in ", $cv->name(),"\n" if $verbose;
   } else {
-    warn "failed to find: $term_name in ", $cv->name(), "\n" if $verbose;
+    warn "  failed to find: $term_name in ", $cv->name(), "\n" if $verbose;
 
     my $new_ont_id = _get_cc_id($pombase_dbs{$cv->name()});
     my $formatted_id = sprintf "%07d", $new_ont_id;
@@ -184,7 +184,7 @@ func _find_or_create_cvterm($cv, $term_name) {
 
     die "no db for ", $cv->name(), "\n" if !defined $db;
 
-    warn "creating dbxref $formatted_id, ", $cv->name(), "\n" if $verbose;
+    warn "  creating dbxref $formatted_id, ", $cv->name(), "\n" if $verbose;
 
     my $dbxref =
       $dbxref_rs->create({ db_id => $db->db_id(),
@@ -204,7 +204,6 @@ func _find_or_create_cvterm($cv, $term_name) {
 
 memoize ('_find_chado_feature');
 func _find_chado_feature ($systematic_id) {
-
   my $rs = $chado->resultset('Sequence::Feature');
   return $rs->find({ uniquename => $systematic_id })
     or die "can't find feature for: $systematic_id\n";
@@ -263,7 +262,7 @@ func _add_cvterm($systematic_id, $cv_name, $cc_map) {
     $db_accession = $cc_map->{GOid};
 
     if (!defined $db_accession) {
-      warn "no GOid for $systematic_id annotation $term\n";
+      warn "  no GOid for $systematic_id annotation $term\n";
     }
   }
 
@@ -285,7 +284,7 @@ func _add_cvterm($systematic_id, $cv_name, $cc_map) {
       }
     }
   } else {
-    warn "qualifier for ", $cc_map->{term}, " has no db_xref\n";
+    warn "  qualifier for ", $cc_map->{term}, " has no db_xref\n";
   }
 }
 
@@ -299,7 +298,7 @@ func _split_sub_qualifiers($cc_qualifier) {
       my $name = $1;
       my $value = $2;
 
-      warn "    $name => $value\n" if $verbose;
+      warn "      $name => $value\n" if $verbose;
 
       if (exists $map{$name}) {
         die "duplicated sub-qualifier '$name' from:
@@ -314,14 +313,14 @@ func _split_sub_qualifiers($cc_qualifier) {
 }
 
 func _process_one_cc($systematic_id, $bioperl_feature, $cc_qualifier) {
-  warn "  cc: $cc_qualifier\n" if $verbose;
+  warn "    cc: $cc_qualifier\n" if $verbose;
 
   my %cc_map;
 
   try {
     %cc_map = _split_sub_qualifiers($cc_qualifier);
   } catch {
-    warn "$_: failed to process sub-qualifiers from $cc_qualifier, feature:\n";
+    warn "  $_: failed to process sub-qualifiers from $cc_qualifier, feature:\n";
     _dump_feature($bioperl_feature);
     return;
   };
@@ -333,29 +332,29 @@ func _process_one_cc($systematic_id, $bioperl_feature, $cc_qualifier) {
       try {
         _add_cvterm($systematic_id, $cc_map{cv}, \%cc_map);
       } catch {
-        warn "$_: failed to load qualifier '$cc_qualifier' from $systematic_id\n";
+        warn "  $_: failed to load qualifier '$cc_qualifier' from $systematic_id\n";
         _dump_feature($bioperl_feature) if $verbose;
         return;
       };
-      warn "loaded: $cc_qualifier\n";
+      warn "  loaded: $cc_qualifier\n";
       return;
     }
 
-    warn "didn't process: $cc_qualifier\n";
+    warn "  didn't process, unknown cv $cc_map{cv}: $cc_qualifier\n";
   } else {
-    warn "no cv name for: $cc_qualifier\n";
+    warn "  no cv name for: $cc_qualifier\n";
   }
 }
 
 func _process_one_go_qual($systematic_id, $bioperl_feature, $go_qualifier) {
-  warn "  go qualifier: $go_qualifier\n" if $verbose;
+  warn "    go qualifier: $go_qualifier\n" if $verbose;
 
   my %qual_map;
 
   try {
     %qual_map = _split_sub_qualifiers($go_qualifier);
   } catch {
-    warn "$_: failed to process sub-qualifiers from $go_qualifier, feature:\n";
+    warn "  $_: failed to process sub-qualifiers from $go_qualifier, feature:\n";
     _dump_feature($bioperl_feature);
     return;
   };
@@ -368,13 +367,13 @@ func _process_one_go_qual($systematic_id, $bioperl_feature, $go_qualifier) {
     try {
       _add_cvterm($systematic_id, $cv_name, \%qual_map);
     } catch {
-      warn "$_: failed to load qualifier '$go_qualifier' from $systematic_id:\n";
+      warn "  $_: failed to load qualifier '$go_qualifier' from $systematic_id:\n";
       _dump_feature($bioperl_feature) if $verbose;
       return;
     };
-    warn "loaded: $go_qualifier\n" if $verbose;
+    warn "  loaded: $go_qualifier\n" if $verbose;
   } else {
-    warn "no aspect for: $go_qualifier\n";
+    warn "  no aspect for: $go_qualifier\n";
   }
 
 }
@@ -397,7 +396,7 @@ while (defined (my $file = shift)) {
 
     if (@systematic_ids != 1) {
       my $systematic_id_count = scalar(@systematic_ids);
-      warn "\nexpected 1 systematic_id, got $systematic_id_count, for:";
+      warn "\n  expected 1 systematic_id, got $systematic_id_count, for:";
       _dump_feature($bioperl_feature);
       exit(1);
     }
