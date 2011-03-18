@@ -5,7 +5,6 @@ use perl5i::2;
 use Bio::SeqIO;
 use Bio::Chado::Schema;
 use Memoize;
-use Try::Tiny;
 use Getopt::Std;
 
 BEGIN {
