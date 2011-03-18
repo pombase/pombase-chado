@@ -700,6 +700,8 @@ sub _check_unused_quals
   }
 }
 
+my %no_systematic_id_counts = ();
+
 # main loop:
 #process all features from the input files
 while (defined (my $file = shift)) {
@@ -711,7 +713,10 @@ while (defined (my $file = shift)) {
   for my $bioperl_feature ($seq_obj->get_SeqFeatures) {
     my $type = $bioperl_feature->primary_tag();
 
-    next unless $bioperl_feature->has_tag("systematic_id");
+    if (!$bioperl_feature->has_tag("systematic_id")) {
+      $no_systematic_id_counts{$type}++;
+      next;
+    }
 
     my @systematic_ids = $bioperl_feature->get_tag_values("systematic_id");
 
@@ -754,5 +759,12 @@ while (defined (my $file = shift)) {
     }
   }
 }
+
+warn "counts of features that have no systematic_id, by type:\n";
+
+for my $type_key (keys %no_systematic_id_counts) {
+  warn "$type_key ", $no_systematic_id_counts{$type_key}, "\n";
+}
+warn "\n";
 
 $guard->commit unless $dry_run;
