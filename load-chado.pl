@@ -334,6 +334,32 @@ func _is_go_cv_name($cv_name) {
   return grep { $_ eq $cv_name } values %go_cv_map;
 }
 
+func _get_and_check_date($sub_qual_map) {
+  my $date = delete $sub_qual_map->{date};
+
+  warn "date: $date\n";
+
+  if (defined $date) {
+    if ($date =~ /(\d\d\d\d)(\d\d)(\d\d)/) {
+      if ($1 > 2011) {
+        warn "date is in the future: $date\n";
+      } else {
+        if ($2 < 1 || $2 > 12) {
+          warn "month ($2) not in range 1..12\n";
+        }
+        if ($3 < 1 || $3 > 31) {
+          warn "day ($3) not in range 1..31\n";
+        }
+      }
+      return $date;
+    } else {
+      warn "  unknown date format: $date\n";
+    }
+  }
+
+  return undef;
+}
+
 func _add_cvterm($pombe_gene, $cv_name, $term, $sub_qual_map) {
   my $cv = _find_cv_by_name($cv_name);
 
@@ -383,8 +409,8 @@ func _add_cvterm($pombe_gene, $cv_name, $term, $sub_qual_map) {
     }
     _add_feature_cvtermprop($featurecvterm,
                             evidence => $evidence);
-    _add_feature_cvtermprop($featurecvterm,
-                            date => delete $sub_qual_map->{date});
+    my $date = _get_and_check_date($sub_qual_map);
+    _add_feature_cvtermprop($featurecvterm, date => $date);
 
     if (defined $sub_qual_map->{residue}) {
       _add_feature_cvtermprop($featurecvterm,
@@ -395,6 +421,11 @@ func _add_cvterm($pombe_gene, $cv_name, $term, $sub_qual_map) {
     if (defined $sub_qual_map->{qualifier}) {
       _add_feature_cvtermprop($featurecvterm,
                               qualifier => $sub_qual_map->{qualifier});
+      my $date = _get_and_check_date($sub_qual_map);
+      if (defined $date) {
+        _add_feature_cvtermprop($featurecvterm, date => $date);
+      }
+
       delete $sub_qual_map->{qualifier};
     }
   }
