@@ -136,6 +136,7 @@ my $pombase_db =
   $chado->resultset('General::Db')->create({ name => 'PomBase' });
 
 $pombase_dbs{feature_cvtermprop_type} = $pombase_db;
+$pombase_dbs{feature_relationshipprop_type} = $pombase_db;
 $pombase_dbs{$go_cv_map{P}} = $pombase_db;
 $pombase_dbs{$go_cv_map{F}} = $pombase_db;
 $pombase_dbs{$go_cv_map{C}} = $pombase_db;
