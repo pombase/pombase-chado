@@ -557,6 +557,7 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
   if (defined $date) {
     _add_feature_cvtermprop($featurecvterm, date => $date);
   }
+
 }
 
 func _split_sub_qualifiers($cc_qualifier) {
