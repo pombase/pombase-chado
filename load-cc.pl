@@ -161,7 +161,7 @@ func _find_or_create_pub($pubmed_identifier) {
 }
 
 
-memoize ('_find_cvterm');
+#memoize ('_find_cvterm');
 func _find_cvterm($cv, $term_name) {
   warn "  _find_cvterm(", $cv->name(), ", $term_name)\n" if $verbose;
 
