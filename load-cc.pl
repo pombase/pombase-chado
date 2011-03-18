@@ -254,15 +254,9 @@ func _is_go_cv_name($cv_name) {
   return grep { $_ eq $cv_name } values %go_cv_map;
 }
 
-sub _add_cvterm {
-  my $systematic_id = shift;
-  my $cv_name = shift;
-  my $cc_map = shift;
-
+func _add_cvterm($systematic_id, $cv_name, $cc_map) {
   my $cv = _find_cv_by_name($cv_name);
-
   my $term = $cc_map->{term};
-
   my $db_accession;
 
   if (_is_go_cv_name($cv_name)) {
