@@ -507,7 +507,7 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
 
     warn "  unknown cv $cv_name: $qualifier\n";
   } else {
-    if (!_try_process_ortholog($systematic_id, $bioperl_feature, \%qual_map)) {
+    if (!_process_ortholog($systematic_id, $bioperl_feature, \%qual_map)) {
       warn "  no cv name for: $qualifier\n";
       return ();
     }
