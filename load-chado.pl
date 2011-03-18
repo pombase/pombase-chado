@@ -221,24 +221,32 @@ func _find_pub($identifier) {
 }
 
 
-func _find_cvterm($cv, $term_name) {
-  warn "    _find_cvterm(", $cv->name(), ", $term_name)\n" if $verbose;
+my $synonym_type_cv = _find_cv_by_name('synonym_type');
+my $exact_cvterm = undef;
+
+func _find_cvterm($cv, $term_name, %options) {
+  warn "    _find_cvterm('", $cv->name(), "', '$term_name')\n" if $verbose;
+
+  my %search_options = ();
+
+  if ($options{prefetch_dbxref}) {
+    $search_options{prefetch} = { dbxref => 'db' };
+  }
 
   my $cvterm_rs = $chado->resultset('Cv::Cvterm');
-  my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id() });
+  my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id() },
+                                { %search_options });
 
   if (defined $cvterm) {
     return $cvterm;
   } else {
-    my $synonym_type_cv = _find_cv_by_name('synonym_type');
-    my $exact = _find_cvterm($synonym_type_cv, 'exact');
-
     my $synonym_rs = $chado->resultset('Cv::Cvtermsynonym');
-    my $search_rs = $synonym_rs->search({ synonym => $term_name,
-                                          type_id => $exact->cvterm_id() });
+    my $search_rs =
+      $synonym_rs->search({ synonym => $term_name,
+                            type_id => $exact_cvterm->cvterm_id() });
 
     if ($search_rs->count() > 1) {
-      die "more than one cvtermsynonym found for $term_name\n";
+      die "more than one cvtermsynonym found for $term_name";
     } else {
       my $synonym = $search_rs->next();
 
@@ -249,8 +257,11 @@ func _find_cvterm($cv, $term_name) {
       }
     }
   }
+
 }
 #memoize ('_find_cvterm');
+
+$exact_cvterm = _find_cvterm($synonym_type_cv, 'exact');
 
 
 func _find_or_create_cvterm($cv, $term_name) {
@@ -486,12 +497,14 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
   my $db_accession;
 
   if (_is_go_cv_name($cv_name)) {
-    $db_accession = $sub_qual_map->{GOid};
-
+    $db_accession = delete $sub_qual_map->{GOid};
     if (!defined $db_accession) {
       my $systematic_id = $pombe_gene->uniquename();
-
       warn "  no GOid for $systematic_id annotation $term\n";
+    }
+    if ($db_accession !~ /GO:(.*)/) {
+      my $systematic_id = $pombe_gene->uniquename();
+      warn "  GOid doesn't start with 'GO:' for $systematic_id: $db_accession\n";
     }
   }
 
@@ -500,9 +513,33 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
   if ($create_cvterm) {
     $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
   } else {
-    $cvterm = _find_cvterm($cv, $term);
+    $cvterm = _find_cvterm($cv, $term, prefetch_dbxref => 1);
+
     if (!defined $cvterm) {
-      die "can't find cvterm of $term\n";
+      die "can't find cvterm of $term";
+    }
+  }
+
+  if (defined $db_accession) {
+    if ($db_accession =~ /(.*):(.*)/) {
+      my $new_db_name = $1;
+      my $new_dbxref_accession = $2;
+
+      my $dbxref = $cvterm->dbxref();
+      my $db = $dbxref->db();
+
+      if ($new_db_name ne $db->name()) {
+        die "database name for new term ($new_db_name) doesn't match " .
+          "existing name (" . $db->name() . ") for term name: $term";
+      }
+
+      if ($new_dbxref_accession ne $dbxref->accession()) {
+        die "database accession for new term ($new_dbxref_accession) " .
+          "doesn't match existing name (" . $dbxref->accession() .
+            ") for term name: $term";
+      }
+    } else {
+      die "database ID ($db_accession) doesn't contain a colon";
     }
   }
 
