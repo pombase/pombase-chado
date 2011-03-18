@@ -265,6 +265,8 @@ func _add_feature_cvtermprop($feature_cvterm, $name, $value) {
 
   my $rs = $chado->resultset('Sequence::FeatureCvtermprop');
 
+  warn "    adding feature_cvtermprop $name => $value\n" if $verbose;
+
   return $rs->create({ feature_cvterm_id =>
                          $feature_cvterm->feature_cvterm_id(),
                        type_id => $type->cvterm_id(),
