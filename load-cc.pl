@@ -263,6 +263,7 @@ func _find_or_create_cvterm($cv, $term_name) {
 }
 memoize ('_find_or_create_cvterm');
 
+
 func _find_chado_feature ($systematic_id, $try_name) {
   my $rs = $chado->resultset('Sequence::Feature');
   my $feature = $rs->find({ uniquename => $systematic_id });
@@ -452,13 +453,20 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
     warn "creating ortholog from ", $pombe_gene->uniquename(),
       " to $ortholog_name\n";
 
-    my $ortholog_feature = _find_chado_feature($ortholog_name, 1);
+    my $ortholog_feature = undef;
+    try {
+      $ortholog_feature = _find_chado_feature($ortholog_name, 1);
+    } catch {
+      warn "  $_: failed to find feature for $ortholog_name\n";
+    };
+
+    return unless defined $ortholog_feature;
 
     my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
 
     $rel_rs->create({ object_id => $pombe_gene->feature_id(),
                       subject_id => $ortholog_feature->feature_id(),
-                      type_id => $orthologous_to_cvterm });
+                      type_id => $orthologous_to_cvterm->cvterm_id() });
   }
 
   return 1;
