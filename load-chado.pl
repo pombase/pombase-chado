@@ -637,7 +637,7 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     warn "  unknown cv $cv_name: $qualifier\n";
   } else {
     if (!_process_ortholog($pombe_gene, $term, \%qual_map)) {
-      warn "  don't know how to process: $qualifier\n";
+      warn "  didn't process: $qualifier\n";
       return ();
     }
   }
