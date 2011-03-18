@@ -444,28 +444,34 @@ func _process_ortholog($pombe_gene, $term, $sub_qual_map) {
     if ($gene_bit =~ /^(\S+) and (\S+)/) {
       push @gene_names, $1, $2;
     } else {
-      die "can't parse: $gene_bit from $term\n";
+      warn qq(can't parse: "$gene_bit" from "$term"\n);
+      return 0;
     }
   }
 
   for my $ortholog_name (@gene_names) {
-    warn "creating ortholog from ", $pombe_gene->uniquename(),
-      " to $ortholog_name\n";
+    warn "  creating ortholog from ", $pombe_gene->uniquename(),
+      " to $ortholog_name\n" if $verbose;
 
     my $ortholog_feature = undef;
     try {
       $ortholog_feature = _find_chado_feature($ortholog_name, 1);
-    } catch {
-      warn "  $_: failed to find feature for $ortholog_name\n";
     };
 
     return unless defined $ortholog_feature;
 
     my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
 
-    $rel_rs->create({ object_id => $pombe_gene->feature_id(),
-                      subject_id => $ortholog_feature->feature_id(),
-                      type_id => $orthologous_to_cvterm->cvterm_id() });
+    try {
+      my $orth_guard = $chado->txn_scope_guard;
+      $rel_rs->create({ object_id => $pombe_gene->feature_id(),
+                        subject_id => $ortholog_feature->feature_id(),
+                        type_id => $orthologous_to_cvterm->cvterm_id() });
+      $orth_guard->commit();
+    } catch {
+      warn "failed to create ortholog relation: $_\n";
+      return 0;
+    };
   }
 
   return 1;
@@ -619,9 +625,17 @@ while (defined (my $file = shift)) {
 
     my $systematic_id = $systematic_ids[0];
 
-    my $pombe_gene = _find_chado_feature($systematic_id);
-
     warn "processing $type $systematic_id\n";
+
+    my $pombe_gene = undef;
+
+    try {
+      $pombe_gene = _find_chado_feature($systematic_id);
+    } catch {
+      warn "no feature found for $type $systematic_id\n";
+    };
+
+    next if not defined $pombe_gene;
 
     if ($bioperl_feature->has_tag("controlled_curation")) {
       for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
