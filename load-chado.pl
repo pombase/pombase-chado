@@ -129,11 +129,9 @@ my $unfetched_pub_cvterm =
 
 my %pombase_dbs = ();
 
-$pombase_dbs{phenotype} =
-  $chado->resultset('General::Db')->create({ name => 'PomBase phenotype' });
-
-my $pombase_db =
-  $chado->resultset('General::Db')->create({ name => 'PomBase' });
+my $db_rs = $chado->resultset('General::Db');
+$pombase_dbs{phenotype} = $db_rs->create({ name => 'PomBase phenotype' });
+my $pombase_db = $db_rs->create({ name => 'PomBase' });
 
 $pombase_dbs{feature_cvtermprop_type} = $pombase_db;
 $pombase_dbs{feature_relationshipprop_type} = $pombase_db;
