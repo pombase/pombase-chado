@@ -94,9 +94,9 @@ sub _dump_feature {
   my $feature = shift;
 
   for my $tag ($feature->get_all_tags) {
-    print "  tag: ", $tag, "\n";
+    warn "  tag: ", $tag, "\n";
     for my $value ($feature->get_tag_values($tag)) {
-      print "    value: ", $value, "\n";
+      warn "    value: ", $value, "\n";
     }
   }
 }
@@ -305,7 +305,7 @@ func _split_sub_qualifiers($cc_qualifier) {
       my $name = $1;
       my $value = $2;
 
-      print "    $name => $value\n" if $verbose;
+      warn "    $name => $value\n" if $verbose;
 
       if (exists $map{$name}) {
         die "duplicated sub-qualifier '$name' from:
@@ -320,7 +320,7 @@ func _split_sub_qualifiers($cc_qualifier) {
 }
 
 func _process_one_cc($systematic_id, $bioperl_feature, $cc_qualifier) {
-  print "  cc: $cc_qualifier\n" if $verbose;
+  warn "  cc: $cc_qualifier\n" if $verbose;
 
   my %cc_map;
 
@@ -354,7 +354,7 @@ func _process_one_cc($systematic_id, $bioperl_feature, $cc_qualifier) {
 }
 
 func _process_one_go_qual($systematic_id, $bioperl_feature, $go_qualifier) {
-  print "  go qualifier: $go_qualifier\n" if $verbose;
+  warn "  go qualifier: $go_qualifier\n" if $verbose;
 
   my %qual_map;
 
@@ -410,7 +410,7 @@ while (defined (my $file = shift)) {
 
     my $systematic_id = $systematic_ids[0];
 
-    print "$type: $systematic_id\n" if $verbose;
+    warn "processing $type $systematic_id\n";
 
     if ($bioperl_feature->has_tag("controlled_curation")) {
       for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
