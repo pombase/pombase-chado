@@ -290,7 +290,7 @@ memoize ('_find_chado_feature');
 
 my %stored_cvterms = ();
 
-func _add_feature_cvterm($pombe_gene, $cvterm, $pub) {
+func _create_feature_cvterm($pombe_gene, $cvterm, $pub) {
   my $rs = $chado->resultset('Sequence::FeatureCvterm');
 
   my $systematic_id = $pombe_gene->uniquename();
@@ -360,7 +360,7 @@ func _get_and_check_date($sub_qual_map) {
   return undef;
 }
 
-func _add_cvterm($pombe_gene, $cv_name, $term, $sub_qual_map) {
+func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
   my $cv = _find_cv_by_name($cv_name);
 
   my $db_accession;
@@ -397,7 +397,7 @@ func _add_cvterm($pombe_gene, $cv_name, $term, $sub_qual_map) {
   }
 
 
-  my $featurecvterm = _add_feature_cvterm($pombe_gene, $cvterm, $pub);
+  my $featurecvterm = _create_feature_cvterm($pombe_gene, $cvterm, $pub);
 
   if (_is_go_cv_name($cv_name)) {
     my $evidence = $go_evidence_codes{delete $sub_qual_map->{evidence}};
@@ -564,7 +564,7 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
 
     if (grep { $_ eq $cv_name } keys %cv_alt_names) {
       try {
-        _add_cvterm($pombe_gene, $cv_name, $term, \%qual_map);
+        _add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map);
       } catch {
         warn "  $_: failed to load qualifier '$qualifier' from $systematic_id\n";
         _dump_feature($bioperl_feature) if $verbose;
@@ -609,7 +609,7 @@ func _process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
     my $term = delete $qual_map{term};
 
     try {
-      _add_cvterm($pombe_gene, $cv_name, $term, \%qual_map);
+      _add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map);
     } catch {
       my $systematic_id = $pombe_gene->uniquename();
       warn "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
