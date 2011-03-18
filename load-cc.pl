@@ -12,6 +12,7 @@ use Method::Signatures;
 use Getopt::Std;
 
 my $verbose = 0;
+my $quiet = 0;
 my $dry_run = 0;
 
 my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-with-genes-2',
@@ -24,12 +25,15 @@ sub usage {
 
 my %opts = ();
 
-if (!getopts('vd', \%opts)) {
+if (!getopts('vdq', \%opts)) {
   usage();
 }
 
 if ($opts{v}) {
   $verbose = 1;
+}
+if ($opts{q}) {
+  $quiet = 1;
 }
 if ($opts{d}) {
   $dry_run = 1;
@@ -303,12 +307,12 @@ func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
     } else {
       warn "  qualifier for ", $sub_qual_map->{term},
         " has unknown format db_xref (", $sub_qual_map->{db_xref},
-          ") - using null publication\n";
+          ") - using null publication\n" unless $quiet;
       $pub = $null_pub;
     }
   } else {
     warn "  qualifier for ", $sub_qual_map->{term},
-      " has no db_xref - using null publication\n";
+      " has no db_xref - using null publication\n" unless $quiet;
     $pub = $null_pub;
   }
 
@@ -400,7 +404,7 @@ func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
         _dump_feature($bioperl_feature) if $verbose;
         return;
       };
-      warn "  loaded: $qualifier\n";
+      warn "  loaded: $qualifier\n" unless $quiet;
       return;
     }
 
