@@ -43,4 +43,14 @@ with 'PomBase::Role::ChadoUser';
 
 requires 'description';
 
+=head2 checker_config
+
+ Usage   : my $config = $checker->checker_config();
+ Function: return the configuration for the current Checker
+
+=cut
+method checker_config() {
+  return $self->config()->{ref $self};
+}
+
 1;
