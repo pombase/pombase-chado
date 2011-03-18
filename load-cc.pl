@@ -297,9 +297,6 @@ func _split_sub_qualifiers($cc_qualifier) {
     if ($bit =~ /\s*([^=]+?)\s*=\s*([^=]+?)\s*$/) {
       my $name = $1;
       my $value = $2;
-
-      warn "      $name => $value\n" if $verbose;
-
       if (exists $map{$name}) {
         die "duplicated sub-qualifier '$name' from:
 /controlled_curation=\"$cc_qualifier\"\n";
