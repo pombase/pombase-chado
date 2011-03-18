@@ -666,7 +666,7 @@ func _process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     _dump_feature($bioperl_feature);
   };
 
-  if ((scalar(keys %qual_map)) == 0) {
+  if (scalar(keys %qual_map) == 0) {
     return ();
   }
 
@@ -730,7 +730,7 @@ func _process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
     _dump_feature($bioperl_feature);
   };
 
-  if ((scalar(keys %qual_map)) == 0) {
+  if (scalar(keys %qual_map) == 0) {
     return ();
   }
 
