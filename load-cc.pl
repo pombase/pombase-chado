@@ -111,15 +111,15 @@ func _find_cv_by_name($cv_name) {
 }
 
 
-my %new_cc_ids = ();
+my %new_cvterm_ids = ();
 
 # return an ID for a new term in the CV with the given name
-func _get_cc_id($db_name) {
-  if (!exists $new_cc_ids{$db_name}) {
-    $new_cc_ids{$db_name} = 1_000_000;
+func _get_cvterm_id($db_name) {
+  if (!exists $new_cvterm_ids{$db_name}) {
+    $new_cvterm_ids{$db_name} = 1_000_000;
   }
 
-  return $new_cc_ids{$db_name}++;
+  return $new_cvterm_ids{$db_name}++;
 }
 
 
@@ -176,7 +176,7 @@ func _find_or_create_cvterm($cv, $term_name) {
   } else {
     warn "  failed to find: $term_name in ", $cv->name(), "\n" if $verbose;
 
-    my $new_ont_id = _get_cc_id($pombase_dbs{$cv->name()});
+    my $new_ont_id = _get_cvterm_id($pombase_dbs{$cv->name()});
     my $formatted_id = sprintf "%07d", $new_ont_id;
 
     my $dbxref_rs = $chado->resultset('General::Dbxref');
@@ -253,13 +253,13 @@ func _is_go_cv_name($cv_name) {
   return grep { $_ eq $cv_name } values %go_cv_map;
 }
 
-func _add_cvterm($systematic_id, $cv_name, $cc_map) {
+func _add_cvterm($systematic_id, $cv_name, $sub_qual_map) {
   my $cv = _find_cv_by_name($cv_name);
-  my $term = $cc_map->{term};
+  my $term = $sub_qual_map->{term};
   my $db_accession;
 
   if (_is_go_cv_name($cv_name)) {
-    $db_accession = $cc_map->{GOid};
+    $db_accession = $sub_qual_map->{GOid};
 
     if (!defined $db_accession) {
       warn "  no GOid for $systematic_id annotation $term\n";
@@ -268,23 +268,23 @@ func _add_cvterm($systematic_id, $cv_name, $cc_map) {
 
   my $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
 
-  if (defined $cc_map->{db_xref} && $cc_map->{db_xref} =~ /^(PMID:(.*))/) {
+  if (defined $sub_qual_map->{db_xref} && $sub_qual_map->{db_xref} =~ /^(PMID:(.*))/) {
     my $pub = _find_or_create_pub($1);
 
     my $featurecvterm = _add_feature_cvterm($systematic_id, $cvterm, $pub);
 
     if (_is_go_cv_name($cv_name)) {
-      my $evidence = $go_evidence_codes{$cc_map->{evidence}};
+      my $evidence = $go_evidence_codes{$sub_qual_map->{evidence}};
       _add_feature_cvtermprop($featurecvterm, evidence => $evidence);
-      _add_feature_cvtermprop($featurecvterm, date => $cc_map->{date});
+      _add_feature_cvtermprop($featurecvterm, date => $sub_qual_map->{date});
     } else {
-      if (defined $cc_map->{qualifier}) {
+      if (defined $sub_qual_map->{qualifier}) {
         _add_feature_cvtermprop($featurecvterm,
-                                qualifier => $cc_map->{qualifier});
+                                qualifier => $sub_qual_map->{qualifier});
       }
     }
   } else {
-    warn "  qualifier for ", $cc_map->{term}, " has no db_xref\n";
+    warn "  qualifier for ", $sub_qual_map->{term}, " has no db_xref\n";
   }
 }
 
@@ -312,49 +312,50 @@ func _split_sub_qualifiers($cc_qualifier) {
   return %map;
 }
 
-func _process_one_cc($systematic_id, $bioperl_feature, $cc_qualifier) {
-  warn "    cc: $cc_qualifier\n" if $verbose;
-
-  my %cc_map;
-
-  try {
-    %cc_map = _split_sub_qualifiers($cc_qualifier);
-  } catch {
-    warn "  $_: failed to process sub-qualifiers from $cc_qualifier, feature:\n";
-    _dump_feature($bioperl_feature);
-    return;
-  };
-
-  if (defined $cc_map{cv}) {
-    $cc_map{term} =~ s/$cc_map{cv}, //;
-
-    if ($cc_map{cv} eq 'phenotype') {
-      try {
-        _add_cvterm($systematic_id, $cc_map{cv}, \%cc_map);
-      } catch {
-        warn "  $_: failed to load qualifier '$cc_qualifier' from $systematic_id\n";
-        _dump_feature($bioperl_feature) if $verbose;
-        return;
-      };
-      warn "  loaded: $cc_qualifier\n";
-      return;
-    }
-
-    warn "  didn't process, unknown cv $cc_map{cv}: $cc_qualifier\n";
-  } else {
-    warn "  no cv name for: $cc_qualifier\n";
-  }
-}
-
-func _process_one_go_qual($systematic_id, $bioperl_feature, $go_qualifier) {
-  warn "    go qualifier: $go_qualifier\n" if $verbose;
+func _process_one_cc($systematic_id, $bioperl_feature, $qualifier) {
+  warn "    _process_one_cc($systematic_id, $bioperl_feature, $qualifier)\n"
+    if $verbose;
 
   my %qual_map;
 
   try {
-    %qual_map = _split_sub_qualifiers($go_qualifier);
+    %qual_map = _split_sub_qualifiers($qualifier);
   } catch {
-    warn "  $_: failed to process sub-qualifiers from $go_qualifier, feature:\n";
+    warn "  $_: failed to process sub-qualifiers from $qualifier, feature:\n";
+    _dump_feature($bioperl_feature);
+    return;
+  };
+
+  if (defined $qual_map{cv}) {
+    $qual_map{term} =~ s/$qual_map{cv}, //;
+
+    if ($qual_map{cv} eq 'phenotype') {
+      try {
+        _add_cvterm($systematic_id, $qual_map{cv}, \%qual_map);
+      } catch {
+        warn "  $_: failed to load qualifier '$qualifier' from $systematic_id\n";
+        _dump_feature($bioperl_feature) if $verbose;
+        return;
+      };
+      warn "  loaded: $qualifier\n";
+      return;
+    }
+
+    warn "  didn't process, unknown cv $qual_map{cv}: $qualifier\n";
+  } else {
+    warn "  no cv name for: $qualifier\n";
+  }
+}
+
+func _process_one_go_qual($systematic_id, $bioperl_feature, $qualifier) {
+  warn "    go qualifier: $qualifier\n" if $verbose;
+
+  my %qual_map;
+
+  try {
+    %qual_map = _split_sub_qualifiers($qualifier);
+  } catch {
+    warn "  $_: failed to process sub-qualifiers from $qualifier, feature:\n";
     _dump_feature($bioperl_feature);
     return;
   };
@@ -367,13 +368,13 @@ func _process_one_go_qual($systematic_id, $bioperl_feature, $go_qualifier) {
     try {
       _add_cvterm($systematic_id, $cv_name, \%qual_map);
     } catch {
-      warn "  $_: failed to load qualifier '$go_qualifier' from $systematic_id:\n";
+      warn "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
       _dump_feature($bioperl_feature) if $verbose;
       return;
     };
-    warn "  loaded: $go_qualifier\n" if $verbose;
+    warn "  loaded: $qualifier\n" if $verbose;
   } else {
-    warn "  no aspect for: $go_qualifier\n";
+    warn "  no aspect for: $qualifier\n";
   }
 
 }
