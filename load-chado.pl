@@ -337,8 +337,6 @@ func _is_go_cv_name($cv_name) {
 func _get_and_check_date($sub_qual_map) {
   my $date = delete $sub_qual_map->{date};
 
-  warn "date: $date\n";
-
   if (defined $date) {
     if ($date =~ /(\d\d\d\d)(\d\d)(\d\d)/) {
       if ($1 > 2011) {
