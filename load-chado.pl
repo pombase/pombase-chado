@@ -313,7 +313,7 @@ memoize ('_find_chado_feature');
 
 my %stored_cvterms = ();
 
-func _create_feature_cvterm($pombe_gene, $cvterm, $pub) {
+func _create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not) {
   my $rs = $chado->resultset('Sequence::FeatureCvterm');
 
   my $systematic_id = $pombe_gene->uniquename();
@@ -328,6 +328,7 @@ func _create_feature_cvterm($pombe_gene, $cvterm, $pub) {
   return $rs->create({ feature_id => $pombe_gene->feature_id(),
                        cvterm_id => $cvterm->cvterm_id(),
                        pub_id => $pub->pub_id(),
+                       is_not => $is_not,
                        rank => $rank });
 }
 
@@ -478,7 +479,17 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
   warn "getting db_xref for: $db_xref\n" if $verbose;
   my $pub = _get_pub_from_db_xref($term, $db_xref);
 
-  my $featurecvterm = _create_feature_cvterm($pombe_gene, $cvterm, $pub);
+  my $qualifier = delete $sub_qual_map->{qualifier};
+
+  my $is_not = 0;
+
+  if (defined $qualifier && $qualifier eq 'NOT') {
+    $is_not = 1;
+    $qualifier = undef;
+  }
+
+  my $featurecvterm =
+    _create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not);
 
   if (_is_go_cv_name($cv_name)) {
     my $evidence_code = delete $sub_qual_map->{evidence};
@@ -507,7 +518,6 @@ func _add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map) {
     }
   }
 
-  my $qualifier = delete $sub_qual_map->{qualifier};
   if (defined $qualifier) {
     _add_feature_cvtermprop($featurecvterm, qualifier => $qualifier);
   }
