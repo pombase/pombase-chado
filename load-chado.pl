@@ -247,7 +247,12 @@ func _find_or_create_cvterm($cv, $term_name) {
   } else {
     warn "  failed to find: $term_name in ", $cv->name(), "\n" if $verbose;
 
-    my $new_ont_id = _get_cvterm_id($pombase_dbs{$cv->name()});
+    my $db_name = $pombase_dbs{$cv->name()};
+    if (!defined $db_name) {
+      die "no db name for ", $cv->name(), "\n";
+    }
+
+    my $new_ont_id = _get_cvterm_id($db_name);
     my $formatted_id = sprintf "%07d", $new_ont_id;
 
     my $dbxref_rs = $chado->resultset('General::Dbxref');
