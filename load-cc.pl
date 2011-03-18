@@ -7,6 +7,8 @@ use Carp;
 use Bio::SeqIO;
 use Bio::Chado::Schema;
 use Memoize;
+use Try::Tiny;
+use Method::Signatures;
 
 my $verbose = 0;
 
@@ -15,7 +17,7 @@ if (@ARGV && $ARGV[0] eq '-v') {
   $verbose = 1;
 }
 
-my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-kmr-qual-dev',
+my $chado = Bio::Chado::Schema->connect('dbi:Pg:database=pombe-kmr-qual-dev-1',
                                         'kmr44', 'kmr44');
 
 my $guard = $chado->txn_scope_guard;
@@ -58,9 +60,7 @@ sub _find_cv_by_name {
 
 my %new_cc_ids = ();
 
-sub _get_cc_id {
-  my $cv_name = shift;
-
+func _get_cc_id($cv_name) {
   if (!exists $new_cc_ids{$cv_name}) {
     $new_cc_ids{$cv_name} = 0;
   }
@@ -70,9 +70,7 @@ sub _get_cc_id {
 
 
 memoize ('_find_or_create_pub');
-sub _find_or_create_pub {
-  my $pubmed_identifier = shift;
-
+func _find_or_create_pub($pubmed_identifier) {
   my $pub_rs = $chado->resultset('Pub::Pub');
 
   return $pub_rs->find_or_create({ uniquename => $pubmed_identifier,
@@ -81,10 +79,7 @@ sub _find_or_create_pub {
 
 
 memoize ('_find_cvterm');
-sub _find_cvterm {
-  my $cv_name = shift;
-  my $term_name = shift;
-
+func _find_cvterm($cv_name, $term_name) {
   my $cv = _find_cv_by_name($cv_name);
 
   return $chado->resultset('Cv::Cvterm')->find({ name => $cv_name, cv => $cv });
@@ -92,10 +87,7 @@ sub _find_cvterm {
 
 
 memoize ('_find_or_create_cvterm');
-sub _find_or_create_cvterm {
-  my $cv_name = shift;
-  my $term_name = shift;
-
+func _find_or_create_cvterm ($cv_name, $term_name) {
   my $cv = _find_cv_by_name($cv_name);
 
   my $cvterm = _find_cvterm($cv_name, $term_name);
@@ -118,8 +110,7 @@ sub _find_or_create_cvterm {
 }
 
 memoize ('_find_chado_feature');
-sub _find_chado_feature {
-  my $systematic_id = shift;
+func _find_chado_feature ($systematic_id) {
 
   my $rs = $chado->resultset('Sequence::Feature');
   return $rs->find({ uniquename => $systematic_id })
@@ -127,10 +118,7 @@ sub _find_chado_feature {
 }
 
 
-sub _add_feature_cvterm {
-  my $systematic_id = shift;
-  my $cvterm = shift;
-  my $pub = shift;
+func _add_feature_cvterm($systematic_id, $cvterm, $pub) {
 
   my $chado_feature = _find_chado_feature($systematic_id);
 
@@ -139,6 +127,25 @@ sub _add_feature_cvterm {
   $rs->create({ feature_id => $chado_feature->feature_id(),
                 cvterm_id => $cvterm->cvterm_id(),
                 pub_id => $pub->pub_id() });
+}
+
+sub _add_cvterm {
+  my $systematic_id = shift;
+  my $cc_map = shift;
+
+  $cc_map->{term} =~ s/$cc_map->{cv}, //;
+
+  my $cvterm = _find_or_create_cvterm($cc_map->{cv}, $cc_map->{term});
+
+  if (defined $cc_map->{db_xref} && $cc_map->{db_xref} =~ /^(PMID:(.*))/) {
+    my $pub = _find_or_create_pub($1);
+
+    _add_feature_cvterm($systematic_id, $cvterm, $pub,
+                        $cc_map->{qualifier});
+
+  } else {
+    die "qualifier has no db_xref\n";
+  }
 }
 
 sub _process_one_cc {
@@ -170,27 +177,18 @@ sub _process_one_cc {
 
   if (defined $cc_map{cv}) {
     if ($cc_map{cv} eq 'phenotype') {
-      $cc_map{term} =~ s/$cc_map{cv}, //;
-
-      my $cvterm = _find_or_create_cvterm($cc_map{cv}, $cc_map{term});
-
-      if (defined $cc_map{db_xref} && $cc_map{db_xref} =~ /^(PMID:(.*))/) {
-        my $pub = _find_or_create_pub($1);
-
-        _add_feature_cvterm($systematic_id, $cvterm, $pub);
-
-        warn "loaded: $cc_qualifier\n";
-
-        return;
-      } else {
-        warn "no db_xref in $cc_qualifier from:\n";
+      try {
+        _add_cvterm($systematic_id, \%cc_map);
+      } catch {
+        warn "$_: failed to load qualifier from $cc_qualifier, feature:\n";
         _dump_feature($bioperl_feature);
         exit(1);
-      }
+      };
+      warn "loaded: $cc_qualifier\n";
+      return;
     }
 
     warn "didn't process: $cc_qualifier\n";
-
   } else {
     warn "no cv name for: $cc_qualifier\n";
   }
@@ -202,17 +200,6 @@ while (defined (my $file = shift)) {
   my $io = Bio::SeqIO->new(-file => $file, -format => "embl" );
   my $seq_obj = $io->next_seq;
   my $anno_collection = $seq_obj->annotation;
-
-  my $phenotype_process = sub {
-    my $systematic_id = shift;
-    my %qualifiers = @_;
-
-
-  };
-
-  my %cv_processes = (
-    phenotype => $phenotype_process,
-  );
 
   for my $bioperl_feature ($seq_obj->get_SeqFeatures) {
     my $type = $bioperl_feature->primary_tag();
