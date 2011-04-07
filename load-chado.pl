@@ -122,6 +122,7 @@ for my $cv_name (keys %cv_alt_names) {
 
 my $guard = $chado->txn_scope_guard;
 
+# load extra CVs, cvterms and dbxrefs
 my $cv_rs = $chado->resultset('Cv::Cv');
 
 my $genedb_literature_cv = $cv_rs->find({ name => 'genedb_literature' });
