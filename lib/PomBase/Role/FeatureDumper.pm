@@ -39,7 +39,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Carp;
 
-use Moose;
+use Moose::Role;
 
 method dump_feature($feature)
 {

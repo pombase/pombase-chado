@@ -40,13 +40,25 @@ use perl5i::2;
 
 use PomBase::External;
 
+use YAML::Any qw(DumpFile LoadFile);
+
 func _load_genes($chado, $organism) {
   my $gene_type = $chado->resultset('Cv::Cvterm')->find({ name => 'gene' });
-
   my $org_name = $organism->genus() . ' ' . $organism->species();
-  my @res = PomBase::External::get_genes($org_name);
+  my @res;
+
+  my $file_name = $organism->species() . "_genes";
+
+  if (-e $file_name) {
+    @res = LoadFile($file_name);
+  } else {
+    @res = PomBase::External::get_genes($org_name);
+    DumpFile($file_name, @res);
+  }
 
   my %seen_names = ();
+
+  my $count = 0;
 
   for my $gene (@res) {
     my $primary_identifier = $gene->{primary_identifier};
@@ -76,6 +88,8 @@ func _load_genes($chado, $organism) {
       organism_id => $organism->organism_id(),
       type_id => $gene_type->cvterm_id()
     });
+
+    last if scalar(keys %seen_names) >= 100;
   }
 
   warn "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
