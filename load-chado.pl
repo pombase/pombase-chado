@@ -14,7 +14,7 @@ BEGIN {
 
 use PomBase::Chado;
 use PomBase::Load;
-use PomBase::Chado::EmblLoad;
+use PomBase::Chado::QualifierLoad;
 
 my $verbose = 0;
 my $quiet = 0;
@@ -50,10 +50,10 @@ my $chado = PomBase::Chado::connect($database, 'kmr44', 'kmr44');
 
 my $guard = $chado->txn_scope_guard;
 
-my $embl_load = PomBase::Chado::EmblLoad->new(chado => $chado,
-                                              verbose => $verbose,
-                                              config => $config
-                                            );
+my $qual_load = PomBase::Chado::QualifierLoad->new(chado => $chado,
+                                                   verbose => $verbose,
+                                                   config => $config
+                                                 );
 # load extra CVs, cvterms and dbxrefs
 warn "loading genes ...\n" unless $quiet;
 my $new_objects;
@@ -83,7 +83,7 @@ while (defined (my $file = shift)) {
     if (@systematic_ids != 1) {
       my $systematic_id_count = scalar(@systematic_ids);
       warn "  expected 1 systematic_id, got $systematic_id_count, for:";
-      $embl_load->dump_feature($bioperl_feature);
+      $qual_load->dump_feature($bioperl_feature);
       exit(1);
     }
 
@@ -94,7 +94,7 @@ while (defined (my $file = shift)) {
     my $pombe_gene = undef;
 
     try {
-      $pombe_gene = $embl_load->find_chado_feature($systematic_id);
+      $pombe_gene = $qual_load->find_chado_feature($systematic_id);
     } catch {
       warn "  no feature found for $type $systematic_id\n";
     };
@@ -103,16 +103,16 @@ while (defined (my $file = shift)) {
 
     if ($bioperl_feature->has_tag("controlled_curation")) {
       for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
-        my %unused_quals = $embl_load->process_one_cc($pombe_gene, $bioperl_feature, $value);
-        $embl_load->check_unused_quals($value, %unused_quals);
+        my %unused_quals = $qual_load->process_one_cc($pombe_gene, $bioperl_feature, $value);
+        $qual_load->check_unused_quals($value, %unused_quals);
         warn "\n" if $verbose;
       }
     }
 
     if ($bioperl_feature->has_tag("GO")) {
       for my $value ($bioperl_feature->get_tag_values("GO")) {
-        my %unused_quals = $embl_load->process_one_go_qual($pombe_gene, $bioperl_feature, $value);
-        $embl_load->check_unused_quals($value, %unused_quals);
+        my %unused_quals = $qual_load->process_one_go_qual($pombe_gene, $bioperl_feature, $value);
+        $qual_load->check_unused_quals($value, %unused_quals);
         warn "\n" if $verbose;
       }
     }

@@ -1,8 +1,8 @@
-package PomBase::Chado::EmblLoad;
+package PomBase::Chado::QualifierLoad;
 
 =head1 NAME
 
-PomBase::Chado::EmblLoad - Load a Chado database from Sanger PGG EMBL files
+PomBase::Chado::QualifierLoad - Load a Chado database from Sanger PGG EMBL files
 
 =head1 SYNOPSIS
 
@@ -18,7 +18,7 @@ Please report any bugs or feature requests to C<kmr44@cam.ac.uk>.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc PomBase::Chado::EmblLoad
+    perldoc PomBase::Chado::QualifierLoad
 
 =over 4
 
@@ -44,6 +44,7 @@ use Memoize;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::FeatureDumper';
 
 has verbose => (is => 'ro', isa => 'Bool');
 has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
@@ -183,17 +184,6 @@ method BUILD
 
   $self->objs()->{exact_cvterm} =
     $self->find_cvterm($self->objs()->{synonym_type_cv}, 'exact');
-}
-
-sub _dump_feature {
-  my $feature = shift;
-
-  for my $tag ($feature->get_all_tags) {
-    warn "    tag: ", $tag, "\n";
-    for my $value ($feature->get_tag_values($tag)) {
-      warn "      value: ", $value, "\n";
-    }
-  }
 }
 
 
