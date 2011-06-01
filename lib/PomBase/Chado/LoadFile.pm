@@ -87,6 +87,11 @@ method process_file($file)
 
   my $io = Bio::SeqIO->new(-file => $file, -format => "embl" );
   my $seq_obj = $io->next_seq;
+
+  my $display_id = $seq_obj->display_id();
+
+  print "reading database from $display_id\n";
+
   my $anno_collection = $seq_obj->annotation;
 
   my %no_systematic_id_counts = ();
@@ -104,7 +109,8 @@ method process_file($file)
     }
 
     my $chado_object =
-      $feature_loaders{$type}->process($bioperl_feature, \%delayed_features);
+      $feature_loaders{$type}->process($bioperl_feature, $display_id,
+                                       \%delayed_features);
 
     next unless defined $chado_object;
 

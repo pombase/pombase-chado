@@ -95,7 +95,7 @@ method BUILD
   }
 }
 
-method process($feature, $delayed_features)
+method process($feature, $chromosome_id, $delayed_features)
 {
   my $feat_type = $feature->primary_tag();
 

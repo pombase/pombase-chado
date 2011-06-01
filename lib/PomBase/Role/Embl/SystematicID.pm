@@ -53,7 +53,11 @@ method get_uniquename($feature)
 
     my $loc = $feature->location();
 
-    return $feature->primary_tag() . '_' . $loc->start() . '..' . $loc->end();
+    my $seq = $feature->entire_seq();
+    my $seq_display_id = $seq->display_id();
+
+    return $seq_display_id . '_' . $feature->primary_tag() .
+      '_' . $loc->start() . '..' . $loc->end();
   }
 
   my @systematic_ids = $feature->get_tag_values("systematic_id");
