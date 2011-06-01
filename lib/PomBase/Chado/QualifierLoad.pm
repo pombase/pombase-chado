@@ -307,27 +307,6 @@ method find_or_create_cvterm($cv, $term_name) {
 memoize ('find_or_create_cvterm');
 
 
-method find_chado_feature ($systematic_id, $try_name) {
-  my $rs = $self->chado()->resultset('Sequence::Feature');
-  my $feature = $rs->find({ uniquename => $systematic_id });
-
-  if (defined $feature) {
-    return $feature;
-  } else {
-    warn "    no feature found using $systematic_id as uniquename\n" if $self->verbose();
-  }
-
-  if ($try_name) {
-    $feature = $rs->find({ name => $systematic_id });
-
-    return $feature if defined $feature;
-  }
-
-  die "can't find feature for: $systematic_id\n";
-}
-memoize ('find_chado_feature');
-
-
 my %stored_cvterms = ();
 
 method create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not) {
@@ -722,7 +701,7 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
 method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
   my $systematic_id = $pombe_gene->uniquename();
 
-  warn "    _process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
+  warn "    process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
     if $self->verbose();
 
   my %qual_map = ();
