@@ -42,12 +42,19 @@ use PomBase::Chado::LoadFeat;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::Embl::Located';
+with 'PomBase::Role::CoordCalculator';
 with 'PomBase::Role::Embl::SystematicID';
 
 has verbose => (is => 'ro', isa => 'Bool');
 has organism => (is => 'ro',
                  required => 1,
                 );
+has delayed_features => (is => 'ro', isa => 'HashRef',
+                         init_arg => undef,
+                         default => sub { {} },
+                        );
 
 method process_file($file)
 {
@@ -83,8 +90,6 @@ method process_file($file)
                                                  so_type => $so_type));
     } keys %feature_loader_conf;
 
-  my %delayed_features = ();
-
   my $io = Bio::SeqIO->new(-file => $file, -format => "embl" );
   my $seq_obj = $io->next_seq;
 
@@ -110,7 +115,7 @@ method process_file($file)
 
     my $chado_object =
       $feature_loaders{$type}->process($bioperl_feature, $display_id,
-                                       \%delayed_features);
+                                       $self->delayed_features());
 
     next unless defined $chado_object;
 
@@ -148,6 +153,8 @@ method process_file($file)
     }
   }
 
+  $self->finalise();
+
   warn "counts of features that have no systematic_id, by type:\n";
 
   for my $type_key (keys %no_systematic_id_counts) {
@@ -155,4 +162,32 @@ method process_file($file)
   }
   warn "\n";
 }
+
+method finalise
+{
+  while (my ($uniquename, $feature_data) = each %{$self->delayed_features()}) {
+    my $feature = $feature_data->{feature};
+    my @collected_features = @{$feature_data->{collected_features}};
+
+    die unless $feature;
+
+    my @coords = ();
+    push @coords,
+      map {
+        $self->coords_of_feature($_);
+      } grep {
+        $_->primary_tag() eq "5'UTR";
+      } @collected_features;
+    push @coords, $self->coords_of_feature($feature);
+    push @coords,
+      map {
+        $self->coords_of_feature($_);
+      } grep {
+        $_->primary_tag() eq "3'UTR";
+      } @collected_features;
+
+    $self->store_feature($feature, $feature_data->{so_type}, [@coords]);
+  }
+}
+
 1;

@@ -36,7 +36,6 @@ under the same terms as Perl itself.
 =cut
 
 use perl5i::2;
-use Carp;
 
 use Moose;
 
@@ -45,6 +44,8 @@ with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::FeatureDumper';
 with 'PomBase::Role::Embl::Located';
 with 'PomBase::Role::Embl::SystematicID';
+with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::CoordCalculator';
 
 has embl_type => (is => 'ro',
                   isa => 'Str',
@@ -52,13 +53,12 @@ has embl_type => (is => 'ro',
                  );
 has so_type => (is => 'ro',
                 isa => 'Maybe[Str]',
+                required => 1,
                );
 has organism => (is => 'ro',
                  required => 1,
                  isa => 'Bio::Chado::Schema::Organism::Organism',
                 );
-
-has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
 
 my %feature_loader_conf = (
   CDS => {
@@ -82,19 +82,6 @@ my %feature_loader_conf = (
   },
 );
 
-method BUILD
-{
-  my $chado = $self->chado();
-
-  if (defined $self->so_type()) {
-    my $so_cv = $chado->resultset('Cv::Cv')->find({ name => 'sequence' });
-
-    $self->objs()->{so_cvterm} =
-      $chado->resultset('Cv::Cvterm')->find({ name => $self->so_type(),
-                                              cv_id => $so_cv->cv_id() });
-  }
-}
-
 method process($feature, $chromosome_id, $delayed_features)
 {
   my $feat_type = $feature->primary_tag();
@@ -103,7 +90,8 @@ method process($feature, $chromosome_id, $delayed_features)
 
   if ($feature_loader_conf{$feat_type}->{delay}) {
     $delayed_features->{$uniquename}->{feature} = $feature;
-
+    $delayed_features->{$uniquename}->{so_type} = $self->so_type();
+    push @{$delayed_features->{$uniquename}->{collected_features}}, ();
     return;
   }
 
@@ -117,30 +105,8 @@ method process($feature, $chromosome_id, $delayed_features)
            "which expects a ", $self->embl_type());
   }
 
-  $self->store_location($feature);
-
-  return $self->store_feature($feature, $uniquename);
-}
-
-method store_feature($feature, $uniquename)
-{
-  my $chado = $self->chado();
-
-  my $name = undef;
-
-  if ($feature->has_tag('gene')) {
-    # XXX handle extra /genes as synonyms
-    ($name) = $feature->get_tag_values('gene');
-  }
-
-  my %create_args = (
-    type_id => $self->objs()->{so_cvterm}->cvterm_id(),
-    uniquename => $uniquename,
-    name => $name,
-    organism_id => $self->organism()->organism_id(),
-  );
-
-  return $chado->resultset('Sequence::Feature')->create({%create_args});
+  return $self->store_feature($feature, $self->so_type(),
+                              [$self->coords_of_feature($feature)]);
 }
 
 1;

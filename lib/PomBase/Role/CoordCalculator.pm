@@ -1,8 +1,8 @@
-package PomBase::Role::Embl::Located;
+package PomBase::Role::CoordCalculator;
 
 =head1 NAME
 
-PomBase::Role::Embl::Located - Code for dealing with Embl feature locations
+PomBase::Role::CoordCalculator - Code for getting exon locations from features
 
 =head1 SYNOPSIS
 
@@ -18,7 +18,7 @@ Please report any bugs or feature requests to C<kmr44@cam.ac.uk>.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc PomBase::Role::Embl::Located
+    perldoc PomBase::Role::CoordCalculator
 
 =over 4
 
@@ -36,14 +36,15 @@ under the same terms as Perl itself.
 =cut
 
 use perl5i::2;
-use Carp;
-
 use Moose::Role;
 
-method store_location($feature, $loc_bits)
+method coords_of_feature($feature)
 {
-  warn "store_location() unimplemented";
+  carp "undefined feature passed to _coords_of_feature()" unless $feature;
+  my $loc = $feature->location();
+  return map { [$_->start(), $_->end()]; } $loc->each_Location();
 }
 
-1;
 
+
+1;
