@@ -102,9 +102,7 @@ method process($feature, $chromosome_id, $delayed_features)
   my $uniquename = $self->get_uniquename($feature);
 
   if ($feature_loader_conf{$feat_type}->{delay}) {
-    $delayed_features->{$uniquename} = {
-      feature => $feature,
-    };
+    $delayed_features->{$uniquename}->{feature} = $feature;
 
     return;
   }
