@@ -740,7 +740,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     $term =~ s/$cv_name, *//;
 
     if (exists $self->objs()->{cv_alt_names}->{$cv_name}) {
-      map { $term =~ s/$_, *//; } @{$$self->objs()->{cv_alt_names}->{$cv_name}};
+      map { $term =~ s/$_, *//; } @{$self->objs()->{cv_alt_names}->{$cv_name}};
     }
 
     if (grep { $_ eq $cv_name } keys %{$self->objs()->{cv_alt_names}}) {
@@ -755,7 +755,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
       warn "  unknown cv $cv_name: $qualifier\n";
     }
   } else {
-    if (!_process_ortholog($pombe_gene, $term, \%qual_map)) {
+    if (!$self->process_ortholog($pombe_gene, $term, \%qual_map)) {
       warn "  didn't process: $qualifier\n";
       return ();
     }
