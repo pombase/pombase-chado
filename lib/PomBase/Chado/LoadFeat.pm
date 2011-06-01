@@ -141,11 +141,7 @@ method store_feature($feature, $uniquename)
     organism_id => $self->organism()->organism_id(),
   );
 
-  use Data::Dumper;
-  $Data::Dumper::Maxdepth = 5;
-  warn "CREATE: ", Dumper([\%create_args]), "\n";
-
-  return $chado->resultset('Feature')->create({%create_args});
+  return $chado->resultset('Sequence::Feature')->create({%create_args});
 }
 
 1;
