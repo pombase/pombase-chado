@@ -39,6 +39,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 
 use PomBase::External;
+use PomBase::Chado::LoadOrganism;
 
 use YAML::Any qw(DumpFile LoadFile);
 
@@ -96,31 +97,24 @@ func _load_genes($chado, $organism) {
 }
 
 func init_objects($chado) {
+  my $org_load = PomBase::Chado::LoadOrganism->new(chado => $chado);
+
+  my $pombe_org =
+    $org_load->load_organism("Schizosaccharomyces", "pombe", "pombe",
+                             "Spombe", 4896);
+
+
   my $human =
-    $chado->resultset('Organism::Organism')->create({
-      genus => 'Homo',
-      species => 'sapiens',
-      common_name => 'human',
-      abbreviation => 'human',
-    });
+    $org_load->load_organism('Homo', 'sapiens', 'human', 'human', 9606);
 
   my $scerevisiae =
-    $chado->resultset('Organism::Organism')->create({
-      genus => 'Saccharomyces',
-      species => 'cerevisiae',
-      common_name => 'Scerevisiae',
-      abbreviation => 'Scerevisiae',
-    });
+    $org_load->load_organism('Saccharomyces', 'cerevisiae', 'Scerevisiae',
+                             'Scerevisiae', 4932);
 
   _load_genes($chado, $human);
   _load_genes($chado, $scerevisiae);
 
-  return {
-    organisms => {
-      human => $human,
-      scerevisiae => $scerevisiae,
-    },
-  }
+  return $pombe_org;
 }
 
 1;

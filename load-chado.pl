@@ -53,15 +53,8 @@ my $guard = $chado->txn_scope_guard;
 
 # load extra CVs, cvterms and dbxrefs
 warn "loading genes ...\n" unless $quiet;
-my $new_objects;
 
-if (!$test) {
-  $new_objects = PomBase::Load::init_objects($chado);
-}
-
-my $organism =
-  $chado->resultset('Organism::Organism')->find({ genus => "Schizosaccharomyces",
-                                                  species => "pombe" });
+my $organism = PomBase::Load::init_objects($chado);
 
 while (defined (my $file = shift)) {
   my $load_file = PomBase::Chado::LoadFile->new(chado => $chado,
