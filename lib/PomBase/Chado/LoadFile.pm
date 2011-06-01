@@ -98,6 +98,11 @@ method process_file($file)
 
     warn "processing $type $uniquename\n";
 
+    if (!defined $feature_loaders{$type}) {
+      warn "no processor for $type";
+      next;
+    }
+
     my $chado_object =
       $feature_loaders{$type}->process($bioperl_feature, \%delayed_features);
 
