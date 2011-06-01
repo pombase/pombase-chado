@@ -55,6 +55,7 @@ has so_type => (is => 'ro',
                );
 has organism => (is => 'ro',
                  required => 1,
+                 isa => 'Bio::Chado::Schema::Organism::Organism',
                 );
 
 has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
