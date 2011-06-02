@@ -54,7 +54,7 @@ method store_feature($feature, $chromosome, $so_type, $loc_bits)
 
   my $uniquename = $self->get_uniquename($feature);
 
-  warn "  storing $uniquename\n";
+  warn "  storing $uniquename ($so_type)\n";
 
   my $name = undef;
 
