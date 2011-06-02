@@ -46,15 +46,16 @@ with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::CoordCalculator';
 with 'PomBase::Role::Embl::SystematicID';
+with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 
 has verbose => (is => 'ro', isa => 'Bool');
 has organism => (is => 'ro',
                  required => 1,
                 );
-has delayed_features => (is => 'ro', isa => 'HashRef',
-                         init_arg => undef,
-                         default => sub { {} },
-                        );
+has gene_data => (is => 'ro', isa => 'HashRef',
+                  init_arg => undef,
+                  default => sub { {} },
+                );
 
 method process_file($file)
 {
@@ -72,10 +73,13 @@ method process_file($file)
     LTR => 'repeat_region',   # XXX should LTR fold into repeat_region?
     repeat_region => 'repeat_region',
     misc_RNA => 'gene',
-    "5'UTR" => undef,
-    "3'UTR" => undef,
+    "5'UTR" => 'five_prime_UTR',
+    "3'UTR" => 'three_prime_UTR',
     "exon" => undef,
-    "intron" => undef,
+    "intron" => "intron",
+    "misc_feature" => 'region',
+    "gap" => 'gap',
+    "conflict" => 'sequence_conflict',
   );
 
   my %feature_loaders =
@@ -116,9 +120,9 @@ method process_file($file)
   for my $bioperl_feature ($seq_obj->get_SeqFeatures) {
     my $type = $bioperl_feature->primary_tag();
 
-    my $uniquename = $self->get_uniquename($bioperl_feature);
+    my ($uniquename) = $self->get_uniquename($bioperl_feature);
 
-    warn "processing $type $uniquename\n";
+    print "processing $type $uniquename\n";
 
     if (!defined $feature_loaders{$type}) {
       warn "no processor for $type";
@@ -127,7 +131,7 @@ method process_file($file)
 
     my $chado_object =
       $feature_loaders{$type}->process($bioperl_feature, $chromosome,
-                                       $self->delayed_features());
+                                       $self->gene_data());
 
     next unless defined $chado_object;
 
@@ -165,28 +169,93 @@ method process_file($file)
     }
   }
 
-  $self->finalise();
-
-  warn "counts of features that have no systematic_id, by type:\n";
-
-  for my $type_key (keys %no_systematic_id_counts) {
-    warn "$type_key ", $no_systematic_id_counts{$type_key}, "\n";
-  }
-  warn "\n";
+  $self->finalise($chromosome);
 }
+
+method store_exons($uniquename, $bioperl_cds, $chromosome)
+{
+  my $chado = $self->chado();
+
+  my @coords_list = $self->coords_of_feature($bioperl_cds);
+  my @exons = ();
+
+  for (my $i = 0; $i < @coords_list; $i++) {
+    my ($start, $end) = @{$coords_list[$i]};
+
+    my $exon_uniquename = $uniquename . ':exon:' . ($i + 1);
+
+    my $chado_exon = $self->store_feature($exon_uniquename, undef, [], 'exon');
+
+    push @exons, $chado_exon;
+
+    my $strand = $bioperl_cds->location()->strand();
+    my $fmin = $start - 1;
+    my $fmax = $end;
+
+    $self->store_location($chado_exon, $chromosome, $strand, $fmin, $fmax);
+  }
+
+  return @exons;
+}
+
+method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
+                        $utrs_5_prime, $utrs_3_prime)
+{
+  my $chado = $self->chado();
+
+  my $cds_location = $bioperl_cds->location();
+
+  my $gene_fmin = $cds_location->start() - 1;
+  my $gene_fmax = $cds_location->end();
+
+  my @utrs_data = (@$utrs_5_prime, @$utrs_3_prime);
+
+  for my $utr_data (@utrs_data) {
+    my $utr_fmin = $utr_data->{chado_feature}->fmin();
+    my $utr_fmax = $utr_data->{chado_feature}->fmax();
+
+    if ($utr_fmin < $gene_fmin) {
+      $gene_fmin = $utr_fmin;
+    }
+    if ($utr_fmax > $gene_fmax) {
+      $gene_fmax = $utr_fmax;
+    }
+  }
+
+  my $chado_mrna = $self->store_feature("$uniquename.1", undef, [], 'mRNA');
+
+  my @exons = $self->store_exons($uniquename, $bioperl_cds, $chromosome);
+
+  for my $exon (@exons) {
+    $self->store_feature_rel($chado_mrna, $exon, 'part_of');
+  }
+
+  return ($gene_fmin, $gene_fmax, $chado_mrna);
+}
+
 
 method finalise($chromosome)
 {
-  while (my ($uniquename, $feature_data) = each %{$self->delayed_features()}) {
-    my $feature = $feature_data->{feature};
+  while (my ($uniquename, $feature_data) = each %{$self->gene_data()}) {
+    my $bioperl_feature = $feature_data->{bioperl_feature};
+    my $so_type = $feature_data->{so_type};
     my @utr_5_prime_features = @{$feature_data->{"5'UTR_features"}};
     my @utr_3_prime_features = @{$feature_data->{"3'UTR_features"}};
 
-    $self->store_gene_feature($feature, $chromosome,
-                              $feature_data->{so_type}
+    my ($gene_start, $gene_end, $chado_mrna) =
+      $self->store_gene_parts($uniquename,
+                              $bioperl_feature,
+                              $chromosome,
                               [@utr_5_prime_features],
                               [@utr_3_prime_features],
-                            );
+                             );
+
+    my $chado_gene =
+      $self->store_feature_and_loc($bioperl_feature, $chromosome, $so_type,
+                                   $gene_start, $gene_end);
+
+
+    $self->store_feature_rel($chado_gene, $chado_mrna, 'part_of');
   }
 }
 

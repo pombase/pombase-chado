@@ -39,41 +39,13 @@ use perl5i::2;
 use Moose::Role;
 
 with 'PomBase::Role::Embl::StoreLocation';
+with 'PomBase::Role::CvQuery';
 
-has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
-
-method store_feature($feature, $chromosome, $so_type, $utrs_5_prime,
-                     $utrs_3_prime)
+method store_feature($uniquename, $name, $synonyms, $so_type)
 {
-  my $chado = $self->chado();
+  my $so_cvterm = $self->get_cvterm('sequence', $so_type);
 
-  my $so_cv = $chado->resultset('Cv::Cv')->find({ name => 'sequence' });
-
-  my $so_cvterm =
-    $chado->resultset('Cv::Cvterm')->find({ name => $so_type,
-                                            cv_id => $so_cv->cv_id() });
-
-  my $uniquename = $self->get_uniquename($feature);
-
-  warn "  storing $uniquename ($so_type)\n";
-
-  my $name = undef;
-
-  if ($feature->has_tag('gene')) {
-    # XXX FIXME TODO handle extra /genes as synonyms
-    ($name) = $feature->get_tag_values('gene');
-  }
-
-  my $complement = ($feature->location()->strand() == -1);
-
-  if ($so_type eq 'gene') {
-    $self->store_gene_location($feature, $chromosome, $complement,
-                               $utrs_5_prime, $utrs_3_prime);
-  } else {
-    my $start = $feature->location()->start();
-    my $end = $feature->location()->end();
-    $self->store_location($feature, $chromosome, $complement, $start, $end);
-  }
+  print "  storing $uniquename ($so_type)\n";
 
   my %create_args = (
     type_id => $so_cvterm->cvterm_id(),
@@ -82,7 +54,34 @@ method store_feature($feature, $chromosome, $so_type, $utrs_5_prime,
     organism_id => $self->organism()->organism_id(),
   );
 
-  return $chado->resultset('Sequence::Feature')->create({%create_args});
+  my $feature_rs = $self->chado()->resultset('Sequence::Feature');
+
+  return $feature_rs->create({ %create_args });
+}
+
+method store_feature_and_loc($feature, $chromosome, $so_type,
+                             $start_arg, $end_arg)
+{
+  my $chado = $self->chado();
+
+  my $name = undef;
+
+  my @synonyms = ();
+
+  if ($feature->has_tag('gene')) {
+    # XXX FIXME TODO handle extra /genes as synonyms
+    ($name, @synonyms) = $feature->get_tag_values('gene');
+  }
+
+  my ($uniquename) = $self->get_uniquename($feature);
+
+  my $chado_feature = $self->store_feature($uniquename, $name, [], $so_type);
+
+  my $start = $start_arg // $feature->location()->start();
+  my $end = $end_arg // $feature->location()->end();
+  my $strand = $feature->location()->strand();
+
+  $self->store_location($chado_feature, $chromosome, $strand, $start, $end);
 }
 
 1;

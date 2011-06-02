@@ -93,7 +93,7 @@ func _load_genes($chado, $organism) {
     last if scalar(keys %seen_names) >= 2;
   }
 
-  warn "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
+  print "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
 }
 
 func init_objects($chado) {

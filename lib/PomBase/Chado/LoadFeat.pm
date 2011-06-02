@@ -61,7 +61,7 @@ has organism => (is => 'ro',
 
 my %feature_loader_conf = (
   CDS => {
-    delay => 1,
+    save => 1,
   },
   LTR => {
   },
@@ -79,34 +79,48 @@ my %feature_loader_conf = (
   "intron" => {
     collected => 1,
   },
+  "intron" => {
+    collected => 1,
+  },
 );
 
-method process($feature, $chromosome, $delayed_features)
+method process($feature, $chromosome, $gene_data)
 {
   my $feat_type = $feature->primary_tag();
 
-  my $uniquename = $self->get_uniquename($feature);
-
-  if ($feature_loader_conf{$feat_type}->{delay}) {
-    $delayed_features->{$uniquename}->{feature} = $feature;
-    $delayed_features->{$uniquename}->{so_type} = $self->so_type();
-    push @{$delayed_features->{$uniquename}->{"5'UTR_features"}}, ();
-    push @{$delayed_features->{$uniquename}->{"3'UTR_features"}}, ();
-    return;
-  }
-
-  if ($feature_loader_conf{$feat_type}->{collected}) {
-    push @{$delayed_features->{$uniquename}->{"${feat_type}_features"}}, $feature;
-    return;
-  }
+  my ($uniquename, $gene_uniquename) = $self->get_uniquename($feature);
 
   if ($self->embl_type() ne $feat_type) {
     croak ("wrong type of feature ($feat_type) passed to process() ",
            "which expects a ", $self->embl_type());
   }
 
-  return $self->store_feature($feature, $chromosome, $self->so_type(),
-                              [$self->coords_of_feature($feature)]);
+  if ($feature_loader_conf{$feat_type}->{save}) {
+    my %new_data = (
+      bioperl_feature => $feature,
+      so_type => $self->so_type(),
+    );
+
+    push @{$new_data{"5'UTR_features"}}, ();
+    push @{$new_data{"3'UTR_features"}}, ();
+    push @{$new_data{"intron"}}, ();
+
+    $gene_data->{$uniquename} = { %new_data };
+    return;
+  }
+
+  die $feat_type unless $self->so_type();
+
+  my $chado_feature =
+    $self->store_feature_and_loc($feature, $chromosome, $self->so_type());
+
+  if ($feature_loader_conf{$feat_type}->{collected}) {
+    my %feature_data = (
+      bioperl_feature => $feature,
+      chado_feature => $chado_feature,
+    );
+    push @{$gene_data->{$gene_uniquename}->{"${feat_type}_features"}}, {%feature_data}
+  }
 }
 
 1;

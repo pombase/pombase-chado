@@ -45,8 +45,12 @@ with 'PomBase::Role::FeatureDumper';
 
 method get_uniquename($feature)
 {
+  state $type_seen = {};
+
+  my $embl_type = $feature->primary_tag();
+
   if (!$feature->has_tag("systematic_id")) {
-    if ($feature->primary_tag() eq 'CDS') {
+    if ($embl_type eq 'CDS') {
       $self->dump_feature($feature);
       croak('CDS feature has no systematic_id');
     }
@@ -69,7 +73,17 @@ method get_uniquename($feature)
     exit(1);
   }
 
-  return $systematic_ids[0];
+  my $systematic_id = $systematic_ids[0];
+  my $orig_systematic_id = $systematic_id;
+
+  $type_seen->{$embl_type}->{$systematic_id}++;
+
+  if (grep { $_ eq $embl_type } qw(intron 5'UTR 3'UTR)) {
+    my $type_count = $type_seen->{$embl_type}->{$systematic_id};
+    $systematic_id .= ":$embl_type:$type_count";
+  }
+
+  return ($systematic_id, $orig_systematic_id);
 }
 
 1;
