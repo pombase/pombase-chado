@@ -279,7 +279,7 @@ method find_or_create_cvterm($cv, $term_name) {
       die "no database for cv: ", $cv->name();
     }
 
-    my $new_ont_id = _get_dbxref_id($db->name());
+    my $new_ont_id = $self->get_dbxref_id($db->name());
     my $formatted_id = sprintf "%07d", $new_ont_id;
 
     my $dbxref_rs = $self->chado()->resultset('General::Dbxref');
@@ -343,14 +343,14 @@ method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
   if (ref $value eq 'ARRAY') {
     my @ret = ();
     for (my $i = 0; $i < @$value; $i++) {
-      push @ret, _add_feature_cvtermprop($feature_cvterm,
-                                         $name, $value->[$i], $i);
+      push @ret, $self->add_feature_cvtermprop($feature_cvterm,
+                                               $name, $value->[$i], $i);
     }
     return @ret;
   }
 
-  my $type = _find_or_create_cvterm($self->objs()->{feature_cvtermprop_type_cv},
-                                    $name);
+  my $type = $self->find_or_create_cvterm($self->objs()->{feature_cvtermprop_type_cv},
+                                          $name);
 
   my $rs = $self->chado()->resultset('Sequence::FeatureCvtermprop');
 
@@ -371,8 +371,8 @@ method add_feature_relationshipprop($feature_relationship, $name, $value) {
     die "no value for $name\n";
   }
 
-  my $type = _find_or_create_cvterm($self->objs()->{feature_relationshipprop_type_cv},
-                                    $name);
+  my $type = $self->find_or_create_cvterm($self->objs()->{feature_relationshipprop_type_cv},
+                                          $name);
 
   my $rs = $self->chado()->resultset('Sequence::FeatureRelationshipprop');
 
@@ -427,11 +427,11 @@ method get_pub_from_db_xref($term, $db_xref) {
       my $db_name = $2;
       my $accession = $3;
 
-      my $db = _find_db_by_name($db_name);
+      my $db = $self->find_db_by_name($db_name);
 
       warn "    finding pub for $db_xref\n" if $self->verbose();
 
-      my $pub = _find_pub($db_xref);
+      my $pub = $self->find_pub($db_xref);
 
       if (!defined $pub) {
 
@@ -442,7 +442,7 @@ method get_pub_from_db_xref($term, $db_xref) {
           uniquename => $db_xref,
           type_id => $self->objs()->{unfetched_pub_cvterm}->cvterm_id()
         });
-        my $dbxref = _find_or_create_dbxref($db, $accession);
+        my $dbxref = $self->find_or_create_dbxref($db, $accession);
         my $pub_dbxref_rs = $self->chado()->resultset('Pub::PubDbxref');
         $pub_dbxref_rs->create({ pub_id => $pub->pub_id(),
                                  dbxref_id => $dbxref->dbxref_id() });
@@ -472,7 +472,7 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
 
   my $db_accession;
 
-  if (_is_go_cv_name($cv_name)) {
+  if ($self->is_go_cv_name($cv_name)) {
     $db_accession = delete $sub_qual_map->{GOid};
     if (!defined $db_accession) {
       my $systematic_id = $pombe_gene->uniquename();
@@ -487,7 +487,7 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
   my $cvterm;
 
   if ($create_cvterm) {
-    $cvterm = _find_or_create_cvterm($cv, $term, $db_accession);
+    $cvterm = $self->find_or_create_cvterm($cv, $term, $db_accession);
   } else {
     $cvterm = $self->find_cvterm($cv, $term, prefetch_dbxref => 1);
 
@@ -521,7 +521,7 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
 
   my $db_xref = delete $sub_qual_map->{db_xref};
 
-  my $pub = _get_pub_from_db_xref($term, $db_xref);
+  my $pub = $self->get_pub_from_db_xref($term, $db_xref);
 
   my $qualifier = delete $sub_qual_map->{qualifier};
 
@@ -533,9 +533,9 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
   }
 
   my $featurecvterm =
-    _create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not);
+    $self->create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not);
 
-  if (_is_go_cv_name($cv_name)) {
+  if ($self->is_go_cv_name($cv_name)) {
     my $evidence_code = delete $sub_qual_map->{evidence};
 
     my $evidence;
@@ -553,22 +553,22 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
     if (defined $sub_qual_map->{from}) {
       $evidence .= " from " . delete $sub_qual_map->{from};
     }
-    _add_feature_cvtermprop($featurecvterm,
-                            evidence => $evidence);
+    $self->add_feature_cvtermprop($featurecvterm,
+                                  evidence => $evidence);
 
     if (defined $sub_qual_map->{residue}) {
-      _add_feature_cvtermprop($featurecvterm,
-                              residue => delete $sub_qual_map->{residue});
+      $self->add_feature_cvtermprop($featurecvterm,
+                                    residue => delete $sub_qual_map->{residue});
     }
   }
 
   if (defined $qualifier) {
-    _add_feature_cvtermprop($featurecvterm, qualifier => $qualifier);
+    $self->add_feature_cvtermprop($featurecvterm, qualifier => $qualifier);
   }
 
-  my $date = _get_and_check_date($sub_qual_map);
+  my $date = $self->get_and_check_date($sub_qual_map);
   if (defined $date) {
-    _add_feature_cvtermprop($featurecvterm, date => $date);
+    $self->add_feature_cvtermprop($featurecvterm, date => $date);
   }
 
 }
