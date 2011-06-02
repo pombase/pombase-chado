@@ -40,12 +40,16 @@ use Carp;
 
 use Moose::Role;
 
-method store_gene_location($feature, $complement, $loc_bits)
+requires 'chado';
+
+method store_gene_location($feature, $chromosome, $complement, $loc_bits)
 {
   my $chado = $self->chado();
+}
 
-
-
+method store_location($feature, $chromosome, $complement, $start, $end)
+{
+  my $chado = $self->chado();
 }
 
 1;

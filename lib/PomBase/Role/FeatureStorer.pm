@@ -65,7 +65,13 @@ method store_feature($feature, $chromosome, $so_type, $loc_bits)
 
   my $complement = ($feature->location()->strand() == -1);
 
-  $self->store_location($feature, $complement, $loc_bits);
+  if ($so_type eq 'gene') {
+    $self->store_gene_location($feature, $chromosome, $complement, $loc_bits);
+  } else {
+    my $start = $feature->location()->start();
+    my $end = $feature->location()->end();
+    $self->store_location($feature, $chromosome, $complement, $start, $end);
+  }
 
   my %create_args = (
     type_id => $so_cvterm->cvterm_id(),
