@@ -42,7 +42,8 @@ with 'PomBase::Role::Embl::StoreLocation';
 
 has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
 
-method store_feature($feature, $chromosome, $so_type, $loc_bits)
+method store_feature($feature, $chromosome, $so_type, $utrs_5_prime,
+                     $utrs_3_prime)
 {
   my $chado = $self->chado();
 
@@ -66,7 +67,8 @@ method store_feature($feature, $chromosome, $so_type, $loc_bits)
   my $complement = ($feature->location()->strand() == -1);
 
   if ($so_type eq 'gene') {
-    $self->store_gene_location($feature, $chromosome, $complement, $loc_bits);
+    $self->store_gene_location($feature, $chromosome, $complement,
+                               $utrs_5_prime, $utrs_3_prime);
   } else {
     my $start = $feature->location()->start();
     my $end = $feature->location()->end();

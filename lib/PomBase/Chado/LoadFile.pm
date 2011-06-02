@@ -179,27 +179,14 @@ method finalise($chromosome)
 {
   while (my ($uniquename, $feature_data) = each %{$self->delayed_features()}) {
     my $feature = $feature_data->{feature};
-    my @collected_features = @{$feature_data->{collected_features}};
+    my @utr_5_prime_features = @{$feature_data->{"5'UTR_features"}};
+    my @utr_3_prime_features = @{$feature_data->{"3'UTR_features"}};
 
-    die unless $feature;
-
-    my @coords = ();
-    push @coords,
-      map {
-        $self->coords_of_feature($_);
-      } grep {
-        $_->primary_tag() eq "5'UTR";
-      } @collected_features;
-    push @coords, $self->coords_of_feature($feature);
-    push @coords,
-      map {
-        $self->coords_of_feature($_);
-      } grep {
-        $_->primary_tag() eq "3'UTR";
-      } @collected_features;
-
-    $self->store_feature($feature, $chromosome,
-                         $feature_data->{so_type}, [@coords]);
+    $self->store_gene_feature($feature, $chromosome,
+                              $feature_data->{so_type}
+                              [@utr_5_prime_features],
+                              [@utr_3_prime_features],
+                            );
   }
 }
 

@@ -42,7 +42,8 @@ use Moose::Role;
 
 requires 'chado';
 
-method store_gene_location($feature, $chromosome, $complement, $loc_bits)
+method store_gene_location($feature, $chromosome, $complement, $utrs_5_prime,
+                           $utrs_3_prime)
 {
   my $chado = $self->chado();
 }

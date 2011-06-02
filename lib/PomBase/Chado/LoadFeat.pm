@@ -90,12 +90,13 @@ method process($feature, $chromosome, $delayed_features)
   if ($feature_loader_conf{$feat_type}->{delay}) {
     $delayed_features->{$uniquename}->{feature} = $feature;
     $delayed_features->{$uniquename}->{so_type} = $self->so_type();
-    push @{$delayed_features->{$uniquename}->{collected_features}}, ();
+    push @{$delayed_features->{$uniquename}->{"5'UTR_features"}}, ();
+    push @{$delayed_features->{$uniquename}->{"3'UTR_features"}}, ();
     return;
   }
 
   if ($feature_loader_conf{$feat_type}->{collected}) {
-    push @{$delayed_features->{$uniquename}->{collected_features}}, $feature;
+    push @{$delayed_features->{$uniquename}->{"${feat_type}_features"}}, $feature;
     return;
   }
 
