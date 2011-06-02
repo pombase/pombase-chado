@@ -42,7 +42,6 @@ use Moose;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::FeatureDumper';
-with 'PomBase::Role::Embl::Located';
 with 'PomBase::Role::Embl::SystematicID';
 with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::CoordCalculator';

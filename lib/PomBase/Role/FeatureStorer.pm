@@ -38,7 +38,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::Embl::Located';
 
 has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
 
@@ -63,7 +63,9 @@ method store_feature($feature, $so_type, $loc_bits)
     ($name) = $feature->get_tag_values('gene');
   }
 
-  $self->store_location($feature, $loc_bits);
+  my $complement = ($feature->location()->strand() == -1);
+
+  $self->store_location($feature, $complement, $loc_bits);
 
   my %create_args = (
     type_id => $so_cvterm->cvterm_id(),

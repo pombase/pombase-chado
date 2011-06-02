@@ -43,7 +43,6 @@ use PomBase::Chado::LoadFeat;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::FeatureStorer';
-with 'PomBase::Role::Embl::Located';
 with 'PomBase::Role::CoordCalculator';
 with 'PomBase::Role::Embl::SystematicID';
 

@@ -1,8 +1,8 @@
-package PomBase::Role::Embl::Located;
+package PomBase::Role::Embl::StoreLocation;
 
 =head1 NAME
 
-PomBase::Role::Embl::Located - Code for dealing with Embl feature locations
+PomBase::Role::Embl::StoreLocation - Code for dealing with Embl feature locations
 
 =head1 SYNOPSIS
 
@@ -18,7 +18,7 @@ Please report any bugs or feature requests to C<kmr44@cam.ac.uk>.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc PomBase::Role::Embl::Located
+    perldoc PomBase::Role::Embl::StoreLocation
 
 =over 4
 
@@ -40,9 +40,12 @@ use Carp;
 
 use Moose::Role;
 
-method store_location($feature, $loc_bits)
+method store_gene_location($feature, $complement, $loc_bits)
 {
-  warn "store_location() unimplemented";
+  my $chado = $self->chado();
+
+
+
 }
 
 1;
