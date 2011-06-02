@@ -81,7 +81,7 @@ my %feature_loader_conf = (
   },
 );
 
-method process($feature, $chromosome_id, $delayed_features)
+method process($feature, $chromosome, $delayed_features)
 {
   my $feat_type = $feature->primary_tag();
 
@@ -104,7 +104,7 @@ method process($feature, $chromosome_id, $delayed_features)
            "which expects a ", $self->embl_type());
   }
 
-  return $self->store_feature($feature, $self->so_type(),
+  return $self->store_feature($feature, $chromosome, $self->so_type(),
                               [$self->coords_of_feature($feature)]);
 }
 

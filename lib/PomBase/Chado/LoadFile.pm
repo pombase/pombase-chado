@@ -43,6 +43,7 @@ use PomBase::Chado::LoadFeat;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::CoordCalculator';
 with 'PomBase::Role::Embl::SystematicID';
 
@@ -94,6 +95,18 @@ method process_file($file)
 
   my $display_id = $seq_obj->display_id();
 
+  my $chromosome_cvterm = $self->get_cvterm('sequence', 'chromosome');
+
+  my %create_args = (
+    type_id => $chromosome_cvterm->cvterm_id(),
+    uniquename => $display_id,
+    name => undef,
+    organism_id => $self->organism()->organism_id(),
+  );
+
+  my $chromosome =
+    $chado->resultset('Sequence::Feature')->create({%create_args});
+
   print "reading database from $display_id\n";
 
   my $anno_collection = $seq_obj->annotation;
@@ -113,7 +126,7 @@ method process_file($file)
     }
 
     my $chado_object =
-      $feature_loaders{$type}->process($bioperl_feature, $display_id,
+      $feature_loaders{$type}->process($bioperl_feature, $chromosome,
                                        $self->delayed_features());
 
     next unless defined $chado_object;
@@ -162,7 +175,7 @@ method process_file($file)
   warn "\n";
 }
 
-method finalise
+method finalise($chromosome)
 {
   while (my ($uniquename, $feature_data) = each %{$self->delayed_features()}) {
     my $feature = $feature_data->{feature};
@@ -185,7 +198,8 @@ method finalise
         $_->primary_tag() eq "3'UTR";
       } @collected_features;
 
-    $self->store_feature($feature, $feature_data->{so_type}, [@coords]);
+    $self->store_feature($feature, $chromosome,
+                         $feature_data->{so_type}, [@coords]);
   }
 }
 

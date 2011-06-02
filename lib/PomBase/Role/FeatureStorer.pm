@@ -38,11 +38,11 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-with 'PomBase::Role::Embl::Located';
+with 'PomBase::Role::Embl::StoreLocation';
 
 has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
 
-method store_feature($feature, $so_type, $loc_bits)
+method store_feature($feature, $chromosome, $so_type, $loc_bits)
 {
   my $chado = $self->chado();
 
