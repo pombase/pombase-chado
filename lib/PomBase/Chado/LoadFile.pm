@@ -258,5 +258,3 @@ method finalise($chromosome)
     $self->store_feature_rel($chado_gene, $chado_mrna, 'part_of');
   }
 }
-
-1;

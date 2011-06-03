@@ -121,6 +121,6 @@ method process($feature, $chromosome, $gene_data)
     );
     push @{$gene_data->{$gene_uniquename}->{"${feat_type}_features"}}, {%feature_data}
   }
-}
 
-1;
+  return $chado_feature;
+}
