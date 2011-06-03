@@ -39,6 +39,7 @@ use perl5i::2;
 use Moose;
 
 use PomBase::Chado::LoadFeat;
+use Tie::Hash::Indexed;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
@@ -54,19 +55,74 @@ has organism => (is => 'ro',
                 );
 has gene_data => (is => 'ro', isa => 'HashRef',
                   init_arg => undef,
-                  default => sub { {} },
+                  default => sub {
+                    tie my %gene_data, 'Tie::Hash::Indexed';
+                    return \%gene_data;
+                  },
                 );
+has qual_load => (is => 'ro', isa => 'PomBase::Chado::QualifierLoad',
+                  init_arg => undef,
+                  lazy => 1,
+                  builder => '_build_qual_load');
+
+method _build_qual_load
+{
+  my $chado = $self->chado();
+  my $config = $self->config();
+  my $verbose = $self->verbose();
+
+  return PomBase::Chado::QualifierLoad->new(chado => $chado,
+                                            verbose => $verbose,
+                                            config => $config
+                                          );
+}
+
+method process_qualifiers($bioperl_feature, $chado_object)
+{
+  my $type = $bioperl_feature->primary_tag();
+  my $verbose = $self->verbose();
+
+  my $uniquename = $chado_object->uniquename();
+
+  if ($bioperl_feature->has_tag("controlled_curation")) {
+    for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
+      my %unused_quals =
+      $self->qual_load()->process_one_cc($chado_object, $bioperl_feature, $value);
+      $self->qual_load()->check_unused_quals($value, %unused_quals);
+      warn "\n" if $verbose;
+    }
+  }
+
+  if ($bioperl_feature->has_tag("GO")) {
+    for my $value ($bioperl_feature->get_tag_values("GO")) {
+      my %unused_quals =
+      $self->qual_load()->process_one_go_qual($chado_object, $bioperl_feature, $value);
+      $self->qual_load()->check_unused_quals($value, %unused_quals);
+      warn "\n" if $verbose;
+    }
+  }
+
+  if ($type eq 'CDS') {
+    if ($bioperl_feature->has_tag("product")) {
+      my @products = $bioperl_feature->get_tag_values("product");
+      if (@products > 1) {
+        warn "  $uniquename has more than one product\n";
+      } else {
+        if (length $products[0] == 0) {
+          warn "  zero length product for $uniquename\n";
+        }
+      }
+    } else {
+      warn "  no product for $uniquename\n";
+    }
+  }
+}
 
 method process_file($file)
 {
   my $chado = $self->chado();
   my $verbose = $self->verbose();
   my $config = $self->config();
-
-  my $qual_load = PomBase::Chado::QualifierLoad->new(chado => $chado,
-                                                     verbose => $verbose,
-                                                     config => $config
-                                                   );
 
   my %feature_loader_conf = (
     CDS => 'gene',
@@ -135,38 +191,7 @@ method process_file($file)
 
     next unless defined $chado_object;
 
-    if ($bioperl_feature->has_tag("controlled_curation")) {
-      for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
-        my %unused_quals =
-          $qual_load->process_one_cc($chado_object, $bioperl_feature, $value);
-        $qual_load->check_unused_quals($value, %unused_quals);
-        warn "\n" if $verbose;
-      }
-    }
-
-    if ($bioperl_feature->has_tag("GO")) {
-      for my $value ($bioperl_feature->get_tag_values("GO")) {
-        my %unused_quals =
-          $qual_load->process_one_go_qual($chado_object, $bioperl_feature, $value);
-        $qual_load->check_unused_quals($value, %unused_quals);
-        warn "\n" if $verbose;
-      }
-    }
-
-    if ($type eq 'CDS') {
-      if ($bioperl_feature->has_tag("product")) {
-        my @products = $bioperl_feature->get_tag_values("product");
-        if (@products > 1) {
-          warn "  $uniquename has more than one product\n";
-        } else {
-          if (length $products[0] == 0) {
-            warn "  zero length product for $uniquename\n";
-          }
-        }
-      } else {
-        warn "  no product for $uniquename\n";
-      }
-    }
+    $self->process_qualifiers($bioperl_feature, $chado_object);
   }
 
   $self->finalise($chromosome);
@@ -255,6 +280,8 @@ method finalise($chromosome)
       $self->store_feature_and_loc($bioperl_feature, $chromosome, $so_type,
                                    $gene_start, $gene_end);
 
+
+    $self->process_qualifiers($bioperl_feature, $chado_gene);
 
     $self->store_feature_rel($chado_gene, $chado_mrna, 'part_of');
   }

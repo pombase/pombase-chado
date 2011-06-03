@@ -173,8 +173,14 @@ method BUILD
     }
   }
 
+  $self->objs()->{null_pub_cvterm} =
+    $self->find_cvterm('PomBase publication types', 'null');
+
   $self->objs()->{null_pub} =
-    $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
+    $chado->resultset('Pub::Pub')->create({
+      uniquename => 'null',
+      type_id => $self->objs()->{null_pub_cvterm}->cvterm_id(),
+    });
 
   $self->objs()->{orthologous_to_cvterm} =
     $chado->resultset('Cv::Cvterm')->find({ name => 'orthologous_to' });
@@ -217,14 +223,21 @@ method get_dbxref_id($db_name) {
 }
 
 
-method find_pub($identifier) {
+method find_or_create_pub($identifier) {
   my $pub_rs = $self->chado()->resultset('Pub::Pub');
 
-  return $pub_rs->find({ uniquename => $identifier });
+  my $paper_cvterm = $self->find_cvterm('PomBase publication types', 'paper');
+
+  return $pub_rs->find_or_create({ uniquename => $identifier,
+                                   type_id => $paper_cvterm->cvterm_id() });
 }
 
 
 method find_cvterm($cv, $term_name, %options) {
+  if (!ref $cv) {
+    $cv = $self->find_cv_by_name($cv);
+  }
+
   warn "    _find_cvterm('", $cv->name(), "', '$term_name')\n" if $self->verbose();
 
   my %search_options = ();

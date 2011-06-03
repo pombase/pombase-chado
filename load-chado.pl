@@ -55,7 +55,7 @@ my $guard = $chado->txn_scope_guard;
 # load extra CVs, cvterms and dbxrefs
 print "loading genes ...\n" unless $quiet;
 
-my $organism = PomBase::Load::init_objects($chado);
+my $organism = PomBase::Load::init_objects($chado, $config);
 
 my @files = @ARGV;
 

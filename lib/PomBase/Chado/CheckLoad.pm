@@ -75,6 +75,6 @@ method check
   my $gene = $rs->next();
 
   should ($gene->uniquename(), "SPAC977.10");
-  should ($gene->feature_cvterms()->count(), 10);
+  should ($gene->feature_cvterms()->count(), 8);
 }
 

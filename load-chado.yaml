@@ -1,1 +1,5 @@
 test: 1
+cvterms:
+  PomBase publication types:
+    - paper
+    - null

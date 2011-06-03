@@ -96,7 +96,42 @@ func _load_genes($chado, $organism) {
   print "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
 }
 
-func init_objects($chado) {
+func _load_cvterms($chado, $config)
+{
+  my $db = $chado->resultset('General::Db')->find({ name => 'PomBase' });
+
+  my %cvterm_confs = %{$config->{cvterms}};
+
+  my %cvs = ();
+
+  for my $cv_name (keys %cvterm_confs) {
+    my @cvterm_names = @{$cvterm_confs{$cv_name}};
+
+    for my $cvterm_name (@cvterm_names) {
+      my $dbxref =
+        $chado->resultset('General::Dbxref')->create({
+          db_id => $db->db_id(),
+          accession => $cvterm_name,
+        });
+
+      my $cv;
+
+      if (exists $cvs{$cv_name}) {
+        $cv = $cvs{$cv_name};
+      } else {
+        $cv = $chado->resultset('Cv::Cv')->create({ name => $cv_name });
+        $cvs{$cv_name} = $cv;
+      }
+
+      $chado->resultset('Cv::Cvterm')->create({ name => $cvterm_name,
+                                                cv_id => $cv->cv_id(),
+                                                dbxref_id => $dbxref->dbxref_id()
+                                              });
+    }
+  }
+}
+
+func init_objects($chado, $config) {
   my $org_load = PomBase::Chado::LoadOrganism->new(chado => $chado);
 
   my $pombe_org =
@@ -113,6 +148,8 @@ func init_objects($chado) {
 
   _load_genes($chado, $human);
   _load_genes($chado, $scerevisiae);
+
+  _load_cvterms($chado, $config);
 
   return $pombe_org;
 }
