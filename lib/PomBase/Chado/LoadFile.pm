@@ -211,8 +211,9 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
   my @utrs_data = (@$utrs_5_prime, @$utrs_3_prime);
 
   for my $utr_data (@utrs_data) {
-    my $utr_fmin = $utr_data->{chado_feature}->fmin();
-    my $utr_fmax = $utr_data->{chado_feature}->fmax();
+    my $featureloc = $utr_data->{chado_feature}->featureloc_features()->first();
+    my $utr_fmin = $featureloc->fmin();
+    my $utr_fmax = $featureloc->fmax();
 
     if ($utr_fmin < $gene_fmin) {
       $gene_fmin = $utr_fmin;
