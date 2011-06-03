@@ -532,16 +532,23 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
   }
 
   my $db_xref = delete $sub_qual_map->{db_xref};
-
   my $pub = $self->get_pub_from_db_xref($term, $db_xref);
-
-  my $qualifier = delete $sub_qual_map->{qualifier};
 
   my $is_not = 0;
 
-  if (defined $qualifier && $qualifier eq 'NOT') {
-    $is_not = 1;
-    $qualifier = undef;
+  my $qualifiers = delete $sub_qual_map->{qualifier};
+  my @qualifiers = ();
+
+  if (defined $qualifiers) {
+    @qualifiers =
+      grep {
+        if ($_ eq 'NOT') {
+          $is_not = 1;
+          0;
+        } else {
+          1;
+        }
+      } @$qualifiers;
   }
 
   my $featurecvterm =
@@ -574,9 +581,7 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
     }
   }
 
-  if (defined $qualifier) {
-    $self->add_feature_cvtermprop($featurecvterm, qualifier => $qualifier);
-  }
+  $self->add_feature_cvtermprop($featurecvterm, qualifier => [@qualifiers]);
 
   my $date = $self->get_and_check_date($sub_qual_map);
   if (defined $date) {
@@ -599,15 +604,9 @@ method split_sub_qualifiers($cc_qualifier) {
 /controlled_curation=\"$cc_qualifier\"";
       }
 
-      # if true ".. from=foo|bar" will create two qualifiers rather than one
-      my $split_piped_qualifiers = 0;
-
-      if ($split_piped_qualifiers) {
+      if ($name eq 'qualifier') {
         my @bits = split /\|/, $value;
-
-        if (@bits > 1) {
-          $value = [@bits];
-        }
+        $value = [@bits];
       }
 
       $map{$name} = $value;

@@ -64,17 +64,32 @@ method check
 
   should ($rs->count(), 5);
 
-  my $rs2 = $rs->search();
-
-  while (defined (my $gene = $rs2->next())) {
-    print $gene->feature_id(), " ", $gene->uniquename(), "\n";
-
-  }
-
   $rs->next();
   my $gene = $rs->next();
 
   should ($gene->uniquename(), "SPAC977.10");
   should ($gene->feature_cvterms()->count(), 14);
+
+  my $cvterms_rs =
+    $gene->feature_cvterms()->search_related('cvterm');
+
+  should ($cvterms_rs->count(), 14);
+
+  assert (grep { $_->name() eq 'plasma membrane' } $cvterms_rs->all());
+
+  my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
+
+  my $feature_cvterm_rs =
+    $gene->feature_cvterms()->search({
+      cvterm_id => $coiled_coil_cvterm->cvterm_id()
+    });
+
+  my $feature_cvterm = $feature_cvterm_rs->next();
+
+  my @props = sort map { $_->value(); } $feature_cvterm->feature_cvtermprops();
+
+  should ($props[0], '19700101');
+  should ($props[1], 'predicted');
+  should ($props[2], 'region');
 }
 
