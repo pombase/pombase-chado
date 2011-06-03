@@ -132,9 +132,6 @@ method BUILD
 
   my $db_rs = $chado->resultset('General::Db');
 
-  $db_rs->find_or_create({ name => 'KOG',
-                           description => 'EuKaryotic Orthologous Groups' });
-
   my %pombase_dbs = ();
 
   $pombase_dbs{phenotype} = $db_rs->find_or_create({ name => 'SPO' });
