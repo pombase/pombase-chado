@@ -82,6 +82,8 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
   my $strand = $feature->location()->strand();
 
   $self->store_location($chado_feature, $chromosome, $strand, $start, $end);
+
+  return $chado_feature;
 }
 
 1;
