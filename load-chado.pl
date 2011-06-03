@@ -53,7 +53,7 @@ my $chado = PomBase::Chado::connect($database, 'kmr44', 'kmr44');
 my $guard = $chado->txn_scope_guard;
 
 # load extra CVs, cvterms and dbxrefs
-print "loading genes ...\n" unless $quiet;
+print "loading genes into $database ...\n" unless $quiet;
 
 my $organism = PomBase::Load::init_objects($chado, $config);
 

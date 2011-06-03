@@ -40,6 +40,7 @@ use Moose;
 
 use PomBase::Chado::LoadFeat;
 use Tie::Hash::Indexed;
+use Digest::MD5;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
@@ -154,14 +155,18 @@ method process_file($file)
   my $seq_obj = $io->next_seq;
 
   my $display_id = $seq_obj->display_id();
-
   my $chromosome_cvterm = $self->get_cvterm('sequence', 'chromosome');
+  my $md5 = Digest::MD5->new;
+  $md5->add($seq_obj->seq());
 
   my %create_args = (
     type_id => $chromosome_cvterm->cvterm_id(),
     uniquename => $display_id,
     name => undef,
     organism_id => $self->organism()->organism_id(),
+    residues => $seq_obj->seq(),
+    seqlen => length $seq_obj->seq(),
+    md5checksum => $md5->hexdigest(),
   );
 
   my $chromosome =
