@@ -44,9 +44,9 @@ use Moose::Role;
 method dump_feature($feature)
 {
   for my $tag ($feature->get_all_tags) {
-    warn "    tag: ", $tag, "\n";
+    print "    tag: ", $tag, "\n";
     for my $value ($feature->get_tag_values($tag)) {
-      warn "      value: ", $value, "\n";
+      print "      value: ", $value, "\n";
     }
   }
 }

@@ -327,6 +327,8 @@ method create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not) {
 
   my $systematic_id = $pombe_gene->uniquename();
 
+  warn "NO PUB\n" unless $pub;
+
   if (!exists $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}) {
     $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()} = 0;
   }
@@ -444,7 +446,7 @@ method get_pub_from_db_xref($term, $db_xref) {
 
       warn "    finding pub for $db_xref\n" if $self->verbose();
 
-      my $pub = $self->find_pub($db_xref);
+      my $pub = $self->find_or_create_pub($db_xref);
 
       if (!defined $pub) {
 
@@ -468,12 +470,12 @@ method get_pub_from_db_xref($term, $db_xref) {
     } else {
       warn "    qualifier for $term",
         " has unknown format db_xref (", $db_xref,
-          ") - using null publication\n" unless $self->verbose() == 10;
+          ") - using null publication\n" if $self->verbose();
       return $self->objs()->{null_pub};
     }
   } else {
     warn "    qualifier for $term",
-      " has no db_xref - using null publication\n" unless $self->verbose() == 10;
+      " has no db_xref - using null publication\n" if $self->verbose();
     return $self->objs()->{null_pub};
   }
 
@@ -684,7 +686,7 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
     };
 
     if (!defined $ortholog_feature) {
-      warn "  ortholog ($ortholog_name) not found\n";
+      print "  ortholog ($ortholog_name) not found\n";
       return 0;
     }
 
@@ -804,13 +806,13 @@ method process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
       $self->add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 0);
     } catch {
       my $systematic_id = $pombe_gene->uniquename();
-      warn "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
+      print "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
       $self->dump_feature($bioperl_feature) if $self->verbose();
       return ();
     };
-    warn "    loaded: $qualifier\n" if $self->verbose();
+    print "    loaded: $qualifier\n" if $self->verbose();
   } else {
-    warn "  no aspect for: $qualifier\n";
+    print "  no aspect for: $qualifier\n";
     return ();
   }
 
