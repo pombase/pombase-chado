@@ -16,6 +16,7 @@ use PomBase::Chado;
 use PomBase::Load;
 use PomBase::Chado::LoadFile;
 use PomBase::Chado::QualifierLoad;
+use PomBase::Chado::CheckLoad;
 
 my $verbose = 0;
 my $quiet = 0;
@@ -56,6 +57,8 @@ print "loading genes ...\n" unless $quiet;
 
 my $organism = PomBase::Load::init_objects($chado);
 
+my @files = @ARGV;
+
 while (defined (my $file = shift)) {
   my $load_file = PomBase::Chado::LoadFile->new(chado => $chado,
                                                 verbose => $verbose,
@@ -64,5 +67,11 @@ while (defined (my $file = shift)) {
 
   $load_file->process_file($file);
 }
+
+my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
+                                             config => $config,
+                                           );
+
+$checker->check();
 
 $guard->commit unless $dry_run;
