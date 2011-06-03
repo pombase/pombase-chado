@@ -721,7 +721,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
   my $term = delete $qual_map{term};
 
   if (!defined $term || length $term == 0) {
-    warn "  no term for: $qualifier\n";
+    print "  no term for: $qualifier\n";
     return ();
   }
 
@@ -756,7 +756,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     }
   } else {
     if (!$self->process_ortholog($pombe_gene, $term, \%qual_map)) {
-      warn "  didn't process: $qualifier\n";
+      print "  didn't process: $qualifier\n";
       return ();
     }
   }
