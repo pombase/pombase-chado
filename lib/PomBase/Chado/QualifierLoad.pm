@@ -745,7 +745,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
       my $long_name = $_;
 
       if ($term =~ s/$long_name, *//) {
-        my $short_cv_name = $self->chado()->{cv_long_names}->{$long_name};
+        my $short_cv_name = $self->objs()->{cv_long_names}->{$long_name};
         $cv_name = $short_cv_name;
       }
     } keys %{$self->objs()->{cv_long_names}};
