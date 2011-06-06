@@ -261,6 +261,14 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
     $self->store_feature_rel($chado_mrna, $exon, 'part_of');
   }
 
+  for my $utr (@$utrs_5_prime) {
+    $self->store_feature_rel($chado_mrna, $utr->{chado_feature}, 'part_of');
+  }
+
+  for my $utr (@$utrs_3_prime) {
+    $self->store_feature_rel($chado_mrna, $utr->{chado_feature}, 'part_of');
+  }
+
   return ($gene_fmin, $gene_fmax, $chado_mrna);
 }
 
