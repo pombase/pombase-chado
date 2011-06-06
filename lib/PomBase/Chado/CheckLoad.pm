@@ -49,7 +49,10 @@ method check
   my $chado = $self->chado();
 
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-  should ($rel_rs->count(), 9);
+  should ($rel_rs->count(), 12);
+
+  my $loc_rs = $chado->resultset('Sequence::Featureloc');
+  should ($loc_rs->count(), 19);
 
   my $pombe = $chado->resultset('Organism::Organism')
     ->find({ species => 'pombe' });

@@ -253,9 +253,14 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
     }
   }
 
-  my $chado_mrna = $self->store_feature("$uniquename.1", undef, [], 'mRNA');
+  my $mrna_uniquename = "$uniquename.1";
 
-  my @exons = $self->store_exons($uniquename, $bioperl_cds, $chromosome);
+  my $chado_mrna = $self->store_feature($mrna_uniquename, undef, [], 'mRNA');
+  my $strand = $bioperl_cds->location()->strand();
+  $self->store_location($chado_mrna, $chromosome, $strand,
+                        $gene_fmin, $gene_fmax);
+
+  my @exons = $self->store_exons($mrna_uniquename, $bioperl_cds, $chromosome);
 
   for my $exon (@exons) {
     $self->store_feature_rel($chado_mrna, $exon, 'part_of');
