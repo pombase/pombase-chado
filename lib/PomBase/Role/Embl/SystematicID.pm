@@ -46,6 +46,11 @@ with 'PomBase::Role::FeatureDumper';
 method get_uniquename($feature)
 {
   state $type_seen = {};
+  state $feature_cache = {};
+
+  if ($feature->{chado_uniquename}) {
+    return @{$feature->{chado_uniquename}};
+  }
 
   my $embl_type = $feature->primary_tag();
 
@@ -76,12 +81,13 @@ method get_uniquename($feature)
   my $systematic_id = $systematic_ids[0];
   my $orig_systematic_id = $systematic_id;
 
-  $type_seen->{$embl_type}->{$systematic_id}++;
-
   if (grep { $_ eq $embl_type } qw(intron 5'UTR 3'UTR)) {
-    my $type_count = $type_seen->{$embl_type}->{$systematic_id};
-    $systematic_id .= ":$embl_type:$type_count";
+    my $key = "$systematic_id.1:$embl_type";
+    my $type_count = ++$type_seen->{$key};
+    $systematic_id = "$key:$type_count";
   }
+
+  $feature->{chado_uniquename} = [$systematic_id, $orig_systematic_id];
 
   return ($systematic_id, $orig_systematic_id);
 }
