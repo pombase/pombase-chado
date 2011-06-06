@@ -141,7 +141,7 @@ method process_file($file)
 
   my %feature_loader_conf = (
     CDS => 'gene',
-    LTR => 'repeat_region',   # XXX should LTR fold into repeat_region?
+    LTR => 'long_terminal_repeat',
     repeat_region => 'repeat_region',
     misc_RNA => 'gene',
     "5'UTR" => 'five_prime_UTR',
