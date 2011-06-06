@@ -87,7 +87,7 @@ method BUILD
 
   $self->objs()->{cv_alt_names} = {
     genome_org => ['genome organisation', 'genome organization'],
-    sequence_feature => ['sequence feature'],
+    sequence_feature => ['sequence feature', 'protein sequence feature'],
     species_dist => ['species distribution'],
     localization => ['localisation'],
     phenotype => [],
@@ -110,6 +110,7 @@ method BUILD
   $self->objs()->{cv_long_names} = {
     'genome organisation' => 'genome_org',
     'genome organization' => 'genome_org',
+    'protein sequence feature' => 'sequence_feature',
     'sequence feature' => 'sequence_feature',
     'species distribution' => 'species_dist',
     'localisation' => 'localization',
@@ -740,7 +741,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     map {
       my $long_name = $_;
 
-      if ($term =~ s/$long_name, *//) {
+      if ($term =~ s/^$long_name, *//) {
         my $short_cv_name = $self->objs()->{cv_long_names}->{$long_name};
         $cv_name = $short_cv_name;
       }
@@ -751,7 +752,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     $term =~ s/$cv_name, *//;
 
     if (exists $self->objs()->{cv_alt_names}->{$cv_name}) {
-      map { $term =~ s/$_, *//; } @{$self->objs()->{cv_alt_names}->{$cv_name}};
+      map { $term =~ s/^$_, *//; } @{$self->objs()->{cv_alt_names}->{$cv_name}};
     }
 
     if (grep { $_ eq $cv_name } keys %{$self->objs()->{cv_alt_names}}) {

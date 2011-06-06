@@ -40,6 +40,11 @@ use Moose::Role;
 
 requires 'chado';
 
+method get_cv($cv_name)
+{
+  return $self->chado()->resultset('Cv::Cv')->find({ name => $cv_name });
+}
+
 method get_cvterm($cv_name, $cvterm_name)
 {
   my $cv = $self->chado()->resultset('Cv::Cv')->find({ name => $cv_name });

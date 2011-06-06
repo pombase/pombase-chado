@@ -80,6 +80,16 @@ method check
 
   assert (grep { $_->name() eq 'plasma membrane' } $cvterms_rs->all());
 
+  my $seq_feat_cv = $self->get_cv('sequence_feature');
+  my $seq_feat_rs =
+    $chado->resultset('Cv::Cvterm')->search({ cv_id => $seq_feat_cv->cv_id() });
+
+  should ($seq_feat_rs->count(), 4);
+
+  for my $feat ($seq_feat_rs->all()) {
+    print $feat->name(), "\n";
+  }
+
   my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
 
   my $feature_cvterm_rs =
