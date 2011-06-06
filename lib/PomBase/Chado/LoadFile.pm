@@ -78,6 +78,11 @@ method _build_qual_load
                                           );
 }
 
+method store_product($feature, $product)
+{
+  $self->store_featureprop($feature, 'product', $product);
+}
+
 method process_qualifiers($bioperl_feature, $chado_object)
 {
   my $type = $bioperl_feature->primary_tag();
@@ -103,7 +108,7 @@ method process_qualifiers($bioperl_feature, $chado_object)
     }
   }
 
-  if ($type eq 'CDS') {
+  if ($type eq 'CDS' or $type eq 'misc_RNA') {
     if ($bioperl_feature->has_tag("product")) {
       my @products = $bioperl_feature->get_tag_values("product");
       if (@products > 1) {
@@ -111,6 +116,8 @@ method process_qualifiers($bioperl_feature, $chado_object)
       } else {
         if (length $products[0] == 0) {
           warn "  zero length product for $uniquename\n";
+        } else {
+          $self->store_product($chado_object, $products[0]);
         }
       }
     } else {

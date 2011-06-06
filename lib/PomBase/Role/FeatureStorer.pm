@@ -86,4 +86,17 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
   return $chado_feature;
 }
 
+method store_featureprop($feature, $type_name, $value)
+{
+  my $type_cvterm = $self->get_cvterm('PomBase feature property types',
+                                      $type_name);
+
+
+  $self->chado()->resultset('Sequence::Featureprop')->create({
+    feature_id => $feature->feature_id(),
+    type_id => $type_cvterm->cvterm_id(),
+    value => $value,
+  });
+}
+
 1;

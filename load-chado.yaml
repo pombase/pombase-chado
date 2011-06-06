@@ -3,3 +3,5 @@ cvterms:
   PomBase publication types:
     - paper
     - null
+  PomBase feature property types:
+    - product

@@ -54,6 +54,9 @@ method check
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
   should ($loc_rs->count(), 24);
 
+  my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
+  should ($feature_prop_rs->count(), 5);
+
   my $pombe = $chado->resultset('Organism::Organism')
     ->find({ species => 'pombe' });
 
