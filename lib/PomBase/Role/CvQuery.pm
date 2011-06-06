@@ -42,16 +42,30 @@ requires 'chado';
 
 method get_cv($cv_name)
 {
-  return $self->chado()->resultset('Cv::Cv')->find({ name => $cv_name });
+  state $cache = {};
+
+  return $cache->{$cv_name} //
+         ($cache->{$cv_name} =
+           $self->chado()->resultset('Cv::Cv')->find({ name => $cv_name }));
 }
 
 method get_cvterm($cv_name, $cvterm_name)
 {
-  my $cv = $self->chado()->resultset('Cv::Cv')->find({ name => $cv_name });
+  my $cv = $self->get_cv($cv_name);
+
+  state $cache = {};
+
+  if (exists $cache->{$cv_name}->{$cvterm_name}) {
+    return $cache->{$cv_name}->{$cvterm_name};
+  }
 
   my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
-  return $cvterm_rs->find({ name => $cvterm_name,
-                            cv_id => $cv->cv_id() });
+  my $cvterm = $cvterm_rs->find({ name => $cvterm_name,
+                                  cv_id => $cv->cv_id() });
+
+  $cache->{$cv_name}->{$cvterm_name} = $cvterm;
+
+  return $cvterm;
 }
 
 1;
