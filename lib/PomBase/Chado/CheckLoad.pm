@@ -52,7 +52,7 @@ method check
   should ($rel_rs->count(), 12);
 
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
-  should ($loc_rs->count(), 19);
+  should ($loc_rs->count(), 24);
 
   my $pombe = $chado->resultset('Organism::Organism')
     ->find({ species => 'pombe' });
