@@ -818,7 +818,7 @@ method process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
 
 method check_unused_quals
 {
-  return if $self->verbose() == 10;
+  return if $self->verbose();
 
   my $qual_text = shift;
   my %quals = @_;
