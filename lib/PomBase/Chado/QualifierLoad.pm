@@ -45,6 +45,7 @@ use Memoize;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::FeatureDumper';
+with 'PomBase::Role::XrefStorer';
 
 has verbose => (is => 'ro', isa => 'Bool');
 has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
@@ -200,15 +201,6 @@ method find_cv_by_name($cv_name) {
 memoize ('find_cv_by_name');
 
 
-method find_db_by_name($db_name) {
-  die 'no $db_name' unless defined $db_name;
-
-  return ($self->chado()->resultset('General::Db')->find({ name => $db_name })
-    or die "no db with name: $db_name");
-}
-memoize ('find_db_by_name');
-
-
 my %new_cvterm_ids = ();
 
 # return an ID for a new term in the CV with the given name
@@ -218,16 +210,6 @@ method get_dbxref_id($db_name) {
   }
 
   return $new_cvterm_ids{$db_name}++;
-}
-
-
-method find_or_create_pub($identifier) {
-  my $pub_rs = $self->chado()->resultset('Pub::Pub');
-
-  my $paper_cvterm = $self->find_cvterm('PomBase publication types', 'paper');
-
-  return $pub_rs->find_or_create({ uniquename => $identifier,
-                                   type_id => $paper_cvterm->cvterm_id() });
 }
 
 
@@ -424,59 +406,6 @@ method get_and_check_date($sub_qual_map) {
   }
 
   return undef;
-}
-
-
-method find_or_create_dbxref($db, $accession) {
-  my $dbxref_rs = $self->chado()->resultset('General::Dbxref');
-  return $dbxref_rs->find_or_create({ db_id => $db->db_id(),
-                                      accession => $accession });
-}
-
-
-method get_pub_from_db_xref($term, $db_xref) {
-  if (defined $db_xref) {
-    if ($db_xref =~ /^((.*):(.*))/) {
-      my $db_name = $2;
-      my $accession = $3;
-
-      my $db = $self->find_db_by_name($db_name);
-
-      warn "    finding pub for $db_xref\n" if $self->verbose();
-
-      my $pub = $self->find_or_create_pub($db_xref);
-
-      if (!defined $pub) {
-
-        warn "    pub not found for: $db_xref  ($db);\n" if $self->verbose();
-
-        my $pub_rs = $self->chado()->resultset('Pub::Pub');
-        $pub = $pub_rs->create({
-          uniquename => $db_xref,
-          type_id => $self->objs()->{unfetched_pub_cvterm}->cvterm_id()
-        });
-        my $dbxref = $self->find_or_create_dbxref($db, $accession);
-        my $pub_dbxref_rs = $self->chado()->resultset('Pub::PubDbxref');
-        $pub_dbxref_rs->create({ pub_id => $pub->pub_id(),
-                                 dbxref_id => $dbxref->dbxref_id() });
-        warn "    created new dbxref and pub for: $db_xref\n" if $self->verbose();
-      }
-
-      warn "    using existing dbxref and pub for: $db_xref\n" if $self->verbose();
-
-      return $pub;
-    } else {
-      warn "    qualifier for $term",
-        " has unknown format db_xref (", $db_xref,
-          ") - using null publication\n" if $self->verbose();
-      return $self->objs()->{null_pub};
-    }
-  } else {
-    warn "    qualifier for $term",
-      " has no db_xref - using null publication\n" if $self->verbose();
-    return $self->objs()->{null_pub};
-  }
-
 }
 
 method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,

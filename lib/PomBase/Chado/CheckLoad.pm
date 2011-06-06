@@ -57,6 +57,9 @@ method check
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
   should ($feature_prop_rs->count(), 5);
 
+  my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
+  should ($feature_dbxref_rs->count(), 8);
+
   my $pombe = $chado->resultset('Organism::Organism')
     ->find({ species => 'pombe' });
 

@@ -49,6 +49,7 @@ with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::CoordCalculator';
 with 'PomBase::Role::Embl::SystematicID';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
+with 'PomBase::Role::XrefStorer';
 
 has verbose => (is => 'ro', isa => 'Bool');
 has organism => (is => 'ro',
@@ -122,6 +123,12 @@ method process_qualifiers($bioperl_feature, $chado_object)
       }
     } else {
       warn "  no product for $uniquename\n";
+    }
+  }
+
+  if ($bioperl_feature->has_tag("db_xref")) {
+    for my $dbxref_value ($bioperl_feature->get_tag_values("db_xref")) {
+      $self->add_feature_dbxref($chado_object, $dbxref_value);
     }
   }
 }
