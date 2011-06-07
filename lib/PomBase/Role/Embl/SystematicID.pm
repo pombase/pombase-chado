@@ -43,7 +43,7 @@ use Moose::Role;
 
 with 'PomBase::Role::FeatureDumper';
 
-method get_uniquename($feature)
+method get_uniquename($feature, $so_type)
 {
   state $type_seen = {};
   state $feature_cache = {};
@@ -65,7 +65,7 @@ method get_uniquename($feature)
     my $seq = $feature->entire_seq();
     my $seq_display_id = $seq->display_id();
 
-    return $seq_display_id . '_' . $feature->primary_tag() .
+    return $seq_display_id . '_' . $so_type .
       '_' . $loc->start() . '..' . $loc->end();
   }
 

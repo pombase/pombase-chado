@@ -127,9 +127,10 @@ my %feature_loader_conf = (
 method process($feature, $chromosome)
 {
   my $feat_type = $feature->primary_tag();
-  my ($uniquename, $gene_uniquename) = $self->get_uniquename($feature);
-
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
+
+  my ($uniquename, $gene_uniquename) =
+    $self->get_uniquename($feature, $so_type);
 
   print "processing $feat_type $uniquename\n";
 

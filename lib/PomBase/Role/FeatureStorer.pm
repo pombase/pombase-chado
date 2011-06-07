@@ -91,7 +91,7 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
 
   my $name = undef;
   my @synonyms = ();
-  my ($uniquename) = $self->get_uniquename($feature);
+  my ($uniquename) = $self->get_uniquename($feature, $so_type);
 
   if ($feature->has_tag('pseudo')) {
     $so_type = 'pseudogene';
