@@ -88,6 +88,26 @@ my %feature_loader_conf = (
     so_type => 'gene',
     transcript_so_type => 'ncRNA',
   },
+  tRNA => {
+    save => 1,
+    so_type => 'gene',
+    transcript_so_type => 'tRNA',
+  },
+  snoRNA => {
+    save => 1,
+    so_type => 'gene',
+    transcript_so_type => 'snoRNA',
+  },
+  snRNA => {
+    save => 1,
+    so_type => 'gene',
+    transcript_so_type => 'snRNA',
+  },
+  rRNA => {
+    save => 1,
+    so_type => 'gene',
+    transcript_so_type => 'rRNA',
+  },
   LTR => {
     so_type => 'long_terminal_repeat',
   },
@@ -118,6 +138,18 @@ my %feature_loader_conf = (
   },
   conflict => {
     so_type => 'sequence_conflict',
+  },
+  polyA_signal => {
+    so_type => 'polyA_signal_sequence',
+  },
+  polyA_site => {
+    so_type => 'polyA_site',
+  },
+  promoter => {
+    so_type => 'promoter',
+  },
+  rep_origin => {
+    so_type => 'origin_of_replication',
   },
 );
 
