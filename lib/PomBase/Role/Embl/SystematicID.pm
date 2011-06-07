@@ -49,6 +49,7 @@ method get_uniquename($feature, $so_type)
   state $feature_cache = {};
 
   if ($feature->{chado_uniquename}) {
+    # cached so we don't increment the counter
     return @{$feature->{chado_uniquename}};
   }
 
@@ -66,7 +67,7 @@ method get_uniquename($feature, $so_type)
     my $seq_display_id = $seq->display_id();
 
     return $seq_display_id . '_' . $so_type .
-      '_' . $loc->start() . '..' . $loc->end();
+      '_' . $loc->start() . '..' . $loc->end(), undef, 0;
   }
 
   my @systematic_ids = $feature->get_tag_values("systematic_id");
@@ -87,9 +88,9 @@ method get_uniquename($feature, $so_type)
     $systematic_id = "$key:$type_count";
   }
 
-  $feature->{chado_uniquename} = [$systematic_id, $orig_systematic_id];
+  $feature->{chado_uniquename} = [$systematic_id, $orig_systematic_id, 1];
 
-  return ($systematic_id, $orig_systematic_id);
+  return ($systematic_id, $orig_systematic_id, 1);
 }
 
 1;

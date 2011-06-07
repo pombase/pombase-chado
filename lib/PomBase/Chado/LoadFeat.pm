@@ -121,37 +121,43 @@ my %feature_loader_conf = (
   },
 );
 
+method save_feature($feature, $uniquename)
+{
+  my $feat_type = $feature->primary_tag();
+  my $so_type = $feature_loader_conf{$feat_type}->{so_type};
+  print "saving: $feat_type\n";
+
+  my $data;
+
+  if (defined $self->gene_data()->{$uniquename}) {
+    $data = $self->gene_data()->{$uniquename};
+  } else {
+    $data = {};
+    $self->gene_data()->{$uniquename} = $data;
+  }
+
+  $data->{bioperl_feature} = $feature;
+  $data->{so_type} = $so_type;
+  $data->{transcript_so_type} =
+  $feature_loader_conf{$feat_type}->{transcript_so_type};
+
+  push @{$data->{"5'UTR_features"}}, ();
+  push @{$data->{"3'UTR_features"}}, ();
+  push @{$data->{"intron_features"}}, ();
+}
+
 method process($feature, $chromosome)
 {
   my $feat_type = $feature->primary_tag();
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
 
-  my ($uniquename, $gene_uniquename) =
+  my ($uniquename, $gene_uniquename, $has_systematic_id) =
     $self->get_uniquename($feature, $so_type);
 
   print "processing $feat_type $uniquename\n";
 
   if ($feature_loader_conf{$feat_type}->{save}) {
-    print "saving: $feat_type\n";
-
-    my $data;
-
-    if (defined $self->gene_data()->{$uniquename}) {
-      $data = $self->gene_data()->{$uniquename};
-    } else {
-      $data = {};
-      $self->gene_data()->{$uniquename} = $data;
-    }
-
-    $data->{bioperl_feature} = $feature;
-    $data->{so_type} = $so_type;
-    $data->{transcript_so_type} =
-      $feature_loader_conf{$feat_type}->{transcript_so_type};
-
-    push @{$data->{"5'UTR_features"}}, ();
-    push @{$data->{"3'UTR_features"}}, ();
-    push @{$data->{"intron_features"}}, ();
-
+    $self->save_feature($feature, $gene_uniquename);
     return;
   }
 
@@ -159,6 +165,11 @@ method process($feature, $chromosome)
     $self->store_feature_and_loc($feature, $chromosome, $so_type);
 
   if ($feature_loader_conf{$feat_type}->{collected}) {
+    if (!$has_systematic_id) {
+      print "  $uniquename has no uniquename - skipping\n";
+      return;
+    }
+
     my %feature_data = (
       bioperl_feature => $feature,
       chado_feature => $chado_feature,
