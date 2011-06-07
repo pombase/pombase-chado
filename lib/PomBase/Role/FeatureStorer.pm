@@ -118,14 +118,25 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
 
 method store_featureprop($feature, $type_name, $value)
 {
+  state $ranks = {};
+
+  my $rank;
+
+  if (exists $ranks->{$feature->feature_id()}->{$type_name}) {
+    $rank = $ranks->{$feature->feature_id()}->{$type_name}++;
+  } else {
+    $ranks->{$feature->feature_id()}->{$type_name} = 1;
+    $rank = 0;
+  }
+
   my $type_cvterm = $self->get_cvterm('PomBase feature property types',
                                       $type_name);
-
 
   $self->chado()->resultset('Sequence::Featureprop')->create({
     feature_id => $feature->feature_id(),
     type_id => $type_cvterm->cvterm_id(),
     value => $value,
+    rank => $rank,
   });
 }
 
