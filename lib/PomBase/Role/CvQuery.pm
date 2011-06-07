@@ -68,4 +68,44 @@ method get_cvterm($cv_name, $cvterm_name)
   return $cvterm;
 }
 
+method find_cvterm($cv, $term_name, %options) {
+  if (!ref $cv) {
+    $cv = $self->get_cv($cv);
+  }
+
+  my %search_options = ();
+
+  if ($options{prefetch_dbxref}) {
+    $search_options{prefetch} = { dbxref => 'db' };
+  }
+
+  my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
+  my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id() },
+                                { %search_options });
+
+  if (defined $cvterm) {
+    return $cvterm;
+  } else {
+    my $synonym_rs = $self->chado()->resultset('Cv::Cvtermsynonym');
+    my $exact_cvterm = $self->get_cvterm('PomBase synonym types', 'exact');
+    my $search_rs =
+      $synonym_rs->search({ synonym => $term_name,
+                            type_id => $exact_cvterm->cvterm_id() });
+
+    if ($search_rs->count() > 1) {
+      die "more than one cvtermsynonym found for $term_name";
+    } else {
+      my $synonym = $search_rs->next();
+
+      if (defined $synonym) {
+        return $cvterm_rs->find($synonym->cvterm_id());
+      } else {
+        return undef;
+      }
+    }
+  }
+
+}
+#memoize ('find_cvterm');
+
 1;

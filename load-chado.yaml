@@ -5,3 +5,6 @@ cvterms:
     - null
   PomBase feature property types:
     - product
+  PomBase synonym types:
+    - synonym
+    - exact

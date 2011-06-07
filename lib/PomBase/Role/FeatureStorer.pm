@@ -40,6 +40,7 @@ use Moose::Role;
 
 with 'PomBase::Role::Embl::StoreLocation';
 with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::ChadoObj';
 
 method store_feature($uniquename, $name, $synonyms, $so_type)
 {
@@ -59,6 +60,30 @@ method store_feature($uniquename, $name, $synonyms, $so_type)
   return $feature_rs->create({ %create_args });
 }
 
+method find_or_create_synonym($synonym_name, $type_name)
+{
+  my $type = $self->get_cvterm('PomBase synonym types', $type_name);
+
+  return $self->chado()->resultset('Sequence::Synonym')->find_or_create({
+    name => $synonym_name,
+    synonym_sgml => $synonym_name,
+    type_id => $type->cvterm_id(),
+  });
+}
+
+method store_feature_synonym($feature, $synonym_name)
+{
+  my $synonym = $self->find_or_create_synonym($synonym_name, 'synonym');
+
+  my $pub = $self->objs()->{null_pub};
+
+  return $self->chado()->resultset('Sequence::FeatureSynonym')->find_or_create({
+    feature_id => $feature->feature_id(),
+    synonym_id => $synonym->synonym_id(),
+    pub_id => $pub->pub_id(),
+  });
+}
+
 method store_feature_and_loc($feature, $chromosome, $so_type,
                              $start_arg, $end_arg)
 {
@@ -67,11 +92,6 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
   my $name = undef;
 
   my @synonyms = ();
-
-  if ($feature->has_tag('gene')) {
-    # XXX FIXME TODO handle extra /genes as synonyms
-    ($name, @synonyms) = $feature->get_tag_values('gene');
-  }
 
   my ($uniquename) = $self->get_uniquename($feature);
 
@@ -82,6 +102,14 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
   my $strand = $feature->location()->strand();
 
   $self->store_location($chado_feature, $chromosome, $strand, $start, $end);
+
+  if ($feature->has_tag('gene')) {
+    ($name, @synonyms) = $feature->get_tag_values('gene');
+
+    for my $synonym (@synonyms) {
+      $self->store_feature_synonym($chado_feature, $synonym);
+    }
+  }
 
   return $chado_feature;
 }

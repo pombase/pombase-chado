@@ -46,151 +46,10 @@ with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::FeatureDumper';
 with 'PomBase::Role::XrefStorer';
+with 'PomBase::Role::ChadoObj';
+with 'PomBase::Role::CvQuery';
 
 has verbose => (is => 'ro', isa => 'Bool');
-has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
-
-my %go_cv_map = (
-  P => 'biological_process',
-  F => 'molecular_function',
-  C => 'cellular_component',
-);
-
-method get_go_cv_map
-{
-  return \%go_cv_map;
-}
-
-method BUILD
-{
-  my $chado = $self->chado();
-
-  $self->objs()->{go_evidence_codes} = {
-    EXP => 'Inferred from Experiment',
-    IDA => 'Inferred from Direct Assay',
-    IPI => 'Inferred from Physical Interaction',
-    IMP => 'Inferred from Mutant Phenotype',
-    IGI => 'Inferred from Genetic Interaction',
-    IEP => 'Inferred from Expression Pattern',
-    ISS => 'Inferred from Sequence or Structural Similarity',
-    ISO => 'Inferred from Sequence Orthology',
-    ISA => 'Inferred from Sequence Alignment',
-    ISM => 'Inferred from Sequence Model',
-    IGC => 'Inferred from Genomic Context',
-    RCA => 'inferred from Reviewed Computational Analysis',
-    TAS => 'Traceable Author Statement',
-    NAS => 'Non-traceable Author Statement',
-    IC => 'Inferred by Curator',
-    ND => 'No biological Data available',
-    IEA => 'Inferred from Electronic Annotation',
-    NR => 'Not Recorded',
-  };
-
-  $self->objs()->{cv_alt_names} = {
-    genome_org => ['genome organisation', 'genome organization'],
-    sequence_feature => ['sequence feature', 'protein sequence feature'],
-    species_dist => ['species distribution'],
-    localization => ['localisation'],
-    phenotype => [],
-    pt_mod => ['modification'],
-    gene_ex => ['expression'],
-    m_f_g => ['misc functional group'],
-    name_description => ['name description'],
-    pathway => [],
-    complementation => [],
-    protein_family => [],
-    ex_tools => [],
-    misc => [],
-    warning => [],
-    DNA_binding_specificity => [],
-    subunit_composition => [],
-    cat_act => ['catalytic activity'],
-    disease_associated => ['disease associated'],
-  };
-
-  $self->objs()->{cv_long_names} = {
-    'genome organisation' => 'genome_org',
-    'genome organization' => 'genome_org',
-    'protein sequence feature' => 'sequence_feature',
-    'sequence feature' => 'sequence_feature',
-    'species distribution' => 'species_dist',
-    'localisation' => 'localization',
-    'localization' => 'localization',
-    'modification' => 'pt_mod',
-    'expression' => 'gene_ex',
-    'misc functional group' => 'm_f_g',
-    'name description' => 'name_description',
-    'catalytic activity' => 'cat_act',
-    'phenotype' => 'phenotype',
-    'disease associated' => 'disease_associated',
-  };
-
-  for my $cv_name (keys %{$self->objs()->{cv_alt_names}}) {
-    if (!exists $self->objs()->{cv_long_names}->{$cv_name}) {
-      $self->objs()->{cv_long_names}->{$cv_name} = $cv_name;
-    }
-  }
-
-
-  my $db_rs = $chado->resultset('General::Db');
-
-  my %pombase_dbs = ();
-
-  $pombase_dbs{phenotype} = $db_rs->find_or_create({ name => 'SPO' });
-  my $pombase_db = $db_rs->find_or_create({ name => 'PomBase' });
-
-  $pombase_dbs{feature_cvtermprop_type} = $pombase_db;
-  $pombase_dbs{feature_relationshipprop_type} = $pombase_db;
-  $pombase_dbs{$go_cv_map{P}} = $pombase_db;
-  $pombase_dbs{$go_cv_map{F}} = $pombase_db;
-  $pombase_dbs{$go_cv_map{C}} = $pombase_db;
-
-  $self->objs()->{pombase_dbs} = \%pombase_dbs;
-
-  my $cv_rs = $chado->resultset('Cv::Cv');
-
-  $self->objs()->{feature_cvtermprop_type_cv} =
-    $cv_rs->create({ name => 'feature_cvtermprop_type' });
-  $self->objs()->{feature_relationshipprop_type_cv} =
-    $cv_rs->create({ name => 'feature_relationshipprop_type' });
-
-  $self->objs()->{genedb_literature_cv} =
-    $cv_rs->find({ name => 'genedb_literature' });
-
-  my $cvterm_rs = $chado->resultset('Cv::Cvterm');
-
-  $self->objs()->{unfetched_pub_cvterm} =
-    $cvterm_rs->find({ name => 'unfetched',
-                       cv_id => $self->objs()->{genedb_literature_cv}->cv_id() });
-
-
-  for my $extra_cv_name (keys %{$self->objs()->{cv_alt_names}}) {
-    $cv_rs->create({ name => $extra_cv_name });
-
-    if (!defined $self->objs()->{pombase_dbs}->{$extra_cv_name}) {
-      $self->objs()->{pombase_dbs}->{$extra_cv_name} = $pombase_db;
-    }
-  }
-
-  $self->objs()->{null_pub_cvterm} =
-    $self->find_cvterm('PomBase publication types', 'null');
-
-  $self->objs()->{null_pub} =
-    $chado->resultset('Pub::Pub')->create({
-      uniquename => 'null',
-      type_id => $self->objs()->{null_pub_cvterm}->cvterm_id(),
-    });
-
-  $self->objs()->{orthologous_to_cvterm} =
-    $chado->resultset('Cv::Cvterm')->find({ name => 'orthologous_to' });
-
-
-  $self->objs()->{synonym_type_cv} = $self->find_cv_by_name('synonym_type');
-
-  $self->objs()->{exact_cvterm} =
-    $self->find_cvterm($self->objs()->{synonym_type_cv}, 'exact');
-}
-
 
 method find_cv_by_name($cv_name) {
   die 'no $cv_name' unless defined $cv_name;
@@ -213,47 +72,6 @@ method get_dbxref_id($db_name) {
 }
 
 
-method find_cvterm($cv, $term_name, %options) {
-  if (!ref $cv) {
-    $cv = $self->find_cv_by_name($cv);
-  }
-
-  warn "    _find_cvterm('", $cv->name(), "', '$term_name')\n" if $self->verbose();
-
-  my %search_options = ();
-
-  if ($options{prefetch_dbxref}) {
-    $search_options{prefetch} = { dbxref => 'db' };
-  }
-
-  my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
-  my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id() },
-                                { %search_options });
-
-  if (defined $cvterm) {
-    return $cvterm;
-  } else {
-    my $synonym_rs = $self->chado()->resultset('Cv::Cvtermsynonym');
-    my $search_rs =
-      $synonym_rs->search({ synonym => $term_name,
-                            type_id => $self->objs()->{exact_cvterm}->cvterm_id() });
-
-    if ($search_rs->count() > 1) {
-      die "more than one cvtermsynonym found for $term_name";
-    } else {
-      my $synonym = $search_rs->next();
-
-      if (defined $synonym) {
-        return $cvterm_rs->find($synonym->cvterm_id());
-      } else {
-        return undef;
-      }
-    }
-  }
-
-}
-#memoize ('find_cvterm');
-
 
 method find_or_create_cvterm($cv, $term_name) {
   my $cvterm = $self->find_cvterm($cv, $term_name);
@@ -267,7 +85,7 @@ method find_or_create_cvterm($cv, $term_name) {
   } else {
     warn "    failed to find: $term_name in ", $cv->name(), "\n" if $self->verbose();
 
-    my $db = $self->objs()->{pombase_dbs}->{$cv->name()};
+    my $db = $self->objs()->{dbs_objects}->{$cv->name()};
     if (!defined $db) {
       die "no database for cv: ", $cv->name();
     }
@@ -297,7 +115,6 @@ method find_or_create_cvterm($cv, $term_name) {
 
   return $cvterm;
 }
-memoize ('find_or_create_cvterm');
 
 
 my %stored_cvterms = ();
@@ -344,7 +161,7 @@ method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
     return @ret;
   }
 
-  my $type = $self->find_or_create_cvterm($self->objs()->{feature_cvtermprop_type_cv},
+  my $type = $self->find_or_create_cvterm($self->get_cv('feature_cvtermprop_type'),
                                           $name);
 
   my $rs = $self->chado()->resultset('Sequence::FeatureCvtermprop');
@@ -378,10 +195,6 @@ method add_feature_relationshipprop($feature_relationship, $name, $value) {
                        type_id => $type->cvterm_id(),
                        value => $value,
                        rank => 0 });
-}
-
-method is_go_cv_name($cv_name) {
-  return grep { $_ eq $cv_name } values %go_cv_map;
 }
 
 method get_and_check_date($sub_qual_map) {

@@ -60,6 +60,9 @@ method check
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
   should ($feature_dbxref_rs->count(), 8);
 
+  my $feature_synonym_rs = $chado->resultset('Sequence::FeatureSynonym');
+  should ($feature_synonym_rs->count(), 3);
+
   my $pombe = $chado->resultset('Organism::Organism')
     ->find({ species => 'pombe' });
 
