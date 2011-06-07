@@ -131,6 +131,15 @@ func _load_cvterms($chado, $config)
   }
 }
 
+func _load_dbs($chado, $config)
+{
+  my @dbs = @{$config->{dbs}};
+
+  for my $db (@dbs) {
+    $chado->resultset('General::Db')->create({ name => $db });
+  }
+}
+
 func init_objects($chado, $config) {
   my $org_load = PomBase::Chado::LoadOrganism->new(chado => $chado);
 
@@ -150,6 +159,7 @@ func init_objects($chado, $config) {
   _load_genes($chado, $scerevisiae);
 
   _load_cvterms($chado, $config);
+  _load_dbs($chado, $config);
 
   return $pombe_org;
 }

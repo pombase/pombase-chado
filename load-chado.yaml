@@ -9,3 +9,6 @@ cvterms:
   PomBase synonym types:
     - synonym
     - exact
+
+dbs:
+  - RFAM
