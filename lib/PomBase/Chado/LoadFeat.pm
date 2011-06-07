@@ -81,15 +81,18 @@ my %feature_loader_conf = (
   CDS => {
     save => 1,
     so_type => 'gene',
+    transcript_so_type => 'mRNA',
+  },
+  misc_RNA => {
+    save => 1,
+    so_type => 'gene',
+    transcript_so_type => 'ncRNA',
   },
   LTR => {
     so_type => 'long_terminal_repeat',
   },
   repeat_region => {
     so_type => 'repeat_region',
-  },
-  misc_RNA => {
-    so_type => 'gene',
   },
   "5'UTR" => {
     so_type => 'five_prime_UTR',
@@ -131,9 +134,13 @@ method process($feature, $chromosome)
   print "processing $feat_type $uniquename\n";
 
   if ($feature_loader_conf{$feat_type}->{save}) {
+    print "saving: $feat_type\n";
+
     my %new_data = (
       bioperl_feature => $feature,
       so_type => $so_type,
+      transcript_so_type =>
+        $feature_loader_conf{$feat_type}->{transcript_so_type},
     );
 
     push @{$new_data{"5'UTR_features"}}, ();
@@ -238,6 +245,7 @@ method store_exons($uniquename, $bioperl_cds, $chromosome, $so_type)
 }
 
 method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
+                        $transcript_so_type,
                         $utrs_5_prime, $utrs_3_prime)
 {
   my $chado = $self->chado();
@@ -266,15 +274,14 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
   my $mrna_so_type;
 
   if ($bioperl_cds->has_tag('pseudo')) {
-    $mrna_so_type = 'pseudogenic_transcript';
+    $transcript_so_type = 'pseudogenic_transcript';
     $exon_so_type = 'pseudogenic_exon';
   } else {
-    $mrna_so_type = 'mRNA';
     $exon_so_type = 'exon';
   }
 
   my $chado_mrna = $self->store_feature($mrna_uniquename, undef, [],
-                                        $mrna_so_type);
+                                        $transcript_so_type);
   my $strand = $bioperl_cds->location()->strand();
   $self->store_location($chado_mrna, $chromosome, $strand,
                         $gene_start, $gene_end);
@@ -303,6 +310,7 @@ method finalise($chromosome)
   while (my ($uniquename, $feature_data) = each %{$self->gene_data()}) {
     my $bioperl_feature = $feature_data->{bioperl_feature};
     my $so_type = $feature_data->{so_type};
+    my $transcript_so_type = $feature_data->{transcript_so_type};
     my @utr_5_prime_features = @{$feature_data->{"5'UTR_features"}};
     my @utr_3_prime_features = @{$feature_data->{"3'UTR_features"}};
 
@@ -310,6 +318,7 @@ method finalise($chromosome)
       $self->store_gene_parts($uniquename,
                               $bioperl_feature,
                               $chromosome,
+                              $transcript_so_type,
                               [@utr_5_prime_features],
                               [@utr_3_prime_features],
                              );
