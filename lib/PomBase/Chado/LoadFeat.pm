@@ -342,18 +342,15 @@ method finalise($chromosome)
     my $bioperl_feature = $feature_data->{bioperl_feature};
     my $so_type = $feature_data->{so_type};
     my $transcript_so_type = $feature_data->{transcript_so_type};
-    my @utr_5_prime_features = @{$feature_data->{"5'UTR_features"}};
-    my @utr_3_prime_features = @{$feature_data->{"3'UTR_features"}};
-    my @intron_features = @{$feature_data->{"intron_features"}};
 
     my ($gene_start, $gene_end, $chado_mrna) =
       $self->store_gene_parts($uniquename,
                               $bioperl_feature,
                               $chromosome,
                               $transcript_so_type,
-                              [@utr_5_prime_features],
-                              [@utr_3_prime_features],
-                              [@intron_features],
+                              $feature_data->{"5'UTR_features"},
+                              $feature_data->{"3'UTR_features"},
+                              $feature_data->{"intron_features"},
                              );
 
     my $chado_gene =
