@@ -107,10 +107,7 @@ my %feature_loader_conf = (
     collected => 1,
   },
   "intron" => {
-    intron => 'intron',
-    collected => 1,
-  },
-  "intron" => {
+    so_type => 'intron',
     collected => 1,
   },
   misc_feature => {
@@ -137,18 +134,24 @@ method process($feature, $chromosome)
   if ($feature_loader_conf{$feat_type}->{save}) {
     print "saving: $feat_type\n";
 
-    my %new_data = (
-      bioperl_feature => $feature,
-      so_type => $so_type,
-      transcript_so_type =>
-        $feature_loader_conf{$feat_type}->{transcript_so_type},
-    );
+    my $data;
 
-    push @{$new_data{"5'UTR_features"}}, ();
-    push @{$new_data{"3'UTR_features"}}, ();
-    push @{$new_data{"intron"}}, ();
+    if (defined $self->gene_data()->{$uniquename}) {
+      $data = $self->gene_data()->{$uniquename};
+    } else {
+      $data = {};
+      $self->gene_data()->{$uniquename} = $data;
+    }
 
-    $self->gene_data()->{$uniquename} = { %new_data };
+    $data->{bioperl_feature} = $feature;
+    $data->{so_type} = $so_type;
+    $data->{transcript_so_type} =
+      $feature_loader_conf{$feat_type}->{transcript_so_type};
+
+    push @{$data->{"5'UTR_features"}}, ();
+    push @{$data->{"3'UTR_features"}}, ();
+    push @{$data->{"intron_features"}}, ();
+
     return;
   }
 
@@ -160,8 +163,9 @@ method process($feature, $chromosome)
       bioperl_feature => $feature,
       chado_feature => $chado_feature,
     );
+
     push @{$self->gene_data()->{$gene_uniquename}->{"${feat_type}_features"}},
-         {%feature_data}
+         {%feature_data};
   }
 
   $self->process_qualifiers($feature, $chado_feature);
@@ -258,7 +262,7 @@ method store_exons($uniquename, $bioperl_cds, $chromosome, $so_type)
 
 method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
                         $transcript_so_type,
-                        $utrs_5_prime, $utrs_3_prime)
+                        $utrs_5_prime, $utrs_3_prime, $introns)
 {
   my $chado = $self->chado();
   my $cds_location = $bioperl_cds->location();
@@ -313,6 +317,10 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
     $self->store_feature_rel($chado_mrna, $utr->{chado_feature}, 'part_of');
   }
 
+  for my $intron (@$introns) {
+    $self->store_feature_rel($chado_mrna, $intron->{chado_feature}, 'part_of');
+  }
+
   return ($gene_start, $gene_end, $chado_mrna);
 }
 
@@ -325,6 +333,7 @@ method finalise($chromosome)
     my $transcript_so_type = $feature_data->{transcript_so_type};
     my @utr_5_prime_features = @{$feature_data->{"5'UTR_features"}};
     my @utr_3_prime_features = @{$feature_data->{"3'UTR_features"}};
+    my @intron_features = @{$feature_data->{"intron_features"}};
 
     my ($gene_start, $gene_end, $chado_mrna) =
       $self->store_gene_parts($uniquename,
@@ -333,6 +342,7 @@ method finalise($chromosome)
                               $transcript_so_type,
                               [@utr_5_prime_features],
                               [@utr_3_prime_features],
+                              [@intron_features],
                              );
 
     my $chado_gene =
