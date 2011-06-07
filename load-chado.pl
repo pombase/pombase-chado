@@ -68,10 +68,12 @@ while (defined (my $file = shift)) {
   $load_file->process_file($file);
 }
 
-my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
-                                             config => $config,
-                                           );
+if ($test) {
+  my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
+                                               config => $config,
+                                             );
 
-$checker->check();
+  $checker->check();
+}
 
 $guard->commit unless $dry_run;
