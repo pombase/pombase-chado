@@ -173,6 +173,11 @@ method store_product($feature, $product)
   $self->store_featureprop($feature, 'product', $product);
 }
 
+method store_note($feature, $note)
+{
+  $self->store_featureprop($feature, 'comment', $note);
+}
+
 method process_qualifiers($bioperl_feature, $chado_object)
 {
   my $type = $bioperl_feature->primary_tag();
@@ -212,6 +217,12 @@ method process_qualifiers($bioperl_feature, $chado_object)
       }
     } else {
       warn "  no product for $uniquename\n";
+    }
+  }
+
+  if ($bioperl_feature->has_tag("note")) {
+    for my $note ($bioperl_feature->get_tag_values("note")) {
+      $self->store_note($chado_object, $note);
     }
   }
 

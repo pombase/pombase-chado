@@ -55,7 +55,7 @@ method check
   should ($loc_rs->count(), 26);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 5);
+  should ($feature_prop_rs->count(), 16);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
   should ($feature_dbxref_rs->count(), 8);
