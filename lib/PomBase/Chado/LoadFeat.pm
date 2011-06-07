@@ -215,7 +215,7 @@ method process_qualifiers($bioperl_feature, $chado_object)
   }
 }
 
-method store_exons($uniquename, $bioperl_cds, $chromosome)
+method store_exons($uniquename, $bioperl_cds, $chromosome, $so_type)
 {
   my $chado = $self->chado();
 
@@ -224,10 +224,8 @@ method store_exons($uniquename, $bioperl_cds, $chromosome)
 
   for (my $i = 0; $i < @coords_list; $i++) {
     my ($start, $end) = @{$coords_list[$i]};
-
     my $exon_uniquename = $uniquename . ':exon:' . ($i + 1);
-
-    my $chado_exon = $self->store_feature($exon_uniquename, undef, [], 'exon');
+    my $chado_exon = $self->store_feature($exon_uniquename, undef, [], $so_type);
 
     push @exons, $chado_exon;
 
@@ -243,9 +241,7 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
                         $utrs_5_prime, $utrs_3_prime)
 {
   my $chado = $self->chado();
-
   my $cds_location = $bioperl_cds->location();
-
   my $gene_start = $cds_location->start();
   my $gene_end = $cds_location->end();
 
@@ -264,14 +260,27 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
     }
   }
 
-  my $mrna_uniquename = "$uniquename.1";
+  my $exon_so_type;
 
-  my $chado_mrna = $self->store_feature($mrna_uniquename, undef, [], 'mRNA');
+  my $mrna_uniquename = "$uniquename.1";
+  my $mrna_so_type;
+
+  if ($bioperl_cds->has_tag('pseudo')) {
+    $mrna_so_type = 'pseudogenic_transcript';
+    $exon_so_type = 'pseudogenic_exon';
+  } else {
+    $mrna_so_type = 'mRNA';
+    $exon_so_type = 'exon';
+  }
+
+  my $chado_mrna = $self->store_feature($mrna_uniquename, undef, [],
+                                        $mrna_so_type);
   my $strand = $bioperl_cds->location()->strand();
   $self->store_location($chado_mrna, $chromosome, $strand,
                         $gene_start, $gene_end);
 
-  my @exons = $self->store_exons($mrna_uniquename, $bioperl_cds, $chromosome);
+  my @exons = $self->store_exons($mrna_uniquename, $bioperl_cds, $chromosome,
+                                 $exon_so_type);
 
   for my $exon (@exons) {
     $self->store_feature_rel($chado_mrna, $exon, 'part_of');
@@ -308,7 +317,6 @@ method finalise($chromosome)
     my $chado_gene =
       $self->store_feature_and_loc($bioperl_feature, $chromosome, $so_type,
                                    $gene_start, $gene_end);
-
 
     $self->process_qualifiers($bioperl_feature, $chado_gene);
 
