@@ -184,6 +184,7 @@ method process($feature, $chromosome)
 
   if (!defined $so_type) {
     print "no SO type for $feat_type - skipping";
+    return;
   }
 
   my ($uniquename, $gene_uniquename, $has_systematic_id) =
