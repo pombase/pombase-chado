@@ -68,16 +68,16 @@ method check
 
   my $gene_cvterm = $self->get_cvterm('sequence', 'gene');
 
-  my $rs = $chado->resultset('Sequence::Feature')
+  my $gene_rs = $chado->resultset('Sequence::Feature')
     ->search({
       type_id => $gene_cvterm->cvterm_id(),
       organism_id => $pombe->organism_id(),
     });
 
-  should ($rs->count(), 5);
+  should ($gene_rs->count(), 4);
 
-  $rs->next();
-  my $gene = $rs->next();
+  $gene_rs->next();
+  my $gene = $gene_rs->next();
 
   should ($gene->uniquename(), "SPAC977.10");
   should ($gene->feature_cvterms()->count(), 14);
@@ -95,10 +95,6 @@ method check
 
   should ($seq_feat_rs->count(), 4);
 
-  for my $feat ($seq_feat_rs->all()) {
-    print $feat->name(), "\n";
-  }
-
   my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
 
   my $feature_cvterm_rs =
@@ -113,5 +109,12 @@ method check
   should ($props[0], '19700101');
   should ($props[1], 'predicted');
   should ($props[2], 'region');
+
+  my $feat_rs = $chado->resultset('Sequence::Feature');
+
+  print "All features:\n";
+  for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
+    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
+  }
 }
 

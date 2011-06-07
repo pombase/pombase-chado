@@ -90,10 +90,12 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
   my $chado = $self->chado();
 
   my $name = undef;
-
   my @synonyms = ();
-
   my ($uniquename) = $self->get_uniquename($feature);
+
+  if ($feature->has_tag('pseudo')) {
+    $so_type = 'pseudogene';
+  }
 
   my $chado_feature = $self->store_feature($uniquename, $name, [], $so_type);
 
