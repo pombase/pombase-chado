@@ -157,7 +157,6 @@ method save_feature($feature, $uniquename)
 {
   my $feat_type = $feature->primary_tag();
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
-  print "saving: $feat_type\n";
 
   my $data;
 
