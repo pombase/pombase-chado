@@ -232,10 +232,8 @@ method store_exons($uniquename, $bioperl_cds, $chromosome)
     push @exons, $chado_exon;
 
     my $strand = $bioperl_cds->location()->strand();
-    my $fmin = $start - 1;
-    my $fmax = $end;
 
-    $self->store_location($chado_exon, $chromosome, $strand, $fmin, $fmax);
+    $self->store_location($chado_exon, $chromosome, $strand, $start, $end);
   }
 
   return @exons;
@@ -248,21 +246,21 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
 
   my $cds_location = $bioperl_cds->location();
 
-  my $gene_fmin = $cds_location->start() - 1;
-  my $gene_fmax = $cds_location->end();
+  my $gene_start = $cds_location->start();
+  my $gene_end = $cds_location->end();
 
   my @utrs_data = (@$utrs_5_prime, @$utrs_3_prime);
 
   for my $utr_data (@utrs_data) {
     my $featureloc = $utr_data->{chado_feature}->featureloc_features()->first();
-    my $utr_fmin = $featureloc->fmin();
-    my $utr_fmax = $featureloc->fmax();
+    my $utr_start = $featureloc->fmin() + 1;
+    my $utr_end = $featureloc->fmax();
 
-    if ($utr_fmin < $gene_fmin) {
-      $gene_fmin = $utr_fmin;
+    if ($utr_start < $gene_start) {
+      $gene_start = $utr_start;
     }
-    if ($utr_fmax > $gene_fmax) {
-      $gene_fmax = $utr_fmax;
+    if ($utr_end > $gene_end) {
+      $gene_end = $utr_end;
     }
   }
 
@@ -271,7 +269,7 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
   my $chado_mrna = $self->store_feature($mrna_uniquename, undef, [], 'mRNA');
   my $strand = $bioperl_cds->location()->strand();
   $self->store_location($chado_mrna, $chromosome, $strand,
-                        $gene_fmin, $gene_fmax);
+                        $gene_start, $gene_end);
 
   my @exons = $self->store_exons($mrna_uniquename, $bioperl_cds, $chromosome);
 
@@ -287,7 +285,7 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
     $self->store_feature_rel($chado_mrna, $utr->{chado_feature}, 'part_of');
   }
 
-  return ($gene_fmin, $gene_fmax, $chado_mrna);
+  return ($gene_start, $gene_end, $chado_mrna);
 }
 
 
