@@ -182,6 +182,10 @@ method process($feature, $chromosome)
   my $feat_type = $feature->primary_tag();
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
 
+  if (!defined $so_type) {
+    print "no SO type for $feat_type - skipping";
+  }
+
   my ($uniquename, $gene_uniquename, $has_systematic_id) =
     $self->get_uniquename($feature, $so_type);
 

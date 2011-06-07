@@ -231,7 +231,8 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
     $db_accession = delete $sub_qual_map->{GOid};
     if (!defined $db_accession) {
       my $systematic_id = $pombe_gene->uniquename();
-      warn "  no GOid for $systematic_id annotation $term\n";
+      warn "  no GOid for $systematic_id annotation: '$term'\n";
+      return;
     }
     if ($db_accession !~ /GO:(.*)/) {
       my $systematic_id = $pombe_gene->uniquename();
