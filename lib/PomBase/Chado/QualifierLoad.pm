@@ -384,7 +384,24 @@ method add_feature_relationship_pub($relationship, $pub) {
 
 }
 
+method find_chado_feature ($systematic_id, $try_name) {
+  my $rs = $self->chado()->resultset('Sequence::Feature');
+  my $feature = $rs->find({ uniquename => $systematic_id });
 
+  if (defined $feature) {
+    return $feature;
+  } else {
+    warn "    no feature found using $systematic_id as uniquename\n" if $self->verbose();
+  }
+
+  if ($try_name) {
+    $feature = $rs->find({ name => $systematic_id });
+
+    return $feature if defined $feature;
+  }
+
+  die "can't find feature for: $systematic_id\n";
+}
 
 method process_ortholog($pombe_gene, $term, $sub_qual_map) {
   my $org_name;
