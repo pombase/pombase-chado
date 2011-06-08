@@ -51,6 +51,7 @@ func _load_genes($chado, $organism) {
   my $file_name = $organism->species() . "_genes";
 
   if (-e $file_name) {
+    print "loading from cache file: $file_name\n";
     @res = LoadFile($file_name);
   } else {
     @res = PomBase::External::get_genes($org_name);
