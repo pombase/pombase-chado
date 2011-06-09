@@ -353,26 +353,26 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
                                  $exon_so_type);
 
   for my $exon (@exons) {
-    $self->store_feature_rel($chado_mrna, $exon, 'part_of');
+    $self->store_feature_rel($exon, $chado_mrna, 'part_of');
   }
 
   for my $utr (@$utrs_5_prime) {
-    $self->store_feature_rel($chado_mrna, $utr->{chado_feature}, 'part_of');
+    $self->store_feature_rel($utr->{chado_feature}, $chado_mrna, 'part_of');
   }
 
   for my $utr (@$utrs_3_prime) {
-    $self->store_feature_rel($chado_mrna, $utr->{chado_feature}, 'part_of');
+    $self->store_feature_rel($utr->{chado_feature}, $chado_mrna, 'part_of');
   }
 
   for my $intron (@$introns) {
-    $self->store_feature_rel($chado_mrna, $intron->{chado_feature}, 'part_of');
+    $self->store_feature_rel($intron->{chado_feature}, $chado_mrna, 'part_of');
   }
 
   if ($transcript_so_type eq 'mRNA') {
     my $chado_peptide = $self->store_feature("$mrna_uniquename:pep", undef,
                                              [], 'polypeptide');
 
-    $self->store_feature_rel($chado_mrna, $chado_peptide, 'derives_from');
+    $self->store_feature_rel($chado_peptide, $chado_mrna, 'derives_from');
 
     $self->store_location($chado_peptide, $chromosome, $strand,
                           $gene_start, $gene_end);
@@ -405,6 +405,6 @@ method finalise($chromosome)
 
     $self->process_qualifiers($bioperl_feature, $chado_gene);
 
-    $self->store_feature_rel($chado_gene, $chado_mrna, 'part_of');
+    $self->store_feature_rel($chado_mrna, $chado_gene, 'part_of');
   }
 }

@@ -42,7 +42,7 @@ with 'PomBase::Role::CvQuery';
 
 requires 'chado';
 
-method store_feature_rel($object, $subject, $rel_type_name)
+method store_feature_rel($subject, $object, $rel_type_name)
 {
   my $rel_cvterm = $self->get_cvterm('relationship', $rel_type_name);
 
