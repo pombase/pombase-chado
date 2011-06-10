@@ -176,6 +176,11 @@ method save_gene($feature, $uniquename)
   my $feat_type = $feature->primary_tag();
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
 
+  if (!defined $uniquename) {
+    warn "$feat_type feature has no uniquename";
+    return;
+  }
+
   my $data = $self->prepare_gene_data($uniquename);
 
   $data->{bioperl_feature} = $feature;
@@ -433,6 +438,10 @@ method finalise($chromosome)
     my $bioperl_feature = $feature_data->{bioperl_feature};
     my $so_type = $feature_data->{so_type};
     my $transcript_so_type = $feature_data->{transcript_so_type};
+
+    if (!defined $bioperl_feature) {
+      die "no feature for $uniquename\n";
+    }
 
     my ($gene_start, $gene_end, $chado_mrna) =
       $self->store_gene_parts($uniquename,
