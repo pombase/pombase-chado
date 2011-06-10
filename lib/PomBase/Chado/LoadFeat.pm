@@ -153,11 +153,8 @@ my %feature_loader_conf = (
   },
 );
 
-method save_gene($feature, $uniquename)
+method prepare_gene_data($uniquename)
 {
-  my $feat_type = $feature->primary_tag();
-  my $so_type = $feature_loader_conf{$feat_type}->{so_type};
-
   my $data;
 
   if (defined $self->gene_data()->{$uniquename}) {
@@ -167,14 +164,40 @@ method save_gene($feature, $uniquename)
     $self->gene_data()->{$uniquename} = $data;
   }
 
-  $data->{bioperl_feature} = $feature;
-  $data->{so_type} = $so_type;
-  $data->{transcript_so_type} =
-  $feature_loader_conf{$feat_type}->{transcript_so_type};
-
   push @{$data->{"5'UTR_features"}}, ();
   push @{$data->{"3'UTR_features"}}, ();
   push @{$data->{"intron_features"}}, ();
+
+  return $data;
+}
+
+method save_gene($feature, $uniquename)
+{
+  my $feat_type = $feature->primary_tag();
+  my $so_type = $feature_loader_conf{$feat_type}->{so_type};
+
+  my $data = $self->prepare_gene_data($uniquename);
+
+  $data->{bioperl_feature} = $feature;
+  $data->{so_type} = $so_type;
+  $data->{transcript_so_type} =
+    $feature_loader_conf{$feat_type}->{transcript_so_type};
+}
+
+method save_utr($feature, $uniquename)
+{
+  my $feat_type = $feature->primary_tag();
+  my $so_type = $feature_loader_conf{$feat_type}->{so_type};
+
+  my $data = $self->prepare_gene_data($uniquename);
+
+  my %feature_data = (
+    bioperl_feature => $feature,
+    chado_feature => undef,
+  );
+
+  push @{$self->gene_data()->{$uniquename}->{"${feat_type}_features"}},
+       {%feature_data};
 }
 
 method process($feature, $chromosome)
@@ -193,7 +216,11 @@ method process($feature, $chromosome)
   print "processing $feat_type $uniquename\n";
 
   if ($feature_loader_conf{$feat_type}->{save}) {
-    $self->save_gene($feature, $gene_uniquename);
+    if ($so_type =~ /UTR/) {
+      $self->save_utr($feature, $gene_uniquename);
+    } else {
+      $self->save_gene($feature, $gene_uniquename);
+    }
     return;
   }
 
@@ -364,12 +391,22 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
     $self->store_feature_rel($exon, $chado_mrna, 'part_of');
   }
 
-  for my $utr (@$utrs_5_prime) {
-    $self->store_feature_rel($utr->{chado_feature}, $chado_mrna, 'part_of');
+  for my $utr_data (@$utrs_5_prime) {
+    my @chado_utrs = $self->store_feature_parts($uniquename,
+                                                $utr_data->{bioperl_feature},
+                                                $chromosome, "five_prime_UTR");
+    for my $chado_utr (@chado_utrs) {
+      $self->store_feature_rel($chado_utr, $chado_mrna, 'part_of');
+    }
   }
 
-  for my $utr (@$utrs_3_prime) {
-    $self->store_feature_rel($utr->{chado_feature}, $chado_mrna, 'part_of');
+  for my $utr_data (@$utrs_3_prime) {
+    my @chado_utrs = $self->store_feature_parts($uniquename,
+                                                $utr_data->{bioperl_feature},
+                                                $chromosome, "three_prime_UTR");
+    for my $chado_utr (@chado_utrs) {
+      $self->store_feature_rel($chado_utr, $chado_mrna, 'part_of');
+    }
   }
 
   for my $intron (@$introns) {

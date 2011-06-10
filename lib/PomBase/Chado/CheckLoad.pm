@@ -52,10 +52,10 @@ method check
   should ($rel_rs->count(), 22);
 
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
-  should ($loc_rs->count(), 31);
+  should ($loc_rs->count(), 35);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 17);
+  should ($feature_prop_rs->count(), 16);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
   should ($feature_dbxref_rs->count(), 8);
@@ -111,6 +111,7 @@ method check
   should ($props[2], 'region');
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
+  should ($feat_rs->count(), 40);
 
   print "All features:\n";
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
