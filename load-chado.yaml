@@ -6,6 +6,7 @@ cvterms:
   PomBase feature property types:
     - product
     - comment
+    - EC_number
   PomBase synonym types:
     - synonym
     - exact
