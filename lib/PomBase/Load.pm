@@ -43,7 +43,7 @@ use PomBase::Chado::LoadOrganism;
 
 use YAML::Any qw(DumpFile LoadFile);
 
-func _load_genes($chado, $organism) {
+func _load_genes($chado, $organism, $test_mode) {
   my $gene_type = $chado->resultset('Cv::Cvterm')->find({ name => 'gene' });
   my $org_name = $organism->genus() . ' ' . $organism->species();
   my @res;
@@ -91,7 +91,7 @@ func _load_genes($chado, $organism) {
       type_id => $gene_type->cvterm_id()
     });
 
-#    last if scalar(keys %seen_names) >= 2;
+    last if $test_mode and scalar(keys %seen_names) >= 2;
   }
 
   print "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
@@ -156,8 +156,8 @@ func init_objects($chado, $config) {
     $org_load->load_organism('Saccharomyces', 'cerevisiae', 'Scerevisiae',
                              'Scerevisiae', 4932);
 
-  _load_genes($chado, $human);
-  _load_genes($chado, $scerevisiae);
+  _load_genes($chado, $human, $config->{test_mode});
+  _load_genes($chado, $scerevisiae, $config->{test_mode});
 
   _load_cvterms($chado, $config);
   _load_dbs($chado, $config);
