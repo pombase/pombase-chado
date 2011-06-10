@@ -285,26 +285,34 @@ method process_qualifiers($bioperl_feature, $chado_object)
   }
 }
 
-method store_exons($uniquename, $bioperl_cds, $chromosome, $so_type)
+method store_feature_parts($uniquename, $bioperl_feature, $chromosome, $so_type)
 {
   my $chado = $self->chado();
 
-  my @coords_list = $self->coords_of_feature($bioperl_cds);
-  my @exons = ();
+  my @coords_list = $self->coords_of_feature($bioperl_feature);
+  my @new_parts = ();
 
   for (my $i = 0; $i < @coords_list; $i++) {
     my ($start, $end) = @{$coords_list[$i]};
-    my $exon_uniquename = $uniquename . ':exon:' . ($i + 1);
-    my $chado_exon = $self->store_feature($exon_uniquename, undef, [], $so_type);
+    my $prefix;
+    if ($so_type =~ /exon$/) {
+      $prefix = "$uniquename:exon:"
+    } else {
+      $prefix = "$uniquename:$so_type:"
+    }
+    my $part_uniquename = $prefix . ($i + 1);
+    my $chado_sub_feature =
+      $self->store_feature($part_uniquename, undef, [], $so_type);
 
-    push @exons, $chado_exon;
+    push @new_parts, $chado_sub_feature;
 
-    my $strand = $bioperl_cds->location()->strand();
+    my $strand = $bioperl_feature->location()->strand();
 
-    $self->store_location($chado_exon, $chromosome, $strand, $start, $end);
+    $self->store_location($chado_sub_feature, $chromosome, $strand,
+                          $start, $end);
   }
 
-  return @exons;
+  return @new_parts;
 }
 
 method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
@@ -349,8 +357,8 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
   $self->store_location($chado_mrna, $chromosome, $strand,
                         $gene_start, $gene_end);
 
-  my @exons = $self->store_exons($mrna_uniquename, $bioperl_cds, $chromosome,
-                                 $exon_so_type);
+  my @exons = $self->store_feature_parts($mrna_uniquename, $bioperl_cds,
+                                         $chromosome, $exon_so_type);
 
   for my $exon (@exons) {
     $self->store_feature_rel($exon, $chado_mrna, 'part_of');
