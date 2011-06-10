@@ -46,7 +46,8 @@ method store_feature($uniquename, $name, $synonyms, $so_type)
 {
   my $so_cvterm = $self->get_cvterm('sequence', $so_type);
 
-  print "  storing $uniquename ($so_type)\n" if $self->verbose();
+  print "  storing $uniquename/", ($name ? $name : 'no_name'),
+    " ($so_type)\n" if $self->verbose();
 
   my %create_args = (
     type_id => $so_cvterm->cvterm_id(),
@@ -91,6 +92,11 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
 
   my $name = undef;
   my @synonyms = ();
+
+  if ($feature->has_tag('gene')) {
+    ($name, @synonyms) = $feature->get_tag_values('gene');
+  }
+
   my ($uniquename) = $self->get_uniquename($feature, $so_type);
 
   if ($feature->has_tag('pseudo')) {
@@ -105,12 +111,8 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
 
   $self->store_location($chado_feature, $chromosome, $strand, $start, $end);
 
-  if ($feature->has_tag('gene')) {
-    ($name, @synonyms) = $feature->get_tag_values('gene');
-
-    for my $synonym (@synonyms) {
-      $self->store_feature_synonym($chado_feature, $synonym);
-    }
+  for my $synonym (@synonyms) {
+    $self->store_feature_synonym($chado_feature, $synonym);
   }
 
   return $chado_feature;
