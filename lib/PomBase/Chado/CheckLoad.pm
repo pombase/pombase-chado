@@ -49,19 +49,19 @@ method check
   my $chado = $self->chado();
 
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-  should ($rel_rs->count(), 22);
+  should ($rel_rs->count(), 28);
 
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
-  should ($loc_rs->count(), 35);
+  should ($loc_rs->count(), 44);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 16);
+  should ($feature_prop_rs->count(), 19);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
-  should ($feature_dbxref_rs->count(), 8);
+  should ($feature_dbxref_rs->count(), 11);
 
   my $feature_synonym_rs = $chado->resultset('Sequence::FeatureSynonym');
-  should ($feature_synonym_rs->count(), 3);
+  should ($feature_synonym_rs->count(), 4);
 
   my $pombe = $chado->resultset('Organism::Organism')
     ->find({ species => 'pombe' });
@@ -74,7 +74,7 @@ method check
       organism_id => $pombe->organism_id(),
     });
 
-  should ($gene_rs->count(), 4);
+  should ($gene_rs->count(), 5);
 
   $gene_rs->next();
   my $gene = $gene_rs->next();
@@ -93,7 +93,7 @@ method check
   my $seq_feat_rs =
     $chado->resultset('Cv::Cvterm')->search({ cv_id => $seq_feat_cv->cv_id() });
 
-  should ($seq_feat_rs->count(), 4);
+  should ($seq_feat_rs->count(), 5);
 
   my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
 
@@ -111,7 +111,7 @@ method check
   should ($props[2], 'region');
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
-  should ($feat_rs->count(), 40);
+  should ($feat_rs->count(), 49);
 
   print "All features:\n";
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
