@@ -12,3 +12,6 @@ cvterms:
 
 dbs:
   - RFAM
+  - GOA
+  - UniProtKB/Swiss-Prot
+  - Uniprot
