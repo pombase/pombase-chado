@@ -153,7 +153,7 @@ my %feature_loader_conf = (
   },
 );
 
-method save_feature($feature, $uniquename)
+method save_gene($feature, $uniquename)
 {
   my $feat_type = $feature->primary_tag();
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
@@ -193,7 +193,7 @@ method process($feature, $chromosome)
   print "processing $feat_type $uniquename\n";
 
   if ($feature_loader_conf{$feat_type}->{save}) {
-    $self->save_feature($feature, $gene_uniquename);
+    $self->save_gene($feature, $gene_uniquename);
     return;
   }
 
