@@ -177,7 +177,7 @@ method save_gene($feature, $uniquename)
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
 
   if (!defined $uniquename) {
-    warn "$feat_type feature has no uniquename";
+    warn "$feat_type feature has no uniquename\n";
     return;
   }
 
