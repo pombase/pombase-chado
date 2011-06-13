@@ -445,6 +445,8 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
                           $gene_start, $gene_end);
 
     $self->store_product($chado_peptide);
+  } else {
+    $self->store_product($chado_transcript);
   }
 
   return ($gene_start, $gene_end, $chado_transcript);
