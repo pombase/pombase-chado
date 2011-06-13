@@ -108,21 +108,21 @@ func _load_cvterms($chado, $config)
   for my $cv_name (keys %cvterm_confs) {
     my @cvterm_names = @{$cvterm_confs{$cv_name}};
 
+    my $cv;
+
+    if (exists $cvs{$cv_name}) {
+      $cv = $cvs{$cv_name};
+    } else {
+      $cv = $chado->resultset('Cv::Cv')->create({ name => $cv_name });
+      $cvs{$cv_name} = $cv;
+    }
+
     for my $cvterm_name (@cvterm_names) {
       my $dbxref =
         $chado->resultset('General::Dbxref')->create({
           db_id => $db->db_id(),
           accession => $cvterm_name,
         });
-
-      my $cv;
-
-      if (exists $cvs{$cv_name}) {
-        $cv = $cvs{$cv_name};
-      } else {
-        $cv = $chado->resultset('Cv::Cv')->create({ name => $cv_name });
-        $cvs{$cv_name} = $cv;
-      }
 
       $chado->resultset('Cv::Cvterm')->create({ name => $cvterm_name,
                                                 cv_id => $cv->cv_id(),

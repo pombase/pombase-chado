@@ -10,6 +10,7 @@ cvterms:
   PomBase synonym types:
     - synonym
     - exact
+  PomBase gene products: []
 
 dbs:
   - RFAM

@@ -134,9 +134,14 @@ method BUILD
 
   my $pombase_db = $db_rs->find_or_create({ name => 'PomBase' });
 
-  $self->objs()->{dbs_objects}->{$go_cv_map{P}} = $pombase_db;
-  $self->objs()->{dbs_objects}->{$go_cv_map{F}} = $pombase_db;
-  $self->objs()->{dbs_objects}->{$go_cv_map{C}} = $pombase_db;
+  $dbs_objects{$go_cv_map{P}} = $pombase_db;
+  $dbs_objects{$go_cv_map{F}} = $pombase_db;
+  $dbs_objects{$go_cv_map{C}} = $pombase_db;
+
+  for my $cv_name (keys %{$self->config->{cvterms}}) {
+    warn "CV: $cv_name\n";
+    $dbs_objects{$cv_name} = $pombase_db;
+  }
 
   $dbs_objects{phenotype} = $db_rs->find_or_create({ name => 'SPO' });
   $self->objs()->{pombase_db} = $pombase_db;

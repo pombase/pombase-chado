@@ -443,6 +443,18 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
 
     $self->store_location($chado_peptide, $chromosome, $strand,
                           $gene_start, $gene_end);
+
+    if ($bioperl_cds->has_tag('product')) {
+      my @products = $bioperl_cds->get_tag_values("product");
+
+      if (@products > 1) {
+        warn "more than one product for $uniquename\n";
+      }
+
+      my $product = $products[0];
+
+      $self->qual_load()->process_product($chado_peptide, $product);
+    }
   }
 
   return ($gene_start, $gene_end, $chado_mrna);
