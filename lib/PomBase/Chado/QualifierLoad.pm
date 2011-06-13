@@ -221,7 +221,7 @@ method get_and_check_date($sub_qual_map) {
   return undef;
 }
 
-method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
+method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
                        $create_cvterm) {
   my $cv = $self->find_cv_by_name($cv_name);
 
@@ -230,12 +230,12 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
   if ($self->is_go_cv_name($cv_name)) {
     $db_accession = delete $sub_qual_map->{GOid};
     if (!defined $db_accession) {
-      my $systematic_id = $pombe_gene->uniquename();
+      my $systematic_id = $pombe_feature->uniquename();
       warn "  no GOid for $systematic_id annotation: '$term'\n";
       return;
     }
     if ($db_accession !~ /GO:(.*)/) {
-      my $systematic_id = $pombe_gene->uniquename();
+      my $systematic_id = $pombe_feature->uniquename();
       warn "  GOid doesn't start with 'GO:' for $systematic_id: $db_accession\n";
     }
   }
@@ -296,7 +296,7 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
   }
 
   my $featurecvterm =
-    $self->create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not);
+    $self->create_feature_cvterm($pombe_feature, $cvterm, $pub, $is_not);
 
   if ($self->is_go_cv_name($cv_name)) {
     my $evidence_code = delete $sub_qual_map->{evidence};
@@ -306,7 +306,7 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
     if (defined $evidence_code) {
       $evidence = $self->objs()->{go_evidence_codes}->{$evidence_code};
     } else {
-      warn "no evidence for: $term in ", $pombe_gene->uniquename(), "\n";
+      warn "no evidence for: $term in ", $pombe_feature->uniquename(), "\n";
       $evidence = "NO EVIDENCE";
     }
 
