@@ -576,9 +576,9 @@ method process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
   return %qual_map;
 }
 
-method process_product($pombe_polypeptide, $product)
+method process_product($chado_feature, $product)
 {
-  $self->add_term_to_gene($pombe_polypeptide, 'PomBase gene products',
+  $self->add_term_to_gene($chado_feature, 'PomBase gene products',
                           $product, { dbxref => 'PomBase:' . $product }, 1);
 }
 

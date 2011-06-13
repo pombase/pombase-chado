@@ -390,8 +390,8 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
 
   my $exon_so_type;
 
-  my $mrna_uniquename = "$uniquename.1";
-  my $mrna_so_type;
+  my $transcript_uniquename = "$uniquename.1";
+  my $transcript_so_type;
 
   if ($bioperl_cds->has_tag('pseudo')) {
     $transcript_so_type = 'pseudogenic_transcript';
@@ -400,17 +400,17 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
     $exon_so_type = 'exon';
   }
 
-  my $chado_mrna = $self->store_feature($mrna_uniquename, undef, [],
+  my $chado_transcript = $self->store_feature($transcript_uniquename, undef, [],
                                         $transcript_so_type);
   my $strand = $bioperl_cds->location()->strand();
-  $self->store_location($chado_mrna, $chromosome, $strand,
+  $self->store_location($chado_transcript, $chromosome, $strand,
                         $gene_start, $gene_end);
 
-  my @exons = $self->store_feature_parts($mrna_uniquename, $bioperl_cds,
+  my @exons = $self->store_feature_parts($transcript_uniquename, $bioperl_cds,
                                          $chromosome, $exon_so_type);
 
   for my $exon (@exons) {
-    $self->store_feature_rel($exon, $chado_mrna, 'part_of');
+    $self->store_feature_rel($exon, $chado_transcript, 'part_of');
   }
 
   for my $utr_data (@$utrs_5_prime) {
@@ -418,7 +418,7 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
                                                 $utr_data->{bioperl_feature},
                                                 $chromosome, "five_prime_UTR");
     for my $chado_utr (@chado_utrs) {
-      $self->store_feature_rel($chado_utr, $chado_mrna, 'part_of');
+      $self->store_feature_rel($chado_utr, $chado_transcript, 'part_of');
     }
   }
 
@@ -427,37 +427,27 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
                                                 $utr_data->{bioperl_feature},
                                                 $chromosome, "three_prime_UTR");
     for my $chado_utr (@chado_utrs) {
-      $self->store_feature_rel($chado_utr, $chado_mrna, 'part_of');
+      $self->store_feature_rel($chado_utr, $chado_transcript, 'part_of');
     }
   }
 
   for my $intron (@$introns) {
-    $self->store_feature_rel($intron->{chado_feature}, $chado_mrna, 'part_of');
+    $self->store_feature_rel($intron->{chado_feature}, $chado_transcript, 'part_of');
   }
 
   if ($transcript_so_type eq 'mRNA') {
-    my $chado_peptide = $self->store_feature("$mrna_uniquename:pep", undef,
+    my $chado_peptide = $self->store_feature("$transcript_uniquename:pep", undef,
                                              [], 'polypeptide');
 
-    $self->store_feature_rel($chado_peptide, $chado_mrna, 'derives_from');
+    $self->store_feature_rel($chado_peptide, $chado_transcript, 'derives_from');
 
     $self->store_location($chado_peptide, $chromosome, $strand,
                           $gene_start, $gene_end);
 
-    if ($bioperl_cds->has_tag('product')) {
-      my @products = $bioperl_cds->get_tag_values("product");
-
-      if (@products > 1) {
-        warn "more than one product for $uniquename\n";
-      }
-
-      my $product = $products[0];
-
-      $self->qual_load()->process_product($chado_peptide, $product);
-    }
+    $self->store_product($chado_peptide);
   }
 
-  return ($gene_start, $gene_end, $chado_mrna);
+  return ($gene_start, $gene_end, $chado_transcript);
 }
 
 
@@ -472,7 +462,7 @@ method finalise($chromosome)
       die "no feature for $uniquename\n";
     }
 
-    my ($gene_start, $gene_end, $chado_mrna) =
+    my ($gene_start, $gene_end, $chado_transcript) =
       $self->store_gene_parts($uniquename,
                               $bioperl_feature,
                               $chromosome,
@@ -488,6 +478,6 @@ method finalise($chromosome)
 
     $self->process_qualifiers($bioperl_feature, $chado_gene);
 
-    $self->store_feature_rel($chado_mrna, $chado_gene, 'part_of');
+    $self->store_feature_rel($chado_transcript, $chado_gene, 'part_of');
   }
 }
