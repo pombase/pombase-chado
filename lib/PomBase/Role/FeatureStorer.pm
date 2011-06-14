@@ -92,14 +92,29 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
 {
   my $chado = $self->chado();
 
+  my ($uniquename, $gene_uniquename)
+    = $self->get_uniquename($feature, $so_type);
   my $name = undef;
+
+  if ($feature->has_tag('primary_name')) {
+    my @primary_names = $feature->get_tag_values('primary_name');
+
+    if (@primary_names > 1) {
+      warn "$uniquename has more than one /primary_name\n";
+    }
+
+    $name = $primary_names[0];
+  } else {
+    if ($so_type eq 'gene') {
+      warn "no /primary_name qualifier for $uniquename\n";
+    }
+  }
+
   my @synonyms = ();
 
   if ($feature->has_tag('gene')) {
-    ($name, @synonyms) = $feature->get_tag_values('gene');
+    @synonyms = $feature->get_tag_values('gene');
   }
-
-  my ($uniquename) = $self->get_uniquename($feature, $so_type);
 
   if ($feature->has_tag('pseudo')) {
     $so_type = 'pseudogene';
@@ -114,6 +129,10 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
   $self->store_location($chado_feature, $chromosome, $strand, $start, $end);
 
   for my $synonym (@synonyms) {
+    next if $synonym eq $uniquename;
+    next if $synonym eq $gene_uniquename;
+    next if defined $name and $synonym eq $name;
+
     $self->store_feature_synonym($chado_feature, $synonym);
   }
 
