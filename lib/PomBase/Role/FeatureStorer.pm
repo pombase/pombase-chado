@@ -133,7 +133,11 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
     next if $synonym eq $gene_uniquename;
     next if defined $name and $synonym eq $name;
 
-    $self->store_feature_synonym($chado_feature, $synonym);
+#    if (defined $name) {
+      $self->store_feature_synonym($chado_feature, $synonym);
+#    } else {
+#      $name = $synonym;
+#    }
   }
 
   return $chado_feature;
