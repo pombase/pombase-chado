@@ -55,7 +55,7 @@ method check
   should ($loc_rs->count(), 44);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 18);
+  should ($feature_prop_rs->count(), 12);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
   should ($feature_dbxref_rs->count(), 11);
@@ -84,8 +84,16 @@ method check
 
   my $cvterms_rs =
     $gene->feature_cvterms()->search_related('cvterm');
-
   should ($cvterms_rs->count(), 14);
+
+  my $product_cv = $chado->resultset('Cv::Cv')
+    ->find({ name => 'PomBase gene products' });
+
+  for my $cvterm ($chado->resultset('Cv::Cvterm')->search({
+    cv_id => $product_cv->cv_id()
+  })->all()) {
+#    print $cvterm->name(), "\n";
+  }
 
   assert (grep { $_->name() eq 'plasma membrane' } $cvterms_rs->all());
 

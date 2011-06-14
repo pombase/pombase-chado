@@ -252,9 +252,22 @@ method process($feature, $chromosome)
   return $chado_feature;
 }
 
-method store_product($feature, $product)
+method store_product($bioperl_feature, $chado_feature, $uniquename)
 {
-  $self->store_featureprop($feature, 'product', $product);
+  if ($bioperl_feature->has_tag("product")) {
+    my @products = $bioperl_feature->get_tag_values("product");
+    if (@products > 1) {
+      warn "  $uniquename has more than one product\n";
+    } else {
+      if (length $products[0] == 0) {
+        warn "  zero length product for $uniquename\n";
+      } else {
+        $self->qual_load()->process_product($chado_feature, $products[0]);
+      }
+    }
+  } else {
+    warn "  no product for $uniquename\n";
+  }
 }
 
 method store_note($feature, $note)
@@ -289,23 +302,6 @@ method process_qualifiers($bioperl_feature, $chado_object)
       $self->qual_load()->process_one_go_qual($chado_object, $bioperl_feature, $value);
       $self->qual_load()->check_unused_quals($value, %unused_quals);
       warn "\n" if $verbose;
-    }
-  }
-
-  if ($type eq 'CDS' or $type eq 'misc_RNA') {
-    if ($bioperl_feature->has_tag("product")) {
-      my @products = $bioperl_feature->get_tag_values("product");
-      if (@products > 1) {
-        warn "  $uniquename has more than one product\n";
-      } else {
-        if (length $products[0] == 0) {
-          warn "  zero length product for $uniquename\n";
-        } else {
-          $self->store_product($chado_object, $products[0]);
-        }
-      }
-    } else {
-      warn "  no product for $uniquename\n";
     }
   }
 
@@ -391,7 +387,6 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
   my $exon_so_type;
 
   my $transcript_uniquename = "$uniquename.1";
-  my $transcript_so_type;
 
   if ($bioperl_cds->has_tag('pseudo')) {
     $transcript_so_type = 'pseudogenic_transcript';
@@ -444,9 +439,9 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
     $self->store_location($chado_peptide, $chromosome, $strand,
                           $gene_start, $gene_end);
 
-    $self->store_product($chado_peptide);
+    $self->store_product($bioperl_cds, $chado_peptide, $uniquename);
   } else {
-    $self->store_product($chado_transcript);
+    $self->store_product($bioperl_cds, $chado_transcript, $uniquename);
   }
 
   return ($gene_start, $gene_end, $chado_transcript);

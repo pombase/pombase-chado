@@ -38,6 +38,8 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
+use Carp::Assert;
+
 with 'PomBase::Role::Embl::StoreLocation';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::ChadoObj';
@@ -121,6 +123,8 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
 method store_featureprop($feature, $type_name, $value)
 {
   state $ranks = {};
+
+  assert (defined $value);
 
   my $rank;
 
