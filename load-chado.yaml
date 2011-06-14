@@ -22,3 +22,7 @@ dbs:
   - EMBL
   - GOC
   - GO_REF
+  - KEGG
+  - Rfam
+  - GI
+
