@@ -92,22 +92,6 @@ method get_pub_from_db_xref($qual, $db_xref) {
 
       my $pub = $self->find_or_create_pub($db_xref);
 
-      if (!defined $pub) {
-
-        warn "    pub not found for: $db_xref  ($db);\n" if $self->verbose();
-
-        my $pub_rs = $self->chado()->resultset('Pub::Pub');
-        $pub = $pub_rs->create({
-          uniquename => $db_xref,
-          type_id => $self->objs()->{unfetched_pub_cvterm}->cvterm_id()
-        });
-        my $dbxref = $self->find_or_create_dbxref($db, $accession);
-        my $pub_dbxref_rs = $self->chado()->resultset('Pub::PubDbxref');
-        $pub_dbxref_rs->create({ pub_id => $pub->pub_id(),
-                                 dbxref_id => $dbxref->dbxref_id() });
-        warn "    created new dbxref and pub for: $db_xref\n" if $self->verbose();
-      }
-
       warn "    using existing dbxref and pub for: $db_xref\n" if $self->verbose();
 
       return $pub;

@@ -159,15 +159,10 @@ method BUILD
   $self->objs()->{feature_relationshipprop_type_cv} =
     $cv_rs->find_or_create({ name => 'feature_relationshipprop_type' });
 
-  $self->objs()->{genedb_literature_cv} =
-    $cv_rs->find({ name => 'genedb_literature' });
+  $self->objs()->{publication_type_cv} =
+    $cv_rs->find({ name => 'PomBase publication types' });
 
   my $cvterm_rs = $chado->resultset('Cv::Cvterm');
-
-  $self->objs()->{unfetched_pub_cvterm} =
-    $cvterm_rs->find({ name => 'unfetched',
-                       cv_id => $self->objs()->{genedb_literature_cv}->cv_id() });
-
 
   for my $extra_cv_name (keys %{$self->objs()->{cv_alt_names}}) {
     $cv_rs->find_or_create({ name => $extra_cv_name });

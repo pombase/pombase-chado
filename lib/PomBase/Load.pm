@@ -137,7 +137,7 @@ func _load_dbs($chado, $config)
   my @dbs = @{$config->{dbs}};
 
   for my $db (@dbs) {
-    $chado->resultset('General::Db')->create({ name => $db });
+    $chado->resultset('General::Db')->find_or_create({ name => $db });
   }
 }
 

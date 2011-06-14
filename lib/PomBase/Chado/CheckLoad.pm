@@ -72,11 +72,10 @@ method check
     ->search({
       type_id => $gene_cvterm->cvterm_id(),
       organism_id => $pombe->organism_id(),
-    });
+    }, { order_by => 'uniquename' });
 
   should ($gene_rs->count(), 5);
 
-  $gene_rs->next();
   my $gene = $gene_rs->next();
 
   should ($gene->uniquename(), "SPAC977.10");
@@ -84,7 +83,7 @@ method check
 
   my $cvterms_rs =
     $gene->feature_cvterms()->search_related('cvterm');
-  should ($cvterms_rs->count(), 14);
+  assert (grep { $_->name() eq 'plasma membrane' } $cvterms_rs->all());
 
   my $product_cv = $chado->resultset('Cv::Cv')
     ->find({ name => 'PomBase gene products' });
@@ -94,8 +93,6 @@ method check
   })->all()) {
 #    print $cvterm->name(), "\n";
   }
-
-  assert (grep { $_->name() eq 'plasma membrane' } $cvterms_rs->all());
 
   my $seq_feat_cv = $self->get_cv('sequence_feature');
   my $seq_feat_rs =

@@ -17,3 +17,8 @@ dbs:
   - GOA
   - UniProtKB/Swiss-Prot
   - Uniprot
+  - SPD
+  - PMID
+  - EMBL
+  - GOC
+  - GO_REF
