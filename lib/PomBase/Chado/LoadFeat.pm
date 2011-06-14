@@ -345,7 +345,7 @@ method store_feature_parts($uniquename, $bioperl_feature, $chromosome, $so_type)
     if ($so_type =~ /exon$/) {
       $prefix = "$uniquename:exon:"
     } else {
-      $prefix = "$uniquename:$so_type:"
+      $prefix = "$uniquename.1:$so_type:"
     }
     my $part_uniquename = $prefix . ($i + 1);
     my $chado_sub_feature =
