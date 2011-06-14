@@ -115,10 +115,12 @@ my %feature_loader_conf = (
     so_type => 'repeat_region',
   },
   "5'UTR" => {
+    save => 1,
     so_type => 'five_prime_UTR',
     collected => 1,
   },
   "3'UTR" => {
+    save => 1,
     so_type => 'three_prime_UTR',
     collected => 1,
   },
@@ -372,9 +374,9 @@ method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
   my @utrs_data = (@$utrs_5_prime, @$utrs_3_prime);
 
   for my $utr_data (@utrs_data) {
-    my $featureloc = $utr_data->{chado_feature}->featureloc_features()->first();
-    my $utr_start = $featureloc->fmin() + 1;
-    my $utr_end = $featureloc->fmax();
+    my $featureloc = $utr_data->{bioperl_feature}->location();
+    my $utr_start = $featureloc->start();
+    my $utr_end = $featureloc->end();
 
     if ($utr_start < $gene_start) {
       $gene_start = $utr_start;

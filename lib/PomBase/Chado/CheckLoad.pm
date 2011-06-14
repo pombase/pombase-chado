@@ -52,13 +52,13 @@ method check
   should ($rel_rs->count(), 28);
 
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
-  should ($loc_rs->count(), 44);
+  should ($loc_rs->count(), 38);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 12);
+  should ($feature_prop_rs->count(), 8);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
-  should ($feature_dbxref_rs->count(), 11);
+  should ($feature_dbxref_rs->count(), 6);
 
   my $feature_synonym_rs = $chado->resultset('Sequence::FeatureSynonym');
   should ($feature_synonym_rs->count(), 1);
@@ -119,7 +119,7 @@ method check
   should ($props[2], 'region');
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
-  should ($feat_rs->count(), 49);
+  should ($feat_rs->count(), 43);
 
   print "All features:\n";
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
