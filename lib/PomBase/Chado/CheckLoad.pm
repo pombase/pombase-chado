@@ -123,7 +123,7 @@ method check
 
   print "All features:\n";
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
-    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
+#    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
   }
 }
 
