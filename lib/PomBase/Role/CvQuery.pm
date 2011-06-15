@@ -53,6 +53,10 @@ method get_cvterm($cv_name, $cvterm_name)
 {
   my $cv = $self->get_cv($cv_name);
 
+  if (!defined $cv) {
+    warn "no such CV: $cv_name\n";
+  }
+
   state $cache = {};
 
   if (exists $cache->{$cv_name}->{$cvterm_name}) {
