@@ -113,7 +113,7 @@ func _load_cvterms($chado, $config)
     if (exists $cvs{$cv_name}) {
       $cv = $cvs{$cv_name};
     } else {
-      $cv = $chado->resultset('Cv::Cv')->create({ name => $cv_name });
+      $cv = $chado->resultset('Cv::Cv')->find_or_create({ name => $cv_name });
       $cvs{$cv_name} = $cv;
     }
 
@@ -124,10 +124,10 @@ func _load_cvterms($chado, $config)
           accession => $cvterm_name,
         });
 
-      $chado->resultset('Cv::Cvterm')->create({ name => $cvterm_name,
-                                                cv_id => $cv->cv_id(),
-                                                dbxref_id => $dbxref->dbxref_id()
-                                              });
+      $chado->resultset('Cv::Cvterm')->find_or_create({ name => $cvterm_name,
+                                                        cv_id => $cv->cv_id(),
+                                                        dbxref_id => $dbxref->dbxref_id()
+                                                      });
     }
   }
 }
