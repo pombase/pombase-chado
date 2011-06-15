@@ -94,7 +94,12 @@ method find_cvterm($cv, $term_name, %options) {
     my $exact_cvterm = $self->get_cvterm('synonym_type', 'exact');
     my $search_rs =
       $synonym_rs->search({ synonym => $term_name,
-                            type_id => $exact_cvterm->cvterm_id() });
+                            type_id => $exact_cvterm->cvterm_id(),
+                            'cvterm.cv_id' => $cv->cv_id(),
+                          },
+                          {
+                            join => 'cvterm'
+                          });
 
     if ($search_rs->count() > 1) {
       die "more than one cvtermsynonym found for $term_name";
