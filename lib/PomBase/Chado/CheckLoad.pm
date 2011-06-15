@@ -79,7 +79,7 @@ method check
   my $gene = $gene_rs->next();
 
   should ($gene->uniquename(), "SPAC977.10");
-  should ($gene->feature_cvterms()->count(), 14);
+  should ($gene->feature_cvterms()->count(), 13);
 
   my $cvterms_rs =
     $gene->feature_cvterms()->search_related('cvterm');

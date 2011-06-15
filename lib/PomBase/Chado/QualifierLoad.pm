@@ -248,7 +248,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     $cvterm = $self->find_cvterm($cv, $term, prefetch_dbxref => 1);
 
     if (!defined $cvterm) {
-      die "can't find cvterm of $term\n";
+      warn "can't find cvterm of $term using name: $term\n";
     }
   }
 
@@ -262,13 +262,13 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
 
       if ($new_db_name ne $db->name()) {
         die "database name for new term ($new_db_name) doesn't match " .
-          "existing name (" . $db->name() . ") for term name: $term";
+          "existing name (" . $db->name() . ") for term name: $term\n";
       }
 
       if ($new_dbxref_accession ne $dbxref->accession()) {
-        die "database accession for new term ($new_dbxref_accession) " .
-          "doesn't match existing name (" . $dbxref->accession() .
-            ") for term name: $term";
+        die "database accession for new term ($new_db_name:$new_dbxref_accession) " .
+          "doesn't match existing name ($new_db_name:" . $dbxref->accession() .
+            ") for term name: $term\n";
       }
     } else {
       die "database ID ($db_accession) doesn't contain a colon";
