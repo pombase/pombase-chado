@@ -320,14 +320,13 @@ method process_qualifiers($bioperl_feature, $chado_object)
   }
 
   if ($bioperl_feature->has_tag("EC_number")) {
-    if ($type eq 'CDS') {
-      my @ec_numbers = $bioperl_feature->get_tag_values("EC_number");
-      if (@ec_numbers > 1) {
-        warn "$type $uniquename has more than one EC number\n";
-      }
-      $self->store_ec_number($chado_object, $ec_numbers[0]);
-    } else {
-      warn "$uniquename $type can't have a /EC_number qualifier"
+    my @ec_numbers = $bioperl_feature->get_tag_values("EC_number");
+    for my $ec_number (@ec_numbers) {
+      $self->store_ec_number($chado_object, $ec_number);
+    }
+
+    if ($type ne 'CDS') {
+      warn "$uniquename $type has ", scalar(@ec_numbers), " /EC_number qualifier(s)"
     }
   }
 }
