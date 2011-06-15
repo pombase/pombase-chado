@@ -7,9 +7,6 @@ cvterms:
     - product
     - comment
     - EC_number
-  PomBase synonym types:
-    - synonym
-    - exact
   PomBase gene products: []
 
 dbs:

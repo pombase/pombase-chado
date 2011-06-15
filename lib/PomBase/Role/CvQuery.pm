@@ -91,7 +91,7 @@ method find_cvterm($cv, $term_name, %options) {
     return $cvterm;
   } else {
     my $synonym_rs = $self->chado()->resultset('Cv::Cvtermsynonym');
-    my $exact_cvterm = $self->get_cvterm('PomBase synonym types', 'exact');
+    my $exact_cvterm = $self->get_cvterm('synonym_type', 'exact');
     my $search_rs =
       $synonym_rs->search({ synonym => $term_name,
                             type_id => $exact_cvterm->cvterm_id() });
@@ -99,9 +99,10 @@ method find_cvterm($cv, $term_name, %options) {
     if ($search_rs->count() > 1) {
       die "more than one cvtermsynonym found for $term_name";
     } else {
-      my $synonym = $search_rs->next();
+      my $synonym = $search_rs->first();
 
       if (defined $synonym) {
+        print "      found as synonym: $term_name\n" if $self->verbose();
         return $cvterm_rs->find($synonym->cvterm_id());
       } else {
         return undef;

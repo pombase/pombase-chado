@@ -65,7 +65,11 @@ method store_feature($uniquename, $name, $synonyms, $so_type)
 
 method find_or_create_synonym($synonym_name, $type_name)
 {
-  my $type = $self->get_cvterm('PomBase synonym types', $type_name);
+  my $type = $self->get_cvterm('synonym_type', $type_name);
+
+  if (!defined $type) {
+    die "no synonym type cvterm found for $type_name\n";
+  }
 
   return $self->chado()->resultset('Sequence::Synonym')->find_or_create({
     name => $synonym_name,
@@ -76,7 +80,7 @@ method find_or_create_synonym($synonym_name, $type_name)
 
 method store_feature_synonym($feature, $synonym_name)
 {
-  my $synonym = $self->find_or_create_synonym($synonym_name, 'synonym');
+  my $synonym = $self->find_or_create_synonym($synonym_name, 'exact');
 
   my $pub = $self->objs()->{null_pub};
 
