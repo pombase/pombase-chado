@@ -248,7 +248,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     $cvterm = $self->find_cvterm($cv, $term, prefetch_dbxref => 1);
 
     if (!defined $cvterm) {
-      die "can't find cvterm of $term";
+      die "can't find cvterm of $term\n";
     }
   }
 
