@@ -118,4 +118,26 @@ method find_cvterm($cv, $term_name, %options) {
 }
 #memoize ('find_cvterm');
 
+method find_cvterm_by_accession($db_accession)
+{
+  if ($db_accession =~ /(.*):(.*)/) {
+    my $db_name = $1;
+    my $dbxref_accession = $2;
+
+    my $chado = $self->chado();
+    my $db = $chado->resultset('General::Db')->find({ name => $db_name });
+
+    my $dbxref =
+      $chado->resultset('General::Dbxref')->find({
+        accession => $dbxref_accession,
+        db_id => $db->db_id(),
+      });
+
+    return $chado->resultset('Cv::Cvterm')->find({ dbxref_id => $dbxref->dbxref_id() });
+  } else {
+    die "database ID ($db_accession) doesn't contain a colon";
+  }
+}
+
+
 1;

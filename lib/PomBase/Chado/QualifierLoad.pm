@@ -248,7 +248,10 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     $cvterm = $self->find_cvterm($cv, $term, prefetch_dbxref => 1);
 
     if (!defined $cvterm) {
-      warn "can't find cvterm of $term using name: $term\n";
+      warn "can't find cvterm of $db_accession using name: $term\n";
+      $cvterm = $self->find_cvterm_by_accession($db_accession);
+      warn "found cvterm by ID: $db_accession\n";
+      $db_accession = undef;
     }
   }
 
@@ -266,8 +269,8 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
       }
 
       if ($new_dbxref_accession ne $dbxref->accession()) {
-        die "database accession for new term ($new_db_name:$new_dbxref_accession) " .
-          "doesn't match existing name ($new_db_name:" . $dbxref->accession() .
+        die "ID in EMBL file ($new_db_name:$new_dbxref_accession) " .
+          "doesn't match ID in Chado ($new_db_name:" . $dbxref->accession() .
             ") for term name: $term\n";
       }
     } else {
