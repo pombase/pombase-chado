@@ -25,4 +25,7 @@ dbs:
   - KEGG
   - Rfam
   - GI
-
+  - InterPro
+  - UniProtKB
+  - UniProtKB/Swiss-Prot
+  
