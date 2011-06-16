@@ -139,7 +139,6 @@ method BUILD
   $dbs_objects{$go_cv_map{C}} = $pombase_db;
 
   for my $cv_name (keys %{$self->config->{cvterms}}) {
-    warn "CV: $cv_name\n";
     $dbs_objects{$cv_name} = $pombase_db;
   }
 
