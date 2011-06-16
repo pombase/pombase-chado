@@ -474,7 +474,7 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
     };
 
     if (!defined $ortholog_feature) {
-      print "  ortholog ($ortholog_name) not found\n";
+      warn "  ortholog ($ortholog_name) not found\n";
       return 0;
     }
 
@@ -524,7 +524,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
   my $term = delete $qual_map{term};
 
   if (!defined $term || length $term == 0) {
-    print "  no term for: $qualifier\n";
+    warn "  no term for: $qualifier\n";
     return ();
   }
 
@@ -561,7 +561,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     }
   } else {
     if (!$self->process_ortholog($pombe_gene, $term, \%qual_map)) {
-      print "  didn't process: $qualifier\n";
+      warn "  didn't process: $qualifier\n";
       return ();
     }
   }
@@ -596,13 +596,13 @@ method process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
       $self->add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 0);
     } catch {
       my $systematic_id = $pombe_gene->uniquename();
-      print "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
+      warn "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
       $self->dump_feature($bioperl_feature) if $self->verbose();
       return ();
     };
-    print "    loaded: $qualifier\n" if $self->verbose();
+    warn "    loaded: $qualifier\n" if $self->verbose();
   } else {
-    print "  no aspect for: $qualifier\n";
+    warn "  no aspect for: $qualifier\n";
     return ();
   }
 

@@ -213,14 +213,14 @@ method process($feature, $chromosome)
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
 
   if (!defined $so_type) {
-    print "no SO type for $feat_type - skipping";
+    warn "no SO type for $feat_type - skipping";
     return;
   }
 
   my ($uniquename, $gene_uniquename, $has_systematic_id) =
     $self->get_uniquename($feature, $so_type);
 
-  print "processing $feat_type $uniquename\n";
+  warn "processing $feat_type $uniquename\n";
 
   if ($feature_loader_conf{$feat_type}->{save}) {
     if ($so_type =~ /UTR/) {
@@ -236,7 +236,7 @@ method process($feature, $chromosome)
 
   if ($feature_loader_conf{$feat_type}->{collected}) {
     if (!$has_systematic_id) {
-      print "  $uniquename has no uniquename - skipping\n";
+      warn "  $uniquename has no uniquename - skipping\n";
       return;
     }
 

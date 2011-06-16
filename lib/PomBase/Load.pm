@@ -51,7 +51,7 @@ func _load_genes($chado, $organism, $test_mode) {
   my $file_name = $organism->species() . "_genes";
 
   if (-e $file_name) {
-    print "loading from cache file: $file_name\n";
+    warn "loading from cache file: $file_name\n";
     @res = LoadFile($file_name);
   } else {
     @res = PomBase::External::get_genes($org_name);
@@ -94,7 +94,7 @@ func _load_genes($chado, $organism, $test_mode) {
     last if $test_mode and scalar(keys %seen_names) >= 2;
   }
 
-  print "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
+  warn "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
 }
 
 func _load_cvterms($chado, $config)

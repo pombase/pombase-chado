@@ -107,7 +107,7 @@ method find_cvterm($cv, $term_name, %options) {
       my $exact_synonym = $search_rs->first();
 
       if (defined $exact_synonym) {
-        print "      found as synonym: $term_name\n" if $self->verbose();
+        warn "      found as synonym: $term_name\n" if $self->verbose();
         return $cvterm_rs->find($exact_synonym->cvterm_id());
       } else {
         $search_rs = $synonym_rs->search({ synonym => $term_name,
@@ -123,7 +123,7 @@ method find_cvterm($cv, $term_name, %options) {
           my $synonym = $search_rs->first();
 
           if (defined $synonym) {
-            print "      found as synonym (type: ", $synonym->type()->name(),
+            warn "      found as synonym (type: ", $synonym->type()->name(),
               "): $term_name\n" if $self->verbose();
             return $cvterm_rs->find($exact_synonym->cvterm_id());
           } else {

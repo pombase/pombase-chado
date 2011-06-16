@@ -48,7 +48,7 @@ method store_feature($uniquename, $name, $synonyms, $so_type)
 {
   my $so_cvterm = $self->get_cvterm('sequence', $so_type);
 
-  print "  storing $uniquename/", ($name ? $name : 'no_name'),
+  warn "  storing $uniquename/", ($name ? $name : 'no_name'),
     " ($so_type)\n" if $self->verbose();
 
   my %create_args = (
