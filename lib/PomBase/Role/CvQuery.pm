@@ -125,7 +125,7 @@ method find_cvterm($cv, $term_name, %options) {
           if (defined $synonym) {
             warn "      found as synonym (type: ", $synonym->type()->name(),
               "): $term_name\n" if $self->verbose();
-            return $cvterm_rs->find($exact_synonym->cvterm_id());
+            return $cvterm_rs->find($synonym->cvterm_id());
           } else {
             return undef;
           }
