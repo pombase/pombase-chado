@@ -446,7 +446,6 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
     if ($term =~ /^human\s+(.*?)\s+ortholog$/) {
       $gene_bit = $1;
     } else {
-      warn "    not recognised as an ortholog curation: $term\n" if $self->verbose();
       return 0;
     }
   }
@@ -556,12 +555,12 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
       };
       warn "    loaded: $qualifier\n" if $self->verbose();
     } else {
-      warn "  unknown cv $cv_name: $qualifier\n";
+      warn "CV name not recognised: $qualifier\n";
       return ();
     }
   } else {
     if (!$self->process_ortholog($pombe_gene, $term, \%qual_map)) {
-      warn "  didn't process: $qualifier\n";
+      warn "CV name not recognised: $qualifier\n";
       return ();
     }
   }

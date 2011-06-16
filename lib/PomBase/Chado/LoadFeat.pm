@@ -460,6 +460,8 @@ method finalise($chromosome)
       die "no feature for $uniquename\n";
     }
 
+    warn "processing $so_type $uniquename\n";
+
     my ($gene_start, $gene_end, $chado_transcript) =
       $self->store_gene_parts($uniquename,
                               $bioperl_feature,
