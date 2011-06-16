@@ -102,15 +102,34 @@ method find_cvterm($cv, $term_name, %options) {
                           });
 
     if ($search_rs->count() > 1) {
-      die "more than one cvtermsynonym found for $term_name";
+      die "more than one exact cvtermsynonym found for $term_name";
     } else {
-      my $synonym = $search_rs->first();
+      my $exact_synonym = $search_rs->first();
 
-      if (defined $synonym) {
+      if (defined $exact_synonym) {
         print "      found as synonym: $term_name\n" if $self->verbose();
-        return $cvterm_rs->find($synonym->cvterm_id());
+        return $cvterm_rs->find($exact_synonym->cvterm_id());
       } else {
-        return undef;
+        $search_rs = $synonym_rs->search({ synonym => $term_name,
+                                           'cvterm.cv_id' => $cv->cv_id(),
+                                         },
+                                         {
+                                           join => 'cvterm'
+                                         });
+
+        if ($search_rs->count() > 1) {
+          die "more than one cvtermsynonym found for $term_name";
+        } else {
+          my $synonym = $search_rs->first();
+
+          if (defined $synonym) {
+            print "      found as synonym (type: ", $synonym->type()->name(),
+              "): $term_name\n" if $self->verbose();
+            return $cvterm_rs->find($exact_synonym->cvterm_id());
+          } else {
+            return undef;
+          }
+        }
       }
     }
   }
