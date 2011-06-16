@@ -272,9 +272,9 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     $cvterm = $self->find_cvterm($cv, $term, prefetch_dbxref => 1);
 
     if (!defined $cvterm) {
-      warn "can't find cvterm of $db_accession using name: $term\n";
       $cvterm = $self->find_cvterm_by_accession($db_accession);
-      warn "found cvterm by ID: $db_accession\n";
+      warn "found cvterm by ID, but name doesn't match any cvterm: $db_accession " .
+        "EMBL file: $term  Chado name for ID: ", $cvterm->name(), "\n";
       $db_accession = undef;
     }
   }
