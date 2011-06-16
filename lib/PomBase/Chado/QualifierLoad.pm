@@ -221,6 +221,30 @@ method get_and_check_date($sub_qual_map) {
   return undef;
 }
 
+method find_cvterm_by_term_id($term_id)
+{
+  if ($term_id =~ /(.*):(.*)/) {
+    my $db_name = $1;
+    my $accession = $2;
+
+    my $chado = $self->chado();
+
+    my $db = $chado->resultset('General::Db')->find({ name => $db_name });
+
+    my $cvterm_rs = $chado->resultset('General::Dbxref')
+      ->search({ db_id => $db->db_id(),
+                 accession => $accession })->search_related('cvterm');
+
+    if ($cvterm_rs->count() > 1) {
+      die "more than one cvterm for dbxref ($term_id)\n";
+    } else {
+      return $cvterm_rs->next();
+    }
+  } else {
+    die "format error for: $term_id\n";
+  }
+}
+
 method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
                        $create_cvterm) {
   my $cv = $self->find_cv_by_name($cv_name);
@@ -269,9 +293,13 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
       }
 
       if ($new_dbxref_accession ne $dbxref->accession()) {
-        die "ID in EMBL file ($new_db_name:$new_dbxref_accession) " .
-          "doesn't match ID in Chado ($new_db_name:" . $dbxref->accession() .
-            ") for term name: $term\n";
+        my $name_of_embl_cvterm =
+          $self->find_cvterm_by_accession($db_accession);
+        die "ID in EMBL file ($db_accession) " .
+          "doesn't match ID in Chado (", $db->name(),
+          ":" . $dbxref->accession() .
+            ") for EMBL term name $term   (Chado term name: ",
+            $name_of_embl_cvterm->name(), ")\n";
       }
     } else {
       die "database ID ($db_accession) doesn't contain a colon";
