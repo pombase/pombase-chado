@@ -292,7 +292,7 @@ method process_qualifiers($bioperl_feature, $chado_object)
   if ($bioperl_feature->has_tag("controlled_curation")) {
     for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
       my %unused_quals =
-      $self->qual_load()->process_one_cc($chado_object, $bioperl_feature, $value);
+        $self->qual_load()->process_one_cc($chado_object, $bioperl_feature, $value);
       $self->qual_load()->check_unused_quals($value, %unused_quals);
       warn "\n" if $verbose;
     }
