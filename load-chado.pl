@@ -18,6 +18,8 @@ use PomBase::Chado::LoadFile;
 use PomBase::Chado::QualifierLoad;
 use PomBase::Chado::CheckLoad;
 
+no stringification;
+
 my $verbose = 0;
 my $quiet = 0;
 my $dry_run = 0;
