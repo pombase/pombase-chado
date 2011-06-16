@@ -64,7 +64,7 @@ FT                   YLR138W; date=19700101"
 FT                   /controlled_curation="term=phenotype, viable;
 FT                   cv=phenotype; db_xref=PMID:1314171; date=20080227"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Eukaryotes; date=20081110"
+FT                   in Eukaryotes; date=20081110; cv=foobar"
 FT                   /controlled_curation="term=species distribution, conserved
 FT                   in Bacteria; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved

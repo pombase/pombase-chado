@@ -458,8 +458,7 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
     if ($gene_bit =~ /^(\S+) and (\S+)/) {
       push @gene_names, $1, $2;
     } else {
-      warn qq(can't parse: "$gene_bit" from "$term"\n);
-      return 0;
+      die qq(can't parse: "$gene_bit" from "$term"\n);
     }
   }
 
@@ -473,8 +472,7 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
     };
 
     if (!defined $ortholog_feature) {
-      warn "  ortholog ($ortholog_name) not found\n";
-      return 0;
+      die "ortholog ($ortholog_name) not found\n";
     }
 
     my $rel_rs = $self->chado()->resultset('Sequence::FeatureRelationship');
@@ -491,8 +489,7 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
       $self->add_feature_relationship_pub($rel, $pub);
       $orth_guard->commit();
     } catch {
-      warn "  failed to create ortholog relation: $_\n";
-      return 0;
+      die "  failed to create ortholog relation: $_\n";
     };
   }
 
@@ -523,7 +520,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
   my $term = delete $qual_map{term};
 
   if (!defined $term || length $term == 0) {
-    warn "  no term for: $qualifier\n";
+    warn "no term for: $qualifier\n";
     return ();
   }
 
@@ -549,7 +546,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
       try {
         $self->add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 1);
       } catch {
-        warn "    $_: failed to load qualifier '$qualifier' from $systematic_id\n";
+        warn "$_: failed to load qualifier '$qualifier' from $systematic_id\n";
         $self->dump_feature($bioperl_feature) if $self->verbose();
         return ();
       };
@@ -559,8 +556,13 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
       return ();
     }
   } else {
-    if (!$self->process_ortholog($pombe_gene, $term, \%qual_map)) {
-      warn "CV name not recognised: $qualifier\n";
+    try {
+      if (!$self->process_ortholog($pombe_gene, $term, \%qual_map)) {
+        warn "qualifier not recognised: $qualifier\n";
+        return ();
+      }
+    } catch {
+      warn $_;
       return ();
     }
   }
@@ -595,7 +597,7 @@ method process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
       $self->add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 0);
     } catch {
       my $systematic_id = $pombe_gene->uniquename();
-      warn "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
+      warn "$_: failed to load qualifier '$qualifier' from $systematic_id:\n";
       $self->dump_feature($bioperl_feature) if $self->verbose();
       return ();
     };
