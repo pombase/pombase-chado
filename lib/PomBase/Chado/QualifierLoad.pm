@@ -617,7 +617,7 @@ method process_product($chado_feature, $product)
 
 method check_unused_quals
 {
-  return if $self->verbose();
+  return unless $self->verbose();
 
   my $qual_text = shift;
   my %quals = @_;
