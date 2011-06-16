@@ -552,10 +552,12 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
       } catch {
         warn "    $_: failed to load qualifier '$qualifier' from $systematic_id\n";
         $self->dump_feature($bioperl_feature) if $self->verbose();
+        return ();
       };
       warn "    loaded: $qualifier\n" if $self->verbose();
     } else {
       warn "  unknown cv $cv_name: $qualifier\n";
+      return ();
     }
   } else {
     if (!$self->process_ortholog($pombe_gene, $term, \%qual_map)) {
