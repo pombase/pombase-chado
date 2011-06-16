@@ -63,6 +63,8 @@ method process_file($file)
                                   chado => $self->chado(),
                                   verbose => $self->verbose());
 
+  warn "reading from: $file\n";
+
   my $io = Bio::SeqIO->new(-file => $file, -format => "embl" );
   my $seq_obj = $io->next_seq;
 
@@ -84,7 +86,7 @@ method process_file($file)
   my $chromosome =
     $chado->resultset('Sequence::Feature')->create({%create_args});
 
-  print "reading database from $display_id\n";
+  warn "reading database from $display_id\n";
 
   my $anno_collection = $seq_obj->annotation;
 
