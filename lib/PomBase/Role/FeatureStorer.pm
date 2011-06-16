@@ -109,15 +109,25 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
 
     $name = $primary_names[0];
   } else {
-    if ($so_type eq 'gene') {
-      warn "no /primary_name qualifier for $uniquename\n";
+    if ($feature->has_tag('reserved_name')) {
+      my @reserved_names = $feature->get_tag_values('reserved_name');
+
+      if (@reserved_names > 1) {
+        warn "$uniquename has more than one /reserved_name\n";
+      }
+
+      $name = $reserved_names[0];
+    } else {
+      if ($so_type eq 'gene') {
+        warn "no /primary_name qualifier for $uniquename\n" if $self->verbose();
+      }
     }
   }
 
   my @synonyms = ();
 
-  if ($feature->has_tag('gene')) {
-    @synonyms = $feature->get_tag_values('gene');
+  if ($feature->has_tag('synonym')) {
+    @synonyms = $feature->get_tag_values('synonym');
   }
 
   if ($feature->has_tag('pseudo')) {
