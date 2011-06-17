@@ -114,6 +114,9 @@ method check
   should ($props[0], '19700101');
   should ($props[1], 'predicted');
   should ($props[2], 'region');
+  should(@props, 3);
+
+  should($chado->resultset('Sequence::FeatureCvtermprop')->all(), 61);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 43);
