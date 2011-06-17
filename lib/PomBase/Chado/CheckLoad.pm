@@ -116,7 +116,7 @@ method check
   should ($props[2], 'region');
   should(@props, 3);
 
-  should($chado->resultset('Sequence::FeatureCvtermprop')->all(), 61);
+  should($chado->resultset('Sequence::FeatureCvtermprop')->all(), 64);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 43);

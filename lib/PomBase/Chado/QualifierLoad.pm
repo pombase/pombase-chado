@@ -342,10 +342,12 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     }
 
     if (defined $sub_qual_map->{with}) {
-      $evidence .= " with " . delete $sub_qual_map->{with};
+      $self->add_feature_cvtermprop($featurecvterm,
+                                    with => delete $sub_qual_map->{with});
     }
     if (defined $sub_qual_map->{from}) {
-      $evidence .= " from " . delete $sub_qual_map->{from};
+      $self->add_feature_cvtermprop($featurecvterm,
+                                    from => delete $sub_qual_map->{from});
     }
     $self->add_feature_cvtermprop($featurecvterm,
                                   evidence => $evidence);
