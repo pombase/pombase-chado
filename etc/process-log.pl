@@ -38,7 +38,7 @@ while (defined (my $line = <>)) {
           } else {
             if ($line =~ /no term for:/) {
               print $all_warnings "$line";
-              print $qual_problems "$gene: $line\n";
+              print $qual_problems "$gene: $line";
             }
             if ($line =~ /^processing (.*)/) {
               $gene = $1;
