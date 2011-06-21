@@ -94,6 +94,7 @@ method find_cvterm($cv, $term_name, %options) {
                                 { %search_options });
 
   if (defined $cvterm) {
+    $cache->{$cv->name()}->{$term_name} = $cvterm;
     return $cvterm;
   } else {
     my $synonym_rs = $self->chado()->resultset('Cv::Cvtermsynonym');
@@ -144,6 +145,12 @@ method find_cvterm($cv, $term_name, %options) {
 
 method find_cvterm_by_accession($db_accession)
 {
+  state $cache = {};
+
+  if (exists $cache->{$db_accession}) {
+    return $cache->{$db_accession};
+  }
+
   if ($db_accession =~ /(.*):(.*)/) {
     my $db_name = $1;
     my $dbxref_accession = $2;
@@ -157,7 +164,12 @@ method find_cvterm_by_accession($db_accession)
         db_id => $db->db_id(),
       });
 
-    return $chado->resultset('Cv::Cvterm')->find({ dbxref_id => $dbxref->dbxref_id() });
+    my $cvterm =
+      $chado->resultset('Cv::Cvterm')->find({ dbxref_id => $dbxref->dbxref_id() });
+
+    $cache->{$db_accession} = $cvterm;
+
+    return $cvterm;
   } else {
     die "database ID ($db_accession) doesn't contain a colon";
   }

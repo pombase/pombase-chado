@@ -58,8 +58,17 @@ method find_or_create_pub($identifier) {
 method find_db_by_name($db_name) {
   die 'no $db_name' unless defined $db_name;
 
-  return ($self->chado()->resultset('General::Db')->find({ name => $db_name })
-    or die "no db with name: $db_name");
+  state $cache = {};
+
+  if (exists $cache->{$db_name}) {
+    return $cache->{$db_name};
+  }
+
+  my $db = $self->chado()->resultset('General::Db')->find({ name => $db_name });
+  $cache->{$db_name} = $db;
+  die "no db with name: $db_name" unless defined $db;
+
+  return $db;
 }
 
 method add_feature_dbxref($feature, $dbxref_value)
