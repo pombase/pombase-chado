@@ -50,7 +50,6 @@ with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 
 has organism => (is => 'ro',
                  required => 1,
-                 isa => 'Bio::Chado::Schema::Organism::Organism',
                 );
 has gene_data => (is => 'ro', isa => 'HashRef',
                   init_arg => undef,
