@@ -254,7 +254,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
   my $mapping_conf = $self->config()->{mappings}->{$cv_name};
 
   if (defined $mapping_conf) {
-    $cv_name = $mapping_conf->{name_name};
+    $cv_name = $mapping_conf->{new_name};
 
     my $mapping = $mapping_conf->{mapping};
     my $new_term_id = $mapping->{$term};
