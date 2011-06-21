@@ -231,6 +231,10 @@ method find_cvterm_by_term_id($term_id)
 
     my $db = $chado->resultset('General::Db')->find({ name => $db_name });
 
+    if (!defined $db) {
+      die "no db found for $db_name\n";
+    }
+
     my $cvterm_rs = $chado->resultset('General::Dbxref')
       ->search({ db_id => $db->db_id(),
                  accession => $accession })->search_related('cvterm');
