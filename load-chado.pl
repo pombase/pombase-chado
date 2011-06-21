@@ -5,7 +5,7 @@ use perl5i::2;
 use Bio::SeqIO;
 use Bio::Chado::Schema;
 use Memoize;
-use Getopt::Std;
+use Getopt::Long;
 use YAML qw(LoadFile);
 
 BEGIN {
@@ -24,6 +24,7 @@ my $verbose = 0;
 my $quiet = 0;
 my $dry_run = 0;
 my $test = 0;
+my @mappings = ();
 
 sub usage {
   die "$0 [-v] [-d] <embl_file> ...\n";
@@ -31,18 +32,12 @@ sub usage {
 
 my %opts = ();
 
-if (!getopts('vdqt', \%opts)) {
+if (!GetOptions("verbose|v=s" => \$verbose,
+                "dry-run|d=s" => \$dry_run,
+                "quiet|q=s" => \$quiet,
+                "test|t=s" => \$test,
+                "mapping|m=s" => \@mappings)) {
   usage();
-}
-
-if ($opts{v}) {
-  $verbose = 1;
-}
-if ($opts{d}) {
-  $dry_run = 1;
-}
-if ($opts{t}) {
-  $test = 1;
 }
 
 my $config_file = shift;
@@ -57,7 +52,37 @@ my $guard = $chado->txn_scope_guard;
 # load extra CVs, cvterms and dbxrefs
 print "loading genes into $database ...\n" unless $quiet;
 
+func read_mapping($file_name)
+{
+  my %ret = ();
+
+  open my $file, '<', $file_name or die "$!: $file_name\n";
+
+  <$file>;
+
+  while (defined (my $line = <$file>)) {
+    if ($line =~ /(.*?),\s*(.*?)\s+(\S+)$/) {
+      $ret{$2} = $3;
+    }
+  }
+
+  return \%ret;
+}
+
+func process_mappings(@mappings)
+{
+  return map {
+    if (/(.*):(.*):(.*)/) {
+      ($1, { new_name => $2, mapping => read_mapping($3) });
+    } else {
+      warn "unknown mapping: $_\n";
+      usage();
+    }
+  } @mappings;
+}
+
 $config->{test_mode} = $test;
+$config->{mappings} = {process_mappings(@mappings)};
 
 my $organism = PomBase::Load::init_objects($chado, $config);
 

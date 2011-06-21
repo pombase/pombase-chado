@@ -57,6 +57,11 @@ method is_go_cv_name($cv_name) {
   return grep { $_ eq $cv_name } values %go_cv_map;
 }
 
+method is_ontology_name($cv_name) {
+  return $self->is_go_cv_name($cv_name) or $cv_name eq 'phenotype';
+}
+
+
 method BUILD
 {
   my $chado = $self->chado();

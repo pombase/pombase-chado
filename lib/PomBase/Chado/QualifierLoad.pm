@@ -247,6 +247,23 @@ method find_cvterm_by_term_id($term_id)
 
 method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
                        $create_cvterm) {
+  my $mapping_conf = $self->config()->{mappings}->{$cv_name};
+
+  if (defined $mapping_conf) {
+    $cv_name = $mapping_conf->{name_name};
+
+    my $mapping = $mapping_conf->{mapping};
+    my $new_term_id = $mapping->{$term};
+
+    my $new_term = $self->find_cvterm_by_term_id($new_term_id);
+
+    if ($self->verbose()) {
+      print "mapping $term to $cv_name/", $new_term->name(), "\n";
+    }
+
+    $term = $new_term->name();
+  }
+
   my $cv = $self->find_cv_by_name($cv_name);
 
   my $db_accession;
