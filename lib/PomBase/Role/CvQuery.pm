@@ -77,6 +77,12 @@ method find_cvterm($cv, $term_name, %options) {
     $cv = $self->get_cv($cv);
   }
 
+  state $cache = {};
+
+  if (exists $cache->{$cv->name()}->{$term_name}) {
+    return $cache->{$cv->name()}->{$term_name};
+  }
+
   my %search_options = ();
 
   if ($options{prefetch_dbxref}) {
@@ -135,7 +141,6 @@ method find_cvterm($cv, $term_name, %options) {
   }
 
 }
-#memoize ('find_cvterm');
 
 method find_cvterm_by_accession($db_accession)
 {
