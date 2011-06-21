@@ -32,10 +32,10 @@ sub usage {
 
 my %opts = ();
 
-if (!GetOptions("verbose|v=s" => \$verbose,
-                "dry-run|d=s" => \$dry_run,
-                "quiet|q=s" => \$quiet,
-                "test|t=s" => \$test,
+if (!GetOptions("verbose|v" => \$verbose,
+                "dry-run|d" => \$dry_run,
+                "quiet|q" => \$quiet,
+                "test|t" => \$test,
                 "mapping|m=s" => \@mappings)) {
   usage();
 }
