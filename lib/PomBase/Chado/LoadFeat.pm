@@ -172,7 +172,7 @@ method prepare_gene_data($uniquename)
   return $data;
 }
 
-method save_gene($feature, $uniquename)
+method save_cds($feature, $uniquename)
 {
   my $feat_type = $feature->primary_tag();
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
@@ -225,7 +225,7 @@ method process($feature, $chromosome)
     if ($so_type =~ /UTR/) {
       $self->save_utr($feature, $gene_uniquename);
     } else {
-      $self->save_gene($feature, $gene_uniquename);
+      $self->save_cds($feature, $gene_uniquename);
     }
     return;
   }
