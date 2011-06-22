@@ -360,9 +360,9 @@ method store_feature_parts($uniquename, $bioperl_feature, $chromosome, $so_type)
   return @new_parts;
 }
 
-method store_gene_parts($uniquename, $bioperl_cds, $chromosome,
-                        $transcript_so_type,
-                        $utrs_5_prime, $utrs_3_prime, $introns)
+method store_transcript_parts($uniquename, $bioperl_cds, $chromosome,
+                              $transcript_so_type,
+                              $utrs_5_prime, $utrs_3_prime, $introns)
 {
   my $chado = $self->chado();
   my $cds_location = $bioperl_cds->location();
@@ -462,14 +462,14 @@ method finalise($chromosome)
     warn "processing $so_type $uniquename\n";
 
     my ($gene_start, $gene_end, $chado_transcript) =
-      $self->store_gene_parts($uniquename,
-                              $bioperl_feature,
-                              $chromosome,
-                              $transcript_so_type,
-                              $feature_data->{"5'UTR_features"},
-                              $feature_data->{"3'UTR_features"},
-                              $feature_data->{"intron_features"},
-                             );
+      $self->store_transcript_parts($uniquename,
+                                    $bioperl_feature,
+                                    $chromosome,
+                                    $transcript_so_type,
+                                    $feature_data->{"5'UTR_features"},
+                                    $feature_data->{"3'UTR_features"},
+                                    $feature_data->{"intron_features"},
+                                  );
 
     my $chado_gene =
       $self->store_feature_and_loc($bioperl_feature, $chromosome, $so_type,
