@@ -36,7 +36,7 @@ while (defined (my $line = <>)) {
             print $all_warnings "$line";
             print $unknown_cv_names "$gene: $line";
           } else {
-            if ($line =~ /no term for:/) {
+            if ($line =~ /no term for:|qualifier not recognised/) {
               print $all_warnings "$line";
               print $qual_problems "$gene: $line";
             }
