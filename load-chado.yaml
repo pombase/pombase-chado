@@ -25,4 +25,6 @@ dbs:
   - InterPro
   - UniProtKB
   - UniProtKB/Swiss-Prot
-  
+
+allowed_unknown_term_names_file: /home/kmr44/Dropbox/pombase/chado_load/warnings-2011-06-21/ids_to_allow-unknown_term_names.txt
+allowed_term_mismatches_file: /home/kmr44/chado/embl_load/unknown_names_ids_ok.txt

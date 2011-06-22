@@ -87,8 +87,8 @@ FT   CDS             complement(join(1174829..1175365,1175755..1175865))
 FT                   /GO="aspect=C; term=endoplasmic reticulum;
 FT                   GOid=GO:0005783; evidence=IDA; db_xref=PMID:11069779;
 FT                   date=20050322"
-FT                   /GO="aspect=F; term=unfolded protein binding;
-FT                   GOid=GO:0051082; evidence=ISS; db_xref=GOC:unpublished;
+FT                   /GO="aspect=F; term=mRNA binding 3'-UTR binding;
+FT                   GOid=GO:0003730; evidence=ISS; db_xref=GOC:unpublished;
 FT                   with=SGD:S000002371; date=20050322"
 FT                   /GO="aspect=P; term=ER to Golgi vesicle-mediated
 FT                   transport; GOid=GO:0006888; evidence=ISS;

@@ -294,8 +294,12 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
 
     if (!defined $cvterm) {
       $cvterm = $self->find_cvterm_by_accession($db_accession);
-      warn "found cvterm by ID, but name doesn't match any cvterm: $db_accession " .
-        "EMBL file: $term  Chado name for ID: ", $cvterm->name(), "\n";
+      if ($self->config()->{allowed_unknown_term_names}->{$db_accession}) {
+        warn "ignoring unknown term name for: $db_accession\n";
+      } else {
+        warn "found cvterm by ID, but name doesn't match any cvterm: $db_accession " .
+          "EMBL file: $term  Chado name for ID: ", $cvterm->name(), "\n";
+      }
       $db_accession = undef;
     }
   }
@@ -316,11 +320,16 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
       if ($new_dbxref_accession ne $dbxref->accession()) {
         my $name_of_embl_cvterm =
           $self->find_cvterm_by_accession($db_accession);
-        die "ID in EMBL file ($db_accession) " .
-          "doesn't match ID in Chado (", $db->name(),
-          ":" . $dbxref->accession() .
+        my $key = "$db_accession\t$term";
+        if ($self->config()->{allowed_term_mismatches}->{$key}) {
+          warn "IGNORING mismatch for: $key";
+        } else {
+          die "ID in EMBL file ($db_accession) " .
+            "doesn't match ID in Chado (", $db->name(),
+            ":" . $dbxref->accession() .
             ") for EMBL term name $term   (Chado term name: ",
             $name_of_embl_cvterm->name(), ")\n";
+        }
       }
     } else {
       die "database ID ($db_accession) doesn't contain a colon";

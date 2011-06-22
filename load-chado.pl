@@ -84,6 +84,20 @@ func process_mappings(@mappings)
 $config->{test_mode} = $test;
 $config->{mappings} = {process_mappings(@mappings)};
 
+open my $unknown_names, '<', $config->{allowed_unknown_term_names_file} or die;
+while (defined (my $line = <$unknown_names>)) {
+  chomp $line;
+  $config->{allowed_unknown_term_names}->{$line} = 1;
+}
+close $unknown_names;
+
+open my $mismatches, '<', $config->{allowed_term_mismatches_file} or die;
+while (defined (my $line = <$mismatches>)) {
+  chomp $line;
+  $config->{allowed_term_mismatches}->{$line} = 1;
+}
+close $mismatches;
+
 my $organism = PomBase::Load::init_objects($chado, $config);
 
 my @files = @ARGV;
