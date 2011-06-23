@@ -132,6 +132,10 @@ method BUILD
     'disease associated' => 'disease_associated',
   };
 
+  $self->objs()->{gene_cvs} = {
+    map { ($_, 1) } qw(gene_ex species_dist name_description misc warning)
+  };
+
   for my $cv_name (keys %{$self->objs()->{cv_alt_names}}) {
     if (!exists $self->objs()->{cv_long_names}->{$cv_name}) {
       $self->objs()->{cv_long_names}->{$cv_name} = $cv_name;

@@ -466,6 +466,12 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
   my $org_name;
   my $gene_bit;
 
+  my $chado_object_type = $chado_object->type()->name();
+
+  if ($chado_object_type ne 'gene' && $chado_object_type ne 'pseudogene') {
+    return 1;
+  }
+
   my $date = delete $sub_qual_map->{date};
 
   if ($term =~ /^orthologous to S\. cerevisiae (.*)/) {
@@ -571,6 +577,12 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
     }
 
     if (grep { $_ eq $cv_name } keys %{$self->objs()->{cv_alt_names}}) {
+      my $chado_object_type = $chado_object->type()->name();
+
+      if ($self->objs()->{gene_cvs}->{$cv_name} xor
+          ($chado_object_type eq 'gene' or $chado_object_type eq 'pseudogene')) {
+        return ();
+      }
       try {
         $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 1);
       } catch {

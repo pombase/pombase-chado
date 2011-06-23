@@ -304,35 +304,39 @@ method process_qualifiers($bioperl_feature, $chado_object)
     }
   }
 
-  if ($bioperl_feature->has_tag("GO")) {
-    for my $value ($bioperl_feature->get_tag_values("GO")) {
-      my %unused_quals =
-      $self->qual_load()->process_one_go_qual($chado_object, $bioperl_feature, $value);
-      $self->qual_load()->check_unused_quals($value, %unused_quals);
-      warn "\n" if $verbose;
-    }
-  }
+  my $chado_object_type = $chado_object->type()->name();
 
-  if ($bioperl_feature->has_tag("note")) {
-    for my $note ($bioperl_feature->get_tag_values("note")) {
-      $self->store_note($chado_object, $note);
-    }
-  }
-
-  if ($bioperl_feature->has_tag("db_xref")) {
-    for my $dbxref_value ($bioperl_feature->get_tag_values("db_xref")) {
-      $self->add_feature_dbxref($chado_object, $dbxref_value);
-    }
-  }
-
-  if ($bioperl_feature->has_tag("EC_number")) {
-    my @ec_numbers = $bioperl_feature->get_tag_values("EC_number");
-    for my $ec_number (@ec_numbers) {
-      $self->store_ec_number($chado_object, $ec_number);
+  if ($chado_object_type eq 'gene' || $chado_object_type eq 'pseudogene') {
+    if ($bioperl_feature->has_tag("note")) {
+      for my $note ($bioperl_feature->get_tag_values("note")) {
+        $self->store_note($chado_object, $note);
+      }
     }
 
-    if ($type ne 'CDS') {
-      warn "$uniquename $type has ", scalar(@ec_numbers), " /EC_number qualifier(s)"
+    if ($bioperl_feature->has_tag("db_xref")) {
+      for my $dbxref_value ($bioperl_feature->get_tag_values("db_xref")) {
+        $self->add_feature_dbxref($chado_object, $dbxref_value);
+      }
+    }
+
+    if ($bioperl_feature->has_tag("EC_number")) {
+      my @ec_numbers = $bioperl_feature->get_tag_values("EC_number");
+      for my $ec_number (@ec_numbers) {
+        $self->store_ec_number($chado_object, $ec_number);
+      }
+
+      if ($type ne 'CDS') {
+        warn "$uniquename $type has ", scalar(@ec_numbers), " /EC_number qualifier(s)"
+      }
+    }
+  } else {
+    if ($bioperl_feature->has_tag("GO")) {
+      for my $value ($bioperl_feature->get_tag_values("GO")) {
+        my %unused_quals =
+        $self->qual_load()->process_one_go_qual($chado_object, $bioperl_feature, $value);
+        $self->qual_load()->check_unused_quals($value, %unused_quals);
+        warn "\n" if $verbose;
+      }
     }
   }
 }
@@ -505,6 +509,8 @@ method finalise($chromosome)
                                                  $chromosome, 'gene',
                                                  $gene_start, $gene_end);
       $self->gene_objects()->{$gene_uniquename} = $chado_gene;
+
+      $self->process_qualifiers($transcript_bioperl_feature, $chado_gene);
     }
 
     $self->store_feature_rel($chado_transcript, $chado_gene, 'part_of');
