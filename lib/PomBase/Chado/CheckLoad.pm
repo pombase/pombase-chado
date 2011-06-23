@@ -38,11 +38,19 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
-use Carp::Assert;
+use Carp::Assert qw(assert);
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
+
+func should($this, $that)
+{
+  if ($this ne $that) {
+    my @call = caller(0);
+    warn qq("$this" should be "$that" at $call[1] line $call[2].\n);
+  }
+}
 
 method check
 {
@@ -55,10 +63,10 @@ method check
   should ($loc_rs->count(), 52);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 8);
+  should ($feature_prop_rs->count(), 11);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
-  should ($feature_dbxref_rs->count(), 6);
+  should ($feature_dbxref_rs->count(), 12);
 
   my $feature_synonym_rs = $chado->resultset('Sequence::FeatureSynonym');
   should ($feature_synonym_rs->count(), 1);
@@ -74,15 +82,17 @@ method check
       organism_id => $pombe->organism_id(),
     }, { order_by => 'uniquename' });
 
-  should ($gene_rs->count(), 5);
+  should ($gene_rs->count(), 7);
 
   my $gene = $gene_rs->next();
 
-  should ($gene->uniquename(), "SPAC977.10");
-  should ($gene->feature_cvterms()->count(), 12);
+  should ($gene->uniquename(), "SPAC1556.06");
+  should ($gene->feature_cvterms()->count(), 7);
 
+  my $transcript = $chado->resultset('Sequence::Feature')
+          ->find({ uniquename => 'SPAC977.10.1'});
   my $cvterms_rs =
-    $gene->feature_cvterms()->search_related('cvterm');
+    $transcript->feature_cvterms()->search_related('cvterm');
   assert (grep { $_->name() eq 'plasma membrane' } $cvterms_rs->all());
 
   my $product_cv = $chado->resultset('Cv::Cv')
@@ -98,12 +108,12 @@ method check
   my $seq_feat_rs =
     $chado->resultset('Cv::Cvterm')->search({ cv_id => $seq_feat_cv->cv_id() });
 
-  should ($seq_feat_rs->count(), 5);
+  should ($seq_feat_rs->count(), 6);
 
   my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
 
   my $feature_cvterm_rs =
-    $gene->feature_cvterms()->search({
+    $transcript->feature_cvterms()->search({
       cvterm_id => $coiled_coil_cvterm->cvterm_id()
     });
 
@@ -114,12 +124,12 @@ method check
   should ($props[0], '19700101');
   should ($props[1], 'predicted');
   should ($props[2], 'region');
-  should(@props, 3);
+  should(scalar(@props), 3);
 
-  should($chado->resultset('Sequence::FeatureCvtermprop')->all(), 64);
+  should(scalar($chado->resultset('Sequence::FeatureCvtermprop')->all()), 83);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
-  should ($feat_rs->count(), 43);
+  should ($feat_rs->count(), 57);
 
   print "All features:\n";
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
