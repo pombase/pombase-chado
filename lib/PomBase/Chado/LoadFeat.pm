@@ -461,8 +461,6 @@ method finalise($chromosome)
 
     my $so_type = $feature_data->{so_type};
 
-    my $gene_systematic_id = $feature_data->{gene_uniquename};
-
     if (!$so_type) {
       use Data::Dumper;
       $Data::Dumper::Maxdepth = 5;
@@ -499,10 +497,15 @@ method finalise($chromosome)
 
     $self->process_qualifiers($transcript_bioperl_feature, $chado_transcript);
 
-    my $chado_gene =
-      $self->store_feature_and_loc($transcript_bioperl_feature,
-                                   $chromosome, 'gene',
-                                   $gene_start, $gene_end);
+    my $gene_uniquename = $feature_data->{gene_uniquename};
+    my $chado_gene = $self->gene_objects()->{$gene_uniquename};
+
+    if (!defined $chado_gene) {
+      $chado_gene = $self->store_feature_and_loc($transcript_bioperl_feature,
+                                                 $chromosome, 'gene',
+                                                 $gene_start, $gene_end);
+      $self->gene_objects()->{$gene_uniquename} = $chado_gene;
+    }
 
     $self->store_feature_rel($chado_transcript, $chado_gene, 'part_of');
   }
