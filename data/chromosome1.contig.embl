@@ -6,6 +6,7 @@ FH   Key             Location/Qualifiers
 FH
 FT   tRNA            5..50
 FT                   /gene="SPBTRNAGLY.06"
+FT                   /systematic_id="SPBTRNAGLY.06"
 FT                   /product="tRNA Lysine"
 FT                   /GO="aspect=C; term=cytoplasm; GOid=GO:0005737;
 FT                   evidence=RCA; db_xref=GOC:unpublished; date=20090711"
@@ -226,6 +227,74 @@ FT                   date=20091223"
 FT                   /note="4 frameshifts"
 FT   repeat_region   8497..8547
 FT                   /note="(ttattttaagttttgtc)3"
+FT   CDS             join(7100..7150,7200..7250)
+FT                   /colour=8
+FT                   /primary_name="meu1"
+FT                   /product="sequence orphan"
+FT                   /synonym="SPAC1556.06"
+FT                   /systematic_id="SPAC1556.06.1"
+FT                   /controlled_curation="term=protein sequence feature, NLS;
+FT                   qualifier=predicted; db_xref=PMID:11376151;
+FT                   cv=sequence_feature; date=20060605"
+FT                   /controlled_curation="term=protein sequence feature,
+FT                   coiled-coil; qualifier=region; cv=sequence_feature;
+FT                   date=20060605"
+FT                   /controlled_curation="term=gene expression, alternative
+FT                   transcripts; db_xref=PMID:11376151; cv=gene_ex;
+FT                   date=20060605"
+FT                   /controlled_curation="term=species distribution, sequence
+FT                   orphan; date=19700101"
+FT                   /controlled_curation="term=species distribution, sequence
+FT                   orphan, uncharacterised; date=20081110"
+FT                   /controlled_curation="term=species distribution,
+FT                   identified in S. pombe only; date=20081110"
+FT                   /controlled_curation="term=species distribution, no
+FT                   apparent orthologs; date=20090303"
+FT                   /controlled_curation="term=name description, Meiotic
+FT                   Expression Upregulated; cv=name_description;
+FT                   db_xref=PMID:11376151; date=19700101"
+FT                   /controlled_curation="term=gene expression, expressed
+FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
+FT                   date=20100103"
+FT                   /shared_id="SPAC1556.06"
+FT   CDS             join(7050..7150,7200..7250)
+FT                   /colour=8
+FT                   /other_transcript="SPAC1556.06.1"
+FT                   /primary_name="meu2"
+FT                   /product="sequence orphan"
+FT                   /shared_id="SPAC1556.06"
+FT                   /synonym="SPAC1556.06b"
+FT                   /synonym="SPAC1556.06"
+FT                   /systematic_id="SPAC1556.06.2"
+FT                   /controlled_curation="term=protein sequence feature, NLS;
+FT                   qualifier=predicted; db_xref=PMID:11376151;
+FT                   cv=sequence_feature; date=20060605"
+FT                   /controlled_curation="term=gene expression, alternative
+FT                   transcripts; cv=gene_ex; db_xref=PMID:11376151;
+FT                   date=20060605"
+FT                   /controlled_curation="term=species distribution, sequence
+FT                   orphan; date=19700101"
+FT                   /controlled_curation="term=gene expression, expressed
+FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
+FT                   date=20100103"
+FT                   /controlled_curation="term=species distribution, sequence
+FT                   orphan, uncharacterised; date=20081110"
+FT                   /controlled_curation="term=species distribution,
+FT                   identified in S. pombe only; date=20081110"
+FT                   /controlled_curation="term=species distribution, no
+FT                   apparent orthologs; date=20090303"
+FT                   /controlled_curation="term=name description, Meiotic
+FT                   Expression Upregulated; cv=name_description;
+FT                   db_xref=PMID:11376151; date=19700101"
+FT                   /controlled_curation="term=gene expression, expressed
+FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
+FT                   date=20100103"
+FT   intron          3804588..3804660
+FT                   /note="intron confirmed by mRNA"
+FT                   /systematic_id="SPAC1556.06.1"
+FT   intron          3804588..3804660
+FT                   /note="intron confirmed by mRNA"
+FT                   /systematic_id="SPAC1556.06.2"
 SQ   Sequence 8613 BP; 2680 A; 1465 C; 1504 G; 2964 T; 0 other;
      ataacaacgg tttattgttt aaaggctaga agtaatgaaa atcgtctttt ataaaagtct        60
      aaatagtatg aaatttgata ttaagtaagc gagtggcctt aaacgctcta tattctggat       120

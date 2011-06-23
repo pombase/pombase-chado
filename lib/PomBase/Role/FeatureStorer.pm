@@ -49,7 +49,7 @@ method store_feature($uniquename, $name, $synonyms, $so_type)
   my $so_cvterm = $self->get_cvterm('sequence', $so_type);
 
   warn "  storing $uniquename/", ($name ? $name : 'no_name'),
-    " ($so_type)\n" if $self->verbose();
+    " ($so_type)" if $self->verbose();
 
   my %create_args = (
     type_id => $so_cvterm->cvterm_id(),
@@ -96,8 +96,13 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
 {
   my $chado = $self->chado();
 
-  my ($uniquename, $gene_uniquename)
-    = $self->get_uniquename($feature, $so_type);
+  my ($uniquename, $transcript_uniquename, $gene_uniquename) =
+    $self->get_uniquename($feature, $so_type);
+
+  if ($so_type eq 'gene') {
+    $uniquename = $gene_uniquename;
+  }
+
   my $name = undef;
 
   if ($feature->has_tag('primary_name')) {

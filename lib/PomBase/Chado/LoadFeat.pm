@@ -51,11 +51,11 @@ with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 has organism => (is => 'ro',
                  required => 1,
                 );
-has gene_data => (is => 'ro', isa => 'HashRef',
+has transcript_data => (is => 'ro', isa => 'HashRef',
                   init_arg => undef,
                   default => sub {
-                    tie my %gene_data, 'Tie::Hash::Indexed';
-                    return \%gene_data;
+                    tie my %transcript_data, 'Tie::Hash::Indexed';
+                    return \%transcript_data;
                   },
                 );
 has qual_load => (is => 'ro', isa => 'PomBase::Chado::QualifierLoad',
@@ -63,6 +63,9 @@ has qual_load => (is => 'ro', isa => 'PomBase::Chado::QualifierLoad',
                   lazy => 1,
                   builder => '_build_qual_load');
 has verbose => (is => 'ro', isa => 'Bool');
+
+has gene_objects => (is => 'ro', init_arg => undef, isa => 'HashRef',
+                     default => sub { {} });
 
 method _build_qual_load
 {
@@ -79,33 +82,33 @@ method _build_qual_load
 my %feature_loader_conf = (
   CDS => {
     save => 1,
-    so_type => 'gene',
-    transcript_so_type => 'mRNA',
+    transcript => 1,
+    so_type => 'mRNA',
   },
   misc_RNA => {
     save => 1,
-    so_type => 'gene',
-    transcript_so_type => 'ncRNA',
+    transcript => 1,
+    so_type => 'ncRNA',
   },
   tRNA => {
     save => 1,
-    so_type => 'gene',
-    transcript_so_type => 'tRNA',
+    transcript => 1,
+    so_type => 'tRNA',
   },
   snoRNA => {
     save => 1,
-    so_type => 'gene',
-    transcript_so_type => 'snoRNA',
+    transcript => 1,
+    so_type => 'snoRNA',
   },
   snRNA => {
     save => 1,
-    so_type => 'gene',
-    transcript_so_type => 'snRNA',
+    transcript => 1,
+    so_type => 'snRNA',
   },
   rRNA => {
     save => 1,
-    so_type => 'gene',
-    transcript_so_type => 'rRNA',
+    transcript => 1,
+    so_type => 'rRNA',
   },
   LTR => {
     so_type => 'long_terminal_repeat',
@@ -154,15 +157,15 @@ my %feature_loader_conf = (
   },
 );
 
-method prepare_gene_data($uniquename)
+method prepare_transcript_data($transcript_uniquename, $gene_uniquename)
 {
   my $data;
 
-  if (defined $self->gene_data()->{$uniquename}) {
-    $data = $self->gene_data()->{$uniquename};
+  if (defined $self->transcript_data()->{$transcript_uniquename}) {
+    $data = $self->transcript_data()->{$transcript_uniquename};
   } else {
     $data = {};
-    $self->gene_data()->{$uniquename} = $data;
+    $self->transcript_data()->{$transcript_uniquename} = $data;
   }
 
   push @{$data->{"5'UTR_features"}}, ();
@@ -172,7 +175,7 @@ method prepare_gene_data($uniquename)
   return $data;
 }
 
-method save_cds($feature, $uniquename)
+method save_transcript($feature, $uniquename, $gene_uniquename)
 {
   my $feat_type = $feature->primary_tag();
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
@@ -182,27 +185,30 @@ method save_cds($feature, $uniquename)
     return;
   }
 
-  my $data = $self->prepare_gene_data($uniquename);
+#  warn "SAVE_TRANSCRIPT: $uniquename\n";
+
+  my $data = $self->prepare_transcript_data($uniquename, $gene_uniquename);
 
   $data->{bioperl_feature} = $feature;
   $data->{so_type} = $so_type;
+  $data->{gene_uniquename} = $gene_uniquename;
   $data->{transcript_so_type} =
-    $feature_loader_conf{$feat_type}->{transcript_so_type};
+    $feature_loader_conf{$feat_type}->{so_type};
 }
 
-method save_utr($feature, $uniquename)
+method save_utr($feature, $uniquename, $transcript_uniquename, $gene_uniquename)
 {
   my $feat_type = $feature->primary_tag();
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
 
-  my $data = $self->prepare_gene_data($uniquename);
+  my $data = $self->prepare_transcript_data($transcript_uniquename, $gene_uniquename);
 
   my %feature_data = (
     bioperl_feature => $feature,
     chado_feature => undef,
   );
 
-  push @{$self->gene_data()->{$uniquename}->{"${feat_type}_features"}},
+  push @{$self->transcript_data()->{$transcript_uniquename}->{"${feat_type}_features"}},
        {%feature_data};
 }
 
@@ -216,16 +222,17 @@ method process($feature, $chromosome)
     return;
   }
 
-  my ($uniquename, $gene_uniquename, $has_systematic_id) =
+  my ($uniquename, $transcript_uniquename, $gene_uniquename, $has_systematic_id) =
     $self->get_uniquename($feature, $so_type);
 
-  warn "processing $feat_type $uniquename\n";
+  warn "processing $feat_type $uniquename",
+    defined $gene_uniquename ? " from gene: $gene_uniquename\n" : "\n";
 
   if ($feature_loader_conf{$feat_type}->{save}) {
     if ($so_type =~ /UTR/) {
-      $self->save_utr($feature, $gene_uniquename);
+      $self->save_utr($feature, $uniquename, $transcript_uniquename, $gene_uniquename);
     } else {
-      $self->save_cds($feature, $gene_uniquename);
+      $self->save_transcript($feature, $uniquename, $gene_uniquename);
     }
     return;
   }
@@ -244,7 +251,7 @@ method process($feature, $chromosome)
       chado_feature => $chado_feature,
     );
 
-    push @{$self->gene_data()->{$gene_uniquename}->{"${feat_type}_features"}},
+    push @{$self->transcript_data()->{$transcript_uniquename}->{"${feat_type}_features"}},
          {%feature_data};
   }
 
@@ -339,12 +346,7 @@ method store_feature_parts($uniquename, $bioperl_feature, $chromosome, $so_type)
 
   for (my $i = 0; $i < @coords_list; $i++) {
     my ($start, $end) = @{$coords_list[$i]};
-    my $prefix;
-    if ($so_type =~ /exon$/) {
-      $prefix = "$uniquename:exon:"
-    } else {
-      $prefix = "$uniquename.1:$so_type:"
-    }
+    my $prefix = "$uniquename:$so_type:";
     my $part_uniquename = $prefix . ($i + 1);
     my $chado_sub_feature =
       $self->store_feature($part_uniquename, undef, [], $so_type);
@@ -360,14 +362,19 @@ method store_feature_parts($uniquename, $bioperl_feature, $chromosome, $so_type)
   return @new_parts;
 }
 
-method store_transcript_parts($uniquename, $bioperl_cds, $chromosome,
+method store_transcript_parts($bioperl_cds, $chromosome,
                               $transcript_so_type,
                               $utrs_5_prime, $utrs_3_prime, $introns)
 {
+  my $uniquename = ($bioperl_cds->get_tag_values('systematic_id'))[0];
+  if ($uniquename !~ /\.\d$/) {
+    $uniquename .= '.1';
+  }
+
   my $chado = $self->chado();
   my $cds_location = $bioperl_cds->location();
-  my $gene_start = $cds_location->start();
-  my $gene_end = $cds_location->end();
+  my $transcript_start = $cds_location->start();
+  my $transcript_end = $cds_location->end();
 
   my @utrs_data = (@$utrs_5_prime, @$utrs_3_prime);
 
@@ -376,17 +383,15 @@ method store_transcript_parts($uniquename, $bioperl_cds, $chromosome,
     my $utr_start = $featureloc->start();
     my $utr_end = $featureloc->end();
 
-    if ($utr_start < $gene_start) {
-      $gene_start = $utr_start;
+    if ($utr_start < $transcript_start) {
+      $transcript_start = $utr_start;
     }
-    if ($utr_end > $gene_end) {
-      $gene_end = $utr_end;
+    if ($utr_end > $transcript_end) {
+      $transcript_end = $utr_end;
     }
   }
 
   my $exon_so_type;
-
-  my $transcript_uniquename = "$uniquename.1";
 
   if ($bioperl_cds->has_tag('pseudo')) {
     $transcript_so_type = 'pseudogenic_transcript';
@@ -395,13 +400,13 @@ method store_transcript_parts($uniquename, $bioperl_cds, $chromosome,
     $exon_so_type = 'exon';
   }
 
-  my $chado_transcript = $self->store_feature($transcript_uniquename, undef, [],
+  my $chado_transcript = $self->store_feature($uniquename, undef, [],
                                         $transcript_so_type);
   my $strand = $bioperl_cds->location()->strand();
   $self->store_location($chado_transcript, $chromosome, $strand,
-                        $gene_start, $gene_end);
+                        $transcript_start, $transcript_end);
 
-  my @exons = $self->store_feature_parts($transcript_uniquename, $bioperl_cds,
+  my @exons = $self->store_feature_parts($uniquename, $bioperl_cds,
                                          $chromosome, $exon_so_type);
 
   for my $exon (@exons) {
@@ -431,39 +436,52 @@ method store_transcript_parts($uniquename, $bioperl_cds, $chromosome,
   }
 
   if ($transcript_so_type eq 'mRNA') {
-    my $chado_peptide = $self->store_feature("$transcript_uniquename:pep", undef,
+    my $chado_peptide = $self->store_feature("$uniquename:pep", undef,
                                              [], 'polypeptide');
 
     $self->store_feature_rel($chado_peptide, $chado_transcript, 'derives_from');
 
     $self->store_location($chado_peptide, $chromosome, $strand,
-                          $gene_start, $gene_end);
+                          $transcript_start, $transcript_end);
 
     $self->store_product($bioperl_cds, $chado_peptide, $uniquename);
   } else {
     $self->store_product($bioperl_cds, $chado_transcript, $uniquename);
   }
 
-  return ($gene_start, $gene_end, $chado_transcript);
+  return ($transcript_start, $transcript_end, $chado_transcript);
 }
 
 
 method finalise($chromosome)
 {
-  while (my ($uniquename, $feature_data) = each %{$self->gene_data()}) {
-    my $bioperl_feature = $feature_data->{bioperl_feature};
+  while (my ($uniquename, $feature_data) = each %{$self->transcript_data()}) {
+    my $gene_start = 9999999999;
+    my $gene_end = -1;
+
     my $so_type = $feature_data->{so_type};
+
+    my $gene_systematic_id = $feature_data->{gene_uniquename};
+
+    if (!$so_type) {
+      use Data::Dumper;
+      $Data::Dumper::Maxdepth = 5;
+      warn 'no SO type:', Dumper([$feature_data]), "\n";
+    }
+
+    my $transcript_bioperl_feature = $feature_data->{bioperl_feature};
+
     my $transcript_so_type = $feature_data->{transcript_so_type};
 
-    if (!defined $bioperl_feature) {
+
+    if (!defined $transcript_bioperl_feature) {
       die "no feature for $uniquename\n";
     }
 
     warn "processing $so_type $uniquename\n";
 
-    my ($gene_start, $gene_end, $chado_transcript) =
-      $self->store_transcript_parts($uniquename,
-                                    $bioperl_feature,
+    my ($transcript_start, $transcript_end, $chado_transcript) =
+      $self->store_transcript_parts($transcript_bioperl_feature,
                                     $chromosome,
                                     $transcript_so_type,
                                     $feature_data->{"5'UTR_features"},
@@ -471,11 +489,20 @@ method finalise($chromosome)
                                     $feature_data->{"intron_features"},
                                   );
 
-    my $chado_gene =
-      $self->store_feature_and_loc($bioperl_feature, $chromosome, $so_type,
-                                   $gene_start, $gene_end);
+    if ($transcript_start < $gene_start) {
+      $gene_start = $transcript_start;
+    }
 
-    $self->process_qualifiers($bioperl_feature, $chado_gene);
+    if ($transcript_end > $gene_end) {
+      $gene_end = $transcript_end;
+    }
+
+    $self->process_qualifiers($transcript_bioperl_feature, $chado_transcript);
+
+    my $chado_gene =
+      $self->store_feature_and_loc($transcript_bioperl_feature,
+                                   $chromosome, 'gene',
+                                   $gene_start, $gene_end);
 
     $self->store_feature_rel($chado_transcript, $chado_gene, 'part_of');
   }
