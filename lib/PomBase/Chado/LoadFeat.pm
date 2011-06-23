@@ -157,6 +157,15 @@ my %feature_loader_conf = (
   },
 );
 
+my %so_transcript_types = (pseudogenic_transcript => 1);
+
+map {
+  my $conf = $feature_loader_conf{$_};
+  if ($conf->{transcript}) {
+    $so_transcript_types{$conf->{so_type}} = 1;
+  }
+} keys %feature_loader_conf;
+
 method prepare_transcript_data($transcript_uniquename, $gene_uniquename)
 {
   my $data;
@@ -306,15 +315,17 @@ method process_qualifiers($bioperl_feature, $chado_object)
 
   my $chado_object_type = $chado_object->type()->name();
 
-  if ($bioperl_feature->has_tag("note")) {
-    for my $note ($bioperl_feature->get_tag_values("note")) {
-      $self->store_note($chado_object, $note);
+  if (!$so_transcript_types{$chado_object_type}) {
+    # will be add to the gene instead
+    if ($bioperl_feature->has_tag("note")) {
+      for my $note ($bioperl_feature->get_tag_values("note")) {
+        $self->store_note($chado_object, $note);
+      }
     }
-  }
-
-  if ($bioperl_feature->has_tag("db_xref")) {
-    for my $dbxref_value ($bioperl_feature->get_tag_values("db_xref")) {
-      $self->add_feature_dbxref($chado_object, $dbxref_value);
+    if ($bioperl_feature->has_tag("db_xref")) {
+      for my $dbxref_value ($bioperl_feature->get_tag_values("db_xref")) {
+        $self->add_feature_dbxref($chado_object, $dbxref_value);
+      }
     }
   }
 
