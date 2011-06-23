@@ -119,10 +119,10 @@ method find_or_create_cvterm($cv, $term_name) {
 
 my %stored_cvterms = ();
 
-method create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not) {
+method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
   my $rs = $self->chado()->resultset('Sequence::FeatureCvterm');
 
-  my $systematic_id = $pombe_gene->uniquename();
+  my $systematic_id = $chado_object->uniquename();
 
   warn "NO PUB\n" unless $pub;
 
@@ -133,7 +133,7 @@ method create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not) {
   my $rank =
     $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}++;
 
-  return $rs->create({ feature_id => $pombe_gene->feature_id(),
+  return $rs->create({ feature_id => $chado_object->feature_id(),
                        cvterm_id => $cvterm->cvterm_id(),
                        pub_id => $pub->pub_id(),
                        is_not => $is_not,
@@ -462,7 +462,7 @@ method find_chado_feature ($systematic_id, $try_name) {
   die "can't find feature for: $systematic_id\n";
 }
 
-method process_ortholog($pombe_gene, $term, $sub_qual_map) {
+method process_ortholog($chado_object, $term, $sub_qual_map) {
   my $org_name;
   my $gene_bit;
 
@@ -491,7 +491,7 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
   }
 
   for my $ortholog_name (@gene_names) {
-    warn "    creating ortholog from ", $pombe_gene->uniquename(),
+    warn "    creating ortholog from ", $chado_object->uniquename(),
       " to $ortholog_name\n" if $self->verbose();
 
     my $ortholog_feature = undef;
@@ -507,7 +507,7 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
 
     try {
       my $orth_guard = $self->chado()->txn_scope_guard;
-      my $rel = $rel_rs->create({ object_id => $pombe_gene->feature_id(),
+      my $rel = $rel_rs->create({ object_id => $chado_object->feature_id(),
                                   subject_id => $ortholog_feature->feature_id(),
                                   type_id => $self->objs()->{orthologous_to_cvterm}->cvterm_id()
                                 });
@@ -525,8 +525,8 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
 }
 
 
-method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
-  my $systematic_id = $pombe_gene->uniquename();
+method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
+  my $systematic_id = $chado_object->uniquename();
 
   warn "    process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
     if $self->verbose();
@@ -572,7 +572,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
 
     if (grep { $_ eq $cv_name } keys %{$self->objs()->{cv_alt_names}}) {
       try {
-        $self->add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 1);
+        $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 1);
       } catch {
         warn "$_: failed to load qualifier '$qualifier' from $systematic_id\n";
         $self->dump_feature($bioperl_feature) if $self->verbose();
@@ -585,7 +585,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     }
   } else {
     try {
-      if (!$self->process_ortholog($pombe_gene, $term, \%qual_map)) {
+      if (!$self->process_ortholog($chado_object, $term, \%qual_map)) {
         warn "qualifier not recognised: $qualifier\n";
         return ();
       }
@@ -598,7 +598,7 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
   return %qual_map;
 }
 
-method process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
+method process_one_go_qual($chado_object, $bioperl_feature, $qualifier) {
   warn "    go qualifier: $qualifier\n" if $self->verbose();
 
   my %qual_map = ();
@@ -622,9 +622,9 @@ method process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
     my $term = delete $qual_map{term};
 
     try {
-      $self->add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 0);
+      $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 0);
     } catch {
-      my $systematic_id = $pombe_gene->uniquename();
+      my $systematic_id = $chado_object->uniquename();
       warn "$_: failed to load qualifier '$qualifier' from $systematic_id:\n";
       $self->dump_feature($bioperl_feature) if $self->verbose();
       return ();
