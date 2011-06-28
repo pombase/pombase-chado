@@ -54,6 +54,7 @@ func _load_genes($chado, $organism, $test_mode) {
     warn "loading from cache file: $file_name\n";
     @res = LoadFile($file_name);
   } else {
+    warn "getting gene information via InterMine API for $org_name\n";
     @res = PomBase::External::get_genes($org_name);
     DumpFile($file_name, @res);
   }

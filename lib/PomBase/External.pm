@@ -77,8 +77,10 @@ func get_genes($species) {
   my $secondary_tag = 'Gene.secondaryIdentifier';
   my $name_tag = 'Gene.name';
   my $symbol_tag = 'Gene.symbol';
+  my $description_tag = 'Gene.description';
 
-  my @view = ($primary_tag, $secondary_tag, $name_tag, $symbol_tag);
+  my @view = ($primary_tag, $secondary_tag, $name_tag, $symbol_tag,
+              $description_tag);
 
   $query->add_view(@view);
 
@@ -102,6 +104,7 @@ func get_genes($species) {
       secondary_identifier => $secondary_identifier,
       name => $_->{$name_tag},
       symbol => $_->{$symbol_tag},
+      description => $_->{$symbol_tag},
     }
   } @$res;
 }
