@@ -78,8 +78,10 @@ method find_or_create_synonym($synonym_name, $type_name)
   });
 }
 
-method store_feature_synonym($feature, $synonym_name)
+method store_feature_synonym($feature, $synonym_name, $is_current)
 {
+  $is_current //= 1;
+
   my $synonym = $self->find_or_create_synonym($synonym_name, 'exact');
 
   my $pub = $self->objs()->{null_pub};
@@ -88,6 +90,7 @@ method store_feature_synonym($feature, $synonym_name)
     feature_id => $feature->feature_id(),
     synonym_id => $synonym->synonym_id(),
     pub_id => $pub->pub_id(),
+    is_current => $is_current,
   });
 }
 
@@ -152,11 +155,15 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
     next if $synonym eq $gene_uniquename;
     next if defined $name and $synonym eq $name;
 
-#    if (defined $name) {
-      $self->store_feature_synonym($chado_feature, $synonym);
-#    } else {
-#      $name = $synonym;
-#    }
+    $self->store_feature_synonym($chado_feature, $synonym);
+  }
+
+  if ($feature->has_tag('obsolete_name')) {
+    my @obsolete_names = $feature->get_tag_values('obsolete_name');
+    if (@obsolete_names > 1) {
+      warn "$uniquename has more than one /obsolete_name\n";
+    }
+    $self->store_feature_synonym($chado_feature, $obsolete_names[0], 0);
   }
 
   return $chado_feature;

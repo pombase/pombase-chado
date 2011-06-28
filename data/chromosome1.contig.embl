@@ -230,6 +230,7 @@ FT                   /note="(ttattttaagttttgtc)3"
 FT   CDS             join(7100..7150,7200..7250)
 FT                   /colour=8
 FT                   /primary_name="meu1"
+FT                   /obsolete_name="moo2"
 FT                   /product="sequence orphan"
 FT                   /synonym="SPAC1556.06"
 FT                   /systematic_id="SPAC1556.06.1"

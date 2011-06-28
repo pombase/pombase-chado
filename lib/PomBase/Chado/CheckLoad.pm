@@ -69,7 +69,7 @@ method check
   should ($feature_dbxref_rs->count(), 6);
 
   my $feature_synonym_rs = $chado->resultset('Sequence::FeatureSynonym');
-  should ($feature_synonym_rs->count(), 1);
+  should ($feature_synonym_rs->count(), 2);
 
   my $pombe = $chado->resultset('Organism::Organism')
     ->find({ species => 'pombe' });
