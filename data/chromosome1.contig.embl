@@ -61,7 +61,7 @@ FT                   /controlled_curation="term=phenotype, viable;
 FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
 FT                   date=20100406"
 FT                   /controlled_curation="term=orthologous to S. cerevisiae
-FT                   YLR138W; date=19700101"
+FT                   ylr138W; date=19700101"
 FT                   /controlled_curation="term=phenotype, viable;
 FT                   cv=phenotype; db_xref=PMID:1314171; date=20080227"
 FT                   /controlled_curation="term=species distribution, conserved

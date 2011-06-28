@@ -443,9 +443,23 @@ method add_feature_relationship_pub($relationship, $pub) {
 
 }
 
-method find_chado_feature ($systematic_id, $try_name) {
+method find_chado_feature ($systematic_id, $try_name, $ignore_case) {
   my $rs = $self->chado()->resultset('Sequence::Feature');
-  my $feature = $rs->find({ uniquename => $systematic_id });
+  my $feature;
+
+  warn "  looking up: $systematic_id\n" if $self->verbose();
+
+  if ($ignore_case) {
+    my @results = $rs->search(\[ "LOWER(uniquename) = ?",
+                              [ plain_value => lc $systematic_id ]])->all();
+    if (@results > 1) {
+      die "too many matches for $systematic_id\n";
+    } else {
+      $feature = $results[0];
+    }
+  } else {
+    $feature = $rs->find({ uniquename => $systematic_id });
+  }
 
   if (defined $feature) {
     return $feature;
@@ -454,7 +468,17 @@ method find_chado_feature ($systematic_id, $try_name) {
   }
 
   if ($try_name) {
-    $feature = $rs->find({ name => $systematic_id });
+    if ($ignore_case) {
+      my @results = $rs->search(\[ "LOWER(name) = ?",
+                                [ plain_value => lc $systematic_id ]])->all();
+      if (@results > 1) {
+        die "too many matches for $systematic_id\n";
+      } else {
+        $feature = $results[0];
+      }
+    } else {
+      $feature = $rs->find({ name => $systematic_id });
+    }
 
     return $feature if defined $feature;
   }
@@ -502,7 +526,9 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 
     my $ortholog_feature = undef;
     try {
-      $ortholog_feature = $self->find_chado_feature($ortholog_name, 1);
+      $ortholog_feature = $self->find_chado_feature($ortholog_name, 1, 1);
+    } catch {
+      warn "  caught exception: $_\n" if $self->verbose();
     };
 
     if (!defined $ortholog_feature) {
