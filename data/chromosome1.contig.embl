@@ -290,12 +290,96 @@ FT                   db_xref=PMID:11376151; date=19700101"
 FT                   /controlled_curation="term=gene expression, expressed
 FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
 FT                   date=20100103"
-FT   intron          3804588..3804660
+FT   intron          4588..4660
 FT                   /note="intron confirmed by mRNA"
 FT                   /systematic_id="SPAC1556.06.1"
-FT   intron          3804588..3804660
+FT   intron          4588..4660
 FT                   /note="intron confirmed by mRNA"
 FT                   /systematic_id="SPAC1556.06.2"
+FT   CDS             5851..6554
+FT                   /GO="aspect=C; term=eukaryotic translation initiation
+FT                   factor 3 complex, eIF3e complex; GOid=GO:0071540;
+FT                   evidence=IDA; db_xref=PMID:19061185; date=20100108"
+FT                   /GO="aspect=C; term=eukaryotic translation initiation
+FT                   factor 3 complex, eIF3m complex; GOid=GO:0071541;
+FT                   evidence=IDA; db_xref=PMID:19061185; date=20100108"
+FT                   /GO="aspect=F; term=protein binding; GOid=GO:0005515;
+FT                   evidence=IPI; db_xref=PMID:11102508;
+FT                   with=GeneDB_Spombe:SPAC18G6.15; date=20040908"
+FT                   /GO="aspect=F; term=protein binding; GOid=GO:0005515;
+FT                   evidence=IPI; db_xref=PMID:11121040;
+FT                   with=GeneDB_Spombe:SPBC646.09c; date=20040908"
+FT                   /GO="aspect=F; term=protein binding; GOid=GO:0005515;
+FT                   evidence=IPI; db_xref=PMID:9892665;
+FT                   with=GeneDB_Spombe:SPAC16E8.09; date=20040908"
+FT                   /GO="aspect=F; term=translation initiation factor
+FT                   activity; qualifier=contributes_to; GOid=GO:0003743;
+FT                   evidence=IC; db_xref=GOC:unpublished; from=GO:0005852;
+FT                   date=20040908"
+FT                   /GO="aspect=P; term=ascospore formation; GOid=GO:0030437;
+FT                   evidence=IMP; db_xref=PMID:19061185; date=20081211"
+FT                   /GO="aspect=P; term=cellular response to caffeine;
+FT                   GOid=GO:0071313; evidence=IMP; db_xref=PMID:19061185;
+FT                   date=20081211"
+FT                   /GO="aspect=P; term=eIF3 complex assembly;
+FT                   GOid=GO:0070196; evidence=IMP; db_xref=PMID:11705997;
+FT                   date=20081211"
+FT                   /GO="aspect=P; term=protein complex assembly;
+FT                   GOid=GO:0006461; evidence=IMP; db_xref=PMID:11705997;
+FT                   date=20081211"
+FT                   /GO="aspect=P; term=translational initiation;
+FT                   GOid=GO:0006413; evidence=TAS; db_xref=PMID:11705997;
+FT                   date=20040908"
+FT                   /GO="aspect=P; term=gamma tubulin complex localization;
+FT                   GOid=GO:0033566; evidence=IMP; db_xref=PMID:11102508;
+FT                   with=GeneDB_Spombe:SPAC18G6.15; date=20110211"
+FT                   /GO="aspect=P; term=spindle assembly involved in mitosis;
+FT                   GOid=GO:0090307; evidence=ISS; db_xref=GOC:unpublished;
+FT                   with=GeneDB_Spombe:SPAC18G6.15; date=20110211"
+FT                   /colour=2
+FT                   /fasta_file="fasta/chromosome1.contig.seq.01868.out"
+FT                   /primary_name="moe1"
+FT                   /product="translation initiation factor eIF3d Moe1"
+FT                   /systematic_id="SPAC637.07"
+FT                   /db_xref="SPD:35/35D10"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
+FT                   date=20100406"
+FT                   /controlled_curation="term=species distribution, no
+FT                   apparent S. cerevisiae ortholog; date=19700101"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Eukaryotes; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Metazoa; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Vertebrates; date=20081110"
+FT                   /controlled_curation="term=species distribution,
+FT                   predominantly uniformly single copy (one to one);
+FT                   date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Fungi; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Eukaryotes only; date=20081110"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   cv=phenotype; db_xref=PMID:11705997; date=20081211"
+FT                   /controlled_curation="term=phenotype, sensitive to
+FT                   caffeine; qualifier=deletion; cv=phenotype; date=20081211"
+FT                   /controlled_curation="term=phenotype, microtubule
+FT                   organization defects; qualifier=deletion; cv=phenotype;
+FT                   db_xref=PMID:9892665; date=20090926"
+FT                   /controlled_curation="term=phenotype, resistance to
+FT                   microtubule depolymerizing drugs; qualifier=deletion;
+FT                   db_xref=PMID:9892665; date=20090926"
+FT                   /controlled_curation="term=phenotype, spindle assembly
+FT                   abnormal; cv=phenotype; qualifier=deletion;
+FT                   db_xref=PMID:9892665; date=20090926"
+FT                   /controlled_curation="term=human moe1 ortholog;
+FT                   db_xref=PMID:9892665; date=20110211"
+FT                   /controlled_curation="term=complementation, functionally
+FT                   complemented by human moe1; db_xref=PMID:9892665;
+FT                   date=20110211"
+FT                   /gene="moe1"
+FT                   /gene="SPAC637.07"
 SQ   Sequence 8613 BP; 2680 A; 1465 C; 1504 G; 2964 T; 0 other;
      ataacaacgg tttattgttt aaaggctaga agtaatgaaa atcgtctttt ataaaagtct        60
      aaatagtatg aaatttgata ttaagtaagc gagtggcctt aaacgctcta tattctggat       120

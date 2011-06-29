@@ -57,16 +57,16 @@ method check
   my $chado = $self->chado();
 
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-  should ($rel_rs->count(), 40);
+  should ($rel_rs->count(), 44);
 
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
-  should ($loc_rs->count(), 52);
+  should ($loc_rs->count(), 56);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
   should ($feature_prop_rs->count(), 10);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
-  should ($feature_dbxref_rs->count(), 6);
+  should ($feature_dbxref_rs->count(), 7);
 
   my $feature_synonym_rs = $chado->resultset('Sequence::FeatureSynonym');
   should ($feature_synonym_rs->count(), 2);
@@ -82,7 +82,7 @@ method check
       organism_id => $pombe->organism_id(),
     }, { order_by => 'uniquename' });
 
-  should ($gene_rs->count(), 7);
+  should ($gene_rs->count(), 8);
 
   my $gene = $gene_rs->next();
 
@@ -126,10 +126,10 @@ method check
   should ($props[2], 'region');
   should(scalar(@props), 3);
 
-  should(scalar($chado->resultset('Sequence::FeatureCvtermprop')->all()), 83);
+  should(scalar($chado->resultset('Sequence::FeatureCvtermprop')->all()), 135);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
-  should ($feat_rs->count(), 57);
+  should ($feat_rs->count(), 61);
 
   print "All features:\n";
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
