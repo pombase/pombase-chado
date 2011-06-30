@@ -87,7 +87,7 @@ method check
   my $gene = $gene_rs->next();
 
   should ($gene->uniquename(), "SPAC1556.06");
-  should ($gene->feature_cvterms()->count(), 7);
+  should ($gene->feature_cvterms()->count(), 8);
 
   my $transcript = $chado->resultset('Sequence::Feature')
           ->find({ uniquename => 'SPAC977.10.1'});

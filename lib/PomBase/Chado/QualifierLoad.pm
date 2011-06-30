@@ -48,6 +48,7 @@ with 'PomBase::Role::FeatureDumper';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::FeatureCvtermCreator';
 
 has verbose => (is => 'ro', isa => 'Bool');
 
@@ -116,29 +117,6 @@ method find_or_create_cvterm($cv, $term_name) {
   return $cvterm;
 }
 
-
-my %stored_cvterms = ();
-
-method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
-  my $rs = $self->chado()->resultset('Sequence::FeatureCvterm');
-
-  my $systematic_id = $chado_object->uniquename();
-
-  warn "NO PUB\n" unless $pub;
-
-  if (!exists $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}) {
-    $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()} = 0;
-  }
-
-  my $rank =
-    $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}++;
-
-  return $rs->create({ feature_id => $chado_object->feature_id(),
-                       cvterm_id => $cvterm->cvterm_id(),
-                       pub_id => $pub->pub_id(),
-                       is_not => $is_not,
-                       rank => $rank });
-}
 
 method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
   if (!defined $name) {

@@ -41,9 +41,11 @@ use Moose;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureDumper';
 with 'PomBase::Role::Embl::SystematicID';
 with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::CoordCalculator';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
@@ -297,6 +299,32 @@ method store_ec_number($feature, $ec_number)
   $self->store_featureprop($feature, 'EC_number', $ec_number);
 }
 
+my %colour_map = (
+  2 => 'published',
+  4 => 'transposon',
+  6 => 'dubious',
+  7 => 'biological role inferred',
+  8 => 'sequence orphan',
+  10 => 'conserved unknown',
+  12 => 'fission yeast specific family',
+);
+
+method store_colour($feature, $colour)
+{
+  my $cvterm_name = $colour_map{$colour};
+
+  if (!defined $cvterm_name) {
+    warn "not storing /colour=$colour - unknown type\n";
+    return;
+  }
+
+  my $cvterm = $self->get_cvterm('PomBase gene knownesses',
+                                 $cvterm_name);
+
+  $self->create_feature_cvterm($feature, $cvterm,
+                               $self->objs()->{null_pub}, 0);
+}
+
 method process_qualifiers($bioperl_feature, $chado_object)
 {
   my $type = $bioperl_feature->primary_tag();
@@ -340,11 +368,21 @@ method process_qualifiers($bioperl_feature, $chado_object)
         warn "$uniquename $type has ", scalar(@ec_numbers), " /EC_number qualifier(s)"
       }
     }
+
+    if ($bioperl_feature->has_tag("colour")) {
+      my @colours = $bioperl_feature->get_tag_values("colour");
+
+      if (@colours > 1) {
+        warn "$type $uniquename has ", scalar(@colours), " /colours qualifier(s)"
+      }
+
+      $self->store_colour($chado_object, $colours[0]);
+    }
   } else {
     if ($bioperl_feature->has_tag("GO")) {
       for my $value ($bioperl_feature->get_tag_values("GO")) {
         my %unused_quals =
-        $self->qual_load()->process_one_go_qual($chado_object, $bioperl_feature, $value);
+          $self->qual_load()->process_one_go_qual($chado_object, $bioperl_feature, $value);
         $self->qual_load()->check_unused_quals($value, %unused_quals);
         warn "\n" if $verbose;
       }

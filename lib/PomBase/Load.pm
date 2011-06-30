@@ -102,13 +102,11 @@ func _load_cvterms($chado, $config)
 {
   my $db = $chado->resultset('General::Db')->find({ name => 'PomBase' });
 
-  my %cvterm_confs = %{$config->{cvterms}};
+  my %cv_confs = %{$config->{cvs}};
 
   my %cvs = ();
 
-  for my $cv_name (keys %cvterm_confs) {
-    my @cvterm_names = @{$cvterm_confs{$cv_name}};
-
+  for my $cv_name (keys %cv_confs) {
     my $cv;
 
     if (exists $cvs{$cv_name}) {
@@ -118,17 +116,31 @@ func _load_cvterms($chado, $config)
       $cvs{$cv_name} = $cv;
     }
 
-    for my $cvterm_name (@cvterm_names) {
+    my @cvterm_confs = @{$cv_confs{$cv_name}};
+
+    for my $cvterm_conf (@cvterm_confs) {
+      my $cvterm_name;
+      my $cvterm_definition;
+
+      if (ref $cvterm_conf) {
+        $cvterm_name = $cvterm_conf->{name};
+        $cvterm_definition = $cvterm_conf->{definition};
+      } else {
+        $cvterm_name = $cvterm_conf;
+      }
+
       my $dbxref =
         $chado->resultset('General::Dbxref')->create({
           db_id => $db->db_id(),
           accession => $cvterm_name,
         });
 
-      $chado->resultset('Cv::Cvterm')->find_or_create({ name => $cvterm_name,
-                                                        cv_id => $cv->cv_id(),
-                                                        dbxref_id => $dbxref->dbxref_id()
-                                                      });
+      $chado->resultset('Cv::Cvterm')
+        ->find_or_create({ name => $cvterm_name,
+                           cv_id => $cv->cv_id(),
+                           dbxref_id => $dbxref->dbxref_id(),
+                           definition => $cvterm_definition,
+                         });
     }
   }
 }

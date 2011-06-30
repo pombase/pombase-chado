@@ -1,5 +1,5 @@
 test: 1
-cvterms:
+cvs:
   PomBase publication types:
     - paper
     - null
@@ -8,6 +8,49 @@ cvterms:
     - comment
     - EC_number
   PomBase gene products: []
+  PomBase gene knownesses:
+    - name: published
+      definition: >
+        Characterised, or partially characterised in a small scale experiment. 
+        Some published information about the biological role (process).
+        "biological role" here refers to  assigned to a biological process GO 
+        slim term, or more specific
+        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
+        excluding response to stress, cellular homeostasis, phosphate metabolic 
+        process are "non-specific" process terms.
+    - name: biological role inferred
+      definition: >
+        The biological role is inferred from homology to a characterised 
+        sequence orphan.
+        "biological role" here refers to  assigned to a biological process GO 
+        slim term, or more specific
+        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
+        excluding response to stress, cellular homeostasis, phosphate metabolic 
+        process are "non-specific" process terms.
+    - name: conserved unknown
+      definition: >
+        conserved outside the Schizosacchaomyces, but nothing known about the 
+        biological role in any organism.
+        "biological role" here refers to  assigned to a biological process GO 
+        slim term, or more specific
+        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
+        excluding response to stress, cellular homeostasis, phosphate metabolic 
+        process are "non-specific" process terms.
+    - name: sequence orphan
+      definition: >
+        unpublished fission yeast  specific (S. pombe or S. octospurus or S. 
+        japonicus)  but nothing known about biological role
+    - name: fission yeast specific family
+      definition: >
+        unpublished fission yeast (pombe or octospurus or japonicus)  specific 
+        but nothing known about biological role, but  are  not single copy 
+        (duplications  in fission yeast)
+    - name: dubious
+      definition: Unlikely to be coding
+    - name: transposon
+      definition: >
+        A transposon or insertion sequence. An element that can insert
+        in a variety of DNA sequences.
 
 dbs:
   - RFAM
