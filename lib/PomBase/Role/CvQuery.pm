@@ -118,6 +118,7 @@ method find_cvterm($cv, $term_name, %options) {
         warn "      found as synonym: $term_name\n" if $self->verbose();
         return $cvterm_rs->find($exact_synonym->cvterm_id());
       } else {
+        # try non-exact synonyms
         $search_rs = $synonym_rs->search({ synonym => $term_name,
                                            'cvterm.cv_id' => $cv->cv_id(),
                                          },
@@ -164,6 +165,10 @@ method find_cvterm_by_accession($db_accession)
         accession => $dbxref_accession,
         db_id => $db->db_id(),
       });
+
+    if (!defined $dbxref) {
+      die qq(can't find "$dbxref_accession" in db "$db_name");
+    }
 
     my $cvterm =
       $chado->resultset('Cv::Cvterm')->find({ dbxref_id => $dbxref->dbxref_id() });

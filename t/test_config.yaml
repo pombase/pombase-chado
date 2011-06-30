@@ -7,4 +7,22 @@ data:
             accession: is_a
             db:
               name: OBO_REL
-
+          cvtermsynonyms:
+            - synonym: isa
+              type:
+                name: exact
+                cv:
+                  name: synonym_type
+                dbxref:
+                  accession: exact
+                  db:
+                    name: internal
+            - synonym: ISA
+              type:
+                name: poor_synonym
+                cv:
+                  name: synonym_type
+                dbxref:
+                  accession: poor_synonym
+                  db:
+                    name: internal
