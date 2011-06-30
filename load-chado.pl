@@ -52,7 +52,7 @@ my $guard = $chado->txn_scope_guard;
 # load extra CVs, cvterms and dbxrefs
 print "loading genes into $database ...\n" unless $quiet;
 
-func read_mapping($file_name)
+func read_mapping($old_name, $file_name)
 {
   my %ret = ();
 
@@ -61,8 +61,14 @@ func read_mapping($file_name)
   <$file>;
 
   while (defined (my $line = <$file>)) {
-    if ($line =~ /(.*?),\s*(.*?)\s+(\S+)$/) {
-      $ret{$2} = $3;
+    if ($line =~ /$old_name,\s*(.*?)\s+(\S+)$/) {
+      $ret{$1} = $2;
+    } else {
+      if ($line =~ /\s*(.*?)\s+(\S+)$/) {
+        $ret{$1} = $2;
+      } else {
+        die "unknown format for line: $line\n";
+      }
     }
   }
 
@@ -73,7 +79,7 @@ func process_mappings(@mappings)
 {
   return map {
     if (/(.*):(.*):(.*)/) {
-      ($1, { new_name => $2, mapping => read_mapping($3) });
+      ($1, { new_name => $2, mapping => read_mapping($1, $3) });
     } else {
       warn "unknown mapping: $_\n";
       usage();

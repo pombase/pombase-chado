@@ -135,5 +135,15 @@ method check
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
 #    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
   }
+
+  my @pt_mod_cvterms =
+    $chado->resultset('Cv::Cv')->find({ name => 'pt_mod' })
+          ->search_related('cvterms')->all();
+  should(scalar(@pt_mod_cvterms), 0);
+
+  my @psi_mod_cvterms =
+    $chado->resultset('Cv::Cv')->find({ name => 'PSI-MOD' })
+          ->search_related('cvterms')->search_related('feature_cvterms')->all();
+  should(scalar(@psi_mod_cvterms), 1);
 }
 
