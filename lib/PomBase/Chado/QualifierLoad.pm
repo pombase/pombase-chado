@@ -201,6 +201,10 @@ method get_and_check_date($sub_qual_map) {
 
 method find_cvterm_by_term_id($term_id)
 {
+  if (!defined $term_id) {
+    croak "undefined term_id passed to find_cvterm_by_term_id()\n";
+  }
+
   if ($term_id =~ /(.*):(.*)/) {
     my $db_name = $1;
     my $accession = $2;
@@ -237,7 +241,15 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     my $mapping = $mapping_conf->{mapping};
     my $new_term_id = $mapping->{$term};
 
+    if (!defined $new_term_id) {
+      die "can't find new term for $term in mapping in $cv_name\n";
+    }
+
     my $new_term = $self->find_cvterm_by_term_id($new_term_id);
+
+    if (!defined $new_term) {
+      die "can't find '$new_term_id' in $cv_name\n";
+    }
 
     if ($self->verbose()) {
       print "mapping $term to $cv_name/", $new_term->name(), "\n";
