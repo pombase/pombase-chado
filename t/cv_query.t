@@ -1,19 +1,22 @@
-use strict;
-use warnings;
-use Test::More tests => 1;
-
-package Test;
-use Moose;
 use perl5i::2;
 
-with 'PomBase::Role::CvQuery';
-with 'PomBase::Role::ChadoUser';
+use Test::More tests => 1;
+use MooseX::QuietCarping;
 
-func test
 {
+  package Test;
+  use perl5i::2;
+  use Moose;
 
+  with 'PomBase::Role::ChadoUser';
+  with 'PomBase::Role::CvQuery';
+
+  no Moose;
 }
 
-no Moose;
+use PomBase::TestUtil;
 
-package main;
+my $test_util = PomBase::TestUtil->new();
+my $test = Test->new(chado => $test_util->chado());
+my $cvterm = $test->get_cvterm('relationship', 'is_a');
+ok($cvterm);

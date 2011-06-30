@@ -1,0 +1,10 @@
+data:
+  cv:
+    - name: relationship
+      cvterms:
+        - name: is_a
+          dbxref:
+            accession: is_a
+            db:
+              name: OBO_REL
+

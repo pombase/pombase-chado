@@ -55,6 +55,7 @@ method get_cvterm($cv_name, $cvterm_name)
 
   if (!defined $cv) {
     warn "no such CV: $cv_name\n";
+    return undef;
   }
 
   state $cache = {};

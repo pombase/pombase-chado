@@ -35,14 +35,12 @@ under the same terms as Perl itself.
 
 =cut
 
-use strict;
-use warnings;
+use perl5i::2;
 use Carp;
-use Method::Signatures;
 
 use Bio::Chado::Schema;
 
-=head2 connect
+=head2 db_connect
 
  Usage   : PomBase::Chado::connect($database, $username, $password)
  Function: Connect to a PomBase Chado database and return a DBIx::Class schema
@@ -51,7 +49,9 @@ use Bio::Chado::Schema;
  Returns : a Bio::Chado::Schema object
 
 =cut
-func connect($database, $username, $password) {
+sub db_connect
+{
+  my ($database, $username, $password) = @_;
   return Bio::Chado::Schema->connect("dbi:Pg:database=$database",
                                      $username, $password,
                                      { auto_savepoint => 1 });
