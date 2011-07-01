@@ -24,6 +24,7 @@ my $verbose = 0;
 my $quiet = 0;
 my $dry_run = 0;
 my $test = 0;
+my @obsolete_term_mapping_files = ();
 my @mappings = ();
 
 sub usage {
@@ -36,6 +37,7 @@ if (!GetOptions("verbose|v" => \$verbose,
                 "dry-run|d" => \$dry_run,
                 "quiet|q" => \$quiet,
                 "test|t" => \$test,
+                "obsolete-term-map=s" => \@obsolete_term_mapping_files,
                 "mapping|m=s" => \@mappings)) {
   usage();
 }
@@ -89,6 +91,34 @@ func process_mappings(@mappings)
 
 $config->{test_mode} = $test;
 $config->{mappings} = {process_mappings(@mappings)};
+
+func read_obsolete_term_mapping($file_name)
+{
+  my %ret = ();
+
+  open my $file, '<', $file_name or die "$!: $file_name\n";
+
+  while (defined (my $line = <$file>)) {
+    chomp $line;
+
+    next if $line =~ /^!/;
+    my @bits = split /\t/, $line;
+    $ret{$bits[1]} = $bits[0];
+  }
+
+  close $file;
+
+  return %ret;
+}
+
+func process_obsolete_term_mapping_files(@obsolete_term_files)
+{
+  return (map { read_obsolete_term_mapping($_) } @obsolete_term_files);
+}
+
+$config->{obsolete_term_mapping} = {
+  process_obsolete_term_mapping_files(@obsolete_term_mapping_files)
+};
 
 open my $unknown_names, '<', $config->{allowed_unknown_term_names_file} or die;
 while (defined (my $line = <$unknown_names>)) {
