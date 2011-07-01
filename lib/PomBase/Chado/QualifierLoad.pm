@@ -199,6 +199,8 @@ method get_and_check_date($sub_qual_map) {
   return undef;
 }
 
+# look up cvterm by $embl_term_name first, then by GOid, complain
+# about mismatches
 method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map,
                        $create_cvterm) {
   my $mapping_conf = $self->config()->{mappings}->{$cv_name};
@@ -291,10 +293,15 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
           my $db_term_id = $db->name() . ":" . $dbxref->accession();
           my $embl_cvterm =
             $self->find_cvterm_by_term_id($qualifier_term_id);
-          die "ID in EMBL file ($qualifier_term_id) " .
-            "doesn't match ID in Chado ($db_term_id) " .
-            "for EMBL term name $embl_term_name   (Chado term name: ",
-            $embl_cvterm->name(), ")\n";
+          if ($db_term_id eq $obsolete_id) {
+            # use the cvterm we got from the GOid, not the name
+            $cvterm = $embl_cvterm;
+          } else {
+            die "ID in EMBL file ($qualifier_term_id) " .
+              "doesn't match ID in Chado ($db_term_id) " .
+              "for EMBL term name $embl_term_name   (Chado term name: ",
+              $embl_cvterm->name(), ")\n";
+          }
         }
       }
     } else {

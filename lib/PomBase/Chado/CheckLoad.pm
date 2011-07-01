@@ -112,6 +112,9 @@ method check
 
   my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
 
+  my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
+  should(scalar(@all_feature_cvterm), 97);
+
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
       cvterm_id => $coiled_coil_cvterm->cvterm_id()
@@ -126,12 +129,12 @@ method check
   should ($props[2], 'region');
   should(scalar(@props), 3);
 
-  should(scalar($chado->resultset('Sequence::FeatureCvtermprop')->all()), 135);
+  my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
+  should(scalar(@all_props), 137);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 61);
 
-  print "All features:\n";
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
 #    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
   }
