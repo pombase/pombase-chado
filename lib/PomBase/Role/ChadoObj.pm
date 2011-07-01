@@ -182,7 +182,7 @@ method BUILD
   }
 
   $self->objs()->{null_pub_cvterm} =
-    $self->find_cvterm('PomBase publication types', 'null');
+    $self->find_cvterm_by_name('PomBase publication types', 'null');
 
   $self->objs()->{null_pub} =
     $chado->resultset('Pub::Pub')->find_or_create({
@@ -197,7 +197,7 @@ method BUILD
   $self->objs()->{synonym_type_cv} = $self->get_cv('synonym_type');
 
   $self->objs()->{exact_cvterm} =
-    $self->find_cvterm($self->objs()->{synonym_type_cv}, 'exact');
+    $self->find_cvterm_by_name($self->objs()->{synonym_type_cv}, 'exact');
 }
 
 1;

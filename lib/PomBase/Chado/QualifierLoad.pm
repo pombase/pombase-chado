@@ -75,7 +75,7 @@ method get_dbxref_id($db_name) {
 
 
 method find_or_create_cvterm($cv, $term_name) {
-  my $cvterm = $self->find_cvterm($cv, $term_name);
+  my $cvterm = $self->find_cvterm_by_name($cv, $term_name);
 
   # nested transaction
   my $cvterm_guard = $self->chado()->txn_scope_guard();
@@ -248,7 +248,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   if ($create_cvterm) {
     $cvterm = $self->find_or_create_cvterm($cv, $embl_term_name, $qualifier_term_id);
   } else {
-    $cvterm = $self->find_cvterm($cv, $embl_term_name, prefetch_dbxref => 1);
+    $cvterm = $self->find_cvterm_by_name($cv, $embl_term_name, prefetch_dbxref => 1);
 
     if (!defined $cvterm) {
       $cvterm = $self->find_cvterm_by_term_id($qualifier_term_id);

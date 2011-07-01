@@ -49,7 +49,7 @@ method find_or_create_dbxref($db, $accession) {
 method find_or_create_pub($identifier) {
   my $pub_rs = $self->chado()->resultset('Pub::Pub');
 
-  my $paper_cvterm = $self->find_cvterm('PomBase publication types', 'paper');
+  my $paper_cvterm = $self->find_cvterm_by_name('PomBase publication types', 'paper');
 
   return $pub_rs->find_or_create({ uniquename => $identifier,
                                    type_id => $paper_cvterm->cvterm_id() });

@@ -73,7 +73,7 @@ method get_cvterm($cv_name, $cvterm_name)
   return $cvterm;
 }
 
-method find_cvterm($cv, $term_name, %options) {
+method find_cvterm_by_name($cv, $term_name, %options) {
   if (!ref $cv) {
     $cv = $self->get_cv($cv);
   }
