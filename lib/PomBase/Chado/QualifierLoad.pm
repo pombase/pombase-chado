@@ -231,7 +231,7 @@ method find_cvterm_by_term_id($term_id)
   }
 }
 
-method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
+method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map,
                        $create_cvterm) {
   my $mapping_conf = $self->config()->{mappings}->{$cv_name};
 
@@ -239,10 +239,10 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     $cv_name = $mapping_conf->{new_name};
 
     my $mapping = $mapping_conf->{mapping};
-    my $new_term_id = $mapping->{$term};
+    my $new_term_id = $mapping->{$embl_term_name};
 
     if (!defined $new_term_id) {
-      die "can't find new term for $term in mapping for $cv_name\n";
+      die "can't find new term for $embl_term_name in mapping for $cv_name\n";
     }
 
     my $new_term = $self->find_cvterm_by_term_id($new_term_id);
@@ -252,48 +252,48 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     }
 
     if ($self->verbose()) {
-      print "mapping $term to $cv_name/", $new_term->name(), "\n";
+      print "mapping $embl_term_name to $cv_name/", $new_term->name(), "\n";
     }
 
-    $term = $new_term->name();
+    $embl_term_name = $new_term->name();
   }
 
   my $cv = $self->find_cv_by_name($cv_name);
 
-  my $db_accession;
+  my $qualifier_term_id;
 
   if ($self->is_go_cv_name($cv_name)) {
-    $db_accession = delete $sub_qual_map->{GOid};
-    if (!defined $db_accession) {
+    $qualifier_term_id = delete $sub_qual_map->{GOid};
+    if (!defined $qualifier_term_id) {
       my $systematic_id = $pombe_feature->uniquename();
-      warn "  no GOid for $systematic_id annotation: '$term'\n";
+      warn "  no GOid for $systematic_id annotation: '$embl_term_name'\n";
       return;
     }
-    if ($db_accession !~ /GO:(.*)/) {
+    if ($qualifier_term_id !~ /GO:(.*)/) {
       my $systematic_id = $pombe_feature->uniquename();
-      warn "  GOid doesn't start with 'GO:' for $systematic_id: $db_accession\n";
+      warn "  GOid doesn't start with 'GO:' for $systematic_id: $qualifier_term_id\n";
     }
   }
 
   my $cvterm;
 
   if ($create_cvterm) {
-    $cvterm = $self->find_or_create_cvterm($cv, $term, $db_accession);
+    $cvterm = $self->find_or_create_cvterm($cv, $embl_term_name, $qualifier_term_id);
   } else {
-    $cvterm = $self->find_cvterm($cv, $term, prefetch_dbxref => 1);
+    $cvterm = $self->find_cvterm($cv, $embl_term_name, prefetch_dbxref => 1);
 
     if (!defined $cvterm) {
-      $cvterm = $self->find_cvterm_by_accession($db_accession);
-      if (!$self->config()->{allowed_unknown_term_names}->{$db_accession}) {
-        warn "found cvterm by ID, but name doesn't match any cvterm: $db_accession " .
-          "EMBL file: $term  Chado name for ID: ", $cvterm->name(), "\n";
+      $cvterm = $self->find_cvterm_by_accession($qualifier_term_id);
+      if (!$self->config()->{allowed_unknown_term_names}->{$qualifier_term_id}) {
+        warn "found cvterm by ID, but name doesn't match any cvterm: $qualifier_term_id " .
+          "EMBL file: $embl_term_name  Chado name for ID: ", $cvterm->name(), "\n";
       }
-      $db_accession = undef;
+      $qualifier_term_id = undef;
     }
   }
 
-  if (defined $db_accession) {
-    if ($db_accession =~ /(.*):(.*)/) {
+  if (defined $qualifier_term_id) {
+    if ($qualifier_term_id =~ /(.*):(.*)/) {
       my $new_db_name = $1;
       my $new_dbxref_accession = $2;
 
@@ -302,28 +302,28 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
 
       if ($new_db_name ne $db->name()) {
         die "database name for new term ($new_db_name) doesn't match " .
-          "existing name (" . $db->name() . ") for term name: $term\n";
+          "existing name (" . $db->name() . ") for term name: $embl_term_name\n";
       }
 
       if ($new_dbxref_accession ne $dbxref->accession()) {
-        my $name_of_embl_cvterm =
-          $self->find_cvterm_by_accession($db_accession);
-        my $key = "$db_accession\t$term";
+        my $key = "$qualifier_term_id\t$embl_term_name";
         if (!$self->config()->{allowed_term_mismatches}->{$key}) {
-          die "ID in EMBL file ($db_accession) " .
-            "doesn't match ID in Chado (", $db->name(),
-            ":" . $dbxref->accession() .
-            ") for EMBL term name $term   (Chado term name: ",
-            $name_of_embl_cvterm->name(), ")\n";
+          my $db_term_id = $db->name() . ":" . $dbxref->accession();
+          my $embl_cvterm =
+            $self->find_cvterm_by_accession($qualifier_term_id);
+          die "ID in EMBL file ($qualifier_term_id) " .
+            "doesn't match ID in Chado ($db_term_id) " .
+            "for EMBL term name $embl_term_name   (Chado term name: ",
+            $embl_cvterm->name(), ")\n";
         }
       }
     } else {
-      die "database ID ($db_accession) doesn't contain a colon";
+      die "database ID ($qualifier_term_id) doesn't contain a colon";
     }
   }
 
   my $db_xref = delete $sub_qual_map->{db_xref};
-  my $pub = $self->get_pub_from_db_xref($term, $db_xref);
+  my $pub = $self->get_pub_from_db_xref($embl_term_name, $db_xref);
 
   my $is_not = 0;
 
@@ -353,7 +353,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     if (defined $evidence_code) {
       $evidence = $self->objs()->{go_evidence_codes}->{$evidence_code};
     } else {
-      warn "no evidence for: $term in ", $pombe_feature->uniquename(), "\n";
+      warn "no evidence for: $embl_term_name in ", $pombe_feature->uniquename(), "\n";
       $evidence = "NO EVIDENCE";
     }
 
