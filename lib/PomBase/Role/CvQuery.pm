@@ -145,39 +145,40 @@ method find_cvterm($cv, $term_name, %options) {
 
 }
 
-method find_cvterm_by_accession($db_accession)
+method find_cvterm_by_term_id($term_id)
 {
   state $cache = {};
 
-  if (exists $cache->{$db_accession}) {
-    return $cache->{$db_accession};
+  if (exists $cache->{$term_id}) {
+    return $cache->{$term_id};
   }
 
-  if ($db_accession =~ /(.*):(.*)/) {
+  if ($term_id =~ /(.*):(.*)/) {
     my $db_name = $1;
     my $dbxref_accession = $2;
 
     my $chado = $self->chado();
     my $db = $chado->resultset('General::Db')->find({ name => $db_name });
 
-    my $dbxref =
-      $chado->resultset('General::Dbxref')->find({
-        accession => $dbxref_accession,
-        db_id => $db->db_id(),
-      });
+    my @cvterms = $chado->resultset('General::Dbxref')
+      ->search({ db_id => $db->db_id(),
+                 accession => $dbxref_accession })
+      ->search_related('cvterm')
+      ->all();
 
-    if (!defined $dbxref) {
-      die qq(can't find "$dbxref_accession" in db "$db_name");
+
+    if (@cvterms > 1) {
+      die "more than one cvterm for dbxref ($term_id)\n";
+    } else {
+      if (@cvterms == 1) {
+        $cache->{$term_id} = $cvterms[0];
+        return $cvterms[0];
+      } else {
+        return undef;
+      }
     }
-
-    my $cvterm =
-      $chado->resultset('Cv::Cvterm')->find({ dbxref_id => $dbxref->dbxref_id() });
-
-    $cache->{$db_accession} = $cvterm;
-
-    return $cvterm;
   } else {
-    die "database ID ($db_accession) doesn't contain a colon";
+    die "database ID ($term_id) doesn't contain a colon";
   }
 }
 

@@ -199,38 +199,6 @@ method get_and_check_date($sub_qual_map) {
   return undef;
 }
 
-method find_cvterm_by_term_id($term_id)
-{
-  if (!defined $term_id) {
-    croak "undefined term_id passed to find_cvterm_by_term_id()\n";
-  }
-
-  if ($term_id =~ /(.*):(.*)/) {
-    my $db_name = $1;
-    my $accession = $2;
-
-    my $chado = $self->chado();
-
-    my $db = $chado->resultset('General::Db')->find({ name => $db_name });
-
-    if (!defined $db) {
-      die "no db found for $db_name\n";
-    }
-
-    my $cvterm_rs = $chado->resultset('General::Dbxref')
-      ->search({ db_id => $db->db_id(),
-                 accession => $accession })->search_related('cvterm');
-
-    if ($cvterm_rs->count() > 1) {
-      die "more than one cvterm for dbxref ($term_id)\n";
-    } else {
-      return $cvterm_rs->next();
-    }
-  } else {
-    die "format error for: $term_id\n";
-  }
-}
-
 method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map,
                        $create_cvterm) {
   my $mapping_conf = $self->config()->{mappings}->{$cv_name};
@@ -283,7 +251,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     $cvterm = $self->find_cvterm($cv, $embl_term_name, prefetch_dbxref => 1);
 
     if (!defined $cvterm) {
-      $cvterm = $self->find_cvterm_by_accession($qualifier_term_id);
+      $cvterm = $self->find_cvterm_by_term_id($qualifier_term_id);
       if (!$self->config()->{allowed_unknown_term_names}->{$qualifier_term_id}) {
         warn "found cvterm by ID, but name doesn't match any cvterm: $qualifier_term_id " .
           "EMBL file: $embl_term_name  Chado name for ID: ", $cvterm->name(), "\n";
@@ -310,7 +278,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
         if (!$self->config()->{allowed_term_mismatches}->{$key}) {
           my $db_term_id = $db->name() . ":" . $dbxref->accession();
           my $embl_cvterm =
-            $self->find_cvterm_by_accession($qualifier_term_id);
+            $self->find_cvterm_by_term_id($qualifier_term_id);
           die "ID in EMBL file ($qualifier_term_id) " .
             "doesn't match ID in Chado ($db_term_id) " .
             "for EMBL term name $embl_term_name   (Chado term name: ",

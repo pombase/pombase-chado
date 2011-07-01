@@ -36,5 +36,5 @@ ok($cvterm);
 $cvterm = $test->find_cvterm('relationship', 'ISA');
 ok($cvterm);
 
-$cvterm = $test->find_cvterm_by_accession('OBO_REL:is_a');
+$cvterm = $test->find_cvterm_by_term_id('OBO_REL:is_a');
 ok($cvterm);
