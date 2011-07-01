@@ -570,7 +570,7 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
   my $term = delete $qual_map{term};
 
   if (!defined $term || length $term == 0) {
-    warn "no term for: $qualifier\n";
+    warn "no term for: $qualifier\n" if $self->verbose();
     return ();
   }
 
