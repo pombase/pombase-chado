@@ -242,7 +242,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $term, $sub_qual_map,
     my $new_term_id = $mapping->{$term};
 
     if (!defined $new_term_id) {
-      die "can't find new term for $term in mapping in $cv_name\n";
+      die "can't find new term for $term in mapping for $cv_name\n";
     }
 
     my $new_term = $self->find_cvterm_by_term_id($new_term_id);
