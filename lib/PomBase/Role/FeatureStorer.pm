@@ -160,10 +160,9 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
 
   if ($feature->has_tag('obsolete_name')) {
     my @obsolete_names = $feature->get_tag_values('obsolete_name');
-    if (@obsolete_names > 1) {
-      warn "$uniquename has more than one /obsolete_name\n";
+    for my $obsolete_name (@obsolete_names) {
+      $self->store_feature_synonym($chado_feature, $obsolete_name, 0);
     }
-    $self->store_feature_synonym($chado_feature, $obsolete_names[0], 0);
   }
 
   return $chado_feature;
