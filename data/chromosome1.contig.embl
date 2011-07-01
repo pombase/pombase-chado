@@ -49,6 +49,10 @@ FT                   evidence=TAS; db_xref=PMID:8643524; date=20050811"
 FT                   /GO="aspect=F; term=sodium:hydrogen antiporter activity;
 FT                   GOid=GO:0015385; evidence=TAS; db_xref=PMID:8643524;
 FT                   date=20080328"
+FT                   /GO="aspect=P; term=modulation of growth or development
+FT                   of symbiont during interaction with host;
+FT                   GOid=GO:0044144; evidence=TAS; db_xref=PMID:8643524;
+FT                   date=20080328"
 FT                   /colour=2
 FT                   /fasta_file="fasta/chromosome1.contig.seq.00016.out"
 FT                   /primary_name="sod2"
