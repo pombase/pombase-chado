@@ -245,18 +245,30 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
   my $cvterm;
 
+  my $obsolete_id;
+
+  if (defined $qualifier_term_id) {
+    $obsolete_id = $self->config()->{obsolete_term_mapping}->{$qualifier_term_id};
+  }
+
   if ($create_cvterm) {
     $cvterm = $self->find_or_create_cvterm($cv, $embl_term_name, $qualifier_term_id);
   } else {
     $cvterm = $self->find_cvterm_by_name($cv, $embl_term_name, prefetch_dbxref => 1);
 
     if (!defined $cvterm) {
-      $cvterm = $self->find_cvterm_by_term_id($qualifier_term_id);
-      if (!$self->config()->{allowed_unknown_term_names}->{$qualifier_term_id}) {
-        warn "found cvterm by ID, but name doesn't match any cvterm: $qualifier_term_id " .
-          "EMBL file: $embl_term_name  Chado name for ID: ", $cvterm->name(), "\n";
+      if (defined $obsolete_id) {
+        $cvterm = $self->find_cvterm_by_name($cv, "$embl_term_name (obsolete $obsolete_id)",
+                                             prefetch_dbxref => 1);
       }
-      $qualifier_term_id = undef;
+      if (!defined $cvterm) {
+        $cvterm = $self->find_cvterm_by_term_id($qualifier_term_id);
+        if (!$self->config()->{allowed_unknown_term_names}->{$qualifier_term_id}) {
+          warn "found cvterm by ID, but name doesn't match any cvterm: $qualifier_term_id " .
+          "EMBL file: $embl_term_name  Chado name for ID: ", $cvterm->name(), "\n";
+        }
+        $qualifier_term_id = undef;
+      }
     }
   }
 
