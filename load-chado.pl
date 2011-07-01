@@ -58,16 +58,16 @@ func read_mapping($old_name, $file_name)
 
   open my $file, '<', $file_name or die "$!: $file_name\n";
 
-  <$file>;
-
   while (defined (my $line = <$file>)) {
+    chomp;
+
     if ($line =~ /$old_name,\s*(.*?)\s+(\S+)$/) {
       $ret{$1} = $2;
     } else {
       if ($line =~ /\s*(.*?)\s+(\S+)$/) {
         $ret{$1} = $2;
       } else {
-        die "unknown format for line: $line\n";
+        warn "unknown format for line from mapping file: $line";
       }
     }
   }
