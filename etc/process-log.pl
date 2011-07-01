@@ -8,6 +8,7 @@ open my $unknown_term_names, '>', 'unknown_term_names.txt' or die;
 open my $ortholog_problems, '>', 'ortholog_problems.txt' or die;
 open my $qual_problems, '>', 'qualifier_problems.txt' or die;
 open my $unknown_cv_names, '>', 'unknown_cv_names.txt' or die;
+open my $mapping_problems, '>', 'mapping_problems.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
 my $prev_line = '';
@@ -39,9 +40,15 @@ while (defined (my $line = <>)) {
             if ($line =~ /no term for:|qualifier not recognised/) {
               print $all_warnings "$line";
               print $qual_problems "$gene: $line";
-            }
-            if ($line =~ /^processing (.*)/) {
-              $gene = $1;
+            } else {
+              if ($line =~ /can't find new term for .* in mapping/) {
+                print $all_warnings "$line";
+                print $mapping_problems "$gene: $line";
+              } else {
+                if ($line =~ /^processing (.*)/) {
+                  $gene = $1;
+                }
+              }
             }
           }
         }
