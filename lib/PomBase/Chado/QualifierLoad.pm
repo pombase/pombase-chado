@@ -203,6 +203,8 @@ method get_and_check_date($sub_qual_map) {
 # about mismatches
 method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map,
                        $create_cvterm) {
+  $embl_term_name =~ s/\s+/ /g;
+
   my $mapping_conf = $self->config()->{mappings}->{$cv_name};
 
   if (defined $mapping_conf) {

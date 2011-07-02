@@ -374,7 +374,7 @@ FT                   db_xref=PMID:9892665; date=20090926"
 FT                   /controlled_curation="term=phenotype, resistance to
 FT                   microtubule depolymerizing drugs; qualifier=deletion;
 FT                   db_xref=PMID:9892665; date=20090926"
-FT                   /controlled_curation="term=phenotype, spindle assembly
+FT                   /controlled_curation="term=phenotype, spindle  assembly
 FT                   abnormal; cv=phenotype; qualifier=deletion;
 FT                   db_xref=PMID:9892665; date=20090926"
 FT                   /controlled_curation="term=human moe1 ortholog;
