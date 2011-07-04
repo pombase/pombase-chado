@@ -6,10 +6,10 @@ symbol: NHA1
 ---
 name: ''
 primary_identifier: L000003336
-secondary_identifier: YCLX01W
+secondary_identifier: GENE1
 symbol: ''
 ---
 name: Transcription Factor class C
 primary_identifier: S000000001
 secondary_identifier: YAL001C
-symbol: GENE1
+symbol: TFC3

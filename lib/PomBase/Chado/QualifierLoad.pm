@@ -422,8 +422,14 @@ method add_feature_relationship_pub($relationship, $pub) {
 
 }
 
-method find_chado_feature ($systematic_id, $try_name, $ignore_case) {
+method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism) {
   my $rs = $self->chado()->resultset('Sequence::Feature');
+
+
+  if (defined $organism) {
+    $rs = $rs->search({ organism_id => $organism->organism_id() });
+  }
+
   my $feature;
 
   warn "  looking up: $systematic_id\n" if $self->verbose();
@@ -477,15 +483,22 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 
   my $date = delete $sub_qual_map->{date};
 
+  my $organism_common_name;
+
   if ($term =~ /^orthologous to S\. cerevisiae (.*)/) {
+    $organism_common_name = 'Scerevisiae';
     $gene_bit = $1;
   } else {
     if ($term =~ /^human\s+(.*?)\s+ortholog$/) {
+      $organism_common_name = 'human';
       $gene_bit = $1;
     } else {
       return 0;
     }
   }
+
+  my $organism = $self->chado()->resultset('Organism::Organism')
+    ->find({ common_name => $organism_common_name });
 
   my @gene_names = ();
 
@@ -503,7 +516,8 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 
     my $ortholog_feature = undef;
     try {
-      $ortholog_feature = $self->find_chado_feature($ortholog_name, 1, 1);
+      $ortholog_feature =
+        $self->find_chado_feature($ortholog_name, 1, 1, $organism);
     } catch {
       warn "  caught exception: $_\n";
     };
