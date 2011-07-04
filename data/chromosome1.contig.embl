@@ -167,7 +167,7 @@ FT                   date=20100406"
 FT                   /controlled_curation="term=genome organization, telomeric
 FT                   duplication;  cv=genome_org; date=19700101"
 FT                   /controlled_curation="term=orthologous to S. cerevisiae
-FT                   YOR390W and YPL279C; date=19700101"
+FT                   YOR390W and YPL279C and YAL001C; date=19700101"
 FT                   /controlled_curation="term=sequence feature, transmembrane
 FT                   helices; cv=sequence_feature; date=19700101"
 FT                   /controlled_curation="term=species distribution, conserved

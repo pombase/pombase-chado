@@ -489,13 +489,11 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 
   my @gene_names = ();
 
-  if ($gene_bit =~ /^\S+$/) {
-    push @gene_names, $gene_bit;
-  } else {
-    if ($gene_bit =~ /^(\S+) and (\S+)/) {
-      push @gene_names, $1, $2;
+  for my $gene_name (split /\s+and\s+/, $gene_bit) {
+    if ($gene_bit =~ /^\S+$/) {
+      push @gene_names, $gene_name;
     } else {
-      die qq(can't parse: "$gene_bit" from "$term"\n);
+      die qq(gene name contains whitespace "$gene_name" from "$term");
     }
   }
 
