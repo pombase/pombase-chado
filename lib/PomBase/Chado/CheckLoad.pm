@@ -57,7 +57,7 @@ method check
   my $chado = $self->chado();
 
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-  should ($rel_rs->count(), 44);
+  should ($rel_rs->count(), 45);
 
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
   should ($loc_rs->count(), 56);
@@ -133,7 +133,7 @@ method check
   should(scalar(@all_props), 137);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
-  should ($feat_rs->count(), 61);
+  should ($feat_rs->count(), 63);
 
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
 #    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
