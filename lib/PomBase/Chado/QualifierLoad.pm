@@ -505,7 +505,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
     try {
       $ortholog_feature = $self->find_chado_feature($ortholog_name, 1, 1);
     } catch {
-      warn "  caught exception: $_\n" if $self->verbose();
+      warn "  caught exception: $_\n";
     };
 
     if (!defined $ortholog_feature) {
