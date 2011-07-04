@@ -92,7 +92,7 @@ func _load_genes($chado, $organism, $test_mode) {
       type_id => $gene_type->cvterm_id()
     });
 
-    last if $test_mode and scalar(keys %seen_names) >= 2;
+    last if $test_mode and scalar(keys %seen_names) >= 3;
   }
 
   warn "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
