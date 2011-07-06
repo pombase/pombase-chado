@@ -8,7 +8,7 @@ cvs:
     - comment
     - EC_number
   PomBase gene products: []
-  PomBase gene knownesses:
+  PomBase gene characterisation status:
     - name: published
       definition: >
         Characterised, or partially characterised in a small scale experiment. 
