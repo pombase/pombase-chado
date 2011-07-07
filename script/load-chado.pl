@@ -31,8 +31,6 @@ sub usage {
   die "$0 [-v] [-d] <embl_file> ...\n";
 }
 
-my %opts = ();
-
 if (!GetOptions("verbose|v" => \$verbose,
                 "dry-run|d" => \$dry_run,
                 "quiet|q" => \$quiet,
