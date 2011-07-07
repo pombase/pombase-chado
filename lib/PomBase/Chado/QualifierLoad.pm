@@ -233,18 +233,18 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
   my $cv = $self->find_cv_by_name($cv_name);
 
+  my $uniquename = $pombe_feature->uniquename();
+
   my $qualifier_term_id;
 
   if ($self->is_go_cv_name($cv_name)) {
     $qualifier_term_id = delete $sub_qual_map->{GOid};
     if (!defined $qualifier_term_id) {
-      my $systematic_id = $pombe_feature->uniquename();
-      warn "  no GOid for $systematic_id annotation: '$embl_term_name'\n";
+      warn "  no GOid for $uniquename annotation: '$embl_term_name'\n";
       return;
     }
     if ($qualifier_term_id !~ /GO:(.*)/) {
-      my $systematic_id = $pombe_feature->uniquename();
-      warn "  GOid doesn't start with 'GO:' for $systematic_id: $qualifier_term_id\n";
+      warn "  GOid doesn't start with 'GO:' for $uniquename: $qualifier_term_id\n";
     }
   }
 
