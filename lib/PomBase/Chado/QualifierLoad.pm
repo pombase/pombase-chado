@@ -50,6 +50,7 @@ with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::FeatureFinder';
+with 'PomBase::Role::OrganismFinder';
 
 has verbose => (is => 'ro', isa => 'Bool');
 
@@ -477,8 +478,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
     }
   }
 
-  my $organism = $self->chado()->resultset('Organism::Organism')
-    ->find({ common_name => $organism_common_name });
+  my $organism = $self->find_organism_by_common_name($organism_common_name);
 
   my @gene_names = ();
 
