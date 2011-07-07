@@ -384,6 +384,11 @@ FT                   complemented by human moe1; db_xref=PMID:9892665;
 FT                   date=20110211"
 FT                   /gene="moe1"
 FT                   /gene="SPAC637.07"
+FT   CDS             complement(8000..8200)
+FT                   /GO="aspect=P; term=copper ion homeostasis;
+FT                   GOid=GO:0006878; evidence=ISS; db_xref=GOC:unpublished;
+FT                   with=UniProtKB:P00445; date=20040823"
+FT                   /systematic_id="SPAC821.10c"
 SQ   Sequence 8613 BP; 2680 A; 1465 C; 1504 G; 2964 T; 0 other;
      ataacaacgg tttattgttt aaaggctaga agtaatgaaa atcgtctttt ataaaagtct        60
      aaatagtatg aaatttgata ttaagtaagc gagtggcctt aaacgctcta tattctggat       120

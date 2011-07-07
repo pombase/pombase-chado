@@ -129,8 +129,27 @@ close $unknown_names;
 
 open my $mismatches, '<', $config->{allowed_term_mismatches_file} or die;
 while (defined (my $line = <$mismatches>)) {
-  chomp $line;
-  $config->{allowed_term_mismatches}->{$line} = 1;
+  if ($line =~ /\S+ (\S+?)(?:\.\d)?:\s+ID in EMBL file \((\S+)\) doesn't match ID in Chado \(\S+\) for EMBL term name (.*)\s+\(Chado term name: .*\)\t?(.*)/) {
+    my $gene = $1;
+    my $embl_id = $2;
+    my $embl_name = $3;
+    my $winner = $4;
+
+    $embl_id =~ s/\s+$//;
+    $embl_name =~ s/\s+$//;
+
+    next unless $winner =~ /^(ID|name)$/i;
+
+    push @{$config->{allowed_term_mismatches}->{$gene}}, {
+      embl_id => $embl_id,
+      embl_name => $embl_name,
+      winner => $winner,
+    };
+  } else {
+    if ($line !~ /warning line/) {
+      warn "can't parse: $line";
+    }
+  }
 }
 close $mismatches;
 

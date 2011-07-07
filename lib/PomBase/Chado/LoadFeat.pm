@@ -318,7 +318,7 @@ method store_colour($feature, $colour)
     return;
   }
 
-  my $cvterm = $self->get_cvterm('PomBase gene knownesses',
+  my $cvterm = $self->get_cvterm('PomBase gene characterisation status',
                                  $cvterm_name);
 
   $self->create_feature_cvterm($feature, $cvterm,

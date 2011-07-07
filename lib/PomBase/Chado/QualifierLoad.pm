@@ -49,6 +49,7 @@ with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureCvtermCreator';
+with 'PomBase::Role::FeatureFinder';
 
 has verbose => (is => 'ro', isa => 'Bool');
 
@@ -232,18 +233,18 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
   my $cv = $self->find_cv_by_name($cv_name);
 
+  my $uniquename = $pombe_feature->uniquename();
+
   my $qualifier_term_id;
 
   if ($self->is_go_cv_name($cv_name)) {
     $qualifier_term_id = delete $sub_qual_map->{GOid};
     if (!defined $qualifier_term_id) {
-      my $systematic_id = $pombe_feature->uniquename();
-      warn "  no GOid for $systematic_id annotation: '$embl_term_name'\n";
+      warn "  no GOid for $uniquename annotation: '$embl_term_name'\n";
       return;
     }
     if ($qualifier_term_id !~ /GO:(.*)/) {
-      my $systematic_id = $pombe_feature->uniquename();
-      warn "  GOid doesn't start with 'GO:' for $systematic_id: $qualifier_term_id\n";
+      warn "  GOid doesn't start with 'GO:' for $uniquename: $qualifier_term_id\n";
     }
   }
 
@@ -290,8 +291,36 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
       }
 
       if ($new_dbxref_accession ne $dbxref->accession()) {
-        my $key = "$qualifier_term_id\t$embl_term_name";
-        if (!$self->config()->{allowed_term_mismatches}->{$key}) {
+        my $allowed_mismatch_confs =
+          $self->config()->{allowed_term_mismatches}->{$uniquename};
+
+        if (!defined $allowed_mismatch_confs) {
+          (my $key = $uniquename) =~ s/\.\d+$//;
+          $allowed_mismatch_confs =
+            $self->config()->{allowed_term_mismatches}->{$key};
+        }
+
+        my $allowed_mismatch_type = undef;
+        if (defined $allowed_mismatch_confs &&
+            grep {
+              my $res =
+                $_->{embl_id} eq $qualifier_term_id &&
+                $_->{embl_name} eq $embl_term_name;
+              if ($res) {
+                $allowed_mismatch_type = $_->{winner};
+              }
+              $res;
+            } @{$allowed_mismatch_confs}) {
+          if ($allowed_mismatch_type eq 'ID') {
+            $cvterm = $self->find_cvterm_by_term_id($qualifier_term_id);
+          } else {
+            if ($allowed_mismatch_type eq 'name') {
+              # this is the default - fall through
+            } else {
+              die "unknown mismatch type: $allowed_mismatch_type\n";
+            }
+          }
+        } else {
           my $db_term_id = $db->name() . ":" . $dbxref->accession();
           my $embl_cvterm =
             $self->find_cvterm_by_term_id($qualifier_term_id);
@@ -420,55 +449,6 @@ method add_feature_relationship_pub($relationship, $pub) {
                          $relationship->feature_relationship_id(),
                        pub_id => $pub->pub_id() });
 
-}
-
-method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism) {
-  my $rs = $self->chado()->resultset('Sequence::Feature');
-
-
-  if (defined $organism) {
-    $rs = $rs->search({ organism_id => $organism->organism_id() });
-  }
-
-  my $feature;
-
-  warn "  looking up: $systematic_id\n" if $self->verbose();
-
-  if ($ignore_case) {
-    my @results = $rs->search(\[ "LOWER(uniquename) = ?",
-                              [ plain_value => lc $systematic_id ]])->all();
-    if (@results > 1) {
-      die "too many matches for $systematic_id\n";
-    } else {
-      $feature = $results[0];
-    }
-  } else {
-    $feature = $rs->find({ uniquename => $systematic_id });
-  }
-
-  if (defined $feature) {
-    return $feature;
-  } else {
-    warn "    no feature found using $systematic_id as uniquename\n" if $self->verbose();
-  }
-
-  if ($try_name) {
-    if ($ignore_case) {
-      my @results = $rs->search(\[ "LOWER(name) = ?",
-                                [ plain_value => lc $systematic_id ]])->all();
-      if (@results > 1) {
-        die "too many matches for $systematic_id\n";
-      } else {
-        $feature = $results[0];
-      }
-    } else {
-      $feature = $rs->find({ name => $systematic_id });
-    }
-
-    return $feature if defined $feature;
-  }
-
-  die "can't find feature for: $systematic_id\n";
 }
 
 method process_ortholog($chado_object, $term, $sub_qual_map) {
