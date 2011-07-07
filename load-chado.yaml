@@ -51,6 +51,9 @@ cvs:
       definition: >
         A transposon or insertion sequence. An element that can insert
         in a variety of DNA sequences.
+  PomBase interaction types:
+    - name: interacts_genetically
+    - name: interacts_physically
 
 dbs:
   - RFAM
@@ -68,6 +71,8 @@ dbs:
   - InterPro
   - UniProtKB
   - UniProtKB/Swiss-Prot
+
+taxonid: 4896
 
 allowed_unknown_term_names_file: /home/kmr44/Dropbox/pombase/chado_load/warnings-2011-06-21/ids_to_allow-unknown_term_names.txt
 allowed_term_mismatches_file: /home/kmr44/Dropbox/pombase/chado_load/warnings-2011-06-21/edited-mismatches.txt

@@ -1,0 +1,37 @@
+#BioGRID Interaction ID	Entrez Gene Interactor A	Entrez Gene Interactor B	BioGRID ID Interactor A	BioGRID ID Interactor B	Systematic Name Interactor A	Systematic Name Interactor B	Official Symbol Interactor A	Official Symbol Interactor B	Synonymns Interactor A	Synonyms Interactor B	Experimental System	Experimental System Type	Author	Pubmed ID	Organism Interactor A	Organism Interactor B	Throughput	Score	Modification	Phenotypes	Qualifications	Tags	Source Database
+196569	2539495	2541652	276058	278148	SPCC4F11.02	SPAC24B11.06c	ptc1	sty1	-	-	Reconstituted Complex	physical	Nguyen AN (1999)	10398679	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196570	2540719	2543289	277242	279714	SPBC216.05	SPAC9E9.08	rad3	rad26	-	-	Co-fractionation	physical	Edwards RJ (1999)	10559981	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196571	2540719	2543289	277242	279714	SPBC216.05	SPAC9E9.08	rad3	rad26	-	-	Affinity Capture-Western	physical	Edwards RJ (1999)	10559981	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196572	2540719	2539087	277242	275659	SPBC216.05	SPCC1259.13	rad3	chk1	-	-	Dosage Rescue	genetic	Martinho RG (1998)	9857181	4896	4896	Low Throughput	-	-	uv resistance:partial rescue|viability:partial rescue	-	-	BioGRID
+196573	2540719	2539087	277242	275659	SPBC216.05	SPCC1259.13	rad3	chk1	-	-	Biochemical Activity	physical	Martinho RG (1998)	9857181	4896	4896	Low Throughput	-	Phosphorylation	-	-	-	BioGRID
+196574	2540719	2538959	277242	275533	SPBC216.05	SPCC18B5.11c	rad3	cds1	-	-	Biochemical Activity	physical	Martinho RG (1998)	9857181	4896	4896	Low Throughput	-	Phosphorylation	-	-	-	BioGRID
+196575	2539087	2540719	275659	277242	SPCC1259.13	SPBC216.05	chk1	rad3	-	-	Affinity Capture-Western	physical	Martinho RG (1998)	9857181	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196576	2538959	2540719	275533	277242	SPCC18B5.11c	SPBC216.05	cds1	rad3	-	-	Affinity Capture-Western	physical	Martinho RG (1998)	9857181	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196577	2538959	2543629	275533	280043	SPCC18B5.11c	SPAC3H5.06c	cds1	pol1	-	-	Synthetic Rescue	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196578	2543289	2543629	279714	280043	SPAC9E9.08	SPAC3H5.06c	rad26	pol1	-	-	Synthetic Lethality	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	inviable	-	-	BioGRID
+196579	2542083	2543289	278560	279714	SPAC27E2.05	SPAC9E9.08	cdc1	rad26	-	-	Synthetic Lethality	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	inviable	-	-	BioGRID
+196580	2542083	2538959	278560	275533	SPAC27E2.05	SPCC18B5.11c	cdc1	cds1	-	-	Synthetic Growth Defect	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	vegetative growth	-	-	BioGRID
+196582	2540255	2543289	276786	279714	SPBC336.04	SPAC9E9.08	cdc6	rad26	-	-	Synthetic Lethality	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	inviable	-	-	BioGRID
+196583	2539627	2538959	276184	275533	SPBC1734.02c	SPCC18B5.11c	cdc27	cds1	-	-	Synthetic Growth Defect	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	vegetative growth	-	-	BioGRID
+196585	2540255	2538959	276786	275533	SPBC336.04	SPCC18B5.11c	cdc6	cds1	-	-	Synthetic Growth Defect	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	vegetative growth	-	-	BioGRID
+196586	2539627	2543289	276184	279714	SPBC1734.02c	SPAC9E9.08	cdc27	rad26	-	-	Synthetic Growth Defect	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	vegetative growth	-	-	BioGRID
+196589	2541849	2543289	278340	279714	SPAC20G8.01	SPAC9E9.08	cdc17	rad26	-	-	Synthetic Growth Defect	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	vegetative growth	-	-	BioGRID
+196590	2541849	2538959	278340	275533	SPAC20G8.01	SPCC18B5.11c	cdc17	cds1	-	-	Synthetic Growth Defect	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	vegetative growth	-	-	BioGRID
+196592	2543164	2543289	279595	279714	SPAC3G6.06c	SPAC9E9.08	rad2	rad26	-	-	Synthetic Growth Defect	genetic	Liu VF (1999)	9891047	4896	4896	Low Throughput	-	-	vegetative growth	-	-	BioGRID
+196593	2539004	2538959	275578	275533	SPCC4G3.05c	SPCC18B5.11c	mus81	cds1	-	-	Affinity Capture-Western	physical	Kai M (2005)	15805465	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196594	2539004	2538959	275578	275533	SPCC4G3.05c	SPCC18B5.11c	mus81	cds1	-	-	Reconstituted Complex	physical	Kai M (2005)	15805465	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196595	2543441	2539016	279861	275589	SPAC821.12	SPCC970.04c	orb6	mob2	-	-	Two-hybrid	physical	Hou MC (2003)	12456722	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196596	2543441	2539016	279861	275589	SPAC821.12	SPCC970.04c	orb6	mob2	-	-	Affinity Capture-Western	physical	Hou MC (2003)	12456722	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+196597	2543441	2539016	279861	275589	SPAC821.12	SPCC970.04c	orb6	mob2	-	-	Reconstituted Complex	physical	Hou MC (2003)	12456722	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+202018	2540149	2540398	276686	276926	SPBC1289.03c	SPBC26H8.10	spi1	dis3	-	-	Affinity Capture-Western	physical	Noguchi E (1996)	8896453	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+202019	2541059	2540398	277574	276926	SPBC557.03c	SPBC26H8.10	pim1	dis3	-	-	Affinity Capture-Western	physical	Noguchi E (1996)	8896453	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+206361	2541633	2539481	278129	276044	SPAC664.01c	SPCC622.16c	swi6	epe1	-	-	Affinity Capture-Western	physical	Zofall M (2006)	16762840	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+239568	2539036	2542783	275609	279232	SPCC1840.01c	SPAC15F9.03c	mog1	nxt2	-	-	Affinity Capture-Western	physical	Oki M (2007)	17651922	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+239569	2539036	2540149	275609	276686	SPCC1840.01c	SPBC1289.03c	mog1	spi1	-	-	Affinity Capture-Western	physical	Oki M (2007)	17651922	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+239570	2539036	2543204	275609	279633	SPCC1840.01c	SPAC821.04c	mog1	cid13	-	-	Affinity Capture-Western	physical	Oki M (2007)	17651922	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+239928	2540234	2539834	276766	276383	SPBC336.12c	SPBC14C8.14c	cdc10	pol5	-	-	Affinity Capture-Western	physical	Nadeem FK (2006)	16816948	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+239929	2540234	2539834	276766	276383	SPBC336.12c	SPBC14C8.14c	cdc10	pol5	-	-	Two-hybrid	physical	Nadeem FK (2006)	16816948	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+241304	2541047	2540494	277562	277022	SPBC409.09c	SPBC409.04c	mis13	mis12	-	-	Affinity Capture-Western	physical	Obuse C (2004)	15502821	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+241305	2539155	2540494	275727	277022	SPCC1020.02	SPBC409.04c	spc7	mis12	-	-	Affinity Capture-Western	physical	Obuse C (2004)	15502821	4896	4896	Low Throughput	-	-	-	-	-	BioGRID
+246017	2540802	2541620	277321	278117	SPBC1921.02	SPAC2G11.12	rad60	rqh1	-	-	Synthetic Lethality	genetic	Raffa GD (2006)	16880212	4896	4896	Low Throughput	-	-	inviable	-	-	BioGRID
+246018	2540802	2543670	277321	280084	SPBC1921.02	SPAPB1E7.06c	rad60	eme1	-	-	Synthetic Lethality	genetic	Raffa GD (2006)	16880212	4896	4896	Low Throughput	-	-	inviable	-	-	BioGRID
