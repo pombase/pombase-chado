@@ -291,8 +291,36 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
       }
 
       if ($new_dbxref_accession ne $dbxref->accession()) {
-        my $key = "$qualifier_term_id\t$embl_term_name";
-        if (!$self->config()->{allowed_term_mismatches}->{$key}) {
+        my $allowed_mismatch_confs =
+          $self->config()->{allowed_term_mismatches}->{$uniquename};
+
+        if (!defined $allowed_mismatch_confs) {
+          (my $key = $uniquename) =~ s/\.\d+$//;
+          $allowed_mismatch_confs =
+            $self->config()->{allowed_term_mismatches}->{$key};
+        }
+
+        my $allowed_mismatch_type = undef;
+        if (defined $allowed_mismatch_confs &&
+            grep {
+              my $res =
+                $_->{embl_id} eq $qualifier_term_id &&
+                $_->{embl_name} eq $embl_term_name;
+              if ($res) {
+                $allowed_mismatch_type = $_->{winner};
+              }
+              $res;
+            } @{$allowed_mismatch_confs}) {
+          if ($allowed_mismatch_type eq 'ID') {
+            $cvterm = $self->find_cvterm_by_term_id($qualifier_term_id);
+          } else {
+            if ($allowed_mismatch_type eq 'name') {
+              # this is the default - fall through
+            } else {
+              die "unknown mismatch type: $allowed_mismatch_type\n";
+            }
+          }
+        } else {
           my $db_term_id = $db->name() . ":" . $dbxref->accession();
           my $embl_cvterm =
             $self->find_cvterm_by_term_id($qualifier_term_id);
