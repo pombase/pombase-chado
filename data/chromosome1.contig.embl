@@ -312,7 +312,7 @@ FT                   evidence=IPI; db_xref=PMID:11102508;
 FT                   with=GeneDB_Spombe:SPAC18G6.15; date=20040908"
 FT                   /GO="aspect=F; term=protein binding; GOid=GO:0005515;
 FT                   evidence=IPI; db_xref=PMID:11121040;
-FT                   with=GeneDB_Spombe:SPBC646.09c; date=20040908"
+FT                   with=GeneDB_Spombe:SPBC646.09c|GeneDB_Spombe:SPAC16E8.09; date=20040908"
 FT                   /GO="aspect=F; term=protein binding; GOid=GO:0005515;
 FT                   evidence=IPI; db_xref=PMID:9892665;
 FT                   with=GeneDB_Spombe:SPAC16E8.09; date=20040908"
