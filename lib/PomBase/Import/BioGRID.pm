@@ -152,6 +152,8 @@ method load($fh)
 
     $self->store_feature_relationshipprop($rel, 'evidence',
                                           $experimental_system);
+    $self->store_feature_relationshipprop($rel, 'source database',
+                                          $source_db);
     $self->store_feature_rel_pub($rel, $pub);
   }
 }
