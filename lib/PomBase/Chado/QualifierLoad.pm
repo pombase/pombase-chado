@@ -509,7 +509,8 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
     };
 
     if (!defined $ortholog_feature) {
-      die "ortholog ($ortholog_name) not found\n";
+      warn "ortholog ($ortholog_name) not found\n";
+      next;
     }
 
     my $rel_rs = $self->chado()->resultset('Sequence::FeatureRelationship');
