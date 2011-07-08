@@ -46,6 +46,10 @@ method store_feature_relationshipprop($feature_relationship, $type_name, $value)
 {
   my $type_cvterm = $self->get_cvterm('feature_relationshipprop_type', $type_name);
 
+  if (!defined $type_cvterm) {
+    die "can't find cvterm for $type_name";
+  }
+
   return $self->chado()->resultset('Sequence::FeatureRelationshipprop')
     ->create({ feature_relationship_id =>
                  $feature_relationship->feature_relationship_id(),
