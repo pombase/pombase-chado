@@ -377,12 +377,18 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     }
 
     if (defined $sub_qual_map->{with}) {
-      $self->add_feature_cvtermprop($featurecvterm,
-                                    with => delete $sub_qual_map->{with});
+      my @withs = split /\|/, delete $sub_qual_map->{with};
+      for (my $i = 0; $i < @withs; $i++) {
+        my $with = $withs[$i];
+        $self->add_feature_cvtermprop($featurecvterm, with => $with, $i);
+      }
     }
     if (defined $sub_qual_map->{from}) {
-      $self->add_feature_cvtermprop($featurecvterm,
-                                    from => delete $sub_qual_map->{from});
+      my @froms = split /\|/, delete $sub_qual_map->{from};
+      for (my $i = 0; $i < @froms; $i++) {
+        my $from = $froms[$i];
+        $self->add_feature_cvtermprop($featurecvterm, from => $from, $i);
+      }
     }
     $self->add_feature_cvtermprop($featurecvterm,
                                   evidence => $evidence);
