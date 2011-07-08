@@ -4,9 +4,7 @@ use perl5i::2;
 
 use YAML qw(LoadFile);
 
-BEGIN {
-  push @INC, 'lib';
-};
+use lib qw(lib);
 
 if (@ARGV != 5) {
   die qq($0: needs fives arguments:
@@ -25,7 +23,7 @@ my $username = shift;
 my $password = shift;
 
 use PomBase::Chado;
-my $chado = PomBase::Chado::connect($database, $username, $password);
+my $chado = PomBase::Chado->db_connect($database, $username, $password);
 
 my $config = LoadFile($config_file);
 

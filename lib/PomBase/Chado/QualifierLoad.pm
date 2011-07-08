@@ -50,6 +50,7 @@ with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::FeatureFinder';
+with 'PomBase::Role::OrganismFinder';
 
 has verbose => (is => 'ro', isa => 'Bool');
 
@@ -376,12 +377,18 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     }
 
     if (defined $sub_qual_map->{with}) {
-      $self->add_feature_cvtermprop($featurecvterm,
-                                    with => delete $sub_qual_map->{with});
+      my @withs = split /\|/, delete $sub_qual_map->{with};
+      for (my $i = 0; $i < @withs; $i++) {
+        my $with = $withs[$i];
+        $self->add_feature_cvtermprop($featurecvterm, with => $with, $i);
+      }
     }
     if (defined $sub_qual_map->{from}) {
-      $self->add_feature_cvtermprop($featurecvterm,
-                                    from => delete $sub_qual_map->{from});
+      my @froms = split /\|/, delete $sub_qual_map->{from};
+      for (my $i = 0; $i < @froms; $i++) {
+        my $from = $froms[$i];
+        $self->add_feature_cvtermprop($featurecvterm, from => $from, $i);
+      }
     }
     $self->add_feature_cvtermprop($featurecvterm,
                                   evidence => $evidence);
@@ -477,8 +484,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
     }
   }
 
-  my $organism = $self->chado()->resultset('Organism::Organism')
-    ->find({ common_name => $organism_common_name });
+  my $organism = $self->find_organism_by_common_name($organism_common_name);
 
   my @gene_names = ();
 
@@ -503,7 +509,8 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
     };
 
     if (!defined $ortholog_feature) {
-      die "ortholog ($ortholog_name) not found\n";
+      warn "ortholog ($ortholog_name) not found\n";
+      next;
     }
 
     my $rel_rs = $self->chado()->resultset('Sequence::FeatureRelationship');

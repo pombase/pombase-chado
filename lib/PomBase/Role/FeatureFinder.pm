@@ -50,8 +50,6 @@ method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism) {
 
    my $feature;
 
-   warn "  looking up: $systematic_id\n" if $self->verbose();
-
    if ($ignore_case) {
      my @results = $rs->search(\[ "LOWER(uniquename) = ?",
                                [ plain_value => lc $systematic_id ]])->all();
@@ -66,8 +64,6 @@ method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism) {
 
    if (defined $feature) {
      return $feature;
-   } else {
-     warn "    no feature found using $systematic_id as uniquename\n" if $self->verbose();
    }
 
    if ($try_name) {

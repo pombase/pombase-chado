@@ -31,8 +31,6 @@ sub usage {
   die "$0 [-v] [-d] <embl_file> ...\n";
 }
 
-my %opts = ();
-
 if (!GetOptions("verbose|v" => \$verbose,
                 "dry-run|d" => \$dry_run,
                 "quiet|q" => \$quiet,
@@ -165,6 +163,32 @@ while (defined (my $file = shift)) {
 
   $load_file->process_file($file);
 }
+
+if(0) {
+# populate the phylonode table
+my $phylotree = $chado->resultset('Phylogeny::Phylotree')->create(
+  {
+    name => 'org_hierarchy',
+    dbxref => $chado->resultset('General::Dbxref')
+      ->find({ accession => 'local:null' }),
+  }
+);
+
+my $phylo_rs = $chado->resultset('Phylogeny::Phylonode');
+
+my $phylonode_id = 0;
+my @phylonodes =
+  qw(root Eukaryota Fungi Dikarya Ascomycota Taphrinomycotina
+     Schizosaccharomycetes Schizosaccharomycetales Schizosaccharomycetaceae
+     Schizosaccharomyces);
+
+for (my $i = 0; $i < @phylonodes; $i++) {
+  $phylo_rs->create({ phylonode_id => $i++, left_id => $i,
+                      right_id => $i, distance => scalar(@phylonodes) - $i });
+}
+}
+
+
 
 if ($test) {
   my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
