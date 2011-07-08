@@ -54,6 +54,8 @@ cvs:
   PomBase interaction types:
     - name: interacts_genetically
     - name: interacts_physically
+  feature_relationshipprop_type:
+    - name: evidence
 
 dbs:
   - RFAM

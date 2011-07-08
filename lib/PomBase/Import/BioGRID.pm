@@ -48,6 +48,7 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
+with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 
 method load($fh)
@@ -149,6 +150,8 @@ method load($fh)
 
     my $rel = $self->store_feature_rel($feature_a, $feature_b, $rel_type);
 
+    $self->store_feature_relationshipprop($rel, 'evidence',
+                                          $experimental_system);
     $self->store_feature_rel_pub($rel, $pub);
   }
 }
