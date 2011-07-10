@@ -9,6 +9,7 @@ open my $ortholog_problems, '>', 'ortholog_problems.txt' or die;
 open my $qual_problems, '>', 'qualifier_problems.txt' or die;
 open my $unknown_cv_names, '>', 'unknown_cv_names.txt' or die;
 open my $mapping_problems, '>', 'mapping_problems.txt' or die;
+open my $duplicated_sub_qual_problems, '>', 'duplication_sub_qual_problems.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
 my $prev_line = '';
@@ -47,6 +48,13 @@ while (defined (my $line = <>)) {
               } else {
                 if ($line =~ /^processing (.*)/) {
                   $gene = $1;
+                } else {
+                  if ($line =~ /duplicated sub-qualifier '(.*)'/) {
+                    $line =~ s/^\s+//;
+                    $line =~ s/\s*from:\s*//;
+                    print $all_warnings "$line\n";
+                    print $duplicated_sub_qual_problems "$gene: $line\n";
+                  }
                 }
               }
             }
