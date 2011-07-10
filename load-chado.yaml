@@ -56,6 +56,7 @@ cvs:
     - name: interacts_physically
   feature_relationshipprop_type:
     - name: evidence
+    - name: source database
 
 dbs:
   - RFAM
