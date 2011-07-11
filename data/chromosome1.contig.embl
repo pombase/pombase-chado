@@ -389,6 +389,11 @@ FT                   /GO="aspect=P; term=copper ion homeostasis;
 FT                   GOid=GO:0006878; evidence=ISS; db_xref=GOC:unpublished;
 FT                   with=UniProtKB:P00445; date=20040823"
 FT                   /systematic_id="SPAC821.10c"
+FT   CDS             complement(join(4221..4715))
+FT                   /GO="aspect=P; term=spore wall chitin biosynthetic
+FT                   process; GOid=GO:0034217; evidence=IDA;
+FT                   db_xref=PMID:10632879; date=20050706"
+FT                   /systematic_id="SPAC13G6.12c"
 SQ   Sequence 8613 BP; 2680 A; 1465 C; 1504 G; 2964 T; 0 other;
      ataacaacgg tttattgttt aaaggctaga agtaatgaaa atcgtctttt ataaaagtct        60
      aaatagtatg aaatttgata ttaagtaagc gagtggcctt aaacgctcta tattctggat       120

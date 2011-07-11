@@ -122,7 +122,7 @@ open my $unknown_names, '<', $config->{allowed_unknown_term_names_file} or die;
 while (defined (my $line = <$unknown_names>)) {
   chomp $line;
   if ($line =~ /but name doesn't match any cvterm: (\S+)/) {
-    $config->{allowed_unknown_term_names}->{$1} = 1;
+#    $config->{allowed_unknown_term_names}->{$1} = 1;
   } else {
     die "can't parse: $line";
   }

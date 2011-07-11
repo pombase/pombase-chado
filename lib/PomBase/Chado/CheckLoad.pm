@@ -57,10 +57,10 @@ method check
   my $chado = $self->chado();
 
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-  should ($rel_rs->count(), 48);
+  should ($rel_rs->count(), 51);
 
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
-  should ($loc_rs->count(), 60);
+  should ($loc_rs->count(), 64);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
   should ($feature_prop_rs->count(), 10);
@@ -82,9 +82,9 @@ method check
       organism_id => $pombe->organism_id(),
     }, { order_by => 'uniquename' });
 
-  should ($gene_rs->count(), 9);
+  should ($gene_rs->count(), 10);
 
-  my $gene = $gene_rs->next();
+  my $gene = $gene_rs->search({ uniquename => 'SPAC1556.06' })->next();
 
   should ($gene->uniquename(), "SPAC1556.06");
   should ($gene->feature_cvterms()->count(), 8);
@@ -113,7 +113,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 98);
+  should(scalar(@all_feature_cvterm), 99);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
@@ -130,10 +130,10 @@ method check
   should(scalar(@props), 3);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 141);
+  should(scalar(@all_props), 143);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
-  should ($feat_rs->count(), 67);
+  should ($feat_rs->count(), 71);
 
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
 #    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
