@@ -270,8 +270,8 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
       if (!defined $cvterm) {
         $cvterm = $self->find_cvterm_by_term_id($qualifier_term_id);
         if (!$self->config()->{allowed_unknown_term_names}->{$qualifier_term_id}) {
-          warn "found cvterm by ID, but name doesn't match any cvterm: $qualifier_term_id " .
-          "EMBL file: $embl_term_name  Chado name for ID: ", $cvterm->name(), "\n";
+          die "found cvterm by ID, but name doesn't match any cvterm: $qualifier_term_id " .
+            "EMBL file: $embl_term_name  Chado name for ID: ", $cvterm->name(), "\n";
         }
         $qualifier_term_id = undef;
       }
