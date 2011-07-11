@@ -77,5 +77,5 @@ dbs:
 
 taxonid: 4896
 
-allowed_unknown_term_names_file: /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-06-21/ids_to_allow-unknown_term_names.txt
+allowed_unknown_term_names_file: /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-07-11/7-11_ID_ok_unknown_term_names.txt
 allowed_term_mismatches_file: /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-06-21/edited-mismatches.txt
