@@ -384,6 +384,8 @@ FT                   abnormal; cv=phenotype; qualifier=deletion;
 FT                   db_xref=PMID:9892665; date=20090926"
 FT                   /controlled_curation="term=human moe1 ortholog;
 FT                   db_xref=PMID:9892665; date=20110211"
+FT                   /controlled_curation="term=human MTX1 ortholog;
+FT                   db_xref=PMID:9892665; date=20110211"
 FT                   /controlled_curation="term=complementation, functionally
 FT                   complemented by human moe1; db_xref=PMID:9892665;
 FT                   date=20110211"
