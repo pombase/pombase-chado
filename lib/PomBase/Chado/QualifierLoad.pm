@@ -490,7 +490,8 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
     if ($gene_name =~ /^\S+$/) {
       push @gene_names, $gene_name;
     } else {
-      die qq(gene name contains whitespace "$gene_name" from "$term");
+      warn qq(gene name contains whitespace "$gene_name" from "$term");
+      return 0;
     }
   }
 
