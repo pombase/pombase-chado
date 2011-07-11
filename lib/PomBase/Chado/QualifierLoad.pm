@@ -522,13 +522,16 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 
       my $date = delete $sub_qual_map->{date};
 
-      $self->add_feature_relationshipprop($rel, 'date', $date);
+      if (defined $date) {
+        $self->add_feature_relationshipprop($rel, 'date', $date);
+      }
       my $db_xref = delete $sub_qual_map->{db_xref};
       my $pub = $self->get_pub_from_db_xref($term, $db_xref);
       $self->add_feature_relationship_pub($rel, $pub);
       $orth_guard->commit();
     } catch {
-      die "  failed to create ortholog relation: $_\n";
+      warn "  failed to create ortholog relation: $_\n";
+      return 0;
     };
   }
 
@@ -617,14 +620,9 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
     }
   } else {
     if (!$self->process_targets($chado_object, $term, \%qual_map)) {
-      try {
-        if (!$self->process_ortholog($chado_object, $term, \%qual_map)) {
-          if (!$self->process_family($chado_object, $term, \%qual_map)) {
-            warn "qualifier not recognised: $qualifier\n";
-            return ();
-          }
-        } catch {
-          warn $_;
+      if (!$self->process_ortholog($chado_object, $term, \%qual_map)) {
+        if (!$self->process_family($chado_object, $term, \%qual_map)) {
+          warn "qualifier not recognised: $qualifier\n";
           return ();
         }
       }
