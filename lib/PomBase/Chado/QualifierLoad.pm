@@ -468,8 +468,6 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
     return 1;
   }
 
-  my $date = delete $sub_qual_map->{date};
-
   my $organism_common_name;
 
   if ($term =~ /^orthologous to S\. cerevisiae (.*)/) {
@@ -521,6 +519,9 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
                                   subject_id => $ortholog_feature->feature_id(),
                                   type_id => $self->objs()->{orthologous_to_cvterm}->cvterm_id()
                                 });
+
+      my $date = delete $sub_qual_map->{date};
+
       $self->add_feature_relationshipprop($rel, 'date', $date);
       my $db_xref = delete $sub_qual_map->{db_xref};
       my $pub = $self->get_pub_from_db_xref($term, $db_xref);
