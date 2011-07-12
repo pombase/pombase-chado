@@ -233,6 +233,16 @@ method process($feature, $chromosome)
     return;
   }
 
+  if ($feature->has_tag("SO")) {
+    my @so_quals = $feature->get_tag_values("SO");
+
+    if (@so_quals > 1) {
+      warn "more than one /SO= qualifier\n";
+    }
+
+    $so_type = $self->find_cvterm_by_term_id($so_quals[0])->name();
+  }
+
   my ($uniquename, $transcript_uniquename, $gene_uniquename, $has_systematic_id) =
     $self->get_uniquename($feature, $so_type);
 
