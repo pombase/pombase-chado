@@ -9,6 +9,7 @@ open my $ortholog_problems, '>', 'ortholog_problems.txt' or die;
 open my $qual_problems, '>', 'qualifier_problems.txt' or die;
 open my $unknown_cv_names, '>', 'unknown_cv_names.txt' or die;
 open my $mapping_problems, '>', 'mapping_problems.txt' or die;
+open my $cv_name_mismatches, '>', 'cv_name_mistaches.txt' or die;
 open my $duplicated_sub_qual_problems, '>', 'duplication_sub_qual_problems.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
@@ -54,6 +55,10 @@ while (defined (my $line = <>)) {
                     $line =~ s/\s*from:\s*//;
                     print $all_warnings "$line\n";
                     print $duplicated_sub_qual_problems "$gene: $line\n";
+                  } else {
+                    if ($line =~ /cv_name .* doesn't match start of term .*/) {
+                      print $all_warnings "$line";
+                      print $cv_name_mismatches "$gene: $line";
                   }
                 }
               }

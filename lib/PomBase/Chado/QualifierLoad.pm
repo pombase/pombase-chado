@@ -617,6 +617,10 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
       map { $term =~ s/^$_, *//; } @{$self->objs()->{cv_alt_names}->{$cv_name}};
     }
 
+    if ($term =~ /(.*?),/ && $1 ne $cv_name) {
+      warn qq{cv_name ("$cv_name") doesn't match start of term ("$1")\n};
+    }
+
     if (grep { $_ eq $cv_name } keys %{$self->objs()->{cv_alt_names}}) {
       my $chado_object_type = $chado_object->type()->name();
 
