@@ -59,6 +59,9 @@ method check
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
   should ($rel_rs->count(), 52);
 
+  my $relprop_rs = $chado->resultset('Sequence::FeatureRelationshipprop');
+  should ($relprop_rs->count(), 3);
+
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
   should ($loc_rs->count(), 64);
 
