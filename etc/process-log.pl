@@ -10,7 +10,7 @@ open my $qual_problems, '>', 'qualifier_problems.txt' or die;
 open my $unknown_cv_names, '>', 'unknown_cv_names.txt' or die;
 open my $mapping_problems, '>', 'mapping_problems.txt' or die;
 open my $cv_name_mismatches, '>', 'cv_name_mistaches.txt' or die;
-open my $duplicated_sub_qual_problems, '>', 'duplication_sub_qual_problems.txt' or die;
+open my $duplicated_sub_qual_problems, '>', 'duplicated_sub_qual_problems.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
 my $prev_line = '';
