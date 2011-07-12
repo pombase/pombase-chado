@@ -60,7 +60,7 @@ method check
   should ($rel_rs->count(), 52);
 
   my $relprop_rs = $chado->resultset('Sequence::FeatureRelationshipprop');
-  should ($relprop_rs->count(), 3);
+  should ($relprop_rs->count(), 4);
 
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
   should ($loc_rs->count(), 64);

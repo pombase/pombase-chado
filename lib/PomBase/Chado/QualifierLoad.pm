@@ -487,15 +487,18 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
   my @gene_names = ();
 
   for my $gene_name (split /\s+and\s+/, $gene_bit) {
-    if ($gene_name =~ /^\S+$/) {
-      push @gene_names, $gene_name;
+    if ($gene_name =~ /^(\S+)(?:\s+\(([cn])-term\))?$/i) {
+      push @gene_names, { name => $1, term => $2 };
     } else {
       warn qq(gene name contains whitespace "$gene_name" from "$term");
       return 0;
     }
   }
 
-  for my $ortholog_name (@gene_names) {
+  for my $ortholog_conf (@gene_names) {
+    my $ortholog_name = $ortholog_conf->{name};
+    my $ortholog_term = $ortholog_conf->{term};
+
     warn "    creating ortholog from ", $chado_object->uniquename(),
       " to $ortholog_name\n" if $self->verbose();
 
@@ -529,6 +532,9 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
       my $db_xref = delete $sub_qual_map->{db_xref};
       my $pub = $self->get_pub_from_db_xref($term, $db_xref);
       $self->add_feature_relationship_pub($rel, $pub);
+      if (defined $ortholog_term) {
+        $self->add_feature_relationshipprop($rel, 'subject terminus', $ortholog_term);
+      }
       $orth_guard->commit();
     } catch {
       warn "  failed to create ortholog relation: $_\n";
