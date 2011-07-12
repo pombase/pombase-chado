@@ -9,6 +9,7 @@ cvs:
     - EC_number
   PomBase gene products: []
   PomBase family or domain: []
+  PomBase warnings: []
   PomBase gene characterisation status:
     - name: published
       definition: >

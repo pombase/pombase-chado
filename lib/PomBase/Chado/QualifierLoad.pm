@@ -555,6 +555,17 @@ method process_targets($chado_object, $term, $sub_qual_map)
   }
 }
 
+method process_warning($chado_object, $term, $sub_qual_map)
+{
+  if ($term =~ /WARNING: (.*)/) {
+    $self->add_term_to_gene($chado_object, 'PomBase warnings', $1,
+                            $sub_qual_map, 1);
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
 method process_family($chado_object, $term, $sub_qual_map)
 {
   $self->add_term_to_gene($chado_object, 'PomBase family or domain', $term,
@@ -628,9 +639,11 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
   } else {
     if (!$self->process_targets($chado_object, $term, \%qual_map)) {
       if (!$self->process_ortholog($chado_object, $term, \%qual_map)) {
-        if (!$self->process_family($chado_object, $term, \%qual_map)) {
-          warn "qualifier not recognised: $qualifier\n";
-          return ();
+        if (!$self->process_warning($chado_object, $term, \%qual_map)) {
+          if (!$self->process_family($chado_object, $term, \%qual_map)) {
+            warn "qualifier not recognised: $qualifier\n";
+            return ();
+          }
         }
       }
     }
