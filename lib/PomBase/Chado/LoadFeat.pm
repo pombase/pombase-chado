@@ -240,7 +240,13 @@ method process($feature, $chromosome)
       warn "more than one /SO= qualifier\n";
     }
 
-    $so_type = $self->find_cvterm_by_term_id($so_quals[0])->name();
+    my $so_term = $self->find_cvterm_by_term_id($so_quals[0]);
+
+    if (defined $so_term) {
+      $so_type = $so_term->name();
+    } else {
+      warn "can't find cvterm for: ", $so_quals[0], "\n";
+    }
   }
 
   my ($uniquename, $transcript_uniquename, $gene_uniquename, $has_systematic_id) =
