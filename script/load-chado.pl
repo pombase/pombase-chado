@@ -118,16 +118,22 @@ $config->{obsolete_term_mapping} = {
   process_obsolete_term_mapping_files(@obsolete_term_mapping_files)
 };
 
-open my $unknown_names, '<', $config->{allowed_unknown_term_names_file} or die;
-while (defined (my $line = <$unknown_names>)) {
-  chomp $line;
-  if ($line =~ /but name doesn't match any cvterm: (\S+)/) {
-    $config->{allowed_unknown_term_names}->{$1} = 1;
-  } else {
-    die "can't parse: $line";
+for my $allowed_unknown_term_names_file (@{$config->{allowed_unknown_term_names_files}}) {
+  open my $unknown_names, '<', $allowed_unknown_term_names_file or die;
+  while (defined (my $line = <$unknown_names>)) {
+    chomp $line;
+    if ($line =~ /but name doesn't match any cvterm: (\S+)/) {
+      $config->{allowed_unknown_term_names}->{$1} = 1;
+    } else {
+      if ($line =~ /^GO:\d+$/) {
+        $config->{allowed_unknown_term_names}->{$line} = 1;
+      } else {
+        die "can't parse: $line";
+      }
+    }
   }
+  close $unknown_names;
 }
-close $unknown_names;
 
 open my $mismatches, '<', $config->{allowed_term_mismatches_file} or die;
 while (defined (my $line = <$mismatches>)) {
