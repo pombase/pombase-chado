@@ -57,7 +57,7 @@ FT                   /controlled_curation="term=target is meu1;
 FT                   db_xref=PMID:16096059; date=19700101"
 FT                   /controlled_curation="term=target of psh3;
 FT                   db_xref=PMID:11702950; date=20071120"
-FT                   /colour=2
+FT                   /colour=13
 FT                   /fasta_file="fasta/chromosome1.contig.seq.00016.out"
 FT                   /primary_name="sod2"
 FT                   /product="plasma membrane sodium ion/proton antiporter

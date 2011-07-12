@@ -317,6 +317,7 @@ my %colour_map = (
   8 => 'sequence orphan',
   10 => 'conserved unknown',
   12 => 'fission yeast specific family',
+  13 => 'pseudogene',
 );
 
 method store_colour($feature, $colour)
@@ -325,6 +326,14 @@ method store_colour($feature, $colour)
 
   if (!defined $cvterm_name) {
     warn "not storing /colour=$colour - unknown type\n";
+    return;
+  }
+
+  if ($cvterm_name eq 'pseudogene') {
+    if ($feature->type()->name() ne 'pseudogene') {
+      warn $feature->uniquename(), " has /colour=13 but isn't a pseudogene\n";
+    }
+
     return;
   }
 
