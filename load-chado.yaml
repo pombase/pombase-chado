@@ -71,6 +71,7 @@ dbs:
   - GOC
   - GO_REF
   - KEGG
+  - Pfam
   - Rfam
   - GI
   - InterPro
