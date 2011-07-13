@@ -11,6 +11,7 @@ open my $unknown_cv_names, '>', 'unknown_cv_names.txt' or die;
 open my $mapping_problems, '>', 'mapping_problems.txt' or die;
 open my $cv_name_mismatches, '>', 'cv_name_mistaches.txt' or die;
 open my $pseudogene_mismatches, '>', 'pseudogene_mismatches.txt' or die;
+open my $synonym_match_problems, '>', 'synonym_match_problems.txt' or die;
 open my $duplicated_sub_qual_problems, '>', 'duplicated_sub_qual_problems.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
@@ -64,6 +65,11 @@ while (defined (my $line = <>)) {
                       if ($line =~ m! has /colour=13 but isn't a pseudogene!) {
                         print $all_warnings $line;
                         print $pseudogene_mismatches "$gene: $line";
+                      } else {
+                        if ($line =~ /more than one cvtermsynonym found for (.*) at .*/) {
+                          print $all_warnings $line;
+                          print $synonym_match_problems qq($gene: "$1" matches more than one term);
+                        }
                       }
                     }
                   }
