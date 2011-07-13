@@ -623,13 +623,21 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
             $name_substituted = 1;
             last;
           }
+          $alt_name =~ s/_/ /g;
+          if ($term =~ s/^$alt_name, *//) {
+            $name_substituted = 1;
+            last;
+          }
         }
       }
 
       if (!$name_substituted) {
-        if ($term =~ /(.*?),/ && $1 ne $cv_name) {
-          if ($chado_object_type ne 'gene' and $chado_object_type ne 'pseudogene') {
-            warn qq{cv_name ("$cv_name") doesn't match start of term ("$1")\n};
+        if ($term =~ /(.*?),/) {
+          my $cv_name_in_term = $1;
+          if ($cv_name_in_term ne $cv_name) {
+            if ($chado_object_type ne 'gene' and $chado_object_type ne 'pseudogene') {
+              warn qq{cv_name ("$cv_name") doesn't match start of term ("$cv_name_in_term")\n};
+            }
           }
         }
       }
