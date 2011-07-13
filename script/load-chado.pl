@@ -137,7 +137,10 @@ for my $allowed_unknown_term_names_file (@{$config->{allowed_unknown_term_names_
   close $unknown_names;
 }
 
-open my $mismatches, '<', $config->{allowed_term_mismatches_file} or die;
+
+for my $allowed_term_mismatches_file (@{$config->{allowed_term_mismatches_file}}) {
+
+open my $mismatches, '<', $allowed_term_mismatches_file or die;
 while (defined (my $line = <$mismatches>)) {
   if ($line =~ /\S+ (\S+?)(?:\.\d)?:\s+ID in EMBL file \((\S+)\) doesn't match ID in Chado \(\S+\) for EMBL term name (.*)\s+\(Chado term name: .*\)\t?(.*)/) {
     my $gene = $1;
@@ -162,6 +165,7 @@ while (defined (my $line = <$mismatches>)) {
   }
 }
 close $mismatches;
+}
 
 my $organism = PomBase::Load::init_objects($chado, $config);
 
