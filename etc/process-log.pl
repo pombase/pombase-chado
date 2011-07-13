@@ -68,7 +68,7 @@ while (defined (my $line = <>)) {
                       } else {
                         if ($line =~ /more than one cvtermsynonym found for (.*) at .*/) {
                           print $all_warnings $line;
-                          print $synonym_match_problems qq($gene: "$1" matches more than one term);
+                          print $synonym_match_problems qq($gene: "$1" matches more than one term\n);
                         }
                       }
                     }
