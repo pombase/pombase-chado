@@ -36,7 +36,7 @@ under the same terms as Perl itself.
 =cut
 
 use perl5i::2;
-use Carp;
+use Carp qw(cluck);
 
 use Moose;
 
@@ -592,6 +592,7 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
   }
 
   my $cv_name = delete $qual_map{cv};
+  my $cv_name_qual_exists = defined $cv_name;
   my $term = delete $qual_map{term};
 
   if (!defined $term || length $term == 0) {
@@ -610,20 +611,33 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
     } keys %{$self->objs()->{cv_long_names}};
   }
 
+  my $chado_object_type = $chado_object->type()->name();
+
+  if ($cv_name_qual_exists) {
+    if (!($term =~ s/$cv_name, *//)) {
+
+      my $name_substituted = 0;
+      if (exists $self->objs()->{cv_alt_names}->{$cv_name}) {
+        for my $alt_name (@{$self->objs()->{cv_alt_names}->{$cv_name}}) {
+          if ($term =~ s/^$alt_name, *//) {
+            $name_substituted = 1;
+            last;
+          }
+        }
+      }
+
+      if (!$name_substituted) {
+        if ($term =~ /(.*?),/ && $1 ne $cv_name) {
+          if ($chado_object_type ne 'gene' and $chado_object_type ne 'pseudogene') {
+            warn qq{cv_name ("$cv_name") doesn't match start of term ("$1")\n};
+          }
+        }
+      }
+    }
+  }
+
   if (defined $cv_name) {
-    $term =~ s/$cv_name, *//;
-
-    if (exists $self->objs()->{cv_alt_names}->{$cv_name}) {
-      map { $term =~ s/^$_, *//; } @{$self->objs()->{cv_alt_names}->{$cv_name}};
-    }
-
-    if ($term =~ /(.*?),/ && $1 ne $cv_name) {
-      warn qq{cv_name ("$cv_name") doesn't match start of term ("$1")\n};
-    }
-
     if (grep { $_ eq $cv_name } keys %{$self->objs()->{cv_alt_names}}) {
-      my $chado_object_type = $chado_object->type()->name();
-
       if ($self->objs()->{gene_cvs}->{$cv_name} xor
           ($chado_object_type eq 'gene' or $chado_object_type eq 'pseudogene')) {
         return ();

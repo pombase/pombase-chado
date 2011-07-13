@@ -280,7 +280,7 @@ FT                   /systematic_id="SPAC1556.06.2"
 FT                   /controlled_curation="term=protein sequence feature, NLS;
 FT                   qualifier=predicted; db_xref=PMID:11376151;
 FT                   cv=sequence_feature; date=20060605"
-FT                   /controlled_curation="term=gene expression, alternative
+FT                   /controlled_curation="term=dummy cv name, gene expression, alternative
 FT                   transcripts; cv=gene_ex; db_xref=PMID:11376151;
 FT                   date=20060605"
 FT                   /controlled_curation="term=species distribution, sequence
