@@ -10,6 +10,7 @@ open my $qual_problems, '>', 'qualifier_problems.txt' or die;
 open my $unknown_cv_names, '>', 'unknown_cv_names.txt' or die;
 open my $mapping_problems, '>', 'mapping_problems.txt' or die;
 open my $cv_name_mismatches, '>', 'cv_name_mistaches.txt' or die;
+open my $pseudogene_mismatches, '>', 'pseudogene_mismatches.txt' or die;
 open my $duplicated_sub_qual_problems, '>', 'duplicated_sub_qual_problems.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
@@ -59,6 +60,11 @@ while (defined (my $line = <>)) {
                     if ($line =~ /cv_name .* doesn't match start of term .*/) {
                       print $all_warnings "$line";
                       print $cv_name_mismatches "$gene: $line";
+                    } else {
+                      if ($line =~ m! has /colour=13 but isn't a pseudogene!) {
+                        print $all_warnings $line;
+                        print $pseudogene_mismatches "$gene: $line";
+                      }
                     }
                   }
                 }
