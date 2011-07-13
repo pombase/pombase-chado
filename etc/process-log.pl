@@ -59,6 +59,7 @@ while (defined (my $line = <>)) {
                     if ($line =~ /cv_name .* doesn't match start of term .*/) {
                       print $all_warnings "$line";
                       print $cv_name_mismatches "$gene: $line";
+                    }
                   }
                 }
               }
