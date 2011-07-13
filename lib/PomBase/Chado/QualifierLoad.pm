@@ -547,8 +547,19 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 
 method process_targets($chado_object, $term, $sub_qual_map)
 {
+  my $chado_object_type = $chado_object->type()->name();
+
+  return unless $chado_object_type eq 'gene' or $chado_object_type eq 'pseudogene';
+
   if ($term =~ /^target (is|of) (\S+)/) {
-    warn "do something with target: $term\n";
+    my $direction = $1;
+    my $gene_name = $2;
+
+    if ($direction eq 'of') {
+      push @{$self->config()->{target_quals}->{of}->{$chado_object->uniquename()}}, $gene_name;
+    } else {
+      push @{$self->config()->{target_quals}->{is}->{$chado_object->uniquename()}}, $gene_name;
+    }
     return 1;
   } else {
     return 0;

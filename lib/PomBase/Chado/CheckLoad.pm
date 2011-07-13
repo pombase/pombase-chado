@@ -43,6 +43,7 @@ use Carp::Assert qw(assert);
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::FeatureFinder';
 
 func should($this, $that)
 {
@@ -153,3 +154,38 @@ method check
   should(scalar(@psi_mod_cvterms), 1);
 }
 
+method check_targets($target_quals)
+{
+  while (my ($target_uniquename, $genes) = each(%{$target_quals->{of}})) {
+    for my $gene_name (@$genes) {
+      my $gene1_feature = undef;
+      try {
+        $gene1_feature = $self->find_chado_feature($gene_name, 1);
+      } catch {
+        warn $_;
+      };
+      if (!defined $gene1_feature) {
+        next;
+      }
+
+      my $gene1_uniquename = $gene1_feature->uniquename();
+
+      if (!exists $target_quals->{is}->{$gene1_uniquename} ||
+          !grep {
+            my $target_feature;
+            try {
+              $target_feature = $self->find_chado_feature($_, 1);
+            } catch {
+              warn $_;
+            };
+            if (defined $target_feature) {
+              $target_feature->uniquename() eq $target_uniquename;
+            } else {
+              0;
+            }
+          } @{$target_quals->{is}->{$gene1_uniquename}}) {
+        warn qq:no "target is $target_uniquename" in $gene_name ($gene1_uniquename)\n:;
+      }
+    }
+  }
+}

@@ -118,6 +118,8 @@ $config->{obsolete_term_mapping} = {
   process_obsolete_term_mapping_files(@obsolete_term_mapping_files)
 };
 
+$config->{target_quals} = {};
+
 for my $allowed_unknown_term_names_file (@{$config->{allowed_unknown_term_names_files}}) {
   open my $unknown_names, '<', $allowed_unknown_term_names_file or die;
   while (defined (my $line = <$unknown_names>)) {
@@ -198,14 +200,13 @@ for (my $i = 0; $i < @phylonodes; $i++) {
 }
 }
 
+my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
+                                             config => $config,
+                                           );
 
+$checker->check_targets($config->{target_quals});
 
 if ($test) {
-  my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
-                                               config => $config,
-                                             );
-
   $checker->check();
 }
-
 $guard->commit unless $dry_run;
