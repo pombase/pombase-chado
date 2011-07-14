@@ -193,7 +193,21 @@ method check_targets($target_quals)
               0;
             }
           } @{$target_quals->{is}->{$gene1_uniquename}}) {
-        warn qq:no "target is $target_uniquename" in $gene_name ($gene1_uniquename)\n:;
+
+        my $name_bit;
+
+        my $target_feature;
+        try {
+          $target_feature = $self->find_chado_feature($target_uniquename, 1, 1, $organism);
+        } catch {
+        };
+
+        if (defined $target_feature && defined $target_feature->name()) {
+          $name_bit = $target_feature->name();
+        } else {
+          $name_bit = $target_uniquename;
+        }
+        warn qq:no "target is $name_bit" in $gene_name ($gene1_uniquename)\n:;
       }
     }
   }
