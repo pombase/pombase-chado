@@ -623,27 +623,32 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
   if ($cv_name_qual_exists) {
     if (!($term =~ s/$cv_name, *//)) {
 
-      my $name_substituted = 0;
-      if (exists $self->objs()->{cv_alt_names}->{$cv_name}) {
-        for my $alt_name (@{$self->objs()->{cv_alt_names}->{$cv_name}}) {
-          if ($term =~ s/^$alt_name, *//) {
-            $name_substituted = 1;
-            last;
-          }
-          $alt_name =~ s/_/ /g;
-          if ($term =~ s/^$alt_name, *//) {
-            $name_substituted = 1;
-            last;
+      (my $space_cv_name = $cv_name) =~ s/_/ /g;
+
+      if (!($term =~ s/$space_cv_name, *//)) {
+        my $name_substituted = 0;
+
+        if (exists $self->objs()->{cv_alt_names}->{$cv_name}) {
+          for my $alt_name (@{$self->objs()->{cv_alt_names}->{$cv_name}}) {
+            if ($term =~ s/^$alt_name, *//) {
+              $name_substituted = 1;
+              last;
+            }
+            $alt_name =~ s/_/ /g;
+            if ($term =~ s/^$alt_name, *//) {
+              $name_substituted = 1;
+              last;
+            }
           }
         }
-      }
 
-      if (!$name_substituted) {
-        if ($term =~ /(.*?),/) {
-          my $cv_name_in_term = $1;
-          if ($cv_name_in_term ne $cv_name) {
-            if ($chado_object_type ne 'gene' and $chado_object_type ne 'pseudogene') {
-              warn qq{cv_name ("$cv_name") doesn't match start of term ("$cv_name_in_term")\n};
+        if (!$name_substituted) {
+          if ($term =~ /(.*?),/) {
+            my $cv_name_in_term = $1;
+            if ($cv_name_in_term ne $cv_name) {
+              if ($chado_object_type ne 'gene' and $chado_object_type ne 'pseudogene') {
+                warn qq{cv_name ("$cv_name") doesn't match start of term ("$cv_name_in_term")\n};
+              }
             }
           }
         }

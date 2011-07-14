@@ -171,6 +171,8 @@ FT                   evidence=IMP; db_xref=PMID:12597774; date=20040923"
 FT                   /controlled_curation="term=phenotype, viable;
 FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
 FT                   date=20100406"
+FT                   /controlled_curation="term=experimental tools, selectable
+FT                   marker; db_xref=PMID:17622533; cv=ex_tools; date=20070716"
 FT                   /controlled_curation="term=genome organization, telomeric
 FT                   duplication;  cv=genome_org; date=19700101"
 FT                   /controlled_curation="term=orthologous to S. cerevisiae

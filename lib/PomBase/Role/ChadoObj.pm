@@ -105,7 +105,7 @@ method BUILD
     pathway => [],
     complementation => [],
     protein_family => [],
-    ex_tools => [],
+    ex_tools => ['experimental tools'],
     misc => [],
     warning => [],
     DNA_binding_specificity => [],
