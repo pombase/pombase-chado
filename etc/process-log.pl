@@ -71,7 +71,7 @@ while (defined (my $line = <>)) {
                           print $all_warnings $line;
                           print $synonym_match_problems qq($gene: "$1" matches more than one term\n);
                         } else {
-                          if ($line =~ /problem (with target annotation of|on gene)/) {
+                          if ($line =~ /problem (with target annotation of|on gene)|no "target .*" in /) {
                             print $all_warnings $line;
                             print $target_problems $line;
 
