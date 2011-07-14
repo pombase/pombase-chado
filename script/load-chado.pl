@@ -138,7 +138,7 @@ for my $allowed_unknown_term_names_file (@{$config->{allowed_unknown_term_names_
 }
 
 
-for my $allowed_term_mismatches_file (@{$config->{allowed_term_mismatches_file}}) {
+for my $allowed_term_mismatches_file (@{$config->{allowed_term_mismatches_files}}) {
 
 open my $mismatches, '<', $allowed_term_mismatches_file or die;
 while (defined (my $line = <$mismatches>)) {
