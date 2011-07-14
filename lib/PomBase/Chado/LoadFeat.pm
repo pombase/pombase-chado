@@ -319,10 +319,10 @@ my %colour_map = (
   2 => 'published',
   4 => 'transposon',
   6 => 'dubious',
-  7 => 'biological role inferred',
-  8 => 'sequence orphan',
-  10 => 'conserved unknown',
-  12 => 'fission yeast specific family',
+  7 => 'biological_role_inferred',
+  8 => 'sequence_orphan',
+  10 => 'conserved_unknown',
+  12 => 'fission_yeast_specific_family',
   13 => 'pseudogene',
 );
 

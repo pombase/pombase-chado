@@ -130,6 +130,8 @@ func _load_cvterms($chado, $config)
         $cvterm_name = $cvterm_conf;
       }
 
+      $cvterm_name =~ s/ /_/g;
+
       my $accession = $config->{id_counter}->get_dbxref_id($db_name);
       my $formatted_accession = sprintf "%07d", $accession;
 
