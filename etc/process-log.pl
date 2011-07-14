@@ -13,6 +13,7 @@ open my $cv_name_mismatches, '>', 'cv_name_mistaches.txt' or die;
 open my $pseudogene_mismatches, '>', 'pseudogene_mismatches.txt' or die;
 open my $synonym_match_problems, '>', 'synonym_match_problems.txt' or die;
 open my $duplicated_sub_qual_problems, '>', 'duplicated_sub_qual_problems.txt' or die;
+open my $target_problems, '>', 'target_problems.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
 my $prev_line = '';
@@ -69,6 +70,12 @@ while (defined (my $line = <>)) {
                         if ($line =~ /more than one cvtermsynonym found for (.*) at .*/) {
                           print $all_warnings $line;
                           print $synonym_match_problems qq($gene: "$1" matches more than one term\n);
+                        } else {
+                          if ($line =~ /problem (with target annotation of|on gene)/) {
+                            print $all_warnings $line;
+                            print $target_problems $line;
+
+                          }
                         }
                       }
                     }

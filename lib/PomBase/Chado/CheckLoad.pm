@@ -164,7 +164,7 @@ method check_targets($target_quals)
       try {
         $gene1_feature = $self->find_chado_feature($gene_name, 1);
       } catch {
-        warn "problem on gene ", $detail->{feature}->uniquename(), ": $_";
+        warn "problem with target annotation of ", $detail->{feature}->uniquename(), ": $_";
       };
       if (!defined $gene1_feature) {
         next;
