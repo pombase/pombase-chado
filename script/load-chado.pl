@@ -17,6 +17,7 @@ use PomBase::Load;
 use PomBase::Chado::LoadFile;
 use PomBase::Chado::QualifierLoad;
 use PomBase::Chado::CheckLoad;
+use PomBase::Chado::IdCounter;
 
 no stringification;
 
@@ -166,6 +167,8 @@ while (defined (my $line = <$mismatches>)) {
 }
 close $mismatches;
 }
+
+$config->{id_counter} = PomBase::Chado::IdCounter->new();
 
 my $organism = PomBase::Load::init_objects($chado, $config);
 

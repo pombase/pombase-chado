@@ -100,7 +100,8 @@ func _load_genes($chado, $organism, $test_mode) {
 
 func _load_cvterms($chado, $config)
 {
-  my $db = $chado->resultset('General::Db')->find({ name => 'PomBase' });
+  my $db_name = 'PomBase';
+  my $db = $chado->resultset('General::Db')->find({ name => $db_name });
 
   my %cv_confs = %{$config->{cvs}};
 
@@ -129,10 +130,13 @@ func _load_cvterms($chado, $config)
         $cvterm_name = $cvterm_conf;
       }
 
+      my $accession = $config->{id_counter}->get_dbxref_id($db_name);
+      my $formatted_accession = sprintf "%07d", $accession;
+
       my $dbxref =
         $chado->resultset('General::Dbxref')->create({
           db_id => $db->db_id(),
-          accession => $cvterm_name,
+          accession => $formatted_accession,
         });
 
       $chado->resultset('Cv::Cvterm')

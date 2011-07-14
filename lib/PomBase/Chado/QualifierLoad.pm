@@ -62,20 +62,6 @@ method find_cv_by_name($cv_name) {
 }
 memoize ('find_cv_by_name');
 
-
-my %new_cvterm_ids = ();
-
-# return an ID for a new term in the CV with the given name
-method get_dbxref_id($db_name) {
-  if (!exists $new_cvterm_ids{$db_name}) {
-    $new_cvterm_ids{$db_name} = 1;
-  }
-
-  return $new_cvterm_ids{$db_name}++;
-}
-
-
-
 method find_or_create_cvterm($cv, $term_name) {
   my $cvterm = $self->find_cvterm_by_name($cv, $term_name);
 
@@ -93,7 +79,7 @@ method find_or_create_cvterm($cv, $term_name) {
       die "no database for cv: ", $cv->name();
     }
 
-    my $new_ont_id = $self->get_dbxref_id($db->name());
+    my $new_ont_id = $self->config()->{id_counter}->get_dbxref_id($db->name());
     my $formatted_id = sprintf "%07d", $new_ont_id;
 
     my $dbxref_rs = $self->chado()->resultset('General::Dbxref');
