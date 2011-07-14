@@ -44,6 +44,7 @@ with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureFinder';
+with 'PomBase::Role::OrganismFinder';
 
 func should($this, $that)
 {
@@ -156,6 +157,10 @@ method check
 
 method check_targets($target_quals)
 {
+  my $organism = $self->find_organism_by_common_name('pombe');
+
+  die unless defined $organism;
+
   while (my ($target_uniquename, $details) = each(%{$target_quals->{of}})) {
     for my $detail (@$details) {
       my $gene_name = $detail->{name};
