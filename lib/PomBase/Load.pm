@@ -48,6 +48,11 @@ func _load_genes($chado, $organism, $test_mode) {
   my $org_name = $organism->genus() . ' ' . $organism->species();
   my @res;
 
+  my $feature_types_cv =
+    $chado->resultset('Cv::Cv')->find({ name => 'PomBase feature property types' });
+  my $symbol_cvterm =
+    $chado->resultset('Cv::Cvterm')->find({ name => 'symbol',
+                                            cv_id => $feature_types_cv->cv_id() });
   my $file_name = $organism->species() . "_genes";
 
   if (-e $file_name) {
@@ -85,12 +90,21 @@ func _load_genes($chado, $organism, $test_mode) {
 
     $seen_names{lc $name} = $primary_identifier;
 
-    $chado->resultset('Sequence::Feature')->create({
+    my $feature = $chado->resultset('Sequence::Feature')->create({
       uniquename => $primary_identifier,
       name => $name,
       organism_id => $organism->organism_id(),
       type_id => $gene_type->cvterm_id()
     });
+
+    if ($org_name eq 'Saccharomyces cerevisiae' && defined $gene->{symbol} &&
+        length $gene->{symbol} > 0) {
+      $chado->resultset('Sequence::Featureprop')->create({
+        feature_id => $feature->feature_id(),
+        value => $gene->{symbol},
+        type_id => $symbol_cvterm->cvterm_id()
+      });
+    }
 
     last if $test_mode and scalar(keys %seen_names) >= 3;
   }
@@ -175,11 +189,11 @@ func init_objects($chado, $config) {
     $org_load->load_organism('Saccharomyces', 'cerevisiae', 'Scerevisiae',
                              'Scerevisiae', 4932);
 
-  _load_genes($chado, $human, $config->{test_mode});
-  _load_genes($chado, $scerevisiae, $config->{test_mode});
-
   _load_cvterms($chado, $config);
   _load_dbs($chado, $config);
+
+  _load_genes($chado, $human, $config->{test_mode});
+  _load_genes($chado, $scerevisiae, $config->{test_mode});
 
   return $pombe_org;
 }
