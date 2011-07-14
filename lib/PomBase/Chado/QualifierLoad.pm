@@ -687,6 +687,8 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
     }
   }
 
+  $self->check_unused_quals($qualifier, %qual_map);
+
   return %qual_map;
 }
 
@@ -715,6 +717,7 @@ method process_one_go_qual($chado_object, $bioperl_feature, $qualifier) {
 
     try {
       $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 0);
+      $self->check_unused_quals($qualifier, %qual_map);
     } catch {
       my $systematic_id = $chado_object->uniquename();
       warn "$_: failed to load qualifier '$qualifier' from $systematic_id:\n";
@@ -738,15 +741,14 @@ method process_product($chado_feature, $product)
 
 method check_unused_quals
 {
-  return unless $self->verbose();
-
   my $qual_text = shift;
   my %quals = @_;
 
   if (scalar(keys %quals) > 0) {
-    warn "  unprocessed sub qualifiers:\n";
+    warn "  unprocessed sub qualifiers:\n" if $self->verbose();
     while (my ($key, $value) = each %quals) {
-      warn "   $key => $value\n";
+      $self->config()->{stats}->{unused_qualifiers}->{$key}++;
+      warn "   $key => $value\n" if $self->verbose();
     }
   }
 }

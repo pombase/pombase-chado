@@ -213,6 +213,11 @@ my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
 
 $checker->check_targets($config->{target_quals});
 
+warn "counts of unused qualifiers:\n";
+while (my ($qual, $count) = each %{$config->{stats}->{unused_qualifiers}}) {
+  warn "  $qual: $count\n";
+}
+
 if ($test) {
   $checker->check();
 }
