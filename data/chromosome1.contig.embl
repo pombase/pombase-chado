@@ -55,7 +55,7 @@ FT                   GOid=GO:0044144; evidence=TAS; db_xref=PMID:8643524;
 FT                   date=20080328"
 FT                   /controlled_curation="term=target is meu1;
 FT                   db_xref=PMID:16096059; date=19700101"
-FT                   /controlled_curation="term=target of psh3;
+FT                   /controlled_curation="term=target of Psh3;
 FT                   db_xref=PMID:11702950; date=20071120"
 FT                   /colour=13
 FT                   /fasta_file="fasta/chromosome1.contig.seq.00016.out"

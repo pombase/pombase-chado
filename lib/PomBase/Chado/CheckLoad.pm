@@ -162,7 +162,7 @@ method check_targets($target_quals)
 
       my $gene1_feature = undef;
       try {
-        $gene1_feature = $self->find_chado_feature($gene_name, 1);
+        $gene1_feature = $self->find_chado_feature($gene_name, 1, 1);
       } catch {
         warn "problem with target annotation of ", $detail->{feature}->uniquename(), ": $_";
       };
@@ -177,7 +177,7 @@ method check_targets($target_quals)
             my $current = $_;
             my $target_feature;
             try {
-              $target_feature = $self->find_chado_feature($current->{name}, 1);
+              $target_feature = $self->find_chado_feature($current->{name}, 1, 1);
             } catch {
               warn "problem on gene ", $current->{feature}->uniquename(), ": $_";
             };
