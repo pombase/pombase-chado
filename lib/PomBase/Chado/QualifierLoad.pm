@@ -559,9 +559,16 @@ method process_targets($chado_object, $term, $sub_qual_map)
     my $gene_name = $2;
 
     if ($direction eq 'of') {
-      push @{$self->config()->{target_quals}->{of}->{$chado_object->uniquename()}}, $gene_name;
+      push @{$self->config()->{target_quals}->{of}->{$chado_object->uniquename()}}, {
+        name => $gene_name,
+        feature => $chado_object,
+      };
+
     } else {
-      push @{$self->config()->{target_quals}->{is}->{$chado_object->uniquename()}}, $gene_name;
+      push @{$self->config()->{target_quals}->{is}->{$chado_object->uniquename()}}, {
+        name => $gene_name,
+        feature => $chado_object,
+      };
     }
     return 1;
   } else {

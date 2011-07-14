@@ -156,13 +156,15 @@ method check
 
 method check_targets($target_quals)
 {
-  while (my ($target_uniquename, $genes) = each(%{$target_quals->{of}})) {
-    for my $gene_name (@$genes) {
+  while (my ($target_uniquename, $details) = each(%{$target_quals->{of}})) {
+    for my $detail (@$details) {
+      my $gene_name = $detail->{name};
+
       my $gene1_feature = undef;
       try {
         $gene1_feature = $self->find_chado_feature($gene_name, 1);
       } catch {
-        warn $_;
+        warn "problem on gene ", $detail->{feature}->uniquename(), ": $_";
       };
       if (!defined $gene1_feature) {
         next;
@@ -172,12 +174,14 @@ method check_targets($target_quals)
 
       if (!exists $target_quals->{is}->{$gene1_uniquename} ||
           !grep {
+            my $current = $_;
             my $target_feature;
             try {
-              $target_feature = $self->find_chado_feature($_, 1);
+              $target_feature = $self->find_chado_feature($current->{name}, 1);
             } catch {
-              warn $_;
+              warn "problem on gene ", $current->{feature}->uniquename(), ": $_";
             };
+
             if (defined $target_feature) {
               $target_feature->uniquename() eq $target_uniquename;
             } else {

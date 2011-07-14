@@ -274,6 +274,10 @@ FT                   date=20100103"
 FT                   /shared_id="SPAC1556.06"
 FT                   /controlled_curation="term=target is SPAC977.13c;
 FT                   db_xref=PMID:16096059; date=19700101"
+FT                   /controlled_curation="term=target is dummy1;
+FT                   db_xref=PMID:16096059; date=19700101"
+FT                   /controlled_curation="term=target of dummy2;
+FT                   db_xref=PMID:16096059; date=19700101"
 FT   CDS             join(7050..7150,7200..7250)
 FT                   /colour=8
 FT                   /other_transcript="SPAC1556.06.1"
