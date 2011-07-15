@@ -545,7 +545,8 @@ method process_family($chado_object, $term, $sub_qual_map)
                           $sub_qual_map, 1);
 }
 
-method process_one_cc($chado_object, $bioperl_feature, $qualifier) {
+method process_one_cc($chado_object, $bioperl_feature, $qualifier,
+                      $target_curations) {
   my $systematic_id = $chado_object->uniquename();
 
   warn "    process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
