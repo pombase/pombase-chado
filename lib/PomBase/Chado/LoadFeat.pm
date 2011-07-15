@@ -235,8 +235,6 @@ method process($feature, $chromosome)
   }
 
   if ($feature->has_tag("SO")) {
-    warn "found a /SO= qualifier for: ", $feature->uniquename(), "\n";
-
     my @so_quals = $feature->get_tag_values("SO");
 
     if (@so_quals > 1) {
@@ -244,6 +242,8 @@ method process($feature, $chromosome)
     }
 
     my $so_term = $self->find_cvterm_by_term_id($so_quals[0]);
+
+    warn "found a /SO= qualifier for $so_quals[0]\n";
 
     if (defined $so_term) {
       warn "changing $so_type to ", $so_term->name(), "\n";
