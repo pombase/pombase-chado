@@ -51,6 +51,7 @@ with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::OrganismFinder';
+with 'PomBase::Role::QualifierSplitter';
 
 has verbose => (is => 'ro', isa => 'Bool');
 
@@ -394,45 +395,6 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   if (defined $date) {
     $self->add_feature_cvtermprop($featurecvterm, date => $date);
   }
-
-}
-
-method split_sub_qualifiers($cc_qualifier) {
-  my %map = ();
-
-  my @bits = split /;/, $cc_qualifier;
-
-  for my $bit (@bits) {
-    if ($bit =~ /\s*([^=]+?)\s*=\s*(.*?)\s*$/) {
-      my $name = $1;
-      my $value = $2;
-      if (exists $map{$name}) {
-        die "duplicated sub-qualifier '$name' from:
-/controlled_curation=\"$cc_qualifier\"";
-      }
-
-      if ($name eq 'qualifier') {
-        my @bits = split /\|/, $value;
-        $value = [@bits];
-      }
-
-      $map{$name} = $value;
-
-      if ($name =~ / /) {
-        warn "  qualifier name ('$name') contains a space\n" unless $self->verbose() == 10;
-      }
-
-      if ($name eq 'cv' && $value =~ / /) {
-        warn "  cv name ('$value') contains a space\n" unless $self->verbose() == 10;
-      }
-
-      if ($name eq 'db_xref' && $value =~ /\|/) {
-        warn "  annotation should be split into two qualifier: $name=$value\n";
-      }
-    }
-  }
-
-  return %map;
 }
 
 method add_feature_relationship_pub($relationship, $pub) {

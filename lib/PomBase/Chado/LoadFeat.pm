@@ -48,6 +48,7 @@ with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::CoordCalculator';
 with 'PomBase::Role::XrefStorer';
+with 'PomBase::Role::QualifierSplitter';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 
 has organism => (is => 'ro',
@@ -350,6 +351,36 @@ method store_colour($feature, $colour)
                                $self->objs()->{null_pub}, 0);
 }
 
+method get_target_curations($bioperl_feature)
+{
+  my @ret = ();
+
+  if ($bioperl_feature->has_tag('controlled_curation')) {
+    for my $cc ($bioperl_feature->get_tag_values('controlled_curation')) {
+      my %qual_map = ();
+
+      try {
+        %qual_map = $self->split_sub_qualifiers($cc);
+      } catch {
+        warn "  $_: failed to process sub-qualifiers from $cc:\n";
+      };
+
+      my $term = delete $qual_map{term};
+
+      if (defined $term && $term =~ /^target is /) {
+        if ($term =~ /^target is (\S+)$/) {
+          push @ret, { target => $1,
+                       %qual_map };
+        } else {
+          warn "can't understand this target qualifier: $term\n";
+        }
+      }
+    }
+  }
+
+  return @ret;
+}
+
 method process_qualifiers($bioperl_feature, $chado_object)
 {
   my $type = $bioperl_feature->primary_tag();
@@ -357,10 +388,13 @@ method process_qualifiers($bioperl_feature, $chado_object)
 
   my $uniquename = $chado_object->uniquename();
 
+  my @target_curations = $self->get_target_curations($bioperl_feature);
+
   if ($bioperl_feature->has_tag("controlled_curation")) {
     for my $value ($bioperl_feature->get_tag_values("controlled_curation")) {
       my %unused_quals =
-        $self->qual_load()->process_one_cc($chado_object, $bioperl_feature, $value);
+        $self->qual_load()->process_one_cc($chado_object, $bioperl_feature, $value,
+                                           \@target_curations);
       warn "\n" if $verbose;
     }
   }
