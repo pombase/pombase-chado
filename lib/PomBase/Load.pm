@@ -76,7 +76,19 @@ func _load_genes($chado, $organism, $test_mode) {
     if ($org_name eq 'Saccharomyces cerevisiae') {
       $name = $gene->{secondary_identifier};
     } else {
-      $name = $gene->{symbol};
+      if (defined $gene->{symbol}) {
+        if ($gene->{symbol} eq 'RAD51L3') {
+          warn "translating: RAD51L3\n";
+          $name = 'RAD51D';
+        } else {
+          if ($gene->{symbol} eq 'CEP110') {
+            warn "translating: CEP111\n";
+            $name = 'CNTRL';
+          } else {
+            $name = $gene->{symbol};
+          }
+        }
+      }
     }
 
     if (defined $name and length $name > 0) {
