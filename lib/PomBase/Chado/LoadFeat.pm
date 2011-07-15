@@ -235,6 +235,8 @@ method process($feature, $chromosome)
   }
 
   if ($feature->has_tag("SO")) {
+    warn "found a /SO= qualifier for: ", $feature->uniquename(), "\n";
+
     my @so_quals = $feature->get_tag_values("SO");
 
     if (@so_quals > 1) {
