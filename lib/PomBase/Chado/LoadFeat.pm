@@ -244,6 +244,7 @@ method process($feature, $chromosome)
     my $so_term = $self->find_cvterm_by_term_id($so_quals[0]);
 
     if (defined $so_term) {
+      warn "changing $so_type to ", $so_term->name(), "\n";
       $so_type = $so_term->name();
     } else {
       warn "can't find cvterm for: ", $so_quals[0], "\n";
