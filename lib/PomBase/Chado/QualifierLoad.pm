@@ -417,7 +417,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
   my $chado_object_type = $chado_object->type()->name();
 
   if ($chado_object_type ne 'gene' && $chado_object_type ne 'pseudogene') {
-    return 1;
+    return 0;
   }
 
   my $organism_common_name;
