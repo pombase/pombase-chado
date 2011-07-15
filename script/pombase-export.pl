@@ -30,6 +30,7 @@ my $config = LoadFile($config_file);
 
 my %retrieve_modules = (
   phenotypes => 'PomBase::Retrieve::Phenotypes',
+  orthologs => 'PomBase::Retrieve::Orthologs',
 );
 
 my $retrieve_module = $retrieve_modules{$retrieve_type};
