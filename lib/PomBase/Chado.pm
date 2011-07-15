@@ -51,8 +51,8 @@ use Bio::Chado::Schema;
 =cut
 sub db_connect
 {
-  my ($database, $username, $password) = @_;
-  return Bio::Chado::Schema->connect("dbi:Pg:database=$database",
+  my ($host, $database, $username, $password) = @_;
+  return Bio::Chado::Schema->connect("dbi:Pg:database=$database;host=$host",
                                      $username, $password,
                                      { auto_savepoint => 1 });
 }

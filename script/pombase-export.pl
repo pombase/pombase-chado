@@ -6,7 +6,7 @@ use YAML qw(LoadFile);
 
 use lib qw(lib);
 
-if (@ARGV != 5) {
+if (@ARGV != 6) {
   die qq($0: needs fives arguments:
   retrieve_type - currently only "phenotypes"
   config_file   - the YAML format configuration file name
@@ -18,12 +18,13 @@ if (@ARGV != 5) {
 
 my $retrieve_type = shift;
 my $config_file = shift;
+my $host = shift;
 my $database = shift;
 my $username = shift;
 my $password = shift;
 
 use PomBase::Chado;
-my $chado = PomBase::Chado->db_connect($database, $username, $password);
+my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
 my $config = LoadFile($config_file);
 

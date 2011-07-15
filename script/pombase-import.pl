@@ -13,7 +13,7 @@ if (!GetOptions("dry-run|d" => \$dry_run)) {
   usage();
 }
 
-if (@ARGV != 5) {
+if (@ARGV != 6) {
   die qq($0: needs fives arguments:
   config_file   - the YAML format configuration file name
   import_type   - possibilities:
@@ -29,12 +29,13 @@ usage:
 
 my $config_file = shift;
 my $import_type = shift;
+my $host = shift;
 my $database = shift;
 my $username = shift;
 my $password = shift;
 
 use PomBase::Chado;
-my $chado = PomBase::Chado::db_connect($database, $username, $password);
+my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
 my $guard = $chado->txn_scope_guard;
 

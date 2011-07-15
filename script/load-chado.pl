@@ -46,7 +46,7 @@ my $database = shift;
 
 my $config = LoadFile($config_file);
 
-my $chado = PomBase::Chado::db_connect($database, 'kmr44', 'kmr44');
+my $chado = PomBase::Chado::db_connect('localhost', $database, 'kmr44', 'kmr44');
 
 my $guard = $chado->txn_scope_guard;
 
