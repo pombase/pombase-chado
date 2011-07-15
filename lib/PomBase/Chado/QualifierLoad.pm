@@ -410,6 +410,7 @@ method add_feature_relationship_pub($relationship, $pub) {
 }
 
 method process_ortholog($chado_object, $term, $sub_qual_map) {
+  warn "    process_ortholog()\n" if $self->verbose();
   my $org_name;
   my $gene_bit;
 
@@ -498,6 +499,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 
 method process_targets($chado_object, $term, $sub_qual_map)
 {
+  warn "    process_targets()\n" if $self->verbose();
   my $chado_object_type = $chado_object->type()->name();
 
   return unless $chado_object_type eq 'gene' or $chado_object_type eq 'pseudogene';
@@ -526,6 +528,7 @@ method process_targets($chado_object, $term, $sub_qual_map)
 
 method process_warning($chado_object, $term, $sub_qual_map)
 {
+  warn "    process_warning()\n" if $self->verbose();
   if ($term =~ /WARNING: (.*)/) {
     $self->add_term_to_gene($chado_object, 'PomBase warnings', $1,
                             $sub_qual_map, 1);
@@ -537,6 +540,7 @@ method process_warning($chado_object, $term, $sub_qual_map)
 
 method process_family($chado_object, $term, $sub_qual_map)
 {
+  warn "    process_family()\n" if $self->verbose();
   $self->add_term_to_gene($chado_object, 'PomBase family or domain', $term,
                           $sub_qual_map, 1);
 }
