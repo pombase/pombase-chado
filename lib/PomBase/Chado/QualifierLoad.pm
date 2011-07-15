@@ -447,6 +447,8 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
     }
   }
 
+  my $date = $self->get_and_check_date($sub_qual_map);
+
   for my $ortholog_conf (@gene_names) {
     my $ortholog_name = $ortholog_conf->{name};
     my $ortholog_term = $ortholog_conf->{term};
@@ -476,11 +478,10 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
                                   type_id => $self->objs()->{orthologous_to_cvterm}->cvterm_id()
                                 });
 
-      my $date = delete $sub_qual_map->{date};
-
       if (defined $date) {
-        $self->add_feature_relationshipprop($rel, 'date', $date);
+        $self->add_feature_relationshipprop($rel, date => $date);
       }
+
       my $db_xref = delete $sub_qual_map->{db_xref};
       my $pub = $self->get_pub_from_db_xref($term, $db_xref);
       $self->add_feature_relationship_pub($rel, $pub);
