@@ -153,6 +153,15 @@ method check
     $chado->resultset('Cv::Cv')->find({ name => 'PSI-MOD' })
           ->search_related('cvterms')->search_related('feature_cvterms')->all();
   should(scalar(@psi_mod_cvterms), 1);
+
+  my $intron_cvterm = $self->get_cvterm('sequence', 'intron');
+
+  my $intron_rs =
+    $chado->resultset('Sequence::Feature')
+      ->search({ type_id => $intron_cvterm->cvterm_id() });
+
+  should($intron_rs->count(), 3);
+  should($intron_rs->search({ name => { '!=', undef }})->count(), 0);
 }
 
 method check_targets($target_quals)

@@ -54,9 +54,12 @@ method store_feature($uniquename, $name, $synonyms, $so_type)
   my %create_args = (
     type_id => $so_cvterm->cvterm_id(),
     uniquename => $uniquename,
-    name => $name,
     organism_id => $self->organism()->organism_id(),
   );
+
+  if ($so_type ne 'intron') {
+    $create_args{name} = $name;
+  }
 
   my $feature_rs = $self->chado()->resultset('Sequence::Feature');
 

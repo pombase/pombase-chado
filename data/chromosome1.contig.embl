@@ -35,6 +35,7 @@ FT                   db_xref=PMID:12597277; date=20050412"
 FT   intron          1501..1600
 FT                   /systematic_id="SPAC977.10"
 FT                   /note="test intron"
+FT                   /primary_name="sod2"
 FT   CDS             join(1178..1301,1379..1500,1601..2661)
 FT                   /GO="aspect=C; term=nuclear envelope-endoplasmic reticulum
 FT                   continuum; GOid=GO:0042175; evidence=IDA;
