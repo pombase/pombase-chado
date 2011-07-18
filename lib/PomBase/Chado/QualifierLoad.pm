@@ -505,9 +505,16 @@ method process_targets($chado_object, $term, $sub_qual_map)
 
   return unless $chado_object_type eq 'gene' or $chado_object_type eq 'pseudogene';
 
-  if ($term =~ /^target (is|of) (\S+)/) {
+  if ($term =~ /^target (is|of) (\S+)\s*(.*)$/) {
     my $direction = $1;
     my $gene_name = $2;
+
+    my $junk = $3;
+
+    if (length $junk > 0) {
+      warn qq(in "$term", "$2 $3" is not a gene\n);
+      return 0;
+    }
 
     if ($direction eq 'of') {
       push @{$self->config()->{target_quals}->{of}->{$chado_object->uniquename()}}, {
