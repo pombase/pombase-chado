@@ -516,6 +516,16 @@ method process_targets($chado_object, $term, $sub_qual_map)
       return 0;
     }
 
+    my $organism = $self->find_organism_by_common_name('pombe');
+
+    my $gene_feature = undef;
+    try {
+      $gene_feature = $self->find_chado_feature($gene_name, 1, 1, $organism);
+    } catch {
+      warn qq(problem with "$term": $_);
+      return 0;
+    };
+
     if ($direction eq 'of') {
       push @{$self->config()->{target_quals}->{of}->{$chado_object->uniquename()}}, {
         name => $gene_name,
