@@ -72,7 +72,7 @@ method store_extension($featurecvterm, $extensions)
 # $qualifier_data - an array ref of qualifiers
 method process($featurecvterm, $qualifier_data, $target_is, $target_of)
 {
-  my $relationship_cv_name = 'relationship';
+  my $relationship_cv_name = 'PomBase annotation extension relationships';
 
   for my $qualifiers (@$qualifier_data) {
 

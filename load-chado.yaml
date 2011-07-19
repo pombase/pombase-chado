@@ -8,7 +8,8 @@ cvs:
     - comment
     - EC_number
     - symbol
-  PomBase annotation extension terms:
+  PomBase annotation extension terms: []
+  PomBase annotation extension relationships:
     - part_of
     - has_part
     - occurs in

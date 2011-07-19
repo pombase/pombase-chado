@@ -206,7 +206,7 @@ FT                   GOid=GO:0006530; evidence=ISS; db_xref=GO_REF:0000024;
 FT                   with=Pfam:PF00710; date=20080804"
 FT                   /GO="aspect=C; term=cell surface; GOid=GO:0009986;
 FT                   evidence=NAS; db_xref=GOC:unpublished; date=20080822;
-FT                   annotation_extension=(GO:0000084) malformed;"
+FT                   annotation_extension=(GO:0000084) _malformed;"
 FT                   /systematic_id="SPAC977.12"
 FT                   /db_xref="SPD:51/51C10"
 FT                   /controlled_curation="term=phenotype, viable;
