@@ -18,6 +18,7 @@ use PomBase::Chado::LoadFile;
 use PomBase::Chado::QualifierLoad;
 use PomBase::Chado::CheckLoad;
 use PomBase::Chado::IdCounter;
+use PomBase::Chado::ExtensionProcessor;
 
 no stringification;
 
@@ -168,7 +169,9 @@ while (defined (my $line = <$mismatches>)) {
 close $mismatches;
 }
 
-$config->{id_counter} = PomBase::Chado::IdCounter->new();
+my $id_counter = PomBase::Chado::IdCounter->new();
+
+$config->{id_counter} = $id_counter;
 
 my $organism = PomBase::Load::init_objects($chado, $config);
 
@@ -197,14 +200,28 @@ my $phylo_rs = $chado->resultset('Phylogeny::Phylonode');
 
 my $phylonode_id = 0;
 my @phylonodes =
-  qw(root Eukaryota Fungi Dikarya Ascomycota Taphrinomycotina
+  qw'root Eukaryota Fungi Dikarya Ascomycota Taphrinomycotina
      Schizosaccharomycetes Schizosaccharomycetales Schizosaccharomycetaceae
-     Schizosaccharomyces);
+     Schizosaccharomyces';
 
 for (my $i = 0; $i < @phylonodes; $i++) {
   $phylo_rs->create({ phylonode_id => $i++, left_id => $i,
                       right_id => $i, distance => scalar(@phylonodes) - $i });
 }
+}
+
+my $extension_processor =
+  PomBase::Chado::ExtensionProcessor->new(chado => $chado,
+                                          config => $config,
+                                          verbose => $verbose,
+                                          id_counter => $id_counter);
+
+my $post_process_data = $config->{post_process};
+
+while (my ($gene_name, $data) = each %{$post_process_data}) {
+  my $featurecvterm = $data->{feature_cvterm};
+
+  $extension_processor->process($featurecvterm, $data->{qualifier_data});
 }
 
 my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,

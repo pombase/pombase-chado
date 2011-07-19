@@ -48,6 +48,7 @@ with 'PomBase::Role::FeatureDumper';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::OrganismFinder';
@@ -62,85 +63,6 @@ method find_cv_by_name($cv_name) {
     or die "no cv with name: $cv_name");
 }
 memoize ('find_cv_by_name');
-
-method find_or_create_cvterm($cv, $term_name) {
-  my $cvterm = $self->find_cvterm_by_name($cv, $term_name);
-
-  # nested transaction
-  my $cvterm_guard = $self->chado()->txn_scope_guard();
-
-  if (defined $cvterm) {
-    warn "    found cvterm_idp ", $cvterm->cvterm_id(),
-      " when looking for $term_name in ", $cv->name(),"\n" if $self->verbose();
-  } else {
-    warn "    failed to find: $term_name in ", $cv->name(), "\n" if $self->verbose();
-
-    my $db = $self->objs()->{dbs_objects}->{$cv->name()};
-    if (!defined $db) {
-      die "no database for cv: ", $cv->name();
-    }
-
-    my $new_ont_id = $self->config()->{id_counter}->get_dbxref_id($db->name());
-    my $formatted_id = sprintf "%07d", $new_ont_id;
-
-    my $dbxref_rs = $self->chado()->resultset('General::Dbxref');
-
-    die "no db for ", $cv->name(), "\n" if !defined $db;
-
-    warn "    creating dbxref $formatted_id, ", $cv->name(), "\n" if $self->verbose();
-
-    my $dbxref =
-      $dbxref_rs->create({ db_id => $db->db_id(),
-                           accession => $formatted_id });
-
-    my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
-    $cvterm = $cvterm_rs->create({ name => $term_name,
-                                   dbxref_id => $dbxref->dbxref_id(),
-                                   cv_id => $cv->cv_id() });
-
-    warn "    created new cvterm, id: ", $cvterm->cvterm_id(), "\n" if $self->verbose();
-  }
-
-  $cvterm_guard->commit();
-
-  return $cvterm;
-}
-
-
-method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
-  if (!defined $name) {
-    die "no name for property\n";
-  }
-  if (!defined $value) {
-    die "no value for $name\n";
-  }
-
-  if (!defined $rank) {
-    $rank = 0;
-  }
-
-  if (ref $value eq 'ARRAY') {
-    my @ret = ();
-    for (my $i = 0; $i < @$value; $i++) {
-      push @ret, $self->add_feature_cvtermprop($feature_cvterm,
-                                               $name, $value->[$i], $i);
-    }
-    return @ret;
-  }
-
-  my $type = $self->find_or_create_cvterm($self->get_cv('feature_cvtermprop_type'),
-                                          $name);
-
-  my $rs = $self->chado()->resultset('Sequence::FeatureCvtermprop');
-
-  warn "    adding feature_cvtermprop $name => $value\n" if $self->verbose();
-
-  return $rs->create({ feature_cvterm_id =>
-                         $feature_cvterm->feature_cvterm_id(),
-                       type_id => $type->cvterm_id(),
-                       value => $value,
-                       rank => $rank });
-}
 
 method add_feature_relationshipprop($feature_relationship, $name, $value) {
   if (!defined $name) {
@@ -394,6 +316,12 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   my $date = $self->get_and_check_date($sub_qual_map);
   if (defined $date) {
     $self->add_feature_cvtermprop($featurecvterm, date => $date);
+  }
+
+  if ($sub_qual_map->{annotation_extension}) {
+    $self->config()->{post_process}->{$uniquename}->{feature} = $pombe_feature;
+    $self->config()->{post_process}->{$uniquename}->{feature_cvterm} = $featurecvterm;
+    push @{$self->config()->{post_process}->{$uniquename}->{qualifier_data}}, $sub_qual_map;
   }
 }
 

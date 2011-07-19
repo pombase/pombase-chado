@@ -2,7 +2,8 @@ package PomBase::Role::FeatureCvtermCreator;
 
 =head1 NAME
 
-PomBase::Role::FeatureCvtermCreator - Role for creating feature_cvterms
+PomBase::Role::FeatureCvtermCreator - Role for creating feature_cvterms and
+                                      feature_cvtermprops
 
 =head1 SYNOPSIS
 
@@ -60,6 +61,42 @@ method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
                        cvterm_id => $cvterm->cvterm_id(),
                        pub_id => $pub->pub_id(),
                        is_not => $is_not,
+                       rank => $rank });
+}
+
+
+method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
+  if (!defined $name) {
+    die "no name for property\n";
+  }
+  if (!defined $value) {
+    die "no value for $name\n";
+  }
+
+  if (!defined $rank) {
+    $rank = 0;
+  }
+
+  if (ref $value eq 'ARRAY') {
+    my @ret = ();
+    for (my $i = 0; $i < @$value; $i++) {
+      push @ret, $self->add_feature_cvtermprop($feature_cvterm,
+                                               $name, $value->[$i], $i);
+    }
+    return @ret;
+  }
+
+  my $type = $self->find_or_create_cvterm($self->get_cv('feature_cvtermprop_type'),
+                                          $name);
+
+  my $rs = $self->chado()->resultset('Sequence::FeatureCvtermprop');
+
+  warn "    adding feature_cvtermprop $name => $value\n" if $self->verbose();
+
+  return $rs->create({ feature_cvterm_id =>
+                         $feature_cvterm->feature_cvterm_id(),
+                       type_id => $type->cvterm_id(),
+                       value => $value,
                        rank => $rank });
 }
 
