@@ -226,7 +226,7 @@ while (my ($gene_name, $data) = each %{$post_process_data}) {
   } catch {
     warn "failed to add annotation extension to ",
       $featurecvterm->feature()->uniquename(), ' <-> ',
-      $featurecvterm->cvterm()->name(), "\n";
+      $featurecvterm->cvterm()->name(), ": $_\n";
   }
 }
 
