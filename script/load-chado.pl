@@ -221,7 +221,13 @@ my $post_process_data = $config->{post_process};
 while (my ($gene_name, $data) = each %{$post_process_data}) {
   my $featurecvterm = $data->{feature_cvterm};
 
-  $extension_processor->process($featurecvterm, $data->{qualifier_data});
+  try {
+    $extension_processor->process($featurecvterm, $data->{qualifier_data});
+  } catch {
+    warn "failed to add annotation extension to ",
+      $featurecvterm->feature()->uniquename(), ' <-> ',
+      $featurecvterm->cvterm()->name(), "\n";
+  }
 }
 
 my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
