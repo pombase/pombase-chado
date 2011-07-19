@@ -74,6 +74,8 @@ method process($featurecvterm, $qualifier_data, $target_is, $target_of)
 {
   my $relationship_cv_name = 'PomBase annotation extension relationships';
 
+  my $feature_uniquename = $featurecvterm->feature()->uniquename();
+
   for my $qualifiers (@$qualifier_data) {
 
     my @extension_qualifiers =
@@ -98,7 +100,7 @@ method process($featurecvterm, $qualifier_data, $target_is, $target_of)
           go_term => $go_term,
         }
       } else {
-        warn "annotation extension qualifier not understood: $_\n";
+        warn "annotation extension qualifier on $feature_uniquename not understood: $_\n";
         return;
       }
     } @extension_qualifiers;
