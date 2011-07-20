@@ -291,6 +291,10 @@ FT                   /shared_id="SPAC1556.06"
 FT                   /synonym="SPAC1556.06b"
 FT                   /synonym="SPAC1556.06"
 FT                   /systematic_id="SPAC1556.06.2"
+FT                   /GO="aspect=P; term=cell cycle checkpoint;
+FT                   qualifier=required;
+FT                   annotation_extension=during(GO:0000084); GOid=GO:0000075;
+FT                   evidence=IMP; db_xref=PMID:12597774; date=20040923"
 FT                   /controlled_curation="term=protein sequence feature, NLS;
 FT                   qualifier=predicted; db_xref=PMID:11376151;
 FT                   cv=sequence_feature; date=20060605"

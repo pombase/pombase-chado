@@ -67,19 +67,30 @@ method store_extension($feature_cvterm, $extensions)
       ' ' . $extension->{go_term}->name() . ' (PomBase)';
   }
 
-  my $new_term = $self->find_or_create_cvterm($extension_cv_name, $new_name);
+  my $new_term = $self->get_cvterm($extension_cv_name, $new_name);
 
-  my $isa_cvterm = $self->get_cvterm('relationship', 'is_a');
-  $self->store_cvterm_rel($new_term, $old_cvterm, $isa_cvterm);
+  if (!defined $new_term) {
+    $new_term = $self->find_or_create_cvterm($extension_cv_name, $new_name);
 
-  for my $extension (@$extensions) {
-    my $rel = $extension->{relation};
-    my $go_term = $extension->{go_term};
+    my $isa_cvterm = $self->get_cvterm('relationship', 'is_a');
+    $self->store_cvterm_rel($new_term, $old_cvterm, $isa_cvterm);
 
-    $self->store_cvterm_rel($new_term, $go_term, $rel);
+    for my $extension (@$extensions) {
+      my $rel = $extension->{relation};
+      my $go_term = $extension->{go_term};
+
+      warn qq'storing new cvterm_relationship of type "' . $rel->name() .
+        " subject: " . $new_term->name() .
+        " object: " . $go_term->name() . "\n" if $self->verbose();
+      $self->store_cvterm_rel($new_term, $go_term, $rel);
+    }
   }
 
+  warn 'storing feature_cvterm from ' .
+    $feature_cvterm->feature()->uniquename() . ' to ' .
+    $new_term->name() . "\n" if $self->verbose();
   $feature_cvterm->cvterm($new_term);
+
   $feature_cvterm->update();
 }
 
