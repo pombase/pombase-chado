@@ -68,6 +68,9 @@ method find_or_create_cvterm($cv, $term_name) {
     $cv = $self->get_cv($cv);
   }
 
+  warn "    find_or_create_cvterm('", $cv->name(), "', '$term_name'\n"
+    if $self->verbose();
+
   my $cvterm = $self->find_cvterm_by_name($cv, $term_name);
 
   # nested transaction

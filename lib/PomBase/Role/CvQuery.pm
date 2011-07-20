@@ -60,7 +60,10 @@ method get_cvterm($cv_name, $cvterm_name)
 
   state $cache = {};
 
-  if (exists $cache->{$cv_name}->{$cvterm_name}) {
+  if (defined $cache->{$cv_name}->{$cvterm_name}) {
+    warn "     get_cvterm('$cv_name', '$cvterm_name') - FOUND IN CACHE ",
+      $cache->{$cv_name}->{$cvterm_name}->cvterm_id(), "\n"
+      if $self->verbose();
     return $cache->{$cv_name}->{$cvterm_name};
   }
 
@@ -69,6 +72,14 @@ method get_cvterm($cv_name, $cvterm_name)
                                   cv_id => $cv->cv_id() });
 
   $cache->{$cv_name}->{$cvterm_name} = $cvterm;
+
+  if (defined $cvterm) {
+    warn "     get_cvterm('$cv_name', '$cvterm_name') - FOUND ", $cvterm->cvterm_id(),"\n"
+      if $self->verbose();
+  } else {
+    warn "     get_cvterm('$cv_name', '$cvterm_name') - NOT FOUND\n"
+      if $self->verbose();
+  }
 
   return $cvterm;
 }

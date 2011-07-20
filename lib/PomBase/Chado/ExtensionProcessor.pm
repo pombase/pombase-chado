@@ -101,8 +101,10 @@ method process($featurecvterm, $qualifier_data, $target_is, $target_of)
 
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
 
-  for my $qualifiers (@$qualifier_data) {
+  warn "processing annotation extension for $feature_uniquename <-> ",
+    $featurecvterm->cvterm()->name(), "\n" if $self->verbose();
 
+  for my $qualifiers (@$qualifier_data) {
     my @extension_qualifiers =
       split /\||,/, $qualifiers->{annotation_extension};
     my @extensions = map {
