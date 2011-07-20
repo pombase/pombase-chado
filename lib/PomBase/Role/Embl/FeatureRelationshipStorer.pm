@@ -38,9 +38,8 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-with 'PomBase::Role::CvQuery';
-
 requires 'chado';
+requires 'get_cvterm';
 
 method store_feature_rel($subject, $object, $rel_type)
 {
