@@ -345,6 +345,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
   my $chado_object_type = $chado_object->type()->name();
 
   if ($chado_object_type ne 'gene' && $chado_object_type ne 'pseudogene') {
+    warn "  can't apply ortholog to $chado_object_type: $term\n" if $self->verbose();
     return 0;
   }
 
@@ -358,6 +359,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
       $organism_common_name = 'human';
       $gene_bit = $1;
     } else {
+      warn "  didn't find ortholog in: $term\n" if $self->verbose();
       return 0;
     }
   }
@@ -417,6 +419,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
         $self->add_feature_relationshipprop($rel, 'subject terminus', $ortholog_term);
       }
       $orth_guard->commit();
+      warn "  created ortholog to $ortholog_name\n" if $self->verbose();
     } catch {
       warn "  failed to create ortholog relation: $_\n";
       return 0;

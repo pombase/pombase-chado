@@ -86,13 +86,13 @@ method process($featurecvterm, $qualifier_data, $target_is, $target_of)
         my $relation =
           $self->find_cvterm_by_name($relationship_cv_name, $rel_name);
         if (!defined $relation) {
-          die "can't find relation cvterm for: $rel_name\n";
+          die "can't find relation cvterm for: $rel_name";
         }
 
         my $term_id = $2;
         my $go_term = $self->find_cvterm_by_term_id($term_id);
         if (!defined $go_term) {
-          die "can't GO term: $term_id\n";
+          die "can't find GO term: $term_id";
         }
 
         {
