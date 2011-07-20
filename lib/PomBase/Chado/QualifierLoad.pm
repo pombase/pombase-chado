@@ -477,7 +477,13 @@ method process_targets($chado_object, $term, $sub_qual_map)
 
 method process_warning($chado_object, $term, $sub_qual_map)
 {
+  my $chado_object_type = $chado_object->type()->name();
+
   warn "    process_warning()\n" if $self->verbose();
+  if ($chado_object_type ne 'gene' and $chado_object_type ne 'pseudogene') {
+    return 0;
+  }
+
   if ($term =~ /WARNING: (.*)/) {
     $self->add_term_to_gene($chado_object, 'PomBase warnings', $1,
                             $sub_qual_map, 1);
