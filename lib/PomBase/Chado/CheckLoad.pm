@@ -172,6 +172,16 @@ method check
           ->search({ type_id => $orthologous_to_cvterm->cvterm_id() });
 
   should($orth_rel_rs->count(), 4);
+
+  my $so_ann_ex_gene =
+    $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPAC977.12' });
+
+  my @so_ann_ex_go_terms =
+    $so_ann_ex_gene->feature_cvterms()->search_related('cvterm');
+
+  assert (grep {
+    !/chromosome, pericentric region has_binding_specificity/;
+  } @so_ann_ex_go_terms);
 }
 
 method check_targets($target_quals)
