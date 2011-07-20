@@ -226,6 +226,10 @@ FT                   in Vertebrates; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
 FT                   in Fungi; date=20081110"
 FT                   /gene="SPAC977.12"
+FT                   /GO="aspect=C; term=chromosome, pericentric region;
+FT                   annotation_extension=has_binding_specificity(SO:0001796);
+FT                   GOid=GO:0000775; evidence=IDA; db_xref=PMID:17627824;
+FT                   date=20070718"
 FT   3'UTR           complement(6624..6797)
 FT                   /note="mRNA from AU009839"
 FT                   /systematic_id="SPAC977.12"
