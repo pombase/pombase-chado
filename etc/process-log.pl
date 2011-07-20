@@ -42,7 +42,7 @@ while (defined (my $line = <>)) {
             print $all_warnings "$line";
             print $unknown_cv_names "$gene: $line";
           } else {
-            if ($line =~ /no term for:|qualifier not recognised/) {
+            if ($line =~ /no term for:|qualifier not recognised|unknown term name.*and unknown GO ID/) {
               print $all_warnings "$line";
               print $qual_problems "$gene: $line";
             } else {
