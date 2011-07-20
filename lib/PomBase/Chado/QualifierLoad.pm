@@ -323,6 +323,8 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     $self->config()->{post_process}->{$uniquename}->{feature_cvterm} = $featurecvterm;
     push @{$self->config()->{post_process}->{$uniquename}->{qualifier_data}}, $sub_qual_map;
   }
+
+  return 1;
 }
 
 method add_feature_relationship_pub($relationship, $pub) {
@@ -498,6 +500,7 @@ method process_family($chado_object, $term, $sub_qual_map)
   warn "    process_family()\n" if $self->verbose();
   $self->add_term_to_gene($chado_object, 'PomBase family or domain', $term,
                           $sub_qual_map, 1);
+  return 1;
 }
 
 method process_one_cc($chado_object, $bioperl_feature, $qualifier,
