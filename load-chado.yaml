@@ -23,6 +23,7 @@ cvs:
     - has_target_cell
     - has_target_anatomical_entity
     - localization_target_is
+    - required_for
   PomBase gene products: []
   PomBase family or domain: []
   PomBase warnings: []
