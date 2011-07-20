@@ -230,7 +230,7 @@ method process($feature, $chromosome)
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
 
   if (!defined $so_type) {
-    warn "no SO type for $feat_type - skipping";
+    warn "no SO type for $feat_type - skipping\n";
     return;
   }
 
