@@ -74,7 +74,7 @@ method find_or_create_cvterm($cv, $term_name) {
   my $cvterm_guard = $self->chado()->txn_scope_guard();
 
   if (defined $cvterm) {
-    warn "    found cvterm_idp ", $cvterm->cvterm_id(),
+    warn "    found cvterm_id ", $cvterm->cvterm_id(),
       " when looking for $term_name in ", $cv->name(),"\n" if $self->verbose();
   } else {
     warn "    failed to find: $term_name in ", $cv->name(), "\n" if $self->verbose();
