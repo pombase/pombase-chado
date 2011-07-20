@@ -73,6 +73,7 @@ method get_cvterm($cv_name, $cvterm_name)
   return $cvterm;
 }
 
+# find cvterm by query with name or cvtermsynonym
 method find_cvterm_by_name($cv, $term_name, %options) {
   if (!ref $cv) {
     $cv = $self->get_cv($cv);
