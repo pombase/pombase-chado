@@ -345,6 +345,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
   my $gene_bit;
 
   my $chado_object_type = $chado_object->type()->name();
+  my $chado_object_uniquename = $chado_object->uniquename();
 
   if ($chado_object_type ne 'gene' && $chado_object_type ne 'pseudogene') {
     warn "  can't apply ortholog to $chado_object_type: $term\n" if $self->verbose();
@@ -385,7 +386,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
     my $ortholog_name = $ortholog_conf->{name};
     my $ortholog_term = $ortholog_conf->{term};
 
-    warn "    creating ortholog from ", $chado_object->uniquename(),
+    warn "    creating ortholog from ", $chado_object_uniquename,
       " to $ortholog_name\n" if $self->verbose();
 
     my $ortholog_feature = undef;
@@ -423,7 +424,8 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
       $orth_guard->commit();
       warn "  created ortholog to $ortholog_name\n" if $self->verbose();
     } catch {
-      warn "  failed to create ortholog relation: $_\n";
+      warn "  failed to create ortholog relation from $chado_object_uniquename " .
+        "to $ortholog_name: $_\n";
       return 0;
     };
   }
