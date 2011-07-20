@@ -243,10 +243,10 @@ method process($feature, $chromosome)
 
     my $so_term = $self->find_cvterm_by_term_id($so_quals[0]);
 
-    warn "found a /SO= qualifier for $so_quals[0]\n";
+    warn "found a /SO= qualifier for $so_quals[0]\n" if $self->verbose();
 
     if (defined $so_term) {
-      warn "changing $so_type to ", $so_term->name(), "\n";
+      warn "changing $so_type to ", $so_term->name(), "\n" if $self->verbose();
       $so_type = $so_term->name();
     } else {
       warn "can't find cvterm for: ", $so_quals[0], "\n";
