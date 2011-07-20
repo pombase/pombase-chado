@@ -122,7 +122,7 @@ method find_cvterm_by_name($cv, $term_name, %options) {
                           });
 
     if ($search_rs->count() > 1) {
-      die "more than one exact cvtermsynonym found for $term_name";
+      die "more than one exact cvtermsynonym found for $term_name\n";
     } else {
       my $exact_synonym = $search_rs->first();
 
