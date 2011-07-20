@@ -86,8 +86,6 @@ method process_file($file)
   my $chromosome =
     $chado->resultset('Sequence::Feature')->create({%create_args});
 
-  warn "reading database from $display_id\n";
-
   my $anno_collection = $seq_obj->annotation;
 
   my %no_systematic_id_counts = ();
