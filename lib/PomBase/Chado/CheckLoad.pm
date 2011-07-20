@@ -162,6 +162,14 @@ method check
 
   should($intron_rs->count(), 3);
   should($intron_rs->search({ name => { '!=', undef }})->count(), 0);
+
+  my $orthologous_to_cvterm = $self->get_cvterm('sequence', 'orthologous_to');
+
+  my $orth_rel_rs =
+    $chado->resultset('Sequence::FeatureRelationship')
+          ->search({ type_id => $orthologous_to_cvterm->cvterm_id() });
+
+  should($orth_rel_rs->count(), 4);
 }
 
 method check_targets($target_quals)
