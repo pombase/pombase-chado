@@ -51,22 +51,36 @@ with 'PomBase::Role::FeatureCvtermCreator';
 # with 'PomBase::Role::OrganismFinder';
 # with 'PomBase::Role::QualifierSplitter';
 with 'PomBase::Role::ChadoObj';
+with 'PomBase::Role::CvtermRelationshipStorer';
 
 has verbose => (is => 'ro');
 
-method store_extension($featurecvterm, $extensions)
+method store_extension($feature_cvterm, $extensions)
 {
   my $extension_cv_name = 'PomBase annotation extension terms';
-  my $old_cvterm = $featurecvterm->cvterm();
+  my $old_cvterm = $feature_cvterm->cvterm();
 
   my $new_name = $old_cvterm->name();
 
   for my $extension (@$extensions) {
-    $new_name .= '--' . $extension->{relation}->name() .
-      '--' . $extension->{go_term}->name();
+    $new_name .=  ' ' . $extension->{relation}->name() .
+      ' ' . $extension->{go_term}->name() . ' (PomBase)';
   }
 
   my $new_term = $self->find_or_create_cvterm($extension_cv_name, $new_name);
+
+  my $isa_cvterm = $self->get_cvterm('relationship', 'is_a');
+  $self->store_cvterm_rel($new_term, $old_cvterm, $isa_cvterm);
+
+  for my $extension (@$extensions) {
+    my $rel = $extension->{relation};
+    my $go_term = $extension->{go_term};
+
+    $self->store_cvterm_rel($new_term, $go_term, $rel);
+  }
+
+  $feature_cvterm->cvterm($new_term);
+  $feature_cvterm->update();
 }
 
 # $qualifier_data - an array ref of qualifiers
