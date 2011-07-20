@@ -46,6 +46,8 @@ with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::OrganismFinder';
 
+has verbose => (is => 'ro');
+
 func should($this, $that)
 {
   if ($this ne $that) {

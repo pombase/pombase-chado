@@ -232,7 +232,8 @@ while (my ($gene_name, $data) = each %{$post_process_data}) {
 
 my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
                                              config => $config,
-                                           );
+                                             verbose => $verbose,
+                                             );
 
 $checker->check_targets($config->{target_quals});
 
