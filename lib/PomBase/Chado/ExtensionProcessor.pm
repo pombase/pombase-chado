@@ -64,7 +64,7 @@ method store_extension($feature_cvterm, $extensions)
 
   for my $extension (@$extensions) {
     $new_name .=  ' ' . $extension->{relation}->name() .
-      ' ' . $extension->{go_term}->name() . ' (PomBase)';
+      ' ' . $extension->{term}->name() . ' (PomBase)';
   }
 
   my $new_term = $self->get_cvterm($extension_cv_name, $new_name);
@@ -77,12 +77,12 @@ method store_extension($feature_cvterm, $extensions)
 
     for my $extension (@$extensions) {
       my $rel = $extension->{relation};
-      my $go_term = $extension->{go_term};
+      my $term = $extension->{term};
 
       warn qq'storing new cvterm_relationship of type "' . $rel->name() .
         " subject: " . $new_term->name() .
-        " object: " . $go_term->name() . "\n" if $self->verbose();
-      $self->store_cvterm_rel($new_term, $go_term, $rel);
+        " object: " . $term->name() . "\n" if $self->verbose();
+      $self->store_cvterm_rel($new_term, $term, $rel);
     }
   }
 
@@ -108,7 +108,7 @@ method process($featurecvterm, $qualifier_data, $target_is, $target_of)
     my @extension_qualifiers =
       split /\||,/, $qualifiers->{annotation_extension};
     my @extensions = map {
-      if (/^(\w+)\((GO:\d+)\)/) {
+      if (/^(\w+)\((\w+:\d+)\)/) {
         my $rel_name = $1;
         my $relation =
           $self->find_cvterm_by_name($relationship_cv_name, $rel_name);
@@ -117,18 +117,19 @@ method process($featurecvterm, $qualifier_data, $target_is, $target_of)
         }
 
         my $term_id = $2;
-        my $go_term = $self->find_cvterm_by_term_id($term_id);
-        if (!defined $go_term) {
-          die "can't find GO term: $term_id\n";
+        my $term = $self->find_cvterm_by_term_id($term_id);
+        if (!defined $term) {
+          die "can't find term with ID: $term_id\n";
         }
 
         {
           relation => $relation,
-          go_term => $go_term,
+          term => $term,
+
         }
       } else {
         warn "annotation extension qualifier on $feature_uniquename not understood: $_\n";
-        return;
+        next;
       }
     } @extension_qualifiers;
 

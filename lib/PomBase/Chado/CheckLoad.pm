@@ -174,13 +174,14 @@ method check
   should($orth_rel_rs->count(), 4);
 
   my $so_ann_ex_gene =
-    $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPAC977.12' });
+    $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPAC977.12.1' });
 
   my @so_ann_ex_go_terms =
     $so_ann_ex_gene->feature_cvterms()->search_related('cvterm');
 
+  # check for annotation extension with a SO term
   assert (grep {
-    !/chromosome, pericentric region has_binding_specificity/;
+    $_->name() =~ /chromosome, centromeric region has_binding_specificity regional_centromere_central_core/;
   } @so_ann_ex_go_terms);
 }
 
