@@ -120,7 +120,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 120);
+  should(scalar(@all_feature_cvterm), 122);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
@@ -137,7 +137,7 @@ method check
   should(scalar(@props), 3);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 170);
+  should(scalar(@all_props), 175);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 71);
@@ -173,16 +173,41 @@ method check
 
   should($orth_rel_rs->count(), 4);
 
+  my $spac977_12_1 = 'SPAC977.12.1';
+
   my $so_ann_ex_gene =
-    $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPAC977.12.1' });
+    $chado->resultset('Sequence::Feature')->find({ uniquename => $spac977_12_1 });
 
   my @so_ann_ex_go_terms =
     $so_ann_ex_gene->feature_cvterms()->search_related('cvterm');
 
   # check for annotation extension with a SO term
+  warn "cvterms for $spac977_12_1:\n" if $self->verbose();
   assert (grep {
+    warn '  ', $_->name(), "\n" if $self->verbose();
+    for my $prop ($_->cvtermprops()) {
+      warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
+    }
     $_->name() =~ /chromosome, centromeric region \[has_binding_specificity\] regional_centromere_central_core/;
   } @so_ann_ex_go_terms);
+
+  my $spbc409_20c_1 = 'SPBC409.20c.1';
+
+  my $ann_ex_gene =
+    $chado->resultset('Sequence::Feature')->find({ uniquename => $spbc409_20c_1 });
+
+  my @ann_ex_go_terms =
+    $ann_ex_gene->feature_cvterms()->search_related('cvterm');
+
+  # check for annotation extension with a SO term
+  warn "cvterms for $spbc409_20c_1:\n" if $self->verbose();
+  assert (grep {
+    warn '  ', $_->name(), "\n" if $self->verbose();
+    for my $prop ($_->cvtermprops()) {
+      warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
+    }
+    $_->name() eq 'protein-lysine N-methyltransferase activity [target_is] SPAC977.10 [target_is] SPBC409.20c';
+  } @ann_ex_go_terms);
 }
 
 method check_targets($target_quals)

@@ -41,6 +41,7 @@ use Moose;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::CvtermpropStorer';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
@@ -56,9 +57,18 @@ method store_extension($feature_cvterm, $extensions)
 
   my $new_name = $old_cvterm->name();
 
+  my $relationship_cv_name = 'PomBase annotation extension relationships';
+
   for my $extension (@$extensions) {
-    $new_name .=  ' [' . $extension->{relation}->name() .
-      '] ' . $extension->{term}->name();
+    my $rel_name = $extension->{rel_name};
+
+    $new_name .=  ' [' . $rel_name . '] ';
+
+    if ($extension->{term}) {
+      $new_name .= $extension->{term}->name();
+    } else {
+      $new_name .= $extension->{identifier};
+    }
   }
 
   my $new_term = $self->get_cvterm($extension_cv_name, $new_name);
@@ -70,13 +80,26 @@ method store_extension($feature_cvterm, $extensions)
     $self->store_cvterm_rel($new_term, $old_cvterm, $isa_cvterm);
 
     for my $extension (@$extensions) {
-      my $rel = $extension->{relation};
+      my $rel_name = $extension->{rel_name};
       my $term = $extension->{term};
 
-      warn qq'storing new cvterm_relationship of type "' . $rel->name() .
-        " subject: " . $new_term->name() .
-        " object: " . $term->name() . "\n" if $self->verbose();
-      $self->store_cvterm_rel($new_term, $term, $rel);
+      if (defined $term) {
+        my $rel = $self->find_cvterm_by_name($relationship_cv_name, $rel_name);
+
+        if (!defined $rel) {
+          die "can't find relation cvterm for: $rel_name\n";
+        }
+
+        warn qq'storing new cvterm_relationship of type "' . $rel->name() .
+          " subject: " . $new_term->name() .
+          " object: " . $term->name() . "\n" if $self->verbose();
+        $self->store_cvterm_rel($new_term, $term, $rel);
+      } else {
+        my $identifier = $extension->{identifier};
+        $self->store_cvtermprop($new_term,
+                                'annotation_extension_relation-' . $rel_name,
+                                $identifier);
+      }
     }
   }
 
@@ -91,8 +114,6 @@ method store_extension($feature_cvterm, $extensions)
 # $qualifier_data - an array ref of qualifiers
 method process($featurecvterm, $qualifiers, $target_is, $target_of)
 {
-  my $relationship_cv_name = 'PomBase annotation extension relationships';
-
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
 
   warn "processing annotation extension for $feature_uniquename <-> ",
@@ -106,23 +127,34 @@ method process($featurecvterm, $qualifiers, $target_is, $target_of)
       my $rel_name = $1;
       my $detail = $2;
 
-      my $relation =
-        $self->find_cvterm_by_name($relationship_cv_name, $rel_name);
-      if (!defined $relation) {
-        die "can't find relation cvterm for: $rel_name\n";
-      }
-
       map {
-        my $term_id = $_;
-        my $term = $self->find_cvterm_by_term_id($term_id);
-        if (!defined $term) {
-          die "can't find term with ID: $term_id\n";
+        my $identifier = $_;
+        my $term_id = undef;
+        my $term = undef;
+        if ($identifier =~ /^\w+:\d+$/) {
+          $term_id = $identifier;
+          $term = $self->find_cvterm_by_term_id($term_id);
+          if (!defined $term) {
+            die "can't find term with ID: $term_id\n";
+          }
+        } else {
+          if ($identifier =~ /^GeneDB_Spombe:([\w\d\.\-]+)/) {
+            $identifier = $1;
+          } else {
+            if ($identifier =~ /^(Pfam:PF\d+)$/) {
+              $identifier = $1;
+            } else {
+              warn "can't parse identifier: $identifier\n";
+              ();
+            }
+          }
         }
 
         {
-          relation => $relation,
+          rel_name => $rel_name,
           term => $term,
           term_id => $term_id,
+          identifier => $identifier
         }
       } split /\|/, $detail;
     } else {
