@@ -319,9 +319,10 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   }
 
   if ($sub_qual_map->{annotation_extension}) {
-    $self->config()->{post_process}->{$uniquename}->{feature} = $pombe_feature;
-    $self->config()->{post_process}->{$uniquename}->{feature_cvterm} = $featurecvterm;
-    push @{$self->config()->{post_process}->{$uniquename}->{qualifier_data}}, $sub_qual_map;
+    push @{$self->config()->{post_process}->{$featurecvterm->feature_cvterm_id()}}, {
+      feature_cvterm => $featurecvterm,
+      qualifiers => $sub_qual_map,
+    }
   }
 
   return 1;

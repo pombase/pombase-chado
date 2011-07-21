@@ -218,15 +218,18 @@ my $extension_processor =
 
 my $post_process_data = $config->{post_process};
 
-while (my ($gene_name, $data) = each %{$post_process_data}) {
-  my $featurecvterm = $data->{feature_cvterm};
+while (my ($feature_cvterm_id, $data_list) = each %{$post_process_data}) {
+  for my $data (@$data_list) {
+    my $feature_cvterm = $data->{feature_cvterm};
+    my $qualifiers = $data->{qualifiers};
 
-  try {
-    $extension_processor->process($featurecvterm, $data->{qualifier_data});
-  } catch {
-    warn "failed to add annotation extension to ",
-      $featurecvterm->feature()->uniquename(), ' <-> ',
-      $featurecvterm->cvterm()->name(), ": $_\n";
+    try {
+      $extension_processor->process($feature_cvterm, $qualifiers);
+    } catch {
+      warn "failed to add annotation extension to ",
+      $feature_cvterm->feature()->uniquename(), ' <-> ',
+      $feature_cvterm->cvterm()->name(), ": $_\n";
+    }
   }
 }
 

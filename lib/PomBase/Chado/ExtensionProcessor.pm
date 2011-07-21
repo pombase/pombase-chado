@@ -95,7 +95,7 @@ method store_extension($feature_cvterm, $extensions)
 }
 
 # $qualifier_data - an array ref of qualifiers
-method process($featurecvterm, $qualifier_data, $target_is, $target_of)
+method process($featurecvterm, $qualifiers, $target_is, $target_of)
 {
   my $relationship_cv_name = 'PomBase annotation extension relationships';
 
@@ -104,19 +104,22 @@ method process($featurecvterm, $qualifier_data, $target_is, $target_of)
   warn "processing annotation extension for $feature_uniquename <-> ",
     $featurecvterm->cvterm()->name(), "\n" if $self->verbose();
 
-  for my $qualifiers (@$qualifier_data) {
-    my @extension_qualifiers =
-      split /\||,/, $qualifiers->{annotation_extension};
-    my @extensions = map {
-      if (/^(\w+)\((\w+:\d+)\)/) {
-        my $rel_name = $1;
-        my $relation =
-          $self->find_cvterm_by_name($relationship_cv_name, $rel_name);
-        if (!defined $relation) {
-          die "can't find relation cvterm for: $rel_name\n";
-        }
+  my @extension_qualifiers =
+    split /(?<=\))\||,/, $qualifiers->{annotation_extension};
 
-        my $term_id = $2;
+  my @extensions = map {
+    if (/^(\w+)\(([^\)]+)\)$/) {
+      my $rel_name = $1;
+      my $detail = $2;
+
+      my $relation =
+        $self->find_cvterm_by_name($relationship_cv_name, $rel_name);
+      if (!defined $relation) {
+        die "can't find relation cvterm for: $rel_name\n";
+      }
+
+      map {
+        my $term_id = $_;
         my $term = $self->find_cvterm_by_term_id($term_id);
         if (!defined $term) {
           die "can't find term with ID: $term_id\n";
@@ -125,14 +128,16 @@ method process($featurecvterm, $qualifier_data, $target_is, $target_of)
         {
           relation => $relation,
           term => $term,
-
+          term_id => $term_id,
         }
-      } else {
-        warn "annotation extension qualifier on $feature_uniquename not understood: $_\n";
-        next;
-      }
-    } @extension_qualifiers;
+      } split /\|/, $detail;
+    } else {
+      warn "annotation extension qualifier on $feature_uniquename not understood: $_\n";
+      ();
+    }
+  } @extension_qualifiers;
 
+  if (@extensions) {
     $self->store_extension($featurecvterm, \@extensions);
   }
 }
