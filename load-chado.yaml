@@ -22,6 +22,7 @@ cvs:
     - located_at
     - has_target_cell
     - has_target_anatomical_entity
+    - has_binding_specificity
     - localization_target_is
     - required_for
     - target_is
