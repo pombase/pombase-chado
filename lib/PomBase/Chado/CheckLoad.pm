@@ -181,7 +181,7 @@ method check
 
   # check for annotation extension with a SO term
   assert (grep {
-    $_->name() =~ /chromosome, centromeric region has_binding_specificity regional_centromere_central_core/;
+    $_->name() =~ /chromosome, centromeric region \[has_binding_specificity\] regional_centromere_central_core/;
   } @so_ann_ex_go_terms);
 }
 

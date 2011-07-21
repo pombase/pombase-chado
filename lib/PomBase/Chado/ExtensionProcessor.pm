@@ -63,8 +63,8 @@ method store_extension($feature_cvterm, $extensions)
   my $new_name = $old_cvterm->name();
 
   for my $extension (@$extensions) {
-    $new_name .=  ' ' . $extension->{relation}->name() .
-      ' ' . $extension->{term}->name() . ' (PomBase)';
+    $new_name .=  ' [' . $extension->{relation}->name() .
+      '] ' . $extension->{term}->name();
   }
 
   my $new_term = $self->get_cvterm($extension_cv_name, $new_name);
