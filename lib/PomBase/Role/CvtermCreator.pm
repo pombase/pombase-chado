@@ -39,7 +39,6 @@ use perl5i::2;
 use Moose::Role;
 
 requires 'get_cv';
-requires 'get_cvterm';
 requires 'chado';
 requires 'config';
 requires 'find_or_create_dbxref';
