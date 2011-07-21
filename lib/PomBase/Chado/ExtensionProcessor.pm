@@ -40,16 +40,10 @@ use Moose;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
-# with 'PomBase::Role::FeatureDumper';
-# with 'PomBase::Role::XrefStorer';
-# with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
-# with 'PomBase::Role::FeatureFinder';
-# with 'PomBase::Role::OrganismFinder';
-# with 'PomBase::Role::QualifierSplitter';
 with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvtermRelationshipStorer';
 
