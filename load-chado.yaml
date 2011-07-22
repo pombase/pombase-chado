@@ -81,6 +81,7 @@ cvs:
     - name: evidence
     - name: source database
   cvterm_property_type:
+    - name: annotation_extension_relation-occurs_in
     - name: annotation_extension_relation-dependent_on
     - name: annotation_extension_relation-localization_dependency
     - name: annotation_extension_relation-localization_dependent_on
