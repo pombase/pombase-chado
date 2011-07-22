@@ -138,7 +138,7 @@ method process($featurecvterm, $qualifiers, $target_is, $target_of)
             die "can't find term with ID: $term_id\n";
           }
         } else {
-          if ($identifier =~ /^GeneDB_Spombe:([\w\d\.\-]+)/) {
+          if ($identifier =~ /^GeneDB_Spombe:([\w\d\.\-]+)/i) {
             $identifier = $1;
           } else {
             if ($identifier =~ /^(Pfam:PF\d+)$/) {
