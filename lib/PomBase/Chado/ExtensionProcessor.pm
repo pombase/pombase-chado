@@ -96,6 +96,10 @@ method store_extension($feature_cvterm, $extensions)
         $self->store_cvterm_rel($new_term, $term, $rel);
       } else {
         my $identifier = $extension->{identifier};
+        if ($rel_name eq 'localization_target_is') {
+          $rel_name = 'localization_target';
+        }
+
         $self->store_cvtermprop($new_term,
                                 'annotation_extension_relation-' . $rel_name,
                                 $identifier);
