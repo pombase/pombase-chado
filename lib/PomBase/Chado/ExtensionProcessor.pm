@@ -47,6 +47,8 @@ with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvtermRelationshipStorer';
+with 'PomBase::Role::OrganismFinder';
+with 'PomBase::Role::FeatureFinder';
 
 has verbose => (is => 'ro');
 
@@ -115,8 +117,89 @@ method store_extension($feature_cvterm, $extensions)
   $feature_cvterm->update();
 }
 
+method check_targets($target_is_quals, $target_of_quals)
+{
+  my $organism = $self->find_organism_by_common_name('pombe');
+
+  die unless defined $organism;
+
+  while (my ($target_uniquename, $details) = each(%{$target_of_quals})) {
+    for my $detail (@$details) {
+      my $gene_name = $detail->{name};
+
+      my $gene1_feature = undef;
+      try {
+        $gene1_feature = $self->find_chado_feature($gene_name, 1, 1, $organism);
+      } catch {
+        warn "problem with target annotation of ", $detail->{feature}->uniquename(), ": $_";
+      };
+      if (!defined $gene1_feature) {
+        next;
+      }
+
+      my $gene1_uniquename = $gene1_feature->uniquename();
+
+      if (!exists $target_is_quals->{$gene1_uniquename} ||
+          !grep {
+            my $current = $_;
+            my $target_feature;
+            try {
+              $target_feature = $self->find_chado_feature($current->{name}, 1, 1, $organism);
+            } catch {
+              warn "problem on gene ", $current->{feature}->uniquename(), ": $_";
+            };
+
+            if (defined $target_feature) {
+              $target_feature->uniquename() eq $target_uniquename;
+            } else {
+              0;
+            }
+          } @{$target_is_quals->{$gene1_uniquename}}) {
+
+        my $name_bit;
+
+        my $target_feature;
+        try {
+          $target_feature = $self->find_chado_feature($target_uniquename, 1, 1, $organism);
+        } catch {
+        };
+
+        if (defined $target_feature && defined $target_feature->name()) {
+          $name_bit = $target_feature->name();
+        } else {
+          $name_bit = $target_uniquename;
+        }
+        warn qq:no "target is $name_bit" in $gene_name ($gene1_uniquename)\n:;
+      }
+    }
+  }
+}
+
+method process($post_process_data, $target_is_quals, $target_of_quals)
+{
+  $self->check_targets($target_is_quals, $target_of_quals);
+
+  while (my ($feature_cvterm_id, $data_list) = each %{$post_process_data}) {
+    for my $data (@$data_list) {
+      my $feature_cvterm = $data->{feature_cvterm};
+      my $qualifiers = $data->{qualifiers};
+
+      try {
+        $self->process_one_annotation($feature_cvterm, $qualifiers,
+                                      $target_is_quals, $target_of_quals);
+      } catch {
+        warn "failed to add annotation extension to ",
+        $feature_cvterm->feature()->uniquename(), ' <-> ',
+        $feature_cvterm->cvterm()->name(), ": $_\n";
+      }
+    }
+  }
+
+}
+
 # $qualifier_data - an array ref of qualifiers
-method process($featurecvterm, $qualifiers, $target_is, $target_of)
+method process_one_annotation($featurecvterm, $qualifiers,
+                              $target_is_quals, $target_of_quals)
 {
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
 

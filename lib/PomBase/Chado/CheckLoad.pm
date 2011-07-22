@@ -44,7 +44,6 @@ with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureFinder';
-with 'PomBase::Role::OrganismFinder';
 
 has verbose => (is => 'ro');
 
@@ -208,62 +207,4 @@ method check
     }
     $_->name() eq 'protein-lysine N-methyltransferase activity [target_is] SPAC977.10 [target_is] SPBC409.20c';
   } @ann_ex_go_terms);
-}
-
-method check_targets($target_quals)
-{
-  my $organism = $self->find_organism_by_common_name('pombe');
-
-  die unless defined $organism;
-
-  while (my ($target_uniquename, $details) = each(%{$target_quals->{of}})) {
-    for my $detail (@$details) {
-      my $gene_name = $detail->{name};
-
-      my $gene1_feature = undef;
-      try {
-        $gene1_feature = $self->find_chado_feature($gene_name, 1, 1, $organism);
-      } catch {
-        warn "problem with target annotation of ", $detail->{feature}->uniquename(), ": $_";
-      };
-      if (!defined $gene1_feature) {
-        next;
-      }
-
-      my $gene1_uniquename = $gene1_feature->uniquename();
-
-      if (!exists $target_quals->{is}->{$gene1_uniquename} ||
-          !grep {
-            my $current = $_;
-            my $target_feature;
-            try {
-              $target_feature = $self->find_chado_feature($current->{name}, 1, 1, $organism);
-            } catch {
-              warn "problem on gene ", $current->{feature}->uniquename(), ": $_";
-            };
-
-            if (defined $target_feature) {
-              $target_feature->uniquename() eq $target_uniquename;
-            } else {
-              0;
-            }
-          } @{$target_quals->{is}->{$gene1_uniquename}}) {
-
-        my $name_bit;
-
-        my $target_feature;
-        try {
-          $target_feature = $self->find_chado_feature($target_uniquename, 1, 1, $organism);
-        } catch {
-        };
-
-        if (defined $target_feature && defined $target_feature->name()) {
-          $name_bit = $target_feature->name();
-        } else {
-          $name_bit = $target_uniquename;
-        }
-        warn qq:no "target is $name_bit" in $gene_name ($gene1_uniquename)\n:;
-      }
-    }
-  }
 }

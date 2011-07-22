@@ -218,27 +218,14 @@ my $extension_processor =
 
 my $post_process_data = $config->{post_process};
 
-while (my ($feature_cvterm_id, $data_list) = each %{$post_process_data}) {
-  for my $data (@$data_list) {
-    my $feature_cvterm = $data->{feature_cvterm};
-    my $qualifiers = $data->{qualifiers};
-
-    try {
-      $extension_processor->process($feature_cvterm, $qualifiers);
-    } catch {
-      warn "failed to add annotation extension to ",
-      $feature_cvterm->feature()->uniquename(), ' <-> ',
-      $feature_cvterm->cvterm()->name(), ": $_\n";
-    }
-  }
-}
+$extension_processor->process($post_process_data,
+                              $config->{target_quals}->{is},
+                              $config->{target_quals}->{of});
 
 my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
                                              config => $config,
                                              verbose => $verbose,
                                              );
-
-$checker->check_targets($config->{target_quals});
 
 warn "counts of unused qualifiers:\n";
 while (my ($qual, $count) = each %{$config->{stats}->{unused_qualifiers}}) {
