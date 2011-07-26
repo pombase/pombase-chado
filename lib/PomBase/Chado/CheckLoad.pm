@@ -93,7 +93,7 @@ method check
   my $gene = $gene_rs->search({ uniquename => 'SPAC1556.06' })->next();
 
   should ($gene->uniquename(), "SPAC1556.06");
-  should ($gene->feature_cvterms()->count(), 9);
+  should ($gene->feature_cvterms()->count(), 11);
 
   my $transcript = $chado->resultset('Sequence::Feature')
           ->find({ uniquename => 'SPAC977.10.1'});
@@ -119,7 +119,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 106);
+  should(scalar(@all_feature_cvterm), 108);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
@@ -136,7 +136,7 @@ method check
   should(scalar(@props), 3);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 158);
+  should(scalar(@all_props), 160);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 71);

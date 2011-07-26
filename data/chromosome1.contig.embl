@@ -299,6 +299,11 @@ FT                   /controlled_curation="term=target is dummy1;
 FT                   db_xref=PMID:16096059; date=19700101"
 FT                   /controlled_curation="term=target of dummy2;
 FT                   db_xref=PMID:16096059; date=19700101"
+FT                   /controlled_curation="term=DNA binding specificity, binds
+FT                   d(GT)n; db_xref=PMID:16043634; date=19700101"
+FT                   /controlled_curation="term=DNA binding specificity, binds
+FT                   HSE 5'-NGAANNTTCNNGAAN-3'; cv=DNA_binding_specificity;
+FT                   date=20100302"
 FT   CDS             join(7050..7150,7200..7250)
 FT                   /colour=8
 FT                   /other_transcript="SPAC1556.06.1"

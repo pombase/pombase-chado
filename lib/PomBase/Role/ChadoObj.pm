@@ -108,7 +108,7 @@ method BUILD
     ex_tools => ['experimental tools'],
     misc => [],
     warning => [],
-    DNA_binding_specificity => [],
+    DNA_binding_specificity => ['DNA binding specificity'],
     subunit_composition => [],
     cat_act => ['catalytic activity'],
     disease_associated => ['disease associated'],
@@ -130,6 +130,7 @@ method BUILD
     'catalytic activity' => 'cat_act',
     'phenotype' => 'phenotype',
     'disease associated' => 'disease_associated',
+    'DNA binding specificity' => 'DNA_binding_specificity',
   };
 
   $self->objs()->{gene_cvs} = {
