@@ -335,6 +335,8 @@ FT                   db_xref=PMID:11376151; date=19700101"
 FT                   /controlled_curation="term=gene expression, expressed
 FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
 FT                   date=20100103"
+FT                   /controlled_curation="term=target of Psh3;
+FT                   db_xref=PMID:11702950; date=20071120"
 FT   intron          4588..4660
 FT                   /note="intron confirmed by mRNA"
 FT                   /systematic_id="SPAC1556.06.1"
