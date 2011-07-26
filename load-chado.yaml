@@ -33,40 +33,35 @@ cvs:
   PomBase gene characterisation status:
     - name: published
       definition: >
-        Characterised, or partially characterised in a small scale experiment. 
-        Some published information about the biological role (process).
-        "biological role" here refers to  assigned to a biological process GO 
-        slim term, or more specific
+        A gene product characterised, or partially characterised in a small 
+        scale experiment to providing published information about the biological 
+        process. The biological process annotation must be equivalent to, or 
+        more specific than terms in the "GO slim"  
         http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
-        excluding response to stress, cellular homeostasis, phosphate metabolic 
-        process are "non-specific" process terms.
     - name: biological role inferred
       definition: >
-        The biological role is inferred from homology to a characterised 
-        sequence orphan.
-        "biological role" here refers to  assigned to a biological process GO 
-        slim term, or more specific
-        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
-        excluding response to stress, cellular homeostasis, phosphate metabolic 
-        process are "non-specific" process terms.
+        A gene product whose biological process is inferred from homology to an 
+        experimentally characterised gene product.  The biological process 
+        annotation must be equivalent to, or more specific than terms in the "GO 
+        slim"  http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
     - name: conserved unknown
       definition: >
-        conserved outside the Schizosacchaomyces, but nothing known about the 
-        biological role in any organism.
-        "biological role" here refers to  assigned to a biological process GO 
-        slim term, or more specific
-        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
-        excluding response to stress, cellular homeostasis, phosphate metabolic 
-        process are "non-specific" process terms.
+        A gene product which is conserved more broadly than the 
+        Schizosacchaomyces clade,  but cannot be assigned a biological process 
+        term,  equivalent to, or more specific than the terms in the "GO slim"  
+        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.htmlbased on 
+        experimental data from any organism
     - name: sequence orphan
       definition: >
-        unpublished fission yeast  specific (S. pombe or S. octospurus or S. 
-        japonicus)  but nothing known about biological role
+        A gene product which is not conserved outside the Schizosacchaomyces clade
+        and where nothing is published about, or can be inferred from homology 
+        about the biological role
     - name: fission yeast specific family
       definition: >
-        unpublished fission yeast (pombe or octospurus or japonicus)  specific 
-        but nothing known about biological role, but  are  not single copy 
-        (duplications  in fission yeast)
+        A gene product which is not conserved outside the Schizosacchaomyces clade
+        and where nothing is published about, or can be inferred from homology 
+        about the biological role
+        but are present in more than one copy in fission yeast
     - name: dubious
       definition: Unlikely to be coding
     - name: transposon
