@@ -482,7 +482,7 @@ method process_warning($chado_object, $term, $sub_qual_map)
   }
 
   if ($term =~ /WARNING: (.*)/) {
-    $self->add_term_to_gene($chado_object, 'PomBase warnings', $1,
+    $self->add_term_to_gene($chado_object, 'warning', $1,
                             $sub_qual_map, 1);
     return 1;
   } else {
