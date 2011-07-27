@@ -131,6 +131,7 @@ method BUILD
     'phenotype' => 'phenotype',
     'disease associated' => 'disease_associated',
     'DNA binding specificity' => 'DNA_binding_specificity',
+    'subunit composition' => 'subunit_composition',
   };
 
   $self->objs()->{gene_cvs} = {
