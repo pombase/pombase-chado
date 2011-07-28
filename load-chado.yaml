@@ -87,26 +87,38 @@ cvs:
     - name: annotation_extension_relation-target_is
     - name: annotation_extension_relation-transcriptionally_regulates
     - name: annotation_extension_relation-protease_activator
-
+  cat_act: []
+  genome_org: []
+  m_f_g: []
+  DNA_binding_specificity: []
+  name_description: []
+  species_dist: []
+  subunit_composition: []
+  gene_ex: []
+  complementation: []
+  warning: []
+  ex_tools: []
+  misc: []
+  disease_associated: []
 
 cv_definitions:
-  biological process: Gene Ontology biological process terms
+  biological_process: Gene Ontology biological process terms
   cat_act: Catalytic activity attributes (Kd, rate, etc.)
   complementation: gene product complement/complemented by another gene product
-  disease association: Orthology to a human disease gene
-  DNA binding specificity: Target sequence consensus of a DNA binding protein
+  disease_associated: Orthology to a human disease gene
+  DNA_binding_specificity: Target sequence consensus of a DNA binding protein
   ex_tools: Uses of gene products as experimental tools (e.g. constructs, selectable markers, antibodies, etc.)
   gene_ex: GP annotations realted to gene expression annotations
   genome_org: Genome organization attributes (e.g. tandem repeat)
   m_f_g: Miscellaneous functional groups, not captured by GO (e.g. chaperone)
   misc: Annotation which does not fit any other ontology
   name_description: Derivation of the "three letter" gene name
-  Pombase annotation extension relationships: Relationships used to construct annotation extenstions
-  Annotation extension terms: Post-composed terms used for anotation cross products
-  PomBase family of domain: Manual annotation of Pfam false negatives and uncaptured subfamilies
-  Pombase gene product: Concise gene product names
-  Species distribution: Broad classifiers of taxon distribution (domain/kingdom level)
-  Subunit composition: Stoichiometry of homogeneous complexes
+  PomBase annotation extension relationships: Relationships used to construct annotation extenstions
+  PomBase annotation extension terms: Post-composed terms used for anotation cross products
+  PomBase family or domain: Manual annotation of Pfam false negatives and uncaptured subfamilies
+  PomBase gene products: Concise gene product names
+  species_dist: Broad classifiers of taxon distribution (domain/kingdom level)
+  subunit_composition: Stoichiometry of homogeneous complexes
   warning: Alerts, gross changes and anomalies
 
 dbs:

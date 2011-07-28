@@ -177,6 +177,24 @@ func _load_cvterms($chado, $config)
   }
 }
 
+func _load_cv_defs($chado, $config)
+{
+  my $db_name = 'PomBase';
+
+  my %cv_defs = %{$config->{cv_definitions}};
+
+  for my $cv_name (keys %cv_defs) {
+    my $cv = $chado->resultset('Cv::Cv')->find({ name => $cv_name });
+
+    if (defined $cv) {
+      $cv->definition($cv_defs{$cv_name});
+      $cv->update();
+    } else {
+      die "can't set definition for $cv_name as it doesn't exist\n";
+    }
+  }
+}
+
 func _load_dbs($chado, $config)
 {
   my @dbs = @{$config->{dbs}};
@@ -202,6 +220,7 @@ func init_objects($chado, $config) {
                              'Scerevisiae', 4932);
 
   _load_cvterms($chado, $config);
+  _load_cv_defs($chado, $config);
   _load_dbs($chado, $config);
 
   _load_genes($chado, $human, $config->{test_mode});
