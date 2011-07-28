@@ -458,8 +458,6 @@ method process_paralog($chado_object, $term, $sub_qual_map) {
 
     my $date = $self->get_and_check_date($sub_qual_map);
 
-    warn "pushing @other_gene_bits\n";
-
     push @{$self->config()->{paralogs}->{$chado_object_uniquename}}, {
       other_gene_names => [@other_gene_bits],
       feature => $chado_object,
