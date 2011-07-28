@@ -87,6 +87,27 @@ cvs:
     - name: annotation_extension_relation-transcriptionally_regulates
     - name: annotation_extension_relation-protease_activator
 
+
+cv_definitions:
+  biological process: Gene Ontology biological process terms
+  cat_act: Catalytic activity attributes (Kd, rate, etc.)
+  complementation: gene product complement/complemented by another gene product
+  disease association: Orthology to a human disease gene
+  DNA binding specificity: Target sequence consensus of a DNA binding protein
+  ex_tools: Uses of gene products as experimental tools (e.g. constructs, selectable markers, antibodies, etc.)
+  gene_ex: GP annotations realted to gene expression annotations
+  genome_org: Genome organization attributes (e.g. tandem repeat)
+  m_f_g: Miscellaneous functional groups, not captured by GO (e.g. chaperone)
+  misc: Annotation which does not fit any other ontology
+  name_description: Derivation of the "three letter" gene name
+  Pombase annotation extension relationships: Relationships used to construct annotation extenstions
+  Annotation extension terms: Post-composed terms used for anotation cross products
+  PomBase family of domain: Manual annotation of Pfam false negatives and uncaptured subfamilies
+  Pombase gene product: Concise gene product names
+  Species distribution: Broad classifiers of taxon distribution (domain/kingdom level)
+  Subunit composition: Stoichiometry of homogeneous complexes
+  warning: Alerts, gross changes and anomalies
+
 dbs:
   - RFAM
   - GOA
