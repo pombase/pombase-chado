@@ -4,7 +4,6 @@ cvs:
     - paper
     - null
   PomBase feature property types:
-    - product
     - comment
     - EC_number
     - symbol
