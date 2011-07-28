@@ -19,6 +19,7 @@ use PomBase::Chado::QualifierLoad;
 use PomBase::Chado::CheckLoad;
 use PomBase::Chado::IdCounter;
 use PomBase::Chado::ExtensionProcessor;
+use PomBase::Chado::ParalogProcessor;
 
 no stringification;
 
@@ -221,6 +222,13 @@ my $post_process_data = $config->{post_process};
 $extension_processor->process($post_process_data,
                               $config->{target_quals}->{is},
                               $config->{target_quals}->{of});
+
+my $paralog_processor =
+  PomBase::Chado::ParalogProcessor->new(chado => $chado,
+                                        config => $config,
+                                        verbose => $verbose);
+my $paralog_data = $config->{paralogs};
+$paralog_processor->store_all_paralogs($paralog_data);
 
 my $checker = PomBase::Chado::CheckLoad->new(chado => $chado,
                                              config => $config,

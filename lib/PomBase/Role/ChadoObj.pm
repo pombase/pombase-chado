@@ -38,7 +38,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-with 'PomBase::Role::ChadoUser';
+requires 'chado';
 
 has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
 
@@ -195,7 +195,8 @@ method BUILD
 
   $self->objs()->{orthologous_to_cvterm} =
     $chado->resultset('Cv::Cvterm')->find({ name => 'orthologous_to' });
-
+  $self->objs()->{paralogous_to_cvterm} =
+    $chado->resultset('Cv::Cvterm')->find({ name => 'paralogous_to' });
 
   $self->objs()->{synonym_type_cv} = $self->get_cv('synonym_type');
 

@@ -434,6 +434,46 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
   return 1;
 }
 
+method process_paralog($chado_object, $term, $sub_qual_map) {
+  warn "    process_ortholog()\n" if $self->verbose();
+  my $other_gene;
+
+  my $chado_object_type = $chado_object->type()->name();
+  my $chado_object_uniquename = $chado_object->uniquename();
+
+  if ($chado_object_type ne 'gene' && $chado_object_type ne 'pseudogene') {
+    warn "  can't apply paralog to $chado_object_type: $term\n" if $self->verbose();
+    return 0;
+  }
+
+  my $related;
+
+  if ($term =~ /^(paralogous|similar|related) to S\. pombe (.*)/i) {
+    if ($1 eq 'related') {
+      $related = 1;
+    } else {
+      $related = 0;
+    }
+    my @other_gene_bits = split /\s+ and \s+/, $2;
+
+    my $date = $self->get_and_check_date($sub_qual_map);
+
+    warn "pushing @other_gene_bits\n";
+
+    push @{$self->config()->{paralogs}->{$chado_object_uniquename}}, {
+      other_gene_names => [@other_gene_bits],
+      feature => $chado_object,
+      related => $related,
+      date => $date,
+    };
+
+    return 1;
+  } else {
+    warn "  didn't find paralog in: $term\n" if $self->verbose();
+    return 0;
+  }
+}
+
 method process_targets($chado_object, $term, $sub_qual_map)
 {
   warn "    process_targets()\n" if $self->verbose();
@@ -597,10 +637,12 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier,
   } else {
     if (!$self->process_targets($chado_object, $term, \%qual_map)) {
       if (!$self->process_ortholog($chado_object, $term, \%qual_map)) {
-        if (!$self->process_warning($chado_object, $term, \%qual_map)) {
-          if (!$self->process_family($chado_object, $term, \%qual_map)) {
-            warn "qualifier not recognised: $qualifier\n";
-            return ();
+        if (!$self->process_paralog($chado_object, $term, \%qual_map)) {
+          if (!$self->process_warning($chado_object, $term, \%qual_map)) {
+            if (!$self->process_family($chado_object, $term, \%qual_map)) {
+              warn "qualifier not recognised: $qualifier\n";
+              return ();
+            }
           }
         }
       }

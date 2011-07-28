@@ -74,6 +74,7 @@ cvs:
   feature_relationshipprop_type:
     - name: evidence
     - name: source database
+    - name: homology type
   cvterm_property_type:
     - name: annotation_extension_relation-occurs_in
     - name: annotation_extension_relation-dependent_on
