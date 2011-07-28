@@ -40,7 +40,7 @@ FT   CDS             join(1178..1301,1379..1500,1601..2661)
 FT                   /controlled_curation="term=related to S. pombe
 FT                   psh3; date=20090811"
 FT                   /controlled_curation="term=similar to S. pombe
-FT                   SPAC637.07; date=19700101"
+FT                   SPAC637.07 and SPAC977.11; date=19700101"
 FT                   /GO="aspect=C; term=nuclear envelope-endoplasmic reticulum
 FT                   continuum; GOid=GO:0042175; evidence=IDA;
 FT                   db_xref=PMID:16091782; date=20050811"

@@ -454,7 +454,7 @@ method process_paralog($chado_object, $term, $sub_qual_map) {
     } else {
       $related = 0;
     }
-    my @other_gene_bits = split /\s+ and \s+/, $2;
+    my @other_gene_bits = split / and /, $2;
 
     my $date = $self->get_and_check_date($sub_qual_map);
 
