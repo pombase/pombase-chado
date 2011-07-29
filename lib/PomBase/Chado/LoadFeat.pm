@@ -316,7 +316,8 @@ method store_note($feature, $note)
 
 method store_ec_number($feature, $ec_number)
 {
-  $self->store_featureprop($feature, 'EC_number', $ec_number);
+  $self->qual_load()->add_term_to_gene($feature, 'EC numbers',
+                                       $ec_number, {}, 1);
 }
 
 my %colour_map = (

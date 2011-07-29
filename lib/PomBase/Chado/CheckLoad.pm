@@ -69,7 +69,7 @@ method check
   should ($loc_rs->count(), 64);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 12);
+  should ($feature_prop_rs->count(), 11);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
   should ($feature_dbxref_rs->count(), 7);
@@ -119,7 +119,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 108);
+  should(scalar(@all_feature_cvterm), 109);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({

@@ -5,7 +5,6 @@ cvs:
     - null
   PomBase feature property types:
     - comment
-    - EC_number
     - symbol
   PomBase annotation extension terms: []
   PomBase annotation extension relationships:
@@ -99,6 +98,7 @@ cvs:
   ex_tools: []
   misc: []
   disease_associated: []
+  EC numbers: []
 
 cv_definitions:
   biological_process: Gene Ontology biological process terms
