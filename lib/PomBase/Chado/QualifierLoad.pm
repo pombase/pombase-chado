@@ -696,7 +696,7 @@ method process_one_go_qual($chado_object, $bioperl_feature, $qualifier) {
 method process_product($chado_feature, $product)
 {
   $self->add_term_to_gene($chado_feature, 'PomBase gene products',
-                          $product, { dbxref => 'PomBase:' . $product }, 1);
+                          $product, {}, 1);
 }
 
 method check_unused_quals
