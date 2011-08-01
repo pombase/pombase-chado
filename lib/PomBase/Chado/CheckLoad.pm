@@ -145,10 +145,10 @@ method check
 #    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
   }
 
-  my @pt_mod_cvterms =
-    $chado->resultset('Cv::Cv')->find({ name => 'pt_mod' })
-          ->search_related('cvterms')->all();
-  should(scalar(@pt_mod_cvterms), 0);
+  assert(!defined $chado->resultset('Cv::Cv')->find({ name => 'pt_mod' }));
+
+  assert($chado->resultset('Cv::Cv')->find({ name => 'PSI-MOD' })
+               ->search_related('cvterms')->count() > 10);
 
   my @psi_mod_cvterms =
     $chado->resultset('Cv::Cv')->find({ name => 'PSI-MOD' })

@@ -177,6 +177,8 @@ method BUILD
   my $cvterm_rs = $chado->resultset('Cv::Cvterm');
 
   for my $extra_cv_name (keys %{$self->objs()->{cv_alt_names}}) {
+    next if exists $self->config()->{mappings}->{$extra_cv_name};
+
     $cv_rs->find_or_create({ name => $extra_cv_name });
 
     if (!defined $self->objs()->{dbs_objects}->{$extra_cv_name}) {
