@@ -51,6 +51,8 @@ with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 
+has verbose => (is => 'ro');
+
 method load($fh)
 {
   my $chado = $self->chado();
@@ -152,7 +154,7 @@ method load($fh)
 
     $self->store_feature_relationshipprop($rel, 'evidence',
                                           $experimental_system);
-    $self->store_feature_relationshipprop($rel, 'source database',
+    $self->store_feature_relationshipprop($rel, 'source_database',
                                           $source_db);
     $self->store_feature_rel_pub($rel, $pub);
   }

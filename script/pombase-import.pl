@@ -14,10 +14,11 @@ if (!GetOptions("dry-run|d" => \$dry_run)) {
 }
 
 if (@ARGV != 6) {
-  die qq($0: needs fives arguments:
+  die qq($0: needs six arguments:
   config_file   - the YAML format configuration file name
   import_type   - possibilities:
                     - "biogrid": interaction data in BioGRID BioTAB 2.0 format
+  host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
   password      - the database password
