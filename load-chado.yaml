@@ -10,6 +10,7 @@ cvs:
   PomBase annotation extension relationships:
     - part_of
     - has_part
+    - has_substrate
     - occurs in
     - happens_during
     - exists_during
