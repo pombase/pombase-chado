@@ -120,6 +120,7 @@ cv_definitions:
   species_dist: Broad classifiers of taxon distribution (domain/kingdom level)
   subunit_composition: Stoichiometry of homogeneous complexes
   warning: Alerts, gross changes and anomalies
+  PSI-MOD: Post translational modifications
 
 dbs:
   - RFAM
