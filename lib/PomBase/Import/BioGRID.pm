@@ -75,7 +75,7 @@ method load($fh)
     my $experimental_system = $columns_ref->{"Experimental System"};
     my $experimental_system_type = $columns_ref->{"Experimental System Type"};
 
-    my $pubmed_id = $columns_ref->{"Pubmed ID"};
+    my $pubmed_id = 'PMID:' . $columns_ref->{"Pubmed ID"};
 
     my $organism_interactor = "Organism Interactor";
 
