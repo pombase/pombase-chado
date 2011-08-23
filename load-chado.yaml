@@ -29,6 +29,8 @@ cvs:
     - acts_at
   PomBase gene products: []
   PomBase family or domain: []
+  PomBase organism property types:
+    - name: taxon_id
   PomBase gene characterisation status:
     - name: published
       definition: >
