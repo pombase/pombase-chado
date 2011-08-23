@@ -99,7 +99,6 @@ method BUILD
     name_description => ['name description'],
     pathway => [],
     complementation => [],
-    protein_family => [],
     ex_tools => ['experimental tools'],
     misc => [],
     warning => [],
