@@ -1,0 +1,24 @@
+#!/bin/sh -
+
+# A script to make a Chado db from scratch using GMOD tools.  Must be
+# run in the gmod-schema/chado directory.
+
+DB=`perl -ne 'print "$1" if /CHADO_DB_NAME=(.*)/' $HOME/.gmod_profile`
+
+echo building database: $DB
+
+dropdb $DB; createdb $DB || exit 1
+
+rm --verbose tmp/*/*$DB
+
+make
+make load_schema
+make prepdb
+make ontologies
+
+export DBIC_TRACE=1
+
+go2fmt.pl -p obo_text -w xml ~/Work/pombe/obo/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=sloth" --user kmr44 --password kmr44 mod_obo_text.xml
+
+(cd ~/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml ~/phenotype_ontology/fypo.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=sloth" --user kmr44 --password kmr44 phenotype_obo_text.xml
+
