@@ -95,7 +95,7 @@ method store_all_paralogs($paralog_data)
           warn "  created paralog to $other_gene_name\n" if $self->verbose();
         } catch {
           warn "  failed to create paralog relation from ", $feature->uniquename(),
-          " to $other_gene_name: $_\n";
+          " to $other_gene_name: $_";
         }
       }
     }

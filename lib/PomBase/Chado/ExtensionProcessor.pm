@@ -190,7 +190,7 @@ method process($post_process_data, $target_is_quals, $target_of_quals)
       } catch {
         warn "failed to add annotation extension to ",
         $feature_cvterm->feature()->uniquename(), ' <-> ',
-        $feature_cvterm->cvterm()->name(), ": $_\n";
+        $feature_cvterm->cvterm()->name(), ": $_";
       }
     }
   }
