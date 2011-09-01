@@ -26,3 +26,60 @@ data:
                   accession: poor_synonym
                   db:
                     name: internal
+    - name: PomBase organism property types
+      cvterms:
+        - name: taxon_id
+          dbxref:
+            accession: taxon_id
+            db:
+              name: PomBase
+    - name: PomBase publication types
+      cvterms:
+        - name: paper
+          dbxref:
+            accession: paper
+            db:
+              name: PomBase
+    - name: sequence
+      cvterms:
+        - name: gene
+          dbxref:
+            accession: gene
+            db:
+              name: SO
+        - name: mRNA
+          dbxref:
+            accession: mRNA
+            db:
+              name: SO
+        - name: polypeptide
+          dbxref:
+            accession: mpolypeptide
+            db:
+              name: SO
+    - name: molecular_function
+      cvterms:
+        - name: microtubule motor activity
+          dbxref:
+            accession: 0003777
+            db:
+              name: GO
+    - name: cellular_component
+      cvterms:
+        - name: spindle
+          dbxref:
+            accession: 0005819
+            db:
+              name: GO
+    - name: feature_cvtermprop_type
+  db:
+    - name: feature_cvtermprop_type
+
+test_organism:
+  genus: Schizosacchaomyces
+  species: pombe
+  taxonid: 4896
+
+test_genes:
+  - uniquename: SPBC2F12.13
+  - uniquename: SPAC1093.06c

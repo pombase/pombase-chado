@@ -152,3 +152,15 @@ allowed_term_mismatches_files:
   - /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-06-21/6-21_mismatch_name_ok.txt
   - /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-07-13/edited-mismatches.txt
   - /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-07-14.2/edited-mismatches.txt
+
+organism_taxon_map:
+  284812: 4896
+
+systematic_id_re: "SP.C\d+\w+\d+c?.\d"
+
+# the default is to use the cv name as the db name
+db_names_for_cvs:
+  biological_process: GO
+  molecular_function: GO
+  cellular_component: GO
+  sequence: SO

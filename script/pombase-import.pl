@@ -18,6 +18,7 @@ if (@ARGV != 6) {
   config_file   - the YAML format configuration file name
   import_type   - possibilities:
                     - "biogrid": interaction data in BioGRID BioTAB 2.0 format
+                    - "gaf": GO gene association file format
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
@@ -36,14 +37,20 @@ my $username = shift;
 my $password = shift;
 
 use PomBase::Chado;
+use PomBase::Chado::IdCounter;
+
 my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
 my $guard = $chado->txn_scope_guard;
 
 my $config = LoadFile($config_file);
 
+my $id_counter = PomBase::Chado::IdCounter->new();
+$config->{id_counter} = $id_counter;
+
 my %import_modules = (
   biogrid => 'PomBase::Import::BioGRID',
+  gaf => 'PomBase::Import::GeneAssociationFile',
 );
 
 my $import_module = $import_modules{$import_type};

@@ -43,6 +43,7 @@ requires 'chado';
 requires 'config';
 requires 'find_or_create_dbxref';
 requires 'find_db_by_name';
+requires 'get_db';
 
 method create_cvterm($cv_name, $db_name, $id_counter, $term_name)
 {
@@ -85,9 +86,12 @@ method find_or_create_cvterm($cv, $term_name) {
   } else {
     warn "    failed to find: $term_name in ", $cv->name(), "\n" if $self->verbose();
 
-    my $db = $self->objs()->{dbs_objects}->{$cv->name()};
+    my $db_name = $self->config->{db_name_for_cv} // $cv->name();
+
+    my $db = $self->get_db($db_name);
+
     if (!defined $db) {
-      die "no database for cv: ", $cv->name();
+      $db = $self->chado()->resultset('General::Db')->create({ name => $db_name });
     }
 
     my $formatted_id =
