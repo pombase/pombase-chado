@@ -156,7 +156,7 @@ allowed_term_mismatches_files:
 organism_taxon_map:
   284812: 4896
 
-systematic_id_re: "SP.C\d+\w+\d+c?.\d"
+systematic_id_re: "SP.[CP]\w+\d+\w+\d+c?.\d"
 
 # the default is to use the cv name as the db name
 db_names_for_cvs:

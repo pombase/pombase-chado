@@ -43,7 +43,13 @@ with 'PomBase::Role::ChadoUser';
 method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism) {
    my $rs = $self->chado()->resultset('Sequence::Feature');
 
+   state $cache = {};
 
+   my $cache_key = "$systematic_id $try_name $ignore_case";
+
+   if (exists $cache->{$cache_key}) {
+     return $cache->{$cache_key};
+   }
    if (defined $organism) {
      $rs = $rs->search({ organism_id => $organism->organism_id() });
    }
@@ -63,6 +69,7 @@ method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism) {
    }
 
    if (defined $feature) {
+     $cache->{$cache_key} = $feature;
      return $feature;
    }
 
@@ -79,7 +86,10 @@ method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism) {
        $feature = $rs->find({ name => $systematic_id });
      }
 
-     return $feature if defined $feature;
+     if (defined $feature) {
+       $cache->{$cache_key} = $feature;
+       return $feature
+     }
    }
 
    die "can't find feature for: $systematic_id\n";

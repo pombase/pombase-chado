@@ -3,7 +3,7 @@
 use perl5i::2;
 use Moose;
 
-use Getopt::Long;
+use Getopt::Long qw(:config pass_through);
 use lib qw(lib);
 use YAML qw(LoadFile);
 
@@ -13,7 +13,8 @@ if (!GetOptions("dry-run|d" => \$dry_run)) {
   usage();
 }
 
-if (@ARGV != 6) {
+sub usage
+{
   die qq($0: needs six arguments:
   config_file   - the YAML format configuration file name
   import_type   - possibilities:
@@ -27,14 +28,30 @@ if (@ARGV != 6) {
 usage:
   $0 <args> < input_file
 );
+
+}
+
+if (@ARGV < 6) {
+  usage();
 }
 
 my $config_file = shift;
 my $import_type = shift;
+
+my @options = ();
+while ($ARGV[0] =~ /^-/) {
+  push @options, shift;
+}
+
 my $host = shift;
 my $database = shift;
 my $username = shift;
 my $password = shift;
+
+if (!defined $password || @ARGV > 0) {
+  die "@ARGV";
+  usage();
+}
 
 use PomBase::Chado;
 use PomBase::Chado::IdCounter;
@@ -60,7 +77,8 @@ if (defined $import_module) {
   $importer =
     eval qq{
 require $import_module;
-$import_module->new(chado => \$chado, config => \$config);
+$import_module->new(chado => \$chado, config => \$config,
+                    options => [\@options]);
     };
   die "$@" if $@;
 } else {

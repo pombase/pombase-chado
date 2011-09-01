@@ -52,6 +52,7 @@ with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 
 has verbose => (is => 'ro');
+has options => (is => 'ro', isa => 'ArrayRef');
 
 method load($fh)
 {
