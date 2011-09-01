@@ -42,6 +42,10 @@ requires 'chado';
 
 method get_cv($cv_name)
 {
+  if (!defined $cv_name) {
+    croak "undefined value for cv name";
+  }
+
   state $cache = {};
 
   return $cache->{$cv_name} //
@@ -86,8 +90,17 @@ method get_cvterm($cv_name, $cvterm_name)
 
 # find cvterm by query with name or cvtermsynonym
 method find_cvterm_by_name($cv, $term_name, %options) {
+  if (!defined $cv) {
+    carp "cv is undefined";
+  }
+
   if (!ref $cv) {
-    $cv = $self->get_cv($cv);
+    my $cv_name = $cv;
+    $cv = $self->get_cv($cv_name);
+
+    if (!defined $cv) {
+      carp "no cv found with name '$cv_name'\n";
+    }
   }
 
   state $cache = {};
@@ -172,6 +185,10 @@ method find_cvterm_by_term_id($term_id)
 
     my $chado = $self->chado();
     my $db = $chado->resultset('General::Db')->find({ name => $db_name });
+
+    if (!defined $db) {
+      croak "no Db found with name '$db_name'\n";
+    }
 
     my @cvterms = $chado->resultset('General::Dbxref')
       ->search({ db_id => $db->db_id(),

@@ -63,6 +63,10 @@ method create_cvterm($cv_name, $db_name, $id_counter, $term_name)
 
 
 method find_or_create_cvterm($cv, $term_name) {
+  if (!defined $cv) {
+    croak "undefined cv";
+  }
+
   if (!ref $cv) {
     $cv = $self->get_cv($cv);
   }

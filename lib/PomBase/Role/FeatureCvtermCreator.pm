@@ -41,6 +41,8 @@ use Moose::Role;
 
 with 'PomBase::Role::ChadoUser';
 
+requires 'find_or_create_cvterm';
+
 my %stored_cvterms = ();
 
 method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
