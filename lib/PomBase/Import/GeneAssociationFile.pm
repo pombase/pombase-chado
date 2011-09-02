@@ -72,7 +72,7 @@ method load($fh)
   $assigned_by_filter =~ s/\s+$//;
 
   if (length $assigned_by_filter == 0) {
-    die "no assigned_by_filter option given - no associated will " .
+    die "no assigned_by_filter option given - no annotation will " .
       "be loaded\n";
   }
 
