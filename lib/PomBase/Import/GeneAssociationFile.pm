@@ -89,7 +89,7 @@ method load($fh)
                    value => $assigned_by });
       my $rs = $prop_rs->search_related('feature_cvterm');
       my $row_count = $rs->delete() + 0;
-      warn "removed $row_count existing $assigned_by annotations\n";
+      warn "will remove $row_count existing $assigned_by annotations\n";
     }
   }
 
