@@ -152,7 +152,7 @@ method load($fh)
         try {
           $feature = $self->find_chado_feature($synonym, 1, 0, $organism);
         } catch {
-          warn "can't find feature for $uniquename: $_";
+          warn "can't find feature for $synonym: $_";
         };
 
         last if defined $feature;
