@@ -52,7 +52,7 @@ with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 
 has verbose => (is => 'ro');
-has options => (is => 'ro', isa => 'ArrayRef');
+has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
 method load($fh)
 {
