@@ -8,8 +8,10 @@ use lib qw(lib);
 use YAML qw(LoadFile);
 
 my $dry_run = 0;
+my $verbose = 0;
 
-if (!GetOptions("dry-run|d" => \$dry_run)) {
+if (!GetOptions("dry-run|d" => \$dry_run,
+                "verbose|v" => \$verbose)) {
   usage();
 }
 
@@ -87,6 +89,10 @@ $import_module->new(chado => \$chado, config => \$config,
 
 open my $fh, '<-' or die;
 
-$importer->load($fh);
+my $results = $importer->load($fh);
+
+if ($verbose) {
+  print $importer->results_summary($results);
+}
 
 $guard->commit unless $dry_run;

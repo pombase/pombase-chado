@@ -53,12 +53,11 @@ with 'PomBase::Role::FeatureCvtermCreator';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
+has assigned_by_filter => (is => 'rw', init_arg => undef);
+has remove_existing => (is => 'rw', init_arg => undef);
 
-method load($fh)
+method BUILD
 {
-  my $chado = $self->chado();
-  my $config = $self->config();
-
   my $assigned_by_filter = '';
   my $remove_existing = 0;
 
@@ -72,31 +71,41 @@ method load($fh)
   $assigned_by_filter =~ s/\s+$//;
 
   if (length $assigned_by_filter == 0) {
-    die "no assigned_by_filter option given - no annotation will " .
+    die "no assigned-by-filter option given - no annotation will " .
       "be loaded\n";
   }
 
-  my @assigned_by_filter = split /\s*,\s*/, $assigned_by_filter;
+  $self->assigned_by_filter([split /\s*,\s*/, $assigned_by_filter]);
+  $self->remove_existing($remove_existing);
+}
+
+
+method load($fh)
+{
+  my $chado = $self->chado();
+  my $config = $self->config();
+
+  my @assigned_by_filter = @{$self->assigned_by_filter};
   my %assigned_by_filter = map { $_ => 1 } @assigned_by_filter;
 
   my $assigned_by_cvterm =
     $self->get_cvterm('feature_cvtermprop_type', 'assigned_by');
 
-  if ($remove_existing) {
+  my %deleted_counts = ();
+
+  if ($self->remove_existing()) {
     for my $assigned_by (@assigned_by_filter) {
       my $prop_rs = $chado->resultset('Sequence::FeatureCvtermprop')
         ->search({ type_id => $assigned_by_cvterm->cvterm_id(),
                    value => $assigned_by });
       my $rs = $prop_rs->search_related('feature_cvterm');
       my $row_count = $rs->delete() + 0;
-      warn "will remove $row_count existing $assigned_by annotations\n";
+      $prop_rs->delete();
+      $deleted_counts{$assigned_by} = $row_count;
     }
   }
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
-
-#  my $genetic_interaction_type =
-#    $self->get_cvterm('PomBase interaction types', 'interacts_genetically');
 
   $csv->column_names(qw(DB DB_object_id DB_object_symbol Qualifier GO_id DB_reference Evidence_code With_or_from Aspect DB_object_name DB_object_synonym DB_object_type Taxon Date Assigned_by Annotation_extension Gene_product_form_id ));
 
@@ -150,7 +159,7 @@ method load($fh)
     for my $synonym (@synonyms) {
       if ($synonym =~ /^($uniquename_re)/) {
         try {
-          $feature = $self->find_chado_feature($synonym, 1, 0, $organism);
+          $feature = $self->find_chado_feature($synonym, 1, 1, $organism);
         } catch {
           warn "$_";
         };
@@ -187,6 +196,18 @@ method load($fh)
     $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by',
                                   $assigned_by);
   }
+
+  return \%deleted_counts;
 }
 
-1;
+method results_summary($results)
+{
+  my $ret_val = '';
+
+  for my $assigned_by (sort keys %$results) {
+    my $count = $results->{$assigned_by};
+    $ret_val .= "will remove $count existing $assigned_by annotations\n";
+  }
+
+  return $ret_val;
+}

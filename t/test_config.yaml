@@ -72,6 +72,12 @@ data:
             db:
               name: GO
     - name: feature_cvtermprop_type
+      cvterms:
+        - name: assigned_by
+          dbxref:
+            accession: assigned_by
+            db:
+              name: PomBase
   db:
     - name: feature_cvtermprop_type
 

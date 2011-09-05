@@ -1,6 +1,7 @@
 use perl5i::2;
 
-use Test::More tests => 5;
+use Test::More tests => 2;
+use Test::Deep;
 
 use PomBase::TestUtil;
 
@@ -10,16 +11,37 @@ my $config = $test_util->config();
 
 use PomBase::Import::GeneAssociationFile;
 
+my @options = ("--assigned-by-filter=UniProtKB,InterPro,IntAct,Reactome",
+               "--remove-existing");
+
 my $importer =
   PomBase::Import::GeneAssociationFile->new(chado => $chado,
-                                            config => $config);
+                                            config => $config,
+                                            options => [@options]);
 
 open my $fh, '<', "data/gene_association.goa.small" or die;
-
-$importer->load($fh);
-
+my $deleted_counts = $importer->load($fh);
+cmp_deeply($deleted_counts,
+           {
+             IntAct => 0,
+             InterPro => 0,
+             Reactome => 0,
+             UniProtKB => 0,
+           });
 my $annotations = $chado->resultset('Sequence::FeatureCvterm');
+is($annotations->count(), 6);
+close $fh;
 
-is($annotations->count(), 9);
-
-sleep 100;
+# make sure we can re-load
+open $fh, '<', "data/gene_association.goa.small" or die;
+$deleted_counts = $importer->load($fh);
+cmp_deeply($deleted_counts,
+           {
+             IntAct => 1,
+             InterPro => 2,
+             Reactome => 1,
+             UniProtKB => 2,
+           });
+$annotations = $chado->resultset('Sequence::FeatureCvterm');
+is($annotations->count(), 6);
+close $fh;
