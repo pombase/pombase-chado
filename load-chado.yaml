@@ -164,3 +164,55 @@ db_names_for_cvs:
   molecular_function: GO
   cellular_component: GO
   sequence: SO
+
+evidence_types:
+  IMP:
+    name: Inferred from mutant phenotype
+  IDA:
+    name: Inferred from direct assay
+  IGI:
+    name: Inferred from genetic interaction
+    with_gene: 1
+  IPI:
+    name: Inferred from physical interaction
+    with_gene: 1
+  EXP:
+    name: Inferred from Experiment
+  IEP:
+    name: Inferred from Expression Pattern
+  ISS:
+    name: Inferred from Sequence or Structural Similarity
+  ISO:
+    name: Inferred from Sequence Orthology
+  ISA:
+    name: Inferred from Sequence Alignment
+  ISM:
+    name: Inferred from Sequence Model
+  IGC:
+    name: Inferred from Genomic Context
+  IBA:
+    name: Inferred from Biological aspect of Ancestor
+  IBD:
+    name: Inferred from Biological aspect of Descendant
+  IKR:
+    name: Inferred from Key Residues
+  IRD:
+    name: Inferred from Rapid Divergence
+  RCA:
+    name: inferred from Reviewed Computational Analysis
+  NAS:
+    name: Non-traceable Author Statement
+  IC:
+    name: Inferred by Curator
+  ND:
+    name: No biological Data available
+  IEA:
+    name: Inferred from Electronic Annotation
+  NR:
+    name: Not Recorded
+  TAS:
+    name: Traceable Author Statement
+  UNK:
+    name: Unknown
+
+suppressible_evidence_codes:

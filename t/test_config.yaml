@@ -71,6 +71,11 @@ data:
             accession: 0005819
             db:
               name: GO
+        - name: spindle pole body
+          dbxref:
+            accession: 0005816
+            db:
+              name: GO
     - name: feature_cvtermprop_type
       cvterms:
         - name: assigned_by
@@ -80,7 +85,29 @@ data:
               name: PomBase
   db:
     - name: feature_cvtermprop_type
-
+  pub:
+    - uniquename: PMID:11739790
+      type:
+        name: paper
+  feature:
+    - uniquename: SPBC2F12.13
+      name: klp5
+      type:
+        name: gene
+      organism:
+        genus: Schizosacchaomyces
+        species: pombe
+    - uniquename: SPBC2F12.13.1
+      type:
+        name: mRNA
+      organism:
+        genus: Schizosacchaomyces
+        species: pombe
+  feature_cvterm:
+    feature:
+      uniquename: SPBC2F12.13
+    cvterm:
+      name: spindle pole body 
 test_organism:
   genus: Schizosacchaomyces
   species: pombe

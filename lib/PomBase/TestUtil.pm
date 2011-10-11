@@ -73,6 +73,11 @@ method _populate_db($chado)
     $chado->resultset("General::Db")->create($row);
   }
 
+  my $pub_conf = $test_data->{pub};
+  for my $row (@$pub_conf) {
+    $chado->resultset("Pub::Pub")->create($row);
+  }
+
   my $org_data = $self->test_config()->{test_organism};
   my $organism =
     $chado->resultset('Organism::Organism')->create({
@@ -91,12 +96,17 @@ method _populate_db($chado)
     organism_id => $organism->organism_id(),
   });
 
-  my $mrna_type =
-    $self->get_cvterm('sequence', 'mRNA');
+  my $gene_type = $self->get_cvterm('sequence', 'gene');
+  my $mrna_type = $self->get_cvterm('sequence', 'mRNA');
 
   for my $gene_data (@{$self->test_config()->{test_genes}}) {
     $chado->resultset('Sequence::Feature')->create({
       uniquename => $gene_data->{uniquename},
+      organism_id => $organism->organism_id(),
+      type_id => $gene_type->cvterm_id(),
+    });
+    $chado->resultset('Sequence::Feature')->create({
+      uniquename => $gene_data->{uniquename} . '.1',
       organism_id => $organism->organism_id(),
       type_id => $mrna_type->cvterm_id(),
     });

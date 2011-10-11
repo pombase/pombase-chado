@@ -159,6 +159,13 @@ method load($fh)
                                           $source_db);
     $self->store_feature_rel_pub($rel, $pub);
   }
+
+  return undef;
+}
+
+method results_summary($results)
+{
+  return '';
 }
 
 1;

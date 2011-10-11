@@ -127,6 +127,9 @@ method load($fh)
 
     my $db_reference = $columns_ref->{"DB_reference"};
     my $evidence_code = $columns_ref->{"Evidence_code"};
+    my $long_evidence =
+      $self->config()->{evidence_types}->{$evidence_code}->{name};
+
     my $with_or_from = $columns_ref->{"With_or_from"};
     my $db_object_synonym = $columns_ref->{"DB_object_synonym"};
     (my $taxonid = $columns_ref->{"Taxon"}) =~ s/taxon://i;
@@ -156,10 +159,11 @@ method load($fh)
     }
 
     my $feature;
+    # try systematic ID first
     for my $synonym (@synonyms) {
       if ($synonym =~ /^($uniquename_re)/) {
         try {
-          $feature = $self->find_chado_feature($synonym, 1, 1, $organism);
+          $feature = $self->find_chado_feature("$synonym.1", 1, 1, $organism);
         } catch {
           warn "$_";
         };
@@ -171,7 +175,7 @@ method load($fh)
     if (!defined $feature) {
       for my $synonym (@synonyms) {
         try {
-          $feature = $self->find_chado_feature($synonym, 1, 1, $organism);
+          $feature = $self->find_chado_feature("$synonym.1", 1, 1, $organism);
         } catch {
           # feature not found
         };
@@ -195,6 +199,9 @@ method load($fh)
 
     $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by',
                                   $assigned_by);
+
+    $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
+                                  $long_evidence);
   }
 
   return \%deleted_counts;
@@ -206,7 +213,7 @@ method results_summary($results)
 
   for my $assigned_by (sort keys %$results) {
     my $count = $results->{$assigned_by};
-    $ret_val .= "will remove $count existing $assigned_by annotations\n";
+    $ret_val .= "removed $count existing $assigned_by annotations\n";
   }
 
   return $ret_val;
