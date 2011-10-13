@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 2;
+use Test::More tests => 4;
 use Test::Deep;
 
 use PomBase::TestUtil;

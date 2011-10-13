@@ -95,12 +95,19 @@ method load($fh)
 
   if ($self->remove_existing()) {
     for my $assigned_by (@assigned_by_filter) {
-      my $prop_rs = $chado->resultset('Sequence::FeatureCvtermprop')
-        ->search({ type_id => $assigned_by_cvterm->cvterm_id(),
-                   value => $assigned_by });
-      my $rs = $prop_rs->search_related('feature_cvterm');
-      my $row_count = $rs->delete() + 0;
-      $prop_rs->delete();
+      my $assigned_by_rs = $chado->resultset('Sequence::FeatureCvtermprop')
+        ->search({ 'me.type_id' => $assigned_by_cvterm->cvterm_id(),
+                   'me.value' => $assigned_by });
+
+      my $rs = $assigned_by_rs->search_related('feature_cvterm');
+
+      my @fc_ids = map { $_->feature_cvterm_id() } $rs->all();
+      my $fc_rs = $chado->resultset('Sequence::FeatureCvterm')
+        ->search({ 'me.feature_cvterm_id' => { -in => [@fc_ids] }});
+
+      $fc_rs->search_related('feature_cvtermprops')->delete();
+
+      my $row_count = $fc_rs->delete() + 0;
       $deleted_counts{$assigned_by} = $row_count;
     }
   }
