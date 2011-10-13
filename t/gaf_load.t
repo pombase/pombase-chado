@@ -32,7 +32,7 @@ my $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 6);
 close $fh;
 
-# make sure we can re-load
+# make sure we can re-load, existing data should be deleted
 open $fh, '<', "data/gene_association.goa.small" or die;
 $deleted_counts = $importer->load($fh);
 cmp_deeply($deleted_counts,
