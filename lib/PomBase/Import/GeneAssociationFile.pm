@@ -55,14 +55,44 @@ has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has assigned_by_filter => (is => 'rw', init_arg => undef);
 has remove_existing => (is => 'rw', init_arg => undef);
+has with_filter_values => (is => 'rw', isa => 'HashRef',
+                             init_arg => undef);
+has term_id_filter_values => (is => 'rw', isa => 'HashRef',
+                              init_arg => undef);
+
+method _load_first_column($filename)
+{
+  my %ret_val = ();
+
+  open my $file, '<', $filename
+    or die "can't open $filename: $!\n";
+
+  while (defined (my $line = <$file>)) {
+    if ($line =~ /^(\S+)/ and length $1 > 0) {
+      $ret_val{$1} = 1;
+    } else {
+      warn "line has no first column: $line";
+    }
+  }
+
+  close $file or die "$!";
+
+  return %ret_val;
+}
 
 method BUILD
 {
   my $assigned_by_filter = '';
   my $remove_existing = 0;
+  my $with_filter_filename = undef;
+  my $term_id_filter_filename = undef;
 
   my @opt_config = ('assigned-by-filter=s' => \$assigned_by_filter,
-                    'remove-existing' => \$remove_existing);
+                    'remove-existing' => \$remove_existing,
+                    'with-filter-filename=s' =>
+                      \$with_filter_filename,
+                    'term-id-filter-filename=s' =>
+                      \$term_id_filter_filename);
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
     croak "option parsing failed";
   }
@@ -77,8 +107,15 @@ method BUILD
 
   $self->assigned_by_filter([split /\s*,\s*/, $assigned_by_filter]);
   $self->remove_existing($remove_existing);
-}
 
+  my %with_filter_values =
+    $self->_load_first_column($with_filter_filename);
+  $self->with_filter_values({%with_filter_values});
+
+  my %term_id_filter_values =
+    $self->_load_first_column($term_id_filter_filename);
+  $self->term_id_filter_values({%term_id_filter_values});
+}
 
 method load($fh)
 {
@@ -116,6 +153,9 @@ method load($fh)
 
   $csv->column_names(qw(DB DB_object_id DB_object_symbol Qualifier GO_id DB_reference Evidence_code With_or_from Aspect DB_object_name DB_object_synonym DB_object_type Taxon Date Assigned_by Annotation_extension Gene_product_form_id ));
 
+  my %with_filter = %{$self->with_filter_values()};
+  my %term_id_filter = %{$self->term_id_filter_values()};
+
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $db_object_id = $columns_ref->{"DB_object_id"};
     my $db_object_symbol = $columns_ref->{"DB_object_symbol"};
@@ -132,12 +172,22 @@ method load($fh)
 
     my $go_id = $columns_ref->{"GO_id"};
 
+    if ($term_id_filter{$go_id}) {
+      next;
+    }
+
     my $db_reference = $columns_ref->{"DB_reference"};
+
     my $evidence_code = $columns_ref->{"Evidence_code"};
     my $long_evidence =
       $self->config()->{evidence_types}->{$evidence_code}->{name};
 
     my $with_or_from = $columns_ref->{"With_or_from"};
+
+    if ($with_filter{$with_or_from}) {
+      next;
+    }
+
     my $db_object_synonym = $columns_ref->{"DB_object_synonym"};
     (my $taxonid = $columns_ref->{"Taxon"}) =~ s/taxon://i;
 
