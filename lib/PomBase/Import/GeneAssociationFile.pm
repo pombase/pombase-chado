@@ -225,8 +225,6 @@ method load($fh)
       if ($synonym =~ /^($uniquename_re)/) {
         try {
           $feature = $self->find_chado_feature("$synonym.1", 1, 1, $organism);
-        } catch {
-          warn "$_";
         };
 
         last if defined $feature;
