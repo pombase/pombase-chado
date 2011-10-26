@@ -62,6 +62,8 @@ has term_id_filter_values => (is => 'rw', isa => 'HashRef',
 
 method _load_first_column($filename)
 {
+  return unless $filename;
+
   my %ret_val = ();
 
   open my $file, '<', $filename
