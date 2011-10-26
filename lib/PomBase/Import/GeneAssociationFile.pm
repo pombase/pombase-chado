@@ -197,18 +197,26 @@ method load($fh)
       next;
     }
 
-    my $pub = $self->find_or_create_pub($db_reference);
+    my $proc = sub {
+      my $pub = $self->find_or_create_pub($db_reference);
 
-    my $cvterm = $self->find_cvterm_by_term_id($go_id);
+      my $cvterm = $self->find_cvterm_by_term_id($go_id);
 
-    my $feature_cvterm =
-      $self->create_feature_cvterm($feature, $cvterm, $pub, $is_not);
+      my $feature_cvterm =
+        $self->create_feature_cvterm($feature, $cvterm, $pub, $is_not);
 
-    $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by',
-                                  $assigned_by);
+      $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by',
+                                    $assigned_by);
 
-    $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
-                                  $long_evidence);
+      $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
+                                    $long_evidence);
+    };
+
+    try {
+      $chado->txn_do($proc);
+    } catch {
+      warn "Failed to load row: $_\n";
+    }
   }
 
   return \%deleted_counts;
