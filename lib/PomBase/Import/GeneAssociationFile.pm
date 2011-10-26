@@ -207,6 +207,8 @@ method load($fh)
 
     push @synonyms, $db_object_id, $db_object_symbol;
 
+    map { s/\s+$//; s/^\s+//; } @synonyms;
+
     my $uniquename_re = $config->{systematic_id_re};
     my $uniquename = undef;
 
