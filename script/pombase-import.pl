@@ -51,7 +51,7 @@ my $username = shift;
 my $password = shift;
 
 if (!defined $password || @ARGV > 0) {
-  die "@ARGV";
+  die "$0: not enough arguments";
   usage();
 }
 
