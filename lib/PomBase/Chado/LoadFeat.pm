@@ -45,9 +45,11 @@ with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureDumper';
 with 'PomBase::Role::Embl::SystematicID';
 with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::XrefStorer';
+with 'PomBase::Role::DbQuery';
+with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::CoordCalculator';
-with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::QualifierSplitter';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 
