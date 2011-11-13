@@ -43,6 +43,7 @@ with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::CvtermpropStorer';
 with 'PomBase::Role::XrefStorer';
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::ChadoObj';
