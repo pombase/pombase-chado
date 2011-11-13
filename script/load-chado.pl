@@ -44,11 +44,14 @@ if (!GetOptions("verbose|v" => \$verbose,
 }
 
 my $config_file = shift;
+my $host = shift;
 my $database = shift;
+my $user = shift;
+my $password = shift;
 
 my $config = LoadFile($config_file);
 
-my $chado = PomBase::Chado::db_connect('localhost', $database, 'kmr44', 'kmr44');
+my $chado = PomBase::Chado::db_connect($host, $database, $user, $password);
 
 my $guard = $chado->txn_scope_guard;
 
