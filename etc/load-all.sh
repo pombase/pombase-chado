@@ -1,6 +1,6 @@
 #!/bin/sh -
 
-DB=pombase-build-25
+DB=$1
 
 cd $HOME/pombe/pombe-embl/
 svn update || exit 1
