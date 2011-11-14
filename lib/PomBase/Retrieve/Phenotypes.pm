@@ -40,7 +40,7 @@ use Moose;
 
 use List::Gen 'iterate';
 
-with 'PomBase::Role::ChadoUser';
+with 'PomBase::Retriever';
 
 method retrieve() {
   my $chado = $self->chado();
@@ -62,5 +62,3 @@ method retrieve() {
     };
   };
 }
-
-with 'PomBase::Retriever';

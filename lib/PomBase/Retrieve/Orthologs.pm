@@ -40,7 +40,7 @@ use Moose;
 
 use List::Gen 'iterate';
 
-with 'PomBase::Role::ChadoUser';
+with 'PomBase::Retriever';
 with 'PomBase::Role::CvQuery';
 
 method retrieve() {
@@ -105,7 +105,5 @@ GROUP BY o_un
     };
   };
 }
-
-with 'PomBase::Retriever';
 
 1;
