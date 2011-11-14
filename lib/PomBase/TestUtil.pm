@@ -47,6 +47,7 @@ has config => (is => 'rw', init_arg => undef, isa => 'HashRef');
 has test_config => (is => 'rw', init_arg => undef, isa => 'HashRef');
 has chado => (is => 'rw', init_arg => undef, isa => 'Bio::Chado::Schema');
 has verbose => (is => 'rw');
+has populate_db => (is => 'rw', default => 1);
 
 with 'PomBase::Role::CvQuery';
 
@@ -127,7 +128,9 @@ method BUILD
 
   my $chado = $self->_make_test_db();
   $self->chado($chado);
-  $self->_populate_db($chado);
+  if ($self->populate_db()) {
+    $self->_populate_db($chado);
+  }
 }
 
 1;
