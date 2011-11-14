@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -44,4 +44,13 @@ cmp_deeply($deleted_counts,
            });
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 6);
+
+while (defined (my $fc = $annotations->next())) {
+  if ($fc->feature->uniquename() eq 'SPAC1093.06c.1') {
+    my @props = $fc->feature_cvtermprops()->all();
+    ok (grep { $_->type()->name() eq 'with' &&
+               $_->value() eq 'InterPro:IPR004273' } @props);
+  }
+}
+
 close $fh;
