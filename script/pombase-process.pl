@@ -68,7 +68,7 @@ my $process_module = $process_modules{$process_type};
 my $processor;
 
 if (defined $process_module) {
-  $process =
+  $processor =
     eval qq{
 require $process_module;
 $process_module->new(chado => \$chado, config => \$config,
@@ -79,10 +79,10 @@ $process_module->new(chado => \$chado, config => \$config,
   die "unknown type to process: $process_type\n";
 }
 
-my $results = $process->process($fh);
+my $results = $processor->process();
 
 if ($verbose) {
-  print $process->results_summary($results);
+  print $processor->results_summary($results);
 }
 
 $guard->commit unless $dry_run;
