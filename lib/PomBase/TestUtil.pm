@@ -84,7 +84,7 @@ method _load_test_features($chado)
 {
   my $test_data = $self->test_config()->{data};
 
-  $self->_load_cv($test_data->{org_props_cv});
+  $self->_load_cv($chado, $test_data->{extra_cvterm_terms});
 
   my $pub_conf = $test_data->{pub};
   for my $row (@$pub_conf) {
