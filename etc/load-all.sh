@@ -32,3 +32,5 @@ echo starting import of GOA GAF data 1>&2
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/From_curation_tool
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/GO_ORFeome_localizations2.tex
 ./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$HOME/pombe/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=$HOME/pombe/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < ~/Work/pombe/gene_association.goa_uniprot.pombe
+
+./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $DB $USER $PASSWORD
