@@ -26,20 +26,6 @@ data:
                   accession: poor_synonym
                   db:
                     name: internal
-    - name: PomBase organism property types
-      cvterms:
-        - name: taxon_id
-          dbxref:
-            accession: taxon_id
-            db:
-              name: PomBase
-    - name: PomBase publication types
-      cvterms:
-        - name: paper
-          dbxref:
-            accession: paper
-            db:
-              name: PomBase
     - name: sequence
       cvterms:
         - name: gene
@@ -76,11 +62,28 @@ data:
             accession: 0005816
             db:
               name: GO
+    - name: biological_process
+    - name: PSI-MOD
     - name: feature_cvtermprop_type
       cvterms:
         - name: assigned_by
           dbxref:
             accession: assigned_by
+            db:
+              name: PomBase
+  extra_cvterm_terms:
+    - name: PomBase organism property types
+      cvterms:
+        - name: taxon_id
+          dbxref:
+            accession: taxon_id
+            db:
+              name: PomBase
+    - name: PomBase publication types
+      cvterms:
+        - name: paper
+          dbxref:
+            accession: paper
             db:
               name: PomBase
   db:

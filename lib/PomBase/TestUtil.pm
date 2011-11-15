@@ -47,7 +47,7 @@ has config => (is => 'rw', init_arg => undef, isa => 'HashRef');
 has test_config => (is => 'rw', init_arg => undef, isa => 'HashRef');
 has chado => (is => 'rw', init_arg => undef, isa => 'Bio::Chado::Schema');
 has verbose => (is => 'rw');
-has populate_db => (is => 'rw', default => 1);
+has load_test_features => (is => 'rw', default => 1);
 
 with 'PomBase::Role::CvQuery';
 
@@ -60,19 +60,31 @@ method _make_test_db
   return Bio::Chado::Schema->connect("dbi:SQLite:$temp_db");
 }
 
-method _populate_db($chado)
+method _load_cv($chado, $cv_conf)
+{
+  for my $row (@$cv_conf) {
+    $chado->resultset("Cv::Cv")->create($row);
+  }
+}
+
+method _load_cv_db($chado)
 {
   my $test_data = $self->test_config()->{data};
 
   my $cv_conf = $test_data->{cv};
-  for my $row (@$cv_conf) {
-    $chado->resultset("Cv::Cv")->create($row);
-  }
+  $self->_load_cv($chado, $cv_conf);
 
   my $db_conf = $test_data->{db};
   for my $row (@$db_conf) {
     $chado->resultset("General::Db")->create($row);
   }
+}
+
+method _load_test_features($chado)
+{
+  my $test_data = $self->test_config()->{data};
+
+  $self->_load_cv($test_data->{org_props_cv});
 
   my $pub_conf = $test_data->{pub};
   for my $row (@$pub_conf) {
@@ -128,8 +140,9 @@ method BUILD
 
   my $chado = $self->_make_test_db();
   $self->chado($chado);
-  if ($self->populate_db()) {
-    $self->_populate_db($chado);
+  $self->_load_cv_db($chado);
+  if ($self->load_test_features()) {
+    $self->_load_test_features($chado);
   }
 }
 
