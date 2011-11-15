@@ -28,4 +28,4 @@ cd $HOME/git/pombase-run
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe oliver0 pombe-chado-ng-v13-full-goa kmr44 kmr44 < $HOME/Work/pombe/pombe-embl/external-go-data/From_curation_tool
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe oliver0 pombe-chado-ng-v13-full-goa kmr44 kmr44 < $HOME/Work/pombe/pombe-embl/external-go-data/GO_ORFeome_localizations2.tex
 ./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=~kmr44/pombe/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=~kmr44/pombe/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB oliver0 pombe-chado-ng-v13-full-goa kmr44 kmr44 < ~/Work/pombe/gene_association.goa_uniprot.pombe
-./script/filter-redundant-go.sh
+./script/filter-redundant-go.pl
