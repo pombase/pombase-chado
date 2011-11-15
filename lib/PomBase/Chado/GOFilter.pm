@@ -40,7 +40,7 @@ use Moose;
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 
-method filter($fh)
+method process()
 {
   my $chado = $self->chado();
   my $config = $self->config();
