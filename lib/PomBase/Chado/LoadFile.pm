@@ -41,6 +41,7 @@ use Moose;
 use PomBase::Chado::LoadFeat;
 use Tie::Hash::Indexed;
 use Digest::MD5;
+use Bio::SeqIO;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
