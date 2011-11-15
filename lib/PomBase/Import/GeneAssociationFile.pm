@@ -254,6 +254,11 @@ method load($fh)
 
       my $cvterm = $self->find_cvterm_by_term_id($go_id);
 
+      if (!defined $cvterm) {
+        warn "can't load annotation, $go_id not found in database\n";
+        return;
+      }
+
       my $feature_cvterm =
         $self->create_feature_cvterm($feature, $cvterm, $pub, $is_not);
 
