@@ -175,6 +175,9 @@ method load($fh)
     my $go_id = $columns_ref->{"GO_id"};
 
     if ($term_id_filter{$go_id}) {
+      if ($self->verbose()) {
+        warn "ignoring line because of term filter: $go_id\n";
+      }
       next;
     }
 
@@ -187,6 +190,9 @@ method load($fh)
     my $with_or_from = $columns_ref->{"With_or_from"};
 
     if ($with_filter{$with_or_from}) {
+      if ($self->verbose()) {
+        warn "ignoring line because of with filter: $with_or_from\n";
+      }
       next;
     }
 
@@ -201,7 +207,12 @@ method load($fh)
     my $date = $columns_ref->{"Date"};
     my $assigned_by = $columns_ref->{"Assigned_by"};
 
-    next unless $assigned_by_filter{$assigned_by};
+    if (!$assigned_by_filter{$assigned_by}) {
+      if ($self->verbose()) {
+        warn "ignoring line because of assigned_by filter: $assigned_by\n";
+      }
+      next;
+    }
 
     my @synonyms = split /\|/, $db_object_synonym;
 
