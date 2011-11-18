@@ -80,6 +80,7 @@ if (defined $import_module) {
     eval qq{
 require $import_module;
 $import_module->new(chado => \$chado, config => \$config,
+                    verbose => \$verbose,
                     options => [\@options]);
     };
   die "$@" if $@;
