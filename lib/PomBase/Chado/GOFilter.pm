@@ -78,7 +78,7 @@ and
      (select fc2.cvterm_id
       from feature_cvterm fc2
       where fc2.feature_id = fc1.feature_id
-     ) and pathdistance > 0
+     ) and pathdistance >= 0
      );
 EOQ
 
