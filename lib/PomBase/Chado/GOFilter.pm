@@ -77,7 +77,7 @@ CREATE TEMP TABLE fc_to_delete AS
 SELECT feature_cvterm_id
 FROM poor_evidence_fcs
 WHERE
-  poor_evidence_fcs.cvterm_id in (
+  poor_evidence_fcs.cvterm_id in (  -- check for child term
     SELECT object_id
       FROM cvtermpath path, feature_cvterm fc2
      WHERE subject_id = fc2.cvterm_id
@@ -85,7 +85,7 @@ WHERE
        AND pathdistance > 0
     )
 OR
-  EXISTS (
+  EXISTS ( -- check for annotation with better evidence
     SELECT fc1.feature_cvterm_id
       FROM feature_cvterm fc1
      WHERE fc1.feature_cvterm_id <> poor_evidence_fcs.feature_cvterm_id
