@@ -305,14 +305,14 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     }
     $self->add_feature_cvtermprop($featurecvterm,
                                   evidence => $evidence);
-
-    if (defined $sub_qual_map->{residue}) {
-      $self->add_feature_cvtermprop($featurecvterm,
-                                    residue => delete $sub_qual_map->{residue});
-    }
   }
 
   $self->add_feature_cvtermprop($featurecvterm, qualifier => [@qualifiers]);
+
+  if (defined $sub_qual_map->{residue}) {
+    $self->add_feature_cvtermprop($featurecvterm,
+                                  residue => delete $sub_qual_map->{residue});
+  }
 
   my $date = $self->get_and_check_date($sub_qual_map);
   if (defined $date) {
