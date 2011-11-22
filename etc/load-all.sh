@@ -1,5 +1,7 @@
 #!/bin/sh -
 
+# run script/make-db first
+
 HOST=$1
 DB=$2
 USER=$3
@@ -44,5 +46,7 @@ echo populate cvtermpath 1>&2
 ./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c cellular_component
 ./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c biological_process
 )
+
+echo filtering redundant terms 1>&2
 
 ./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $DB $USER $PASSWORD
