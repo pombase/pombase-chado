@@ -12,3 +12,5 @@ cover_db
 pod2htm*.tmp
 PomBase-*
 MYMETA.*
+cerevisiae_genes
+sapiens_genes
