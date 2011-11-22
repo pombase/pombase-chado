@@ -48,38 +48,52 @@ method process()
   my $dbh = $chado->storage()->dbh();
 
   my $query = <<'EOQ';
-create temp table fc_to_delete
-AS
-  SELECT fc1.feature_cvterm_id
-from feature_cvterm fc1, cvterm c1, cv, feature_cvtermprop fc1_prop, cvterm fc1_type, cvterm prop_type
-where
-  fc1_prop.type_id = prop_type.cvterm_id
-and
+CREATE TEMP TABLE go_cvterms AS
+SELECT cvterm.* FROM cvterm, cv
+WHERE
+  cvterm.cv_id = cv.cv_id
+AND
+  cv.name in ('biological_process', 'cellular_component', 'molecular_function');
+
+CREATE TEMP TABLE poor_evidence_fcs AS
+SELECT feature_cvterm.* FROM feature_cvterm, feature_cvtermprop prop,
+       cvterm prop_type, go_cvterms
+WHERE
+  feature_cvterm.cvterm_id = go_cvterms.cvterm_id
+AND
+  feature_cvterm.feature_cvterm_id = prop.feature_cvterm_id
+AND
   prop_type.name = 'evidence'
-and
-  fc1.cvterm_id = fc1_type.cvterm_id
-and
-  fc1_prop.value in
-  ('Inferred from Electronic Annotation',
-  'Inferred from Expression Pattern',
-  'Non-traceable Author Statement',
-  'inferred from Reviewed Computational Analysis')
-and
-  fc1_prop.feature_cvterm_id = fc1.feature_cvterm_id
-and
-  fc1.cvterm_id = c1.cvterm_id
-and
-  c1.cv_id = cv.cv_id
-and
-  cv.name in ('biological_process', 'cellular_component', 'molecular_function')
-and
-  fc1.cvterm_id in (select object_id from cvtermpath path
-    where subject_id in
-     (select fc2.cvterm_id
-      from feature_cvterm fc2
-      where fc2.feature_id = fc1.feature_id
-     ) and pathdistance >= 0
-     );
+AND
+  prop.type_id = prop_type.cvterm_id
+AND
+  prop.value in ('Inferred from Electronic Annotation',
+   'Inferred from Expression Pattern','Non-traceable Author Statement',
+   'inferred from Reviewed Computational Analysis');
+
+CREATE INDEX poor_evidence_fsc_id on poor_evidence_fcs(cvterm_id);
+
+CREATE TEMP TABLE fc_to_delete AS
+SELECT feature_cvterm_id
+FROM poor_evidence_fcs
+WHERE
+  poor_evidence_fcs.cvterm_id in (
+    SELECT object_id
+      FROM cvtermpath path, feature_cvterm fc2
+     WHERE subject_id = fc2.cvterm_id
+       AND fc2.feature_id = poor_evidence_fcs.feature_id
+       AND pathdistance > 0
+    )
+OR
+  EXISTS (
+    SELECT fc1.feature_cvterm_id
+      FROM feature_cvterm fc1
+     WHERE fc1.feature_cvterm_id <> poor_evidence_fcs.feature_cvterm_id
+       AND fc1.cvterm_id = poor_evidence_fcs.cvterm_id
+       AND fc1.feature_id = poor_evidence_fcs.feature_id
+       AND fc1.feature_cvterm_id NOT IN (
+         SELECT pefcs.feature_cvterm_id
+           FROM poor_evidence_fcs pefcs));
 EOQ
 
   my $sth = $dbh->prepare($query);
