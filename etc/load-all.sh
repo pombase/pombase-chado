@@ -33,4 +33,16 @@ echo starting import of GOA GAF data 1>&2
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/GO_ORFeome_localizations2.tex
 ./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$HOME/pombe/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=$HOME/pombe/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < ~/Work/pombe/gene_association.goa_uniprot.pombe
 
+(
+cd ~/extern/svn/gmod-schema/chado
+
+export PERL5LIB=lib
+
+echo populate cvtermpath 1>&2
+
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c molecular_function
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c cellular_component
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c biological_process
+)
+
 ./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $DB $USER $PASSWORD
