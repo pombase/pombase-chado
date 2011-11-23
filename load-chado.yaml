@@ -144,14 +144,14 @@ dbs:
 taxonid: 4896
 
 allowed_unknown_term_names_files:
-  - /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-07-11/7-11_ID_ok_unknown_term_names.txt
-  - /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-06-21/ids_to_allow-unknown_term_names.txt
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/warnings-2011-07-11/7-11_ID_ok_unknown_term_names.txt
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/warnings-2011-06-21/ids_to_allow-unknown_term_names.txt
 allowed_term_mismatches_files:
-  - /home/kmr44/Dropbox/pombase/chado_load_warnings/cumulative_ID_ok_mismatches.txt
-  - /home/kmr44/Dropbox/pombase/chado_load_warnings/cumulative_name_ok_mismatches.txt
-  - /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-06-21/6-21_mismatch_name_ok.txt
-  - /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-07-13/edited-mismatches.txt
-  - /home/kmr44/Dropbox/pombase/chado_load_warnings/warnings-2011-07-14.2/edited-mismatches.txt
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/cumulative_ID_ok_mismatches.txt
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/cumulative_name_ok_mismatches.txt
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/warnings-2011-06-21/6-21_mismatch_name_ok.txt
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/warnings-2011-07-13/edited-mismatches.txt
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/warnings-2011-07-14.2/edited-mismatches.txt
 
 organism_taxon_map:
   284812: 4896
