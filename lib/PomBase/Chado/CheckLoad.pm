@@ -198,7 +198,7 @@ method check
   my @ann_ex_go_terms =
     $ann_ex_gene->feature_cvterms()->search_related('cvterm');
 
-  # check for annotation extension with a SO term
+  # check for annotation extension targeting genes
   warn "cvterms for $spbc409_20c_1:\n" if $self->verbose();
   assert (grep {
     warn '  ', $_->name(), "\n" if $self->verbose();
