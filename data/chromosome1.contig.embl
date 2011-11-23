@@ -390,6 +390,10 @@ FT                   with=GeneDB_Spombe:SPAC18G6.15; date=20110211"
 FT                   /GO="aspect=P; term=spindle assembly involved in mitosis;
 FT                   GOid=GO:0090307; evidence=ISS; db_xref=GOC:unpublished;
 FT                   with=GeneDB_Spombe:SPAC18G6.15; date=20110211"
+FT                   /GO="aspect=P; term=cellular protein localization;
+FT                   qualifier=localization_dependency; GOid=GO:0034613;
+FT                   evidence=IGI; db_xref=PMID:15620657;
+FT                   with=GeneDB_Spombe:SPAC167.03c; date=20050923"
 FT                   /colour=2
 FT                   /fasta_file="fasta/chromosome1.contig.seq.01868.out"
 FT                   /primary_name="moe1"
