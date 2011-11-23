@@ -207,4 +207,13 @@ method check
     }
     $_->name() eq 'protein-lysine N-methyltransferase activity [target_is] SPAC977.10 [target_is] SPBC409.20c';
   } @ann_ex_go_terms);
+
+  # check for IGI converted to annotation extension
+  assert (grep {
+    warn '  ', $_->name(), "\n" if $self->verbose();
+    for my $prop ($_->cvtermprops()) {
+      warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
+    }
+    $_->name() eq 'cellular protein localization [localizes] SPAC167.03c';
+  } @ann_ex_go_terms);
 }

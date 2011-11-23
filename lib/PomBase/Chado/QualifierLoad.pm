@@ -278,6 +278,8 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     $self->create_feature_cvterm($pombe_feature, $cvterm, $pub, $is_not);
 
   if ($self->is_go_cv_name($cv_name)) {
+    $self->maybe_move_igi($sub_qual_map);
+
     my $evidence_code = delete $sub_qual_map->{evidence};
 
     my $evidence;
@@ -332,6 +334,22 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   }
 
   return 1;
+}
+
+method maybe_move_igi($sub_qual_map) {
+  if ($sub_qual_map->{evidence} && $sub_qual_map->{evidence} eq 'IGI') {
+    if (exists $sub_qual_map->{with}) {
+      my $with = delete $sub_qual_map->{with};
+
+      if (exists $sub_qual_map->{annotation_extension}) {
+        warn "annotation_extension already existing when converting IGI\n";
+      } else {
+        $sub_qual_map->{annotation_extension} = "localizes($with)";
+      }
+    } else {
+      warn "no 'with' qualifier on localization_dependency IGI\n"
+    }
+  }
 }
 
 method add_feature_relationship_pub($relationship, $pub) {

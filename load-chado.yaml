@@ -78,7 +78,7 @@ cvs:
   cvterm_property_type:
     - name: annotation_extension_relation-occurs_in
     - name: annotation_extension_relation-dependent_on
-    - name: annotation_extension_relation-localization_dependency
+    - name: annotation_extension_relation-localizes
     - name: annotation_extension_relation-localization_dependent_on
     - name: annotation_extension_relation-localization_target
     - name: annotation_extension_relation-protease_inhibitor_of
