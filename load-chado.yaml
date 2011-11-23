@@ -83,7 +83,7 @@ cvs:
     - name: annotation_extension_relation-localization_target
     - name: annotation_extension_relation-protease_inhibitor_of
     - name: annotation_extension_relation-stabilizes
-    - name: annotation_extension_relation-substrate_is
+    - name: annotation_extension_relation-has_substrate
     - name: annotation_extension_relation-target_is
     - name: annotation_extension_relation-transcriptionally_regulates
     - name: annotation_extension_relation-protease_activator
