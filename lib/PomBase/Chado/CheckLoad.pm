@@ -59,6 +59,8 @@ method check
 {
   my $chado = $self->chado();
 
+  warn "checking results ...\n";
+
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
   should ($rel_rs->count(), 55);
 
@@ -197,6 +199,8 @@ method check
 
   my @ann_ex_go_terms =
     $ann_ex_gene->feature_cvterms()->search_related('cvterm');
+
+  should(scalar(@ann_ex_go_terms), 9);
 
   # check for annotation extension targeting genes
   warn "cvterms for $spbc409_20c_1:\n" if $self->verbose();
