@@ -185,11 +185,11 @@ method check
   # check for annotation extension with a SO term
   warn "cvterms for $spac977_12_1:\n" if $self->verbose();
   assert (grep {
-    warn '  ', $_->name(), "\n" if $self->verbose();
+    warn '  props for ', $_->name(), ":\n" if $self->verbose();
     for my $prop ($_->cvtermprops()) {
       warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
     }
-    $_->name() =~ /chromosome, centromeric region \[has_binding_specificity\] regional_centromere_central_core/;
+    $_->name() =~ /chromosome, centromeric region \[requires_feature\] regional_centromere_central_core/;
   } @so_ann_ex_go_terms);
 
   my $spbc409_20c_1 = 'SPBC409.20c.1';

@@ -8,26 +8,6 @@ cvs:
     - comment
     - symbol
   PomBase annotation extension terms: []
-  PomBase annotation extension relationships:
-    - part_of
-    - has_part
-    - has_substrate
-    - occurs in
-    - happens_during
-    - exists_during
-    - during
-    - localizes_to
-    - dependent_on
-    - independent_of
-    - located_at
-    - has_target_cell
-    - has_target_anatomical_entity
-    - has_binding_specificity
-    - localization_target_is
-    - required_for
-    - target_is
-    - inhibited_by
-    - acts_at
   PomBase gene products: []
   PomBase family or domain: []
   PomBase gene characterisation status:
@@ -114,7 +94,6 @@ cv_definitions:
   m_f_g: Miscellaneous functional groups, not captured by GO (e.g. chaperone)
   misc: Annotation which does not fit any other ontology
   name_description: Derivation of the "three letter" gene name
-  PomBase annotation extension relationships: Relationships used to construct annotation extenstions
   PomBase annotation extension terms: Post-composed terms used for anotation cross products
   PomBase family or domain: Manual annotation of Pfam false negatives and uncaptured subfamilies
   PomBase gene products: Concise gene product names
