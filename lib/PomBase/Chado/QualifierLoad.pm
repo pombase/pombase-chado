@@ -278,7 +278,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     $self->create_feature_cvterm($pombe_feature, $cvterm, $pub, $is_not);
 
   if ($self->is_go_cv_name($cv_name)) {
-    $self->maybe_move_igi($sub_qual_map);
+    $self->maybe_move_igi($qualifiers, $sub_qual_map);
 
     my $evidence_code = delete $sub_qual_map->{evidence};
 
@@ -336,8 +336,9 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   return 1;
 }
 
-method maybe_move_igi($sub_qual_map) {
-  if ($sub_qual_map->{evidence} && $sub_qual_map->{evidence} eq 'IGI') {
+method maybe_move_igi($qualifiers, $sub_qual_map) {
+  if ($sub_qual_map->{evidence} && $sub_qual_map->{evidence} eq 'IGI' &&
+      $qualifiers->[0] eq 'localization_dependency') {
     if (exists $sub_qual_map->{with}) {
       my $with = delete $sub_qual_map->{with};
 
