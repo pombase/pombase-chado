@@ -21,5 +21,7 @@ export DBIC_TRACE=1
 
 go2fmt.pl -p obo_text -w xml /var/pomcur/sources/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user kmr44 --password kmr44 mod_obo_text.xml
 
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user kmr44 --password kmr44 anex_rel_obo_text.xml
+
 (cd ~/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml ~/phenotype_ontology/fypo.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user kmr44 --password kmr44 phenotype_obo_text.xml
 
