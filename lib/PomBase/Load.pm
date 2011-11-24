@@ -124,6 +124,18 @@ func _load_genes($chado, $organism, $test_mode) {
   warn "loaded ", scalar(keys %seen_names), " genes for $org_name\n";
 }
 
+func _fix_annotation_extension_rels($chado, $config)
+ {
+  my @new_annotation_rel_names =
+    map {
+      'annotation_extension_relation-' . $_->name();
+    } $chado->resultset('Cv::Cv')->search({ 'me.name' => 'go_annotation_relations' })
+            ->search_related('cvterms');
+
+  $config->{cvs}->{cvterm_property_types} = [@new_annotation_rel_names];
+
+}
+
 func _load_cvterms($chado, $config)
 {
   my $db_name = 'PomBase';
@@ -219,6 +231,7 @@ func init_objects($chado, $config) {
     $org_load->load_organism('Saccharomyces', 'cerevisiae', 'Scerevisiae',
                              'Scerevisiae', 4932);
 
+  _fix_annotation_extension_rels($chado, $config);
   _load_cvterms($chado, $config);
   _load_cv_defs($chado, $config);
   _load_dbs($chado, $config);

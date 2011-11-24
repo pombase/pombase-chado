@@ -150,7 +150,7 @@ FT                   with=GeneDB_Spombe:SPBC32F12.06; date=20041111"
 FT                   /GO="aspect=F; term=protein-lysine N-methyltransferase
 FT                   activity; GOid=GO:0016279; evidence=IMP;
 FT                   db_xref=PMID:18292091;
-FT                   annotation_extension=target_is(GeneDB_Spombe:SPAC977.10|GeneDB_Spombe:SPBC409.20c);
+FT                   annotation_extension=has_downstream_target(GeneDB_Spombe:SPAC977.10|GeneDB_Spombe:SPBC409.20c);
 FT                   date=20050510"
 FT   5'UTR           complement(1175866..1175972)
 FT                   /systematic_id="SPBC409.20c"

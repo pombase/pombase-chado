@@ -55,18 +55,6 @@ cvs:
     - name: evidence
     - name: source database
     - name: homology type
-  cvterm_property_type:
-    - name: annotation_extension_relation-occurs_in
-    - name: annotation_extension_relation-dependent_on
-    - name: annotation_extension_relation-localizes
-    - name: annotation_extension_relation-localization_dependent_on
-    - name: annotation_extension_relation-localization_target
-    - name: annotation_extension_relation-protease_inhibitor_of
-    - name: annotation_extension_relation-stabilizes
-    - name: annotation_extension_relation-has_substrate
-    - name: annotation_extension_relation-target_is
-    - name: annotation_extension_relation-transcriptionally_regulates
-    - name: annotation_extension_relation-protease_activator
   cat_act: []
   genome_org: []
   m_f_g: []

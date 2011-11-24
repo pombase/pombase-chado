@@ -209,7 +209,7 @@ method check
     for my $prop ($_->cvtermprops()) {
       warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
     }
-    $_->name() eq 'protein-lysine N-methyltransferase activity [target_is] SPAC977.10 [target_is] SPBC409.20c';
+    $_->name() eq 'protein-lysine N-methyltransferase activity [has_downstream_target] SPAC977.10 [has_downstream_target] SPBC409.20c';
   } @ann_ex_go_terms);
 
   # check for IGI converted to annotation extension
