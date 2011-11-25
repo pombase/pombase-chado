@@ -3,6 +3,8 @@
 # A script to make a Chado db from scratch using GMOD tools.  Must be
 # run in the gmod-schema/chado directory.
 
+export PERL5LIB=lib
+
 DB=`perl -ne 'print "$1" if /CHADO_DB_NAME=(.*)/' $HOME/.gmod_profile`
 HOST=`perl -ne 'print "$1" if /CHADO_DB_HOST=(.*)/' $HOME/.gmod_profile`
 
@@ -28,3 +30,8 @@ go2fmt.pl -p obo_text -w xml /var/pomcur/sources/go_annotation_extension_relatio
 
 (cd ~/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml ~/phenotype_ontology/fypo_edit.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user kmr44 --password kmr44 phenotype_obo_text.xml
 
+echo populate cvtermpath in the background 1>&2
+
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c molecular_function
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c cellular_component
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c biological_process
