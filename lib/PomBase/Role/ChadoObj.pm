@@ -160,7 +160,6 @@ method BUILD
   my $cv_rs = $chado->resultset('Cv::Cv');
 
   $cv_rs->find_or_create({ name => 'feature_cvtermprop_type' });
-  $cv_rs->find_or_create({ name => 'sequence_feature' });
 
   $self->objs()->{feature_relationshipprop_type_cv} =
     $cv_rs->find_or_create({ name => 'feature_relationshipprop_type' });

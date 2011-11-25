@@ -113,15 +113,12 @@ method check
   }
 
   my $seq_feat_cv = $self->get_cv('sequence_feature');
-  my $seq_feat_rs =
-    $chado->resultset('Cv::Cvterm')->search({ cv_id => $seq_feat_cv->cv_id() });
+  assert (!defined $seq_feat_cv);
 
-  should ($seq_feat_rs->count(), 8);
-
-  my $coiled_coil_cvterm = $self->get_cvterm('sequence_feature', 'coiled-coil');
+  my $coiled_coil_cvterm = $self->get_cvterm('sequence', 'coiled_coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 110);
+  should(scalar(@all_feature_cvterm), 103);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
@@ -138,7 +135,7 @@ method check
   should(scalar(@props), 3);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 163);
+  should(scalar(@all_props), 150);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 71);
@@ -200,7 +197,7 @@ method check
   my @ann_ex_go_terms =
     $ann_ex_gene->feature_cvterms()->search_related('cvterm');
 
-  should(scalar(@ann_ex_go_terms), 9);
+  should(scalar(@ann_ex_go_terms), 7);
 
   # check for annotation extension targeting genes
   warn "cvterms for $spbc409_20c_1:\n" if $self->verbose();
