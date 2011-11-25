@@ -12,6 +12,9 @@ dropdb $DB; createdb $DB || exit 1
 
 rm --verbose tmp/*/*$DB
 
+cd ~/extern/svn/gmod-schema/chado
+
+perl Makefile.PL
 make
 make load_schema
 make prepdb
