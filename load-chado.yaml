@@ -7,6 +7,7 @@ cvs:
   PomBase feature property types:
     - comment
     - symbol
+    - ena_id
   PomBase annotation extension terms: []
   PomBase gene products: []
   PomBase family or domain: []
@@ -182,3 +183,11 @@ evidence_types:
     name: Unknown
 
 suppressible_evidence_codes:
+
+contig_ena_ids:
+  chromosome_1: CU329670.1
+  chromosome_2: CU329671.1
+  chromosome_3: CU329672.1
+  mating_type_region: FP565355
+  MISPCG: X54421.1
+  AB325691: AB325691

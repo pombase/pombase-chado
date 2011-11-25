@@ -46,6 +46,7 @@ use Bio::SeqIO;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::FeatureStorer';
 
 has verbose => (is => 'ro', isa => 'Bool');
 has organism => (is => 'ro',
@@ -86,6 +87,9 @@ method process_file($file)
 
   my $chromosome =
     $chado->resultset('Sequence::Feature')->create({%create_args});
+
+  $self->store_featureprop($chromosome, 'ena_id',
+                           $config->{contig_ena_ids}->{$display_id});
 
   my $anno_collection = $seq_obj->annotation;
 
