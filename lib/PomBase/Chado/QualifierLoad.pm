@@ -338,6 +338,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
 method maybe_move_igi($qualifiers, $sub_qual_map) {
   if ($sub_qual_map->{evidence} && $sub_qual_map->{evidence} eq 'IGI' &&
+      defined $qualifiers && @{$qualifiers} > 0 &&
       $qualifiers->[0] eq 'localization_dependency') {
     if (exists $sub_qual_map->{with}) {
       my $with = delete $sub_qual_map->{with};
