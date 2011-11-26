@@ -7,6 +7,8 @@ export PERL5LIB=lib
 
 DB=`perl -ne 'print "$1" if /CHADO_DB_NAME=(.*)/' $HOME/.gmod_profile`
 HOST=`perl -ne 'print "$1" if /CHADO_DB_HOST=(.*)/' $HOME/.gmod_profile`
+USER=kmr44
+PASSWORD=kmr44
 
 echo building database: $DB on $HOST
 
@@ -24,14 +26,14 @@ make ontologies
 
 export DBIC_TRACE=1
 
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user kmr44 --password kmr44 mod_obo_text.xml
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mod_obo_text.xml
 
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user kmr44 --password kmr44 anex_rel_obo_text.xml
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD anex_rel_obo_text.xml
 
-(cd ~/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml ~/phenotype_ontology/fypo_edit.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user kmr44 --password kmr44 phenotype_obo_text.xml
+(cd ~/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml ~/phenotype_ontology/fypo_edit.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_obo_text.xml
 
-echo populate cvtermpath in the background 1>&2
+echo populate cvtermpath 1>&2
 
-./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c molecular_function
-./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c cellular_component
-./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u kmr44 -p $PASSWORD -c biological_process
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c molecular_function
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c cellular_component
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c biological_process
