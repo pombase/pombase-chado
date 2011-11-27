@@ -226,8 +226,8 @@ method process_one_annotation($featurecvterm, $qualifiers,
             die "can't find term with ID: $term_id\n";
           }
         } else {
-          if ($identifier =~ /^GeneDB_Spombe:([\w\d\.\-]+)/i) {
-            $identifier = $1;
+          if ($identifier =~ /^(PomBase|GeneDB_?Spombe):([\w\d\.\-]+)/i) {
+            $identifier = $2;
           } else {
             if ($identifier =~ /^(Pfam:PF\d+)$/) {
               $identifier = $1;
