@@ -61,7 +61,7 @@ func get_genes($species) {
     }
     when ('Saccharomyces cerevisiae') {
       $service_uri =
-        'http://yeastmine-test.yeastgenome.org/yeastmine-dev/service';
+        'http://yeastmine.yeastgenome.org/yeastmine/service';
     }
     default {
       croak "unknown species: $species";
