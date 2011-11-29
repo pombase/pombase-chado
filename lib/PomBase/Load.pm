@@ -236,8 +236,8 @@ func init_objects($chado, $config) {
   _load_cv_defs($chado, $config);
   _load_dbs($chado, $config);
 
-  _load_genes($chado, $human, $config->{test_mode});
   _load_genes($chado, $scerevisiae, $config->{test_mode});
+  _load_genes($chado, $human, $config->{test_mode});
 
   return $pombe_org;
 }
