@@ -32,6 +32,8 @@ go2fmt.pl -p obo_text -w xml /var/pomcur/sources/PSI-MOD.obo | go-apply-xslt obo
 
 go2fmt.pl -p obo_text -w xml /var/pomcur/sources/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD anex_rel_obo_text.xml
 
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pro_small.obo | go-apply-xslt oboxml_to_chadoxml - > pro_small_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pro_small_obo_text.xml
+
 echo populate cvtermpath 1>&2
 
 ./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c molecular_function
