@@ -280,17 +280,6 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   if ($self->is_go_cv_name($cv_name)) {
     $self->maybe_move_igi($qualifiers, $sub_qual_map);
 
-    my $evidence_code = delete $sub_qual_map->{evidence};
-
-    my $evidence;
-
-    if (defined $evidence_code) {
-      $evidence = $self->objs()->{go_evidence_codes}->{$evidence_code};
-    } else {
-      warn "no evidence for: $embl_term_name in ", $pombe_feature->uniquename(), "\n";
-      $evidence = "NO EVIDENCE";
-    }
-
     if (defined $sub_qual_map->{with}) {
       my @withs = split /\|/, delete $sub_qual_map->{with};
       for (my $i = 0; $i < @withs; $i++) {
@@ -305,11 +294,20 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
         $self->add_feature_cvtermprop($featurecvterm, from => $from, $i);
       }
     }
-    $self->add_feature_cvtermprop($featurecvterm,
-                                  evidence => $evidence);
   }
 
   $self->add_feature_cvtermprop($featurecvterm, qualifier => [@qualifiers]);
+
+  my $evidence_code = delete $sub_qual_map->{evidence};
+  my $evidence;
+
+  if (defined $evidence_code) {
+    $evidence = $self->objs()->{go_evidence_codes}->{$evidence_code};
+  } else {
+    warn "no evidence for: $embl_term_name in ", $pombe_feature->uniquename(), "\n";
+    $evidence = "NO EVIDENCE";
+  }
+  $self->add_feature_cvtermprop($featurecvterm, evidence => $evidence);
 
   if (defined $sub_qual_map->{residue}) {
     $self->add_feature_cvtermprop($featurecvterm,
