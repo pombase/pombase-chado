@@ -503,7 +503,9 @@ method process_targets($chado_object, $term, $sub_qual_map)
   warn "    process_targets()\n" if $self->verbose();
   my $chado_object_type = $chado_object->type()->name();
 
-  return 1 unless $chado_object_type eq 'gene' or $chado_object_type eq 'pseudogene';
+  die "process_targets() called - exiting:";
+
+  return 0 unless $chado_object_type eq 'gene' or $chado_object_type eq 'pseudogene';
 
   if ($term =~ /^target (is|of) (\S+)\s*(.*)$/) {
     my $direction = $1;
