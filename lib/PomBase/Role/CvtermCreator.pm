@@ -88,6 +88,8 @@ method find_or_create_cvterm($cv, $term_name) {
 
     my $db_name = $self->config->{db_name_for_cv} // $cv->name();
 
+    die if $db_name eq 'warning';
+
     my $db = $self->get_db($db_name);
 
     if (!defined $db) {
