@@ -118,7 +118,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence', 'coiled_coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 103);
+  should(scalar(@all_feature_cvterm), 114);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
@@ -130,12 +130,12 @@ method check
   my @props = sort map { $_->value(); } $feature_cvterm->feature_cvtermprops();
 
   should ($props[0], '19700101');
-  should ($props[1], 'predicted');
-  should ($props[2], 'region');
-  should(scalar(@props), 3);
+  should ($props[1], 'NO EVIDENCE');
+  should ($props[2], 'predicted');
+  should(scalar(@props), 4);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 150);
+  should(scalar(@all_props), 236);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 71);
@@ -197,7 +197,7 @@ method check
   my @ann_ex_go_terms =
     $ann_ex_gene->feature_cvterms()->search_related('cvterm');
 
-  should(scalar(@ann_ex_go_terms), 7);
+  should(scalar(@ann_ex_go_terms), 8);
 
   # check for annotation extension targeting genes
   warn "cvterms for $spbc409_20c_1:\n" if $self->verbose();

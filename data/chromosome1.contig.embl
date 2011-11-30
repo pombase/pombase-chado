@@ -58,10 +58,6 @@ FT                   /GO="aspect=P; term=modulation of growth or development
 FT                   of symbiont during interaction with host;
 FT                   GOid=GO:0044144; evidence=TAS; db_xref=PMID:8643524;
 FT                   date=20080328"
-FT                   /controlled_curation="term=target is meu1;
-FT                   db_xref=PMID:16096059; date=19700101"
-FT                   /controlled_curation="term=target of Psh3;
-FT                   db_xref=PMID:11702950; date=20071120"
 FT                   /colour=13
 FT                   /fasta_file="fasta/chromosome1.contig.seq.00016.out"
 FT                   /primary_name="sod2"
@@ -141,8 +137,6 @@ FT                   /controlled_curation="term=species distribution, conserved
 FT                   in Fungi only; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
 FT                   in Eukaryotes; date=20080202"
-FT                   /controlled_curation="term=target is sod2;
-FT                   db_xref=PMID:16096059; date=19700101"
 FT                   /GO="aspect=F; term=protein binding;
 FT                   annotation_extension=dependent_on(Pfam:PF00069);
 FT                   GOid=GO:0005515; evidence=IPI; db_xref=PMID:12475973;
@@ -265,8 +259,6 @@ FT                   /systematic_id="SPAC977.13c"
 FT                   /controlled_curation="term=WARNING: frameshifted;
 FT                   date=20091223"
 FT                   /note="4 frameshifts"
-FT                   /controlled_curation="term=target of meu1;
-FT                   db_xref=PMID:16096059; date=19700101"
 FT   repeat_region   8497..8547
 FT                   /note="(ttattttaagttttgtc)3"
 FT   CDS             join(7100..7150,7200..7250)
@@ -301,12 +293,6 @@ FT                   /controlled_curation="term=gene expression, expressed
 FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
 FT                   date=20100103"
 FT                   /shared_id="SPAC1556.06"
-FT                   /controlled_curation="term=target is SPAC977.13c;
-FT                   db_xref=PMID:16096059; date=19700101"
-FT                   /controlled_curation="term=target is dummy1;
-FT                   db_xref=PMID:16096059; date=19700101"
-FT                   /controlled_curation="term=target of dummy2;
-FT                   db_xref=PMID:16096059; date=19700101"
 FT                   /controlled_curation="term=DNA binding specificity, binds
 FT                   d(GT)n; db_xref=PMID:16043634; date=19700101"
 FT                   /controlled_curation="term=DNA binding specificity, binds
@@ -440,8 +426,6 @@ FT                   complemented by human moe1; db_xref=PMID:9892665;
 FT                   date=20110211"
 FT                   /gene="moe1"
 FT                   /gene="SPAC637.07"
-FT                   /controlled_curation="term=target of Psh3;
-FT                   db_xref=PMID:11702950; date=20071120"
 FT   CDS             complement(8000..8200)
 FT                   /GO="aspect=P; term=copper ion homeostasis;
 FT                   GOid=GO:0006878; evidence=ISS; db_xref=GOC:unpublished;

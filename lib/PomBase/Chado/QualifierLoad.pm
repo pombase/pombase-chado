@@ -496,46 +496,6 @@ method process_paralog($chado_object, $term, $sub_qual_map) {
   }
 }
 
-method process_targets($chado_object, $term, $sub_qual_map)
-{
-  warn "    process_targets()\n" if $self->verbose();
-  my $chado_object_type = $chado_object->type()->name();
-
-  return 0 unless $chado_object_type eq 'gene' or $chado_object_type eq 'pseudogene';
-
-  if ($term =~ /^target (is|of) (\S+)\s*(.*)$/) {
-    die "process_targets() called - exiting:";
-
-    my $direction = $1;
-    my $gene_name = $2;
-
-    my $junk = $3;
-
-    if (length $junk > 0) {
-      warn qq(in "$term", "$2 $3" is not a gene\n);
-      return 0;
-    }
-
-    my $organism = $self->find_organism_by_common_name('pombe');
-
-    if ($direction eq 'of') {
-      push @{$self->config()->{target_quals}->{of}->{$chado_object->uniquename()}}, {
-        name => $gene_name,
-        feature => $chado_object,
-      };
-
-    } else {
-      push @{$self->config()->{target_quals}->{is}->{$chado_object->uniquename()}}, {
-        name => $gene_name,
-        feature => $chado_object,
-      };
-    }
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
 method process_warning($chado_object, $term, $sub_qual_map)
 {
   my $chado_object_type = $chado_object->type()->name();
@@ -659,7 +619,6 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier,
       return ();
     }
   } else {
-    if (!$self->process_targets($chado_object, $term, \%qual_map)) {
       if (!$self->process_ortholog($chado_object, $term, \%qual_map)) {
         if (!$self->process_paralog($chado_object, $term, \%qual_map)) {
           if (!$self->process_warning($chado_object, $term, \%qual_map)) {
@@ -670,7 +629,6 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier,
           }
         }
       }
-    }
   }
 
   $self->check_unused_quals($qualifier, %qual_map);
