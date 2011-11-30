@@ -149,7 +149,6 @@ method BUILD
     $dbs_objects{$cv_name} = $pombase_db;
   }
 
-  $dbs_objects{phenotype} = $db_rs->find_or_create({ name => 'SPO' });
   $self->objs()->{pombase_db} = $pombase_db;
 
   $dbs_objects{feature_cvtermprop_type} = $pombase_db;
