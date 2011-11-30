@@ -50,4 +50,13 @@ method store_cvterm_rel($subject, $object, $rel)
              });
 }
 
+method get_cvterm_rel($subject, $object, $rel)
+{
+  return $self->chado()->resultset('Cv::CvtermRelationship')
+    ->search({ subject_id => $subject->cvterm_id(),
+               object_id => $object->cvterm_id(),
+               type_id => $rel->cvterm_id(),
+             });
+}
+
 1;

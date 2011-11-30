@@ -241,6 +241,16 @@ FT                   in Vertebrates; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
 FT                   in Fungi; date=20081110"
 FT                   /gene="SPAC977.12"
+FT                   /GO="aspect=F; term=nucleosomal histone binding;
+FT                   GOid=GO:0031493;
+FT                   annotation_extension=has_substrate(PR:000027604|PR:000027591|PR:000027604);
+FT                   evidence=IPI; db_xref=PMID:11242054;
+FT                   with=GeneDB_Spombe:SPBC1105.11c; date=20041110"
+FT                   /GO="aspect=F; term=nucleosomal histone binding;
+FT                   GOid=GO:0031493;
+FT                   annotation_extension=has_substrate(PR:000027604|PR:000027591);
+FT                   evidence=IPI; db_xref=PMID:11242054;
+FT                   with=GeneDB_Spombe:SPBC1105.11c; date=20041110"
 FT                   /GO="aspect=C; term=chromosome, pericentric region;
 FT                   annotation_extension=requires_feature(SO:0001796);
 FT                   GOid=GO:0000775; evidence=IDA; db_xref=PMID:17627824;

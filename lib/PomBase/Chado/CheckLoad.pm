@@ -118,7 +118,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence', 'coiled_coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 114);
+  should(scalar(@all_feature_cvterm), 116);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
@@ -135,7 +135,7 @@ method check
   should(scalar(@props), 4);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 236);
+  should(scalar(@all_props), 242);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 71);
