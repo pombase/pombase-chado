@@ -108,3 +108,14 @@ SELECT t.name, cv.name, db.name, x.accession
     };
   };
 }
+
+method format_result($data)
+{
+  my $id = $data->[2] . ':' . $data->[3];
+  my $name = $data->[0];
+  my $ret_val = <<"EOF";
+[Term]
+id: $id
+name: $name
+EOF
+}

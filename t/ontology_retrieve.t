@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More tests => 4;
 
 #use File::Temp qw(tempfile);
 #use File::Compare;
@@ -25,5 +25,14 @@ while (my $data = $results->next()) {
     is($data->[1], 'molecular_function');
     is($data->[2], 'GO');
     is($data->[3], '0003777');
+
+    my $formatted_results = $retriever->format_result($data);
+
+    my $expected = "[Term]
+id: GO:0003777
+name: microtubule motor activity
+";
+
+    is($formatted_results, $expected);
   }
 }
