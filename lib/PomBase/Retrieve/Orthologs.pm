@@ -106,4 +106,9 @@ GROUP BY o_un
   };
 }
 
+method format_result($res)
+{
+  return join "\t", @$res;
+}
+
 1;

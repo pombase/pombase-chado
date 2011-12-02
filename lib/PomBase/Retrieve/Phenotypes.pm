@@ -62,3 +62,8 @@ method retrieve() {
     };
   };
 }
+
+method format_result($res)
+{
+  return join "\t", @$res;
+}

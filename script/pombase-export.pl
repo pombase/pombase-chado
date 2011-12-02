@@ -16,8 +16,14 @@ if (@ARGV != 6) {
 );
 }
 
-my $retrieve_type = shift;
 my $config_file = shift;
+my $retrieve_type = shift;
+
+my @options = ();
+while ($ARGV[0] =~ /^-/) {
+  push @options, shift;
+}
+
 my $host = shift;
 my $database = shift;
 my $username = shift;
@@ -39,14 +45,15 @@ if (defined $retrieve_module) {
   my $retriever =
     eval qq{
 require $retrieve_module;
-$retrieve_module->new(chado => \$chado, config => \$config);
+$retrieve_module->new(chado => \$chado, config => \$config,
+                      options => [\@options]);
 };
   die "$@" if $@;
 
   my $results = $retriever->retrieve();
 
-  while (my $row = $results->next()) {
-    say join "\t", @$row;
+  while (my $data = $results->next()) {
+    print $retriever->format_result($data);
   }
 } else {
   die "unknown type to retrieve: $retrieve_type\n";
