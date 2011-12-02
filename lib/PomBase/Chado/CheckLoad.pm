@@ -133,12 +133,12 @@ method check
   my @props = sort map { $_->value(); } $feature_cvterm->feature_cvtermprops();
 
   should ($props[0], '19700101');
-  should ($props[1], 'NO EVIDENCE');
-  should ($props[2], 'predicted');
-  should(scalar(@props), 4);
+  should ($props[1], 'predicted');
+  should ($props[2], 'region');
+  should(scalar(@props), 3);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 242);
+  should(scalar(@all_props), 168);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 71);

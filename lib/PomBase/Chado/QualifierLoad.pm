@@ -299,15 +299,23 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   $self->add_feature_cvtermprop($featurecvterm, qualifier => [@qualifiers]);
 
   my $evidence_code = delete $sub_qual_map->{evidence};
-  my $evidence;
+  my $evidence = undef;
 
   if (defined $evidence_code) {
     $evidence = $self->objs()->{go_evidence_codes}->{$evidence_code};
+    if (!grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
+                                  'cellular_component')) {
+      warn "found evidence for $embl_term_name in $cv_name\n";
+    }
   } else {
-    warn "no evidence for: $embl_term_name in ", $pombe_feature->uniquename(), "\n";
-    $evidence = "NO EVIDENCE";
+    if (grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
+                                 'cellular_component')) {
+      warn "no evidence for $cv_name annotation: $embl_term_name in ", $pombe_feature->uniquename(), "\n";
+    }
   }
-  $self->add_feature_cvtermprop($featurecvterm, evidence => $evidence);
+  if (defined $evidence_code) {
+    $self->add_feature_cvtermprop($featurecvterm, evidence => $evidence);
+  }
 
   if (defined $sub_qual_map->{residue}) {
     $self->add_feature_cvtermprop($featurecvterm,
