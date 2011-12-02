@@ -79,6 +79,9 @@ method check
   my $feature_synonym_rs = $chado->resultset('Sequence::FeatureSynonym');
   should ($feature_synonym_rs->count(), 2);
 
+  my $db_res = $chado->resultset('General::Db');
+  assert($db_res->search({ name => 'warning' })->count() == 0);
+
   my $pombe = $chado->resultset('Organism::Organism')
     ->find({ species => 'pombe' });
 

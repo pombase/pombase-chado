@@ -86,7 +86,7 @@ method find_or_create_cvterm($cv, $term_name) {
   } else {
     warn "    failed to find: $term_name in ", $cv->name(), "\n" if $self->verbose();
 
-    my $db_name = $self->config->{db_name_for_cv} // $cv->name();
+    my $db_name = $self->config->{db_name_for_cv};
 
     die if $db_name eq 'warning';
 
