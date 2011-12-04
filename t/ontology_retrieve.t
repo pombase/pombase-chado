@@ -31,6 +31,7 @@ while (my $data = $results->next()) {
     my $expected = "[Term]
 id: GO:0003777
 name: microtubule motor activity
+namespace: molecular_function
 ";
 
     is($formatted_results, $expected);
