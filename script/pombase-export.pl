@@ -7,9 +7,10 @@ use YAML qw(LoadFile);
 use lib qw(lib);
 
 if (@ARGV != 6) {
-  die qq($0: needs fives arguments:
-  retrieve_type - currently only "phenotypes"
+  die qq($0: needs six arguments:
   config_file   - the YAML format configuration file name
+  retrieve_type - currently only "phenotypes"
+  host          - the machine hosting the database
   database_name - the Chado database name
   username      - the database user name
   password      - the database password
