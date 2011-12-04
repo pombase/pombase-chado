@@ -41,4 +41,9 @@ use Moose::Role;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 
+sub header
+{
+  return '';
+}
+
 1;

@@ -48,7 +48,8 @@ with 'PomBase::Role::CvQuery';
 
 has options => (is => 'ro', isa => 'ArrayRef');
 
-method retrieve() {
+method BUILD
+{
   my $chado = $self->chado();
 
   my $dbh = $self->chado()->storage()->dbh();
@@ -59,7 +60,9 @@ method retrieve() {
   my @opt_config = ('constraint-type=s' => \$constraint_type,
                     'constraint-value=s' => \$constraint_value);
 
-  if (!GetOptionsFromArray($self->options(), @opt_config)) {
+  my @options_copy = @{$self->options()};
+
+  if (!GetOptionsFromArray(\@options_copy, @opt_config)) {
     croak "option parsing failed";
   }
 
@@ -83,6 +86,17 @@ method retrieve() {
     die "no --constraint-type argument\n";
   }
 
+  $self->{_name_constraint} = $name_constraint;
+  $self->{_constraint_value} = $constraint_value;
+}
+
+method retrieve() {
+  my $chado = $self->chado();
+
+  my $dbh = $self->chado()->storage()->dbh();
+
+  my $name_constraint =  $self->{_name_constraint};
+  my $constraint_value =  $self->{_constraint_value};
 
   my $query = "
 SELECT t.name, cv.name, db.name, x.accession
@@ -109,6 +123,15 @@ SELECT t.name, cv.name, db.name, x.accession
   };
 }
 
+method header
+{
+  return <<"EOF";
+format-version: 1.2
+ontology: pombase
+default-namespace: pombase
+EOF
+}
+
 method format_result($data)
 {
   my $id = $data->[2] . ':' . $data->[3];
@@ -119,5 +142,6 @@ method format_result($data)
 id: $id
 name: $name
 namespace: $namespace
+
 EOF
 }

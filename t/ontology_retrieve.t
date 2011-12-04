@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 #use File::Temp qw(tempfile);
 #use File::Compare;
@@ -20,6 +20,13 @@ my $retriever = PomBase::Retrieve::Ontology->new(chado => $chado,
 
 my $results = $retriever->retrieve();
 
+my $expected_term = "[Term]
+id: GO:0003777
+name: microtubule motor activity
+namespace: molecular_function
+
+";
+
 while (my $data = $results->next()) {
   if ($data->[0] eq 'microtubule motor activity') {
     is($data->[1], 'molecular_function');
@@ -28,12 +35,13 @@ while (my $data = $results->next()) {
 
     my $formatted_results = $retriever->format_result($data);
 
-    my $expected = "[Term]
-id: GO:0003777
-name: microtubule motor activity
-namespace: molecular_function
-";
-
-    is($formatted_results, $expected);
+    is($formatted_results, $expected_term);
   }
 }
+
+my $expected_header = 'format-version: 1.2
+ontology: pombase
+default-namespace: pombase
+';
+
+is($retriever->header(), $expected_header);
