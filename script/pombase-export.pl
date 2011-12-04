@@ -6,7 +6,8 @@ use YAML qw(LoadFile);
 
 use lib qw(lib);
 
-if (@ARGV != 6) {
+sub usage
+{
   die qq($0: needs six arguments:
   config_file   - the YAML format configuration file name
   retrieve_type - currently only "phenotypes"
@@ -15,6 +16,10 @@ if (@ARGV != 6) {
   username      - the database user name
   password      - the database password
 );
+}
+
+if (@ARGV < 6) {
+  usage();
 }
 
 my $config_file = shift;
