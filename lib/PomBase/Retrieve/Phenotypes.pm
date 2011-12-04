@@ -63,6 +63,11 @@ method retrieve() {
   };
 }
 
+method header
+{
+  return '';
+}
+
 method format_result($res)
 {
   return join "\t", @$res;

@@ -123,14 +123,14 @@ SELECT t.name, cv.name, db.name, x.accession
   };
 }
 
-method header
+override header => sub
 {
   return <<"EOF";
 format-version: 1.2
 ontology: pombase
 default-namespace: pombase
 EOF
-}
+};
 
 method format_result($data)
 {

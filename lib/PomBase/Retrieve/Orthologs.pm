@@ -106,6 +106,11 @@ GROUP BY o_un
   };
 }
 
+method header
+{
+  return '';
+}
+
 method format_result($res)
 {
   return join "\t", @$res;
