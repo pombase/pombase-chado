@@ -2,9 +2,6 @@ use strict;
 use warnings;
 use Test::More tests => 5;
 
-#use File::Temp qw(tempfile);
-#use File::Compare;
-
 use PomBase::TestUtil;
 use PomBase::Retrieve::Ontology;
 
