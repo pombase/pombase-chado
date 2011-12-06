@@ -67,9 +67,16 @@ method _load_cv($chado, $cv_conf)
   }
 }
 
+method _load_feature_cvterms($chado, $feature_cvterm_conf)
+{
+  for my $row (@$feature_cvterm_conf) {
+    $chado->resultset("Sequence::FeatureCvterm")->create($row);
+  }
+}
+
 method _load_cv_db($chado)
 {
-  my $test_data = $self->test_config()->{data};
+my $test_data = $self->test_config()->{data};
 
   my $cv_conf = $test_data->{cv};
   $self->_load_cv($chado, $cv_conf);
@@ -124,6 +131,8 @@ method _load_test_features($chado)
       type_id => $mrna_type->cvterm_id(),
     });
   }
+
+  $self->_load_feature_cvterms($chado, $test_data->{feature_cvterm});
 }
 
 method BUILD

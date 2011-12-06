@@ -107,10 +107,12 @@ data:
         genus: Schizosacchaomyces
         species: pombe
   feature_cvterm:
-    feature:
-      uniquename: SPBC2F12.13
-    cvterm:
-      name: spindle pole body 
+    - feature:
+        uniquename: SPBC2F12.13
+      cvterm:
+        name: spindle pole body
+      pub:
+        uniquename: PMID:11739790
 test_organism:
   genus: Schizosacchaomyces
   species: pombe
