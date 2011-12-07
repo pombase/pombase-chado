@@ -10,7 +10,7 @@ sub usage
 {
   die qq($0: needs six arguments:
   config_file   - the YAML format configuration file name
-  retrieve_type - currently only "phenotypes"
+  retrieve_type - eg. "phenotypes", "orthologs", "ontology"
   host          - the machine hosting the database
   database_name - the Chado database name
   username      - the database user name
