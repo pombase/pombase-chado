@@ -40,10 +40,20 @@ use Moose;
 
 my %new_cvterm_ids = ();
 
+with 'PomBase::Role::ConfigUser';
+with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::DbQuery';
+
 # return a new ID in the given db
 method get_dbxref_id($db_name) {
   if (!exists $new_cvterm_ids{$db_name}) {
-    $new_cvterm_ids{$db_name} = 1;
+    my $db = $self->chado()->resultset('General::Db')->find({ name => $db_name });
+    my $rs = $self->chado()->resultset('General::Dbxref')->search({ db_id => $db->db_id(),
+                                                                  accession => { like => '0______' }},
+                                                                  { order_by => { -desc => 'accession' }});
+    my $largest = $rs->first();
+    my $new_num = $largest->accession() + 1;
+    $new_cvterm_ids{$db_name} = $new_num;
   }
 
   return $new_cvterm_ids{$db_name}++;
