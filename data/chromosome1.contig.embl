@@ -1,0 +1,594 @@
+ID   chromosome_1    standard; DNA; FUN;  8613BP.
+XX
+AC   chromosome_1;
+XX
+FH   Key             Location/Qualifiers
+FH
+FT   tRNA            5..50
+FT                   /gene="SPBTRNAGLY.06"
+FT                   /systematic_id="SPBTRNAGLY.06"
+FT                   /product="tRNA Lysine"
+FT                   /GO="aspect=C; term=cytoplasm; GOid=GO:0005737;
+FT                   evidence=RCA; db_xref=GOC:unpublished; date=20090711"
+FT                   /GO="aspect=P; term=translational elongation;
+FT                   GOid=GO:0006414; evidence=RCA; db_xref=GOC:unpublished;
+FT                   date=20090711"
+FT                   /GO="aspect=F; term=CTT codon-amino acid adaptor activity;
+FT                   GOid=GO:0033417; evidence=RCA; db_xref=GOC:unpublished;
+FT                   date=20090711"
+FT   misc_RNA        219..644
+FT                   /db_xref="PMID:12597277"
+FT                   /db_xref="EMBL:AB084831"
+FT                   /gene="prl19"
+FT                   /gene="SPNCRNA.19"
+FT                   /primary_name="prl19"
+FT                   /product="non-coding RNA (predicted)"
+FT                   /systematic_id="SPNCRNA.19"
+FT                   /controlled_curation="term=; qualifier=predicted;
+FT                   db_xref=PMID:12597277; date=20050412"
+FT                   /controlled_curation="term=sequence feature,
+FT                   poly(A)-bearing RNA; cv=sequence_feature;
+FT                   qualifier=predicted; db_xref=PMID:12597277; date=20050412"
+FT                   /controlled_curation="term=WARNING: no detectable long
+FT                   open reading frame; qualifier=predicted;
+FT                   db_xref=PMID:12597277; date=20050412"
+FT   intron          1501..1600
+FT                   /systematic_id="SPAC977.10"
+FT                   /note="test intron"
+FT                   /primary_name="sod2"
+FT   CDS             join(1178..1301,1379..1500,1601..2661)
+FT                   /controlled_curation="term=related to S. pombe
+FT                   psh3; date=20090811"
+FT                   /controlled_curation="term=similar to S. pombe
+FT                   SPAC637.07 and SPAC977.11; date=19700101"
+FT                   /GO="aspect=C; term=nuclear envelope-endoplasmic reticulum
+FT                   continuum; GOid=GO:0042175; evidence=IDA;
+FT                   db_xref=PMID:16091782; date=20050811"
+FT                   /GO="aspect=C; term=plasma membrane; GOid=GO:0005886;
+FT                   evidence=IDA; db_xref=PMID:16091782; date=20050811"
+FT                   /GO="aspect=P; term=cellular sodium ion homeostasis;
+FT                   GOid=GO:0006814; evidence=IGI; db_xref=PMID:15870269;
+FT                   with=GeneDB_Spombe:SPAC24B11.06c; date=20050922"
+FT                   /GO="aspect=P; term=sodium gluon transport; GOid=GO:0006814;
+FT                   evidence=TAS; db_xref=PMID:8643524; date=20050811"
+FT                   /GO="aspect=F; term=sodium:hydrogen antiporter activity;
+FT                   GOid=GO:0015385; evidence=TAS; db_xref=PMID:8643524;
+FT                   date=20080328"
+FT                   /GO="aspect=P; term=modulation of growth or development
+FT                   of symbiont during interaction with host;
+FT                   GOid=GO:0044144; evidence=TAS; db_xref=PMID:8643524;
+FT                   date=20080328"
+FT                   /colour=13
+FT                   /fasta_file="fasta/chromosome1.contig.seq.00016.out"
+FT                   /primary_name="sod2"
+FT                   /product="plasma membrane sodium ion/proton antiporter
+FT                   Sod2"
+FT                   /systematic_id="SPAC977.10"
+FT                   /controlled_curation="term=modification, phosphorylated;
+FT                   db_xref=PMID:19547744; cv=pt_mod; date=20100606"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
+FT                   date=20100406"
+FT                   /controlled_curation="term=orthologous to S. cerevisiae
+FT                   ylr138W; date=19700101"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   cv=phenotype; db_xref=PMID:1314171; date=20080227"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Eukaryotes; date=20081110; cv=foobar"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Bacteria; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Metazoa; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Vertebrates; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Fungi; date=20081110"
+FT                   /controlled_curation="term=sequence feature, coiled-coil;
+FT                   qualifier=predicted|region; date=19700101"
+FT                   /db_xref="SPD:50/50G04"
+FT                   /gene="sod2"
+FT                   /gene="test1"
+FT                   /synonym="test1"
+FT                   /gene="SPAC977.10"
+FT   3'UTR           complement(1174480..1174828)
+FT                   /systematic_id="SPBC409.20c"
+FT                   /db_xref="PMID:21511999"
+FT   CDS             complement(join(1174829..1175365,1175755..1175865))
+FT                   /GO="aspect=C; term=endoplasmic reticulum;
+FT                   GOid=GO:0005783; evidence=IDA; db_xref=PMID:11069779;
+FT                   date=20050322"
+FT                   /GO="aspect=F; term=mRNA binding 3'-UTR binding;
+FT                   GOid=GO:0003730; evidence=ISS; db_xref=GOC:unpublished;
+FT                   with=SGD:S000002371; date=20050322"
+FT                   /GO="aspect=P; term=ER to Golgi vesicle-mediated
+FT                   transport; GOid=GO:0006888; evidence=ISS;
+FT                   db_xref=GOC:unpublished; with=SGD:S000002371; date=20050322"
+FT                   /GO="aspect=P; term=vesicle-mediated transport;
+FT                   GOid=GO:0016192; evidence=IMP; db_xref=PMID:11069779;
+FT                   date=20050322"
+FT                   /GO="aspect=P; term=cellular protein localization;
+FT                   qualifier=localization_dependency; GOid=GO:0034613;
+FT                   evidence=IGI; db_xref=PMID:15620657;
+FT                   with=GeneDB_Spombe:SPAC167.03c; date=20050923"
+FT                   /colour=2
+FT                   /fasta_file="fasta/chromosome2.contig.seq.02728.out"
+FT                   /primary_name="psh3"
+FT                   /product="ER chaperone SHR3 homologue Psh3"
+FT                   /db_xref="SPD:15/15G01"
+FT                   /gene="psh3"
+FT                   /gene="SPBC409.20c"
+FT                   /systematic_id="SPBC409.20c"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
+FT                   date=20100406"
+FT                   /controlled_curation="term=protein sequence feature,
+FT                   N-terminal signal sequence; qualifier=predicted;
+FT                   cv=sequence_feature; date=19700101"
+FT                   /controlled_curation="term=protein sequence feature,
+FT                   transmembrane helices; cv=sequence_feature; date=19700101"
+FT                   /controlled_curation="term=orthologous to S. cerevisiae
+FT                   YDL212W (N-term); date=19700101"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Fungi; date=20081110"
+FT                   /controlled_curation="term=species distribution,
+FT                   predominantly uniformly single copy (one to one);
+FT                   date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Fungi only; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Eukaryotes; date=20080202"
+FT                   /GO="aspect=F; term=protein binding;
+FT                   annotation_extension=dependent_on(Pfam:PF00069);
+FT                   GOid=GO:0005515; evidence=IPI; db_xref=PMID:12475973;
+FT                   with=GeneDB_Spombe:SPBC32F12.06; date=20041111"
+FT                   /GO="aspect=F; term=protein-lysine N-methyltransferase
+FT                   activity; GOid=GO:0016279; evidence=IMP;
+FT                   db_xref=PMID:18292091;
+FT                   annotation_extension=has_downstream_target(GeneDB_Spombe:SPAC977.10|GeneDB_Spombe:SPBC409.20c);
+FT                   date=20050510"
+FT   5'UTR           complement(1175866..1175972)
+FT                   /systematic_id="SPBC409.20c"
+FT                   /db_xref="PMID:21511999"
+FT   misc_feature    1302..1307
+FT                   /colour=6
+FT                   /SO="SO:0001005"
+FT                   /note="gtacgt, splice donor sequence"
+FT   misc_feature    1362..1378
+FT                   /colour=6
+FT                   /note="ctaatactagtgtgtag, splice branch and acceptor"
+FT   3'UTR           2662..2919
+FT                   /note="mRNA from AU010734"
+FT                   /systematic_id="SPAC977.10"
+FT                   /db_xref="SPD:50/50G04"
+FT                   /gene="sod2"
+FT                   /gene="SPAC977.10"
+FT   LTR             3560..3915
+FT                   /note="Tf1-type LTR"
+FT   5'UTR           join(4120..4234,4300..4334)
+FT                   /note="mRNA from AU013094"
+FT                   /systematic_id="SPAC977.11"
+FT                   /gene="SPAC977.11"
+FT   repeat_region   4325..6975
+FT                   /note="duplicated in pB8B6"
+FT   CDS             4335..5270
+FT                   /colour=10
+FT                   /fasta_file="fasta/chromosome1.contig.seq.00017.out"
+FT                   /product="CRCB domain protein"
+FT                   /systematic_id="SPAC977.11"
+FT                   /db_xref="SPD:41/41G12"
+FT                   /GO="aspect=P; term=cell cycle checkpoint;
+FT                   qualifier=required;
+FT                   annotation_extension=during(GO:0000084); GOid=GO:0000075;
+FT                   evidence=IMP; db_xref=PMID:12597774; date=20040923"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
+FT                   date=20100406"
+FT                   /controlled_curation="term=experimental tools, selectable
+FT                   marker; db_xref=PMID:17622533; cv=ex_tools; date=20070716"
+FT                   /controlled_curation="term=genome organization, telomeric
+FT                   duplication;  cv=genome_org; date=19700101"
+FT                   /controlled_curation="term=orthologous to S. cerevisiae
+FT                   YAL001C and Gene1 (C-term); date=19700101"
+FT                   /controlled_curation="term=sequence feature, transmembrane
+FT                   helices; cv=sequence_feature; date=19700101"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Fungi; date=20081110"
+FT                   /controlled_curation="term=species distribution,
+FT                   predominantly uniformly single copy (one to one);
+FT                   date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Bacteria; date=20081110"
+FT                   /gene="SPAC977.11"
+FT                   /controlled_curation="term=protein sequence feature,
+FT                   destruction box; cv=sequence_feature; qualifier=predicted;
+FT                   date=19700101"
+FT   3'UTR           5271..5369
+FT                   /note="mRNA from AU013226"
+FT                   /systematic_id="SPAC977.11"
+FT                   /db_xref="SPD:41/41G12"
+FT                   /gene="SPAC977.11"
+FT   CDS             complement(5553..6623)
+FT                   /EC_number="3.5.1.1"
+FT                   /colour=7
+FT                   /fasta_file="fasta/chromosome1.contig.seq.00018.out"
+FT                   /product="L-asparaginase (predicted)"
+FT                   /GO="aspect=P; term=asparagine catabolic process;
+FT                   GOid=GO:0006530; evidence=ISS; db_xref=GO_REF:0000024;
+FT                   with=Pfam:PF00710; date=20080804"
+FT                   /GO="aspect=C; term=cell division site; GOid=GO:0032153;
+FT                   evidence=IDA; db_xref=PMID:15975911;
+FT                   annotation_extension=independent_of(GO:0031941|GO:0015630);
+FT                   date=20050420"
+FT                   /GO="aspect=C; term=cell surface; GOid=GO:0009986;
+FT                   evidence=NAS; db_xref=GOC:unpublished; date=20080822;
+FT                   annotation_extension=(GO:0000084) _malformed;"
+FT                   /systematic_id="SPAC977.12"
+FT                   /db_xref="SPD:51/51C10"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
+FT                   date=20100406"
+FT                   /controlled_curation="term=orthologous to S. cerevisiae
+FT                   YLR155C and YLR157C and YLR158C and YLR160C;
+FT                   date=19700101"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Eukaryotes; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Bacteria; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Metazoa; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Vertebrates; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Fungi; date=20081110"
+FT                   /gene="SPAC977.12"
+FT                   /GO="aspect=F; term=nucleosomal histone binding;
+FT                   GOid=GO:0031493;
+FT                   annotation_extension=has_substrate(PR:000027604|PR:000027591|PR:000027604);
+FT                   evidence=IPI; db_xref=PMID:11242054;
+FT                   with=GeneDB_Spombe:SPBC1105.11c; date=20041110"
+FT                   /GO="aspect=F; term=nucleosomal histone binding;
+FT                   GOid=GO:0031493;
+FT                   annotation_extension=has_substrate(PR:000027604|PR:000027591);
+FT                   evidence=IPI; db_xref=PMID:11242054;
+FT                   with=GeneDB_Spombe:SPBC1105.11c; date=20041110"
+FT                   /GO="aspect=C; term=chromosome, pericentric region;
+FT                   annotation_extension=requires_feature(SO:0001796);
+FT                   GOid=GO:0000775; evidence=IDA; db_xref=PMID:17627824;
+FT                   date=20070718"
+FT   3'UTR           complement(6624..6797)
+FT                   /note="mRNA from AU009839"
+FT                   /systematic_id="SPAC977.12"
+FT                   /db_xref="SPD:51/51C10"
+FT                   /gene="SPAC977.12"
+FT   CDS             complement(7338..8166)
+FT                   /colour=13
+FT                   /gene="SPAC977.13c"
+FT                   /product="hydrolase, pseudogene"
+FT                   /pseudo
+FT                   /systematic_id="SPAC977.13c"
+FT                   /controlled_curation="term=WARNING: frameshifted;
+FT                   date=20091223"
+FT                   /note="4 frameshifts"
+FT   repeat_region   8497..8547
+FT                   /note="(ttattttaagttttgtc)3"
+FT   CDS             join(7100..7150,7200..7250)
+FT                   /colour=8
+FT                   /primary_name="meu1"
+FT                   /obsolete_name="moo2"
+FT                   /product="sequence orphan"
+FT                   /synonym="SPAC1556.06"
+FT                   /systematic_id="SPAC1556.06.1"
+FT                   /controlled_curation="term=protein sequence feature, NLS;
+FT                   qualifier=predicted; db_xref=PMID:11376151;
+FT                   cv=sequence_feature; date=20060605"
+FT                   /controlled_curation="term=protein sequence feature,
+FT                   coiled-coil; qualifier=region; cv=sequence_feature;
+FT                   date=20060605"
+FT                   /controlled_curation="term=gene expression, alternative
+FT                   transcripts; db_xref=PMID:11376151; cv=gene_ex;
+FT                   date=20060605"
+FT                   /controlled_curation="term=species distribution, sequence
+FT                   orphan; date=19700101"
+FT                   /controlled_curation="term=species distribution, sequence
+FT                   orphan, uncharacterised; date=20081110"
+FT                   /controlled_curation="term=species distribution,
+FT                   identified in S. pombe only; date=20081110"
+FT                   /controlled_curation="term=species distribution, no
+FT                   apparent orthologs; date=20090303"
+FT                   /controlled_curation="term=name description, Meiotic
+FT                   Expression Upregulated; cv=name_description;
+FT                   db_xref=PMID:11376151; date=19700101"
+FT                   /controlled_curation="term=XP-G family; date=19700101"
+FT                   /controlled_curation="term=gene expression, expressed
+FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
+FT                   date=20100103"
+FT                   /shared_id="SPAC1556.06"
+FT                   /controlled_curation="term=DNA binding specificity, binds
+FT                   d(GT)n; db_xref=PMID:16043634; date=19700101"
+FT                   /controlled_curation="term=DNA binding specificity, binds
+FT                   HSE 5'-NGAANNTTCNNGAAN-3'; cv=DNA_binding_specificity;
+FT                   date=20100302"
+FT   CDS             join(7050..7150,7200..7250)
+FT                   /colour=8
+FT                   /other_transcript="SPAC1556.06.1"
+FT                   /primary_name="meu2"
+FT                   /product="sequence orphan"
+FT                   /shared_id="SPAC1556.06"
+FT                   /synonym="SPAC1556.06b"
+FT                   /synonym="SPAC1556.06"
+FT                   /systematic_id="SPAC1556.06.2"
+FT                   /GO="aspect=P; term=cell cycle checkpoint;
+FT                   qualifier=required;
+FT                   annotation_extension=during(GO:0000084); GOid=GO:0000075;
+FT                   evidence=IMP; db_xref=PMID:12597774; date=20040923"
+FT                   /controlled_curation="term=protein sequence feature, NLS;
+FT                   qualifier=predicted; db_xref=PMID:11376151;
+FT                   cv=sequence_feature; date=20060605"
+FT                   /controlled_curation="term=dummy cv name, gene expression, alternative
+FT                   transcripts; cv=gene_ex; db_xref=PMID:11376151;
+FT                   date=20060605"
+FT                   /controlled_curation="term=species distribution, sequence
+FT                   orphan; date=19700101"
+FT                   /controlled_curation="term=gene expression, expressed
+FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
+FT                   date=20100103"
+FT                   /controlled_curation="term=species distribution, sequence
+FT                   orphan, uncharacterised; date=20081110"
+FT                   /controlled_curation="term=species distribution,
+FT                   identified in S. pombe only; date=20081110"
+FT                   /controlled_curation="term=species distribution, no
+FT                   apparent orthologs; date=20090303"
+FT                   /controlled_curation="term=name description, Meiotic
+FT                   Expression Upregulated; cv=name_description;
+FT                   db_xref=PMID:11376151; date=19700101"
+FT                   /controlled_curation="term=gene expression, expressed
+FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
+FT                   date=20100103"
+FT   intron          4588..4660
+FT                   /note="intron confirmed by mRNA"
+FT                   /systematic_id="SPAC1556.06.1"
+FT   intron          4588..4660
+FT                   /note="intron confirmed by mRNA"
+FT                   /systematic_id="SPAC1556.06.2"
+FT   CDS             5851..6554
+FT                   /GO="aspect=C; term=eukaryotic translation initiation
+FT                   factor 3 complex, eIF3e complex; GOid=GO:0071540;
+FT                   evidence=IDA; db_xref=PMID:19061185; date=20100108"
+FT                   /GO="aspect=C; term=eukaryotic translation initiation
+FT                   factor 3 complex, eIF3m complex; GOid=GO:0071541;
+FT                   evidence=IDA; db_xref=PMID:19061185; date=20100108"
+FT                   /GO="aspect=F; term=protein binding; GOid=GO:0005515;
+FT                   evidence=IPI; db_xref=PMID:11102508;
+FT                   with=GeneDB_Spombe:SPAC18G6.15; date=20040908"
+FT                   /GO="aspect=F; term=protein binding; GOid=GO:0005515;
+FT                   evidence=IPI; db_xref=PMID:11121040;
+FT                   with=GeneDB_Spombe:SPBC646.09c|GeneDB_Spombe:SPAC16E8.09; date=20040908"
+FT                   /GO="aspect=F; term=protein binding; GOid=GO:0005515;
+FT                   evidence=IPI; db_xref=PMID:9892665;
+FT                   with=GeneDB_Spombe:SPAC16E8.09; date=20040908"
+FT                   /GO="aspect=F; term=translation initiation factor
+FT                   activity; qualifier=contributes_to; GOid=GO:0003743;
+FT                   evidence=IC; db_xref=GOC:unpublished; from=GO:0005852;
+FT                   date=20040908"
+FT                   /GO="aspect=P; term=ascospore formation; GOid=GO:0030437;
+FT                   evidence=IMP; db_xref=PMID:19061185; date=20081211"
+FT                   /GO="aspect=P; term=cellular response to caffeine;
+FT                   GOid=GO:0071313; evidence=IMP; db_xref=PMID:19061185;
+FT                   date=20081211"
+FT                   /GO="aspect=P; term=eIF3 complex assembly;
+FT                   GOid=GO:0070196; evidence=IMP; db_xref=PMID:11705997;
+FT                   date=20081211"
+FT                   /GO="aspect=P; term=protein complex assembly;
+FT                   GOid=GO:0006461; evidence=IMP; db_xref=PMID:11705997;
+FT                   date=20081211"
+FT                   /GO="aspect=P; term=translational initiation;
+FT                   GOid=GO:0006413; evidence=TAS; db_xref=PMID:11705997;
+FT                   date=20040908"
+FT                   /GO="aspect=P; term=gamma tubulin complex localization;
+FT                   GOid=GO:0033566; evidence=IMP; db_xref=PMID:11102508;
+FT                   with=GeneDB_Spombe:SPAC18G6.15; date=20110211"
+FT                   /GO="aspect=P; term=spindle assembly involved in mitosis;
+FT                   GOid=GO:0090307; evidence=ISS; db_xref=GOC:unpublished;
+FT                   with=GeneDB_Spombe:SPAC18G6.15; date=20110211"
+FT                   /colour=2
+FT                   /fasta_file="fasta/chromosome1.contig.seq.01868.out"
+FT                   /primary_name="moe1"
+FT                   /product="translation initiation factor eIF3d Moe1"
+FT                   /systematic_id="SPAC637.07"
+FT                   /db_xref="SPD:35/35D10"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
+FT                   date=20100406"
+FT                   /controlled_curation="term=species distribution, no
+FT                   apparent S. cerevisiae ortholog; date=19700101"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Eukaryotes; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Metazoa; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Vertebrates; date=20081110"
+FT                   /controlled_curation="term=species distribution,
+FT                   predominantly uniformly single copy (one to one);
+FT                   date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Fungi; date=20081110"
+FT                   /controlled_curation="term=species distribution, conserved
+FT                   in Eukaryotes only; date=20081110"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   cv=phenotype; db_xref=PMID:11705997; date=20081211"
+FT                   /controlled_curation="term=phenotype, sensitive to
+FT                   caffeine; qualifier=deletion; cv=phenotype; date=20081211"
+FT                   /controlled_curation="term=phenotype, microtubule
+FT                   organization defects; qualifier=deletion; cv=phenotype;
+FT                   db_xref=PMID:9892665; date=20090926"
+FT                   /controlled_curation="term=phenotype, resistance to
+FT                   microtubule depolymerizing drugs; qualifier=deletion;
+FT                   db_xref=PMID:9892665; date=20090926"
+FT                   /controlled_curation="term=phenotype, spindle  assembly
+FT                   abnormal; cv=phenotype; qualifier=deletion;
+FT                   db_xref=PMID:9892665; date=20090926"
+FT                   /controlled_curation="term=human moe1 ortholog;
+FT                   db_xref=PMID:9892665; date=20110211"
+FT                   /controlled_curation="term=human MTX1 ortholog;
+FT                   db_xref=PMID:9892665; date=20110211"
+FT                   /controlled_curation="term=complementation, functionally
+FT                   complemented by human moe1; db_xref=PMID:9892665;
+FT                   date=20110211"
+FT                   /gene="moe1"
+FT                   /gene="SPAC637.07"
+FT   CDS             complement(8000..8200)
+FT                   /GO="aspect=P; term=copper ion homeostasis;
+FT                   GOid=GO:0006878; evidence=ISS; db_xref=GOC:unpublished;
+FT                   with=UniProtKB:P00445; date=20040823"
+FT                   /systematic_id="SPAC821.10c"
+FT   CDS             complement(join(4221..4715))
+FT                   /GO="aspect=P; term=spore wall chitin biosynthetic
+FT                   process; GOid=GO:0034217; evidence=IDA;
+FT                   db_xref=PMID:10632879; date=20050706"
+FT                   /systematic_id="SPAC13G6.12c"
+SQ   Sequence 8613 BP; 2680 A; 1465 C; 1504 G; 2964 T; 0 other;
+     ataacaacgg tttattgttt aaaggctaga agtaatgaaa atcgtctttt ataaaagtct        60
+     aaatagtatg aaatttgata ttaagtaagc gagtggcctt aaacgctcta tattctggat       120
+     ctgcaactca tggggtgaga ctcggttgtg tctatgtaac taaccttgcc accacattgt       180
+     gcatgaaagc aaatgattca tttaaacgta aagtgtttct cgttttattt gacatgaaag       240
+     gagctcttga attcttccta agttgttcat gaggagaaat tgtccactga aaaagaacaa       300
+     gttcaaacat tcgctcatga cttttctcct gcccgtaatc gaaataccaa attccttctg       360
+     tgttcggtag tcaatacctt ggccgttatc tcatcaatta acaagtttcc cccaccaatg       420
+     tgattatagg cctggcaatt cctttgacag aacgtgtcaa ctggatattt gtgtaatttc       480
+     gtcgttctcg ttaatcccat acagtttttc attgctaatt taactctaca tatggttgaa       540
+     ttacaagagt gcttgtttta tgctcactac ttcctttttt aagtagtata aaagattgac       600
+     ttctgttaca ctagtaatca aatcctatag aaagaatttt caatattttt gatttattgc       660
+     cacttatgtc atattgagat aaaatgcctt aatccaatca ggtcttttta gctaagttat       720
+     aatcaaagct ttttgctgcc gaggtattaa tagcttacaa gtgagtacac aacacccttt       780
+     caatcaattt aatggtgcta aatttatata aacatacgat gtataacaat cgcacaatat       840
+     ttacaattca ctatcctgct aaaattgtat aaaaaaaaat aatataacag cccacctcaa       900
+     atgtgcttaa tcagtctcag tgaatttaaa attgaatagt tacttaaaag gcatgttttt       960
+     taagttgata agcgttaaaa cccaagtaac aagctttgtt actccaatca aaaagataac      1020
+     taaggtaccc cggtcctcaa gtataaacca caggcatgca cgcatcagtc cgtggctaac      1080
+     tgtatctttt gccacatttt atgtcgaata ctctaaaaaa aatattatag gaatttatta      1140
+     caagaaaaca ttctcttgtg gatattgcct aattactatg ggctggagac aacttgatat      1200
+     agacaaagtc catttagctt taatagtggc cgggggattt ataacatttt tctgctattt      1260
+     ttcagaagtt tttcgaaaaa aattactagt tggagaagct ggtacgttga agatattgta      1320
+     tagggtggtt tttgaaaatt agcaattgat ataaaataag actaatacta gtgtgtagtt      1380
+     cttggaagta tcactggatt aatatttggg cctcatgctg ctaaactcgt agaccctttt      1440
+     tcctggggtg accatggaga ttacttgaca gtagagattt gtagaatcgt acttgatgtg      1500
+     cgtgtgtttg cttctgcaat agaactcccc ggtgcatatt ttcaacataa ttttcgaagc      1560
+     atcattgtaa tgctattacc agttatggct tacgggtggt tagttacagc tggatttgca      1620
+     tatgcattgt ttccacaaat taacttttta ggatctttgc tgatcgcagg atgtataact      1680
+     tctactgatc ctgttctatc agcattgatt gtaggagaag gtccattagc taaaaagact      1740
+     cctgaacgga ttcggtcttt attgatcgct gagtctggat gtaatgatgg aatggcggtt      1800
+     ccttttttct attttgctat caaacttctt actgttaagc catcgaggaa tgcagggagg      1860
+     gattgggtgc tgcttgttgt gttgtatgaa tgtgcatttg gtatattttt tgggtgtgta      1920
+     atagggtatc ttttatcgtt cattttaaag cacgctcaga aataccgttt aattgatgct      1980
+     attagttatt attcccttcc gctagcgata cctttattat gttctgggat aggaactatt      2040
+     attggagttg atgacctgtt gatgtccttt tttgctggaa tattatttaa ctggaatgat      2100
+     ttattttcca aaaatatatc tgcttgttct gtacctgctt ttattgatca gacttttagt      2160
+     ttactatttt ttacctatta tggtacaatc attccctgga ataattttaa ttggtctgtt      2220
+     gaaggcttgc ctgtttggcg tttaattgtc tttagcatat tgactctagt ttgtcgtcga      2280
+     ttaccggttg tattttcggt gaagccttta gttccggaca ttaagacatg gaaagaagcc      2340
+     cttttcgttg gacatttcgg accaataggg gtttgcgcag tttatatggc atttcttgca      2400
+     aaattactgt tgtccccgga tgaaattgaa aagagtattt atgaatcaac tacagtattt      2460
+     tcaacactta atgaaataat ttggccgatc atttcgtttg ttatcttatc ctcaatcatt      2520
+     gttcatggtt tcagtatcca tgtattagtg atttggggaa agttaaaaag tctgtattta      2580
+     aatcgaaaag tcaccaagtc cgattccgat ttggagttac aagtaatagg ggttgataag      2640
+     tcacaggaag attacgttta ggaaagctct tttaatgtca attcggattt ccaaattatt      2700
+     ttcaaatgta ttgtgaatcg ctgtctctgg tcaaaaagat tactgcactc atattttgaa      2760
+     attccttcta tagttgatat atactataag ataagtgatt ctcagaatca caaggctaac      2820
+     caccaacagg gatggagtgt atatttttgt tgtacatata tattatctac aatagagtaa      2880
+     ttttcggctt ctataattca tttattttct tactactcta aaaatattgt ataatttcta      2940
+     aaactgatca agatactgag aaaagtacaa atcgttattt aatttgtaat ttattttgat      3000
+     ggctaaaact taccaatatt cgttcgcttc aaacaatacc aatcttacga aacaccttac      3060
+     gcttcatcaa agtctacttt ggatcaccta atattttatt atttgttgtt gtaattatac      3120
+     aaactaatac tattttatgt aagaaactaa gaaaacggaa aatcaatagc tactttgtgt      3180
+     atataaatag caatcaaatt aaaacttgat aaatctcacc tactaaaaca catcaacgta      3240
+     cttcaaaggg cctaactact ataagacttg gtaatattta aatagtgttt ctattagtag      3300
+     gtagcttcaa agtatgtata aagcttttgg aagtagatga agtattgaat atctcctcct      3360
+     agatcagtta ttaactaagt acgactgaac cggtgctccc aatttagttg caatctattt      3420
+     agatgagcta gaatataatt acacagtaat cggtatggac tgagttttag caccaataaa      3480
+     ttctcactaa acataacttc atcccaaata tatacatatg ttttgcagag aaacaccccg      3540
+     cagtttatca tatcgtaaat gtcagcaata ttacaatacg ttatgactct acgttgcgtt      3600
+     atatgccaca tgttctattt gctctatcaa ctgtaaataa taagttatca agataaattt      3660
+     attaccattt atggtaagaa actatcagtt aaaattatag ctttttcaag ctctataaat      3720
+     agagatcaat tgaacctagt tcctcagttc agttattagc tatagggata tcggtgatcg      3780
+     atacaaatac tcgttattat aataattata atagtgttat ttgaacatat tgcatatcgc      3840
+     tgtattgtag gtcgcaagaa aaactcaccg caattcaatg aatcgttaaa cagataccaa      3900
+     actgcgtagc tgacataggg aagttttaaa aagtacgtaa tactctaacg atgtagtagt      3960
+     tgcaagtaaa atagcaacaa aaaaaaacga tgcacttcaa agaagcgctt acatttttaa      4020
+     ttacaagcaa gttacatttc aacgctggat catagaaact ttaatagaga tgcaattata      4080
+     aacatgtacc ttgagataaa aattagacct caaatcgccg gctttaagtc tttttgaaag      4140
+     aattttcttt ttgttttgtt ttattaacct aagtcgattt aaaatacttt ttctctcttt      4200
+     attttaagaa attactatag tctcgaagcc tttatcgagg ctatcgctcc gtatatatag      4260
+     aattgtgata gacactccgg aatagttgca ttttccttct aatctaaaaa aaaaaaaaaa      4320
+     aaaaaaaaaa aaaaatgcta ttaacacagt cttacttttg tataatgtct atgttgggga      4380
+     cgctagctcg tctaggactt actgcattaa acacataccc aggtgcaccg ttttctggac      4440
+     ttttatgggt tcaatttgtt ggatgcgtta ttatgggatt ttgtcagaca gagtctgttt      4500
+     tctttcctcg acccaaacat aatgctactt ttttgctagc cattactaca ggtttttgtg      4560
+     gatctcttac aacgttttct tcttggatgt tgcaaatgtt tacagggatg gctaacttgg      4620
+     atccatttga acgtaggggc cgaggctatt catttttaag tgtggtttcc gattttatgg      4680
+     taactatgtg cattgcgatg tccagcttaa tatgggggaa gcagattgga aaaacgacgg      4740
+     gacagtggag aattggcaaa gttgcatttg cctggcctat cccggcgcac acgcatatcg      4800
+     tagtgcgggt attacttttg ttactctcga tttgtttttt tgttggtgca gcattttata      4860
+     cggcatatac aaccaatgtg acacatcgtg gcataggttt tagtctaata ttctctcctt      4920
+     ttgctgcctt gacacgtttg tatcttgcgc gattccttaa ttcacctcaa tattttattc      4980
+     cctatggaac tctttgtgcc aatgtctttg ctacactttt gctttctatc atgtacatga      5040
+     taccacaaat cacacactgc actcctgtgt ctagaagtgt gatgtatgga atccaaaacg      5100
+     gattttgtgc tgtactctct accctttcaa cattctccaa cgaactccac acaatgccta      5160
+     taaaacgagc atatatttat tgtataattt cagttgctat ttccttttca atatgtgtca      5220
+     ttgtcgatgg agctactgca tggggtcatg gttatactga aaagtattag acttactatt      5280
+     aaattagaga tttttttttt aaagtttttg tatataatta aagtattcat tctttatctt      5340
+     taatattatt tatttttttt tgtttataat taagaaataa aaatactata tttgaatgcg      5400
+     taaatttcaa aactaacaca ataaggtcgc aatgcgctgc tccgaaaaag cagtcacgac      5460
+     gtttaacgat accatacact aaaaaagaat atgaaagata agaaattttt aatggttagt      5520
+     tccgtttcct atctgcgctt ccaagtaagg agatgtgggg attcatagta acttgtggga      5580
+     tttttctagt gttactatgc caattgcgtt tactgagtaa acgcaaatca aaatccactc      5640
+     cttataatgc cttgcttccc aatgttacag tttttgcaat gggtggtaca atcgctggat      5700
+     gcgcaaattc aagtcttgag attgtcaatt acattcccgg ttcggtagga attgaaaaat      5760
+     tgattgaggc ggttccagcg atcaaggcaa ttgcaaacat taatggagta caggtaacta      5820
+     atatgggaag cgaaaattta acacctgctg atgtcctaaa actagctaaa ttgattttag      5880
+     ccgaagttgc aaaaccgaat gttcatggta tcgtcattac acacggtacc gactccctgg      5940
+     aagaaacagc aatgtttctt gatctgacca tcagtactgc aaaaccaatt gttgtagttg      6000
+     gagcaatgag accatctacg gctataggcg cagacggccc tatgaatttg ttaaacgctg      6060
+     ttgctgtggc atcttccaat caatctatgg gaaggggcac tttagtttta ttaaatgacc      6120
+     ggattggatc tgcattttac actacgaaaa cgaatggaaa tacgcttgac acatttaaat      6180
+     cttatgaagc tggatctctt gggatagttc ttaatcaaaa accattttac ttttttagtc      6240
+     cagctgttcc aaccggtaaa gtgttctttg acatttataa cattaaacaa ctaccacgag      6300
+     tagacatctt atatggatat caaggattga atcccaaact tgctgaatca gcagtccatc      6360
+     tgggggccaa aggcttggtt ttggctgcta tgggagcaac ttcatggact gatgatggta      6420
+     atgaagttat cagctcgtta atacgggaac acaatattcc agtagtgtac agtcatcgaa      6480
+     ctgcggaagg atattcaagc aactcttgtc ttggcatccc ctcttacttc ctaaatccac      6540
+     aaaaagctcg gtacatgctt atgcttgcta ttagttcagg ctattctatt cgagatattg      6600
+     aagatctgtt cagcattaaa taatctaaag atcctagcga tttataatta ttaacgtata      6660
+     ttcaacgttc ttcaatgcga ataattgcgt acggaagggg tctcgcttcc aaacatctta      6720
+     agcgaaaatt tgttcctttt taagcttttg caaaaagcac gtagtgttac tttgctcggt      6780
+     tcatgacaaa tcacggatat aaatagaata agattgaatt ttaaaatgca cctacattgt      6840
+     gttttattat tataatataa agcaagtagc gagtgttaat ttgattataa tatttgcagc      6900
+     gttaacgcta tgattccacg ttttatcttt aggaggatgt ttatttcaat ataaaaataa      6960
+     ttaaaactgt gtaacgctgg atggcatgct catgataaaa accgttagtt caaacgtagc      7020
+     tttttgttac caaattttaa taagcaataa cgactaggtc ttgcgcattt tttttccaaa      7080
+     aagaaacatc aactattact ttttctatcg ttaatataat cagtatatag tataatgatt      7140
+     attgagttca aaatggatca aaaatataaa caattttgta aaatagttag ccaagcacat      7200
+     tttatgccca aattgaaaga taattcgaca attgataata cagatgaatc atataaacaa      7260
+     acttaatgtt gcgatttttt tgtatgcaca gcttaacgac ctatatcagt atttacaaaa      7320
+     ttatggagaa ttatgaagga aaaagatttg atcatagctt cggccaataa tttaggttgt      7380
+     tcctctggaa tataatgccc atttcccgaa attaacccgc cactgacatt agtgcctaac      7440
+     ggttctatag cttcaaatat attaggagca cttccaattt cttcaccaag gacaagtaat      7500
+     gggacgtcaa tcaatacaga ctttattaac ttgttttgct cgaaatcttc caaaacagcc      7560
+     cggtagtatt caagcatctc ccacattcct cctagcattt ggtaagcgcg cttgtattct      7620
+     gtaaaatcat tttcagaaaa acaagcatta aaataataca gcctttcttt tgaaaaacca      7680
+     ctccataaag attctttcac gttcacgcaa aagttcttct ggtagatcaa ggactgtatt      7740
+     gaataggaaa tgccaacttc gccaattgtc cggacctagt tctatggacg atggatgtgt      7800
+     aattcctgga attctcatct aatagcacag ctacgaagag ttcagctcaa aatagtgaac      7860
+     aatatggata agtaatccaa gtaccgacat catgaccgac aaggaaatat ttatcaacct      7920
+     taaatgtttt cactagataa tgaatacgct ttgcagccgt ctgtatgtca taaccaacaa      7980
+     gcggtttttc tgagtcacct taaccaggta agtctactgc aaccacaagt atcgaccaga      8040
+     aagcagtggc atgacgtggc gccatgcgta gcaagtttga ggaaatcctg ctaataatat      8100
+     tactaatggt cccatatcca tttctacaat atgcagacga acaccagcgg cttgtacaaa      8160
+     gcgatgatgt gtatttttat aattcaggtt gaaataaagt taatatagaa gaaaaatatg      8220
+     gatttttcta taccgtatta attctcatat gggtgtttag tattatgtat atgattgata      8280
+     tgcaatgatt caactatctt actgataaag atgatgacgt atattgcaag gactttgttt      8340
+     attgtagaaa gtcgagcttg atagcgtatg tctggtgaat ctaatgtgct gtttttcaag      8400
+     tggtcatgcg ttacaaaaat cttttagctt attaaatttg attggtgata aatttccaat      8460
+     taaaatacaa tttatattga tatgcgccgt tttgaattat tttaagtttt gtcttatttt      8520
+     aagttttgtc ttattttaag ttttgtctta tttgtagaat agctaggcta aatcaaaccg      8580
+     aattgaactc gcttttatca acggttatta taa                                   8613
+//

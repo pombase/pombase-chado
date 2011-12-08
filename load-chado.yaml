@@ -1,14 +1,195 @@
+# PomBase Chado load config file  -*- conf -*-
 test: 1
-cvterms:
+cvs:
   PomBase publication types:
     - paper
     - null
   PomBase feature property types:
-    - product
     - comment
-  PomBase synonym types:
-    - synonym
-    - exact
+    - symbol
+    - ena_id
+  PomBase annotation extension terms: []
+  PomBase gene products: []
+  PomBase family or domain: []
+  PomBase gene characterisation status:
+    - name: published
+      definition: >
+        A gene product characterised, or partially characterised in a small 
+        scale experiment to providing published information about the biological 
+        process. The biological process annotation must be equivalent to, or 
+        more specific than terms in the "GO slim"  
+        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
+    - name: biological role inferred
+      definition: >
+        A gene product whose biological process is inferred from homology to an 
+        experimentally characterised gene product.  The biological process 
+        annotation must be equivalent to, or more specific than terms in the "GO 
+        slim"  http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
+    - name: conserved unknown
+      definition: >
+        A gene product which is conserved more broadly than the 
+        Schizosacchaomyces clade,  but cannot be assigned a biological process 
+        term,  equivalent to, or more specific than the terms in the "GO slim"  
+        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.htmlbased on 
+        experimental data from any organism
+    - name: sequence orphan
+      definition: >
+        A gene product which is not conserved outside the Schizosacchaomyces clade
+        and where nothing is published about, or can be inferred from homology 
+        about the biological role
+    - name: fission yeast specific family
+      definition: >
+        A gene product which is not conserved outside the Schizosacchaomyces clade
+        and where nothing is published about, or can be inferred from homology 
+        about the biological role
+        but are present in more than one copy in fission yeast
+    - name: dubious
+      definition: Unlikely to be coding
+    - name: transposon
+      definition: >
+        A transposon or insertion sequence. An element that can insert
+        in a variety of DNA sequences.
+  PomBase interaction types:
+    - name: interacts_genetically
+    - name: interacts_physically
+  feature_relationshipprop_type:
+    - name: evidence
+    - name: source database
+    - name: homology type
+  cat_act: []
+  genome_org: []
+  m_f_g: []
+  DNA_binding_specificity: []
+  name_description: []
+  species_dist: []
+  subunit_composition: []
+  gene_ex: []
+  complementation: []
+  warning: []
+  ex_tools: []
+  misc: []
+  disease_associated: []
+  EC numbers: []
+
+cv_definitions:
+  biological_process: Gene Ontology biological process terms
+  cat_act: Catalytic activity attributes (Kd, rate, etc.)
+  complementation: gene product complement/complemented by another gene product
+  disease_associated: Orthology to a human disease gene
+  DNA_binding_specificity: Target sequence consensus of a DNA binding protein
+  ex_tools: Uses of gene products as experimental tools (e.g. constructs, selectable markers, antibodies, etc.)
+  gene_ex: GP annotations realted to gene expression annotations
+  genome_org: Genome organization attributes (e.g. tandem repeat)
+  m_f_g: Miscellaneous functional groups, not captured by GO (e.g. chaperone)
+  misc: Annotation which does not fit any other ontology
+  name_description: Derivation of the "three letter" gene name
+  PomBase annotation extension terms: Post-composed terms used for anotation cross products
+  PomBase family or domain: Manual annotation of Pfam false negatives and uncaptured subfamilies
+  PomBase gene products: Concise gene product names
+  species_dist: Broad classifiers of taxon distribution (domain/kingdom level)
+  subunit_composition: Stoichiometry of homogeneous complexes
+  warning: Alerts, gross changes and anomalies
+  PSI-MOD: Protein modification terms
 
 dbs:
   - RFAM
+  - GOA
+  - UniProtKB/Swiss-Prot
+  - Uniprot
+  - SPD
+  - PMID
+  - EMBL
+  - GOC
+  - GO_REF
+  - KEGG
+  - Pfam
+  - Rfam
+  - GI
+  - InterPro
+  - UniProtKB
+  - UniProtKB/Swiss-Prot
+
+taxonid: 4896
+
+allowed_unknown_term_names_files:
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/cumulative_unknown_term_name_ok.txt
+allowed_term_mismatches_files:
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/cumulative_ID_ok_mismatches.txt
+  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/cumulative_name_ok_mismatches.txt
+  - "/home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/old warnings/warnings-2011-06-21/6-21_mismatch_name_ok.txt"
+  - "/home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/old warnings/warnings-2011-07-13/edited-mismatches.txt"
+  - "/home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/old warnings/warnings-2011-07-14.2/edited-mismatches.txt"
+
+organism_taxon_map:
+  284812: 4896
+
+systematic_id_re: "SP.[CP]\w+\d+\w+\d+c?.\d"
+
+# the default is to use the cv name as the db name
+db_names_for_cvs:
+  biological_process: GO
+  molecular_function: GO
+  cellular_component: GO
+  sequence: SO
+
+evidence_types:
+  IMP:
+    name: Inferred from mutant phenotype
+  IDA:
+    name: Inferred from direct assay
+  IGI:
+    name: Inferred from genetic interaction
+    with_gene: 1
+  IPI:
+    name: Inferred from physical interaction
+    with_gene: 1
+  EXP:
+    name: Inferred from Experiment
+  IEP:
+    name: Inferred from Expression Pattern
+  ISS:
+    name: Inferred from Sequence or Structural Similarity
+  ISO:
+    name: Inferred from Sequence Orthology
+  ISA:
+    name: Inferred from Sequence Alignment
+  ISM:
+    name: Inferred from Sequence Model
+  IGC:
+    name: Inferred from Genomic Context
+  IBA:
+    name: Inferred from Biological aspect of Ancestor
+  IBD:
+    name: Inferred from Biological aspect of Descendant
+  IKR:
+    name: Inferred from Key Residues
+  IRD:
+    name: Inferred from Rapid Divergence
+  RCA:
+    name: inferred from Reviewed Computational Analysis
+  NAS:
+    name: Non-traceable Author Statement
+  IC:
+    name: Inferred by Curator
+  ND:
+    name: No biological Data available
+  IEA:
+    name: Inferred from Electronic Annotation
+  NR:
+    name: Not Recorded
+  TAS:
+    name: Traceable Author Statement
+  UNK:
+    name: Unknown
+
+suppressible_evidence_codes:
+
+contig_ena_ids:
+  chromosome_1: CU329670.1
+  chromosome_2: CU329671.1
+  chromosome_3: CU329672.1
+  mating_type_region: FP565355
+  MISPCG: X54421.1
+  AB325691: AB325691
+
+db_name_for_cv: PomBase

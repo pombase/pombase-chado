@@ -36,7 +36,7 @@ under the same terms as Perl itself.
 =cut
 
 use perl5i::2;
-use Carp;
+use Carp qw(cluck);
 
 use Moose;
 
@@ -48,6 +48,12 @@ with 'PomBase::Role::FeatureDumper';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::DbQuery';
+with 'PomBase::Role::CvtermCreator';
+with 'PomBase::Role::FeatureCvtermCreator';
+with 'PomBase::Role::FeatureFinder';
+with 'PomBase::Role::OrganismFinder';
+with 'PomBase::Role::QualifierSplitter';
 
 has verbose => (is => 'ro', isa => 'Bool');
 
@@ -58,122 +64,6 @@ method find_cv_by_name($cv_name) {
     or die "no cv with name: $cv_name");
 }
 memoize ('find_cv_by_name');
-
-
-my %new_cvterm_ids = ();
-
-# return an ID for a new term in the CV with the given name
-method get_dbxref_id($db_name) {
-  if (!exists $new_cvterm_ids{$db_name}) {
-    $new_cvterm_ids{$db_name} = 1;
-  }
-
-  return $new_cvterm_ids{$db_name}++;
-}
-
-
-
-method find_or_create_cvterm($cv, $term_name) {
-  my $cvterm = $self->find_cvterm($cv, $term_name);
-
-  # nested transaction
-  my $cvterm_guard = $self->chado()->txn_scope_guard();
-
-  if (defined $cvterm) {
-    warn "    found cvterm_idp ", $cvterm->cvterm_id(),
-      " when looking for $term_name in ", $cv->name(),"\n" if $self->verbose();
-  } else {
-    warn "    failed to find: $term_name in ", $cv->name(), "\n" if $self->verbose();
-
-    my $db = $self->objs()->{dbs_objects}->{$cv->name()};
-    if (!defined $db) {
-      die "no database for cv: ", $cv->name();
-    }
-
-    my $new_ont_id = $self->get_dbxref_id($db->name());
-    my $formatted_id = sprintf "%07d", $new_ont_id;
-
-    my $dbxref_rs = $self->chado()->resultset('General::Dbxref');
-
-    die "no db for ", $cv->name(), "\n" if !defined $db;
-
-    warn "    creating dbxref $formatted_id, ", $cv->name(), "\n" if $self->verbose();
-
-    my $dbxref =
-      $dbxref_rs->create({ db_id => $db->db_id(),
-                           accession => $formatted_id });
-
-    my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
-    $cvterm = $cvterm_rs->create({ name => $term_name,
-                                   dbxref_id => $dbxref->dbxref_id(),
-                                   cv_id => $cv->cv_id() });
-
-    warn "    created new cvterm, id: ", $cvterm->cvterm_id(), "\n" if $self->verbose();
-  }
-
-  $cvterm_guard->commit();
-
-  return $cvterm;
-}
-
-
-my %stored_cvterms = ();
-
-method create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not) {
-  my $rs = $self->chado()->resultset('Sequence::FeatureCvterm');
-
-  my $systematic_id = $pombe_gene->uniquename();
-
-  warn "NO PUB\n" unless $pub;
-
-  if (!exists $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}) {
-    $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()} = 0;
-  }
-
-  my $rank =
-    $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}++;
-
-  return $rs->create({ feature_id => $pombe_gene->feature_id(),
-                       cvterm_id => $cvterm->cvterm_id(),
-                       pub_id => $pub->pub_id(),
-                       is_not => $is_not,
-                       rank => $rank });
-}
-
-method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
-  if (!defined $name) {
-    die "no name for property\n";
-  }
-  if (!defined $value) {
-    die "no value for $name\n";
-  }
-
-  if (!defined $rank) {
-    $rank = 0;
-  }
-
-  if (ref $value eq 'ARRAY') {
-    my @ret = ();
-    for (my $i = 0; $i < @$value; $i++) {
-      push @ret, $self->add_feature_cvtermprop($feature_cvterm,
-                                               $name, $value->[$i], $i);
-    }
-    return @ret;
-  }
-
-  my $type = $self->find_or_create_cvterm($self->get_cv('feature_cvtermprop_type'),
-                                          $name);
-
-  my $rs = $self->chado()->resultset('Sequence::FeatureCvtermprop');
-
-  warn "    adding feature_cvtermprop $name => $value\n" if $self->verbose();
-
-  return $rs->create({ feature_cvterm_id =>
-                         $feature_cvterm->feature_cvterm_id(),
-                       type_id => $type->cvterm_id(),
-                       value => $value,
-                       rank => $rank });
-}
 
 method add_feature_relationshipprop($feature_relationship, $name, $value) {
   if (!defined $name) {
@@ -221,39 +111,88 @@ method get_and_check_date($sub_qual_map) {
   return undef;
 }
 
-method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
-                       $create_cvterm) {
+# look up cvterm by $embl_term_name first, then by GOid, complain
+# about mismatches
+method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map,
+                        $create_cvterm) {
+  $embl_term_name =~ s/\s+/ /g;
+
+  my $mapping_conf = $self->config()->{mappings}->{$cv_name};
+
+  if (defined $mapping_conf) {
+    $cv_name = $mapping_conf->{new_name};
+
+    my $mapping = $mapping_conf->{mapping};
+    my $new_term_id = $mapping->{$embl_term_name};
+
+    if (!defined $new_term_id) {
+      die "can't find new term for $embl_term_name in mapping for $cv_name\n";
+    }
+
+    my $new_term = $self->find_cvterm_by_term_id($new_term_id);
+
+    if (!defined $new_term) {
+      die "can't find '$new_term_id' in $cv_name\n";
+    }
+
+    if ($self->verbose()) {
+      print "mapping $embl_term_name to $cv_name/", $new_term->name(), "\n";
+    }
+
+    $embl_term_name = $new_term->name();
+  }
+
   my $cv = $self->find_cv_by_name($cv_name);
 
-  my $db_accession;
+  my $uniquename = $pombe_feature->uniquename();
+
+  my $qualifier_term_id;
 
   if ($self->is_go_cv_name($cv_name)) {
-    $db_accession = delete $sub_qual_map->{GOid};
-    if (!defined $db_accession) {
-      my $systematic_id = $pombe_gene->uniquename();
-      warn "  no GOid for $systematic_id annotation: '$term'\n";
+    $qualifier_term_id = delete $sub_qual_map->{GOid};
+    if (!defined $qualifier_term_id) {
+      warn "  no GOid for $uniquename annotation: '$embl_term_name'\n";
       return;
     }
-    if ($db_accession !~ /GO:(.*)/) {
-      my $systematic_id = $pombe_gene->uniquename();
-      warn "  GOid doesn't start with 'GO:' for $systematic_id: $db_accession\n";
+    if ($qualifier_term_id !~ /GO:(.*)/) {
+      warn "  GOid doesn't start with 'GO:' for $uniquename: $qualifier_term_id\n";
     }
   }
 
   my $cvterm;
 
+  my $obsolete_id;
+
+  if (defined $qualifier_term_id) {
+    $obsolete_id = $self->config()->{obsolete_term_mapping}->{$qualifier_term_id};
+  }
+
   if ($create_cvterm) {
-    $cvterm = $self->find_or_create_cvterm($cv, $term, $db_accession);
+    $cvterm = $self->find_or_create_cvterm($cv, $embl_term_name, $qualifier_term_id);
   } else {
-    $cvterm = $self->find_cvterm($cv, $term, prefetch_dbxref => 1);
+    $cvterm = $self->find_cvterm_by_name($cv, $embl_term_name, prefetch_dbxref => 1);
 
     if (!defined $cvterm) {
-      die "can't find cvterm of $term";
+      if (defined $obsolete_id) {
+        $cvterm = $self->find_cvterm_by_name($cv, "$embl_term_name (obsolete $obsolete_id)",
+                                             prefetch_dbxref => 1);
+      }
+      if (!defined $cvterm) {
+        $cvterm = $self->find_cvterm_by_term_id($qualifier_term_id);
+        if (!defined $cvterm) {
+          die qq(unknown term name "$embl_term_name" and unknown GO ID "$qualifier_term_id"\n);
+        }
+        if (!$self->config()->{allowed_unknown_term_names}->{$qualifier_term_id}) {
+          die "found cvterm by ID, but name doesn't match any cvterm: $qualifier_term_id " .
+            "EMBL file: $embl_term_name  Chado name for ID: ", $cvterm->name(), "\n";
+        }
+        $qualifier_term_id = undef;
+      }
     }
   }
 
-  if (defined $db_accession) {
-    if ($db_accession =~ /(.*):(.*)/) {
+  if (defined $qualifier_term_id) {
+    if ($qualifier_term_id =~ /(.*):(.*)/) {
       my $new_db_name = $1;
       my $new_dbxref_accession = $2;
 
@@ -262,21 +201,61 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
 
       if ($new_db_name ne $db->name()) {
         die "database name for new term ($new_db_name) doesn't match " .
-          "existing name (" . $db->name() . ") for term name: $term";
+          "existing name (" . $db->name() . ") for term name: $embl_term_name\n";
       }
 
       if ($new_dbxref_accession ne $dbxref->accession()) {
-        die "database accession for new term ($new_dbxref_accession) " .
-          "doesn't match existing name (" . $dbxref->accession() .
-            ") for term name: $term";
+        my $allowed_mismatch_confs =
+          $self->config()->{allowed_term_mismatches}->{$uniquename};
+
+        if (!defined $allowed_mismatch_confs) {
+          (my $key = $uniquename) =~ s/\.\d+$//;
+          $allowed_mismatch_confs =
+            $self->config()->{allowed_term_mismatches}->{$key};
+        }
+
+        my $allowed_mismatch_type = undef;
+        if (defined $allowed_mismatch_confs &&
+            grep {
+              my $res =
+                $_->{embl_id} eq $qualifier_term_id &&
+                $_->{embl_name} eq $embl_term_name;
+              if ($res) {
+                $allowed_mismatch_type = $_->{winner};
+              }
+              $res;
+            } @{$allowed_mismatch_confs}) {
+          if ($allowed_mismatch_type eq 'ID') {
+            $cvterm = $self->find_cvterm_by_term_id($qualifier_term_id);
+          } else {
+            if ($allowed_mismatch_type eq 'name') {
+              # this is the default - fall through
+            } else {
+              die "unknown mismatch type: $allowed_mismatch_type\n";
+            }
+          }
+        } else {
+          my $db_term_id = $db->name() . ":" . $dbxref->accession();
+          my $embl_cvterm =
+            $self->find_cvterm_by_term_id($qualifier_term_id);
+          if (defined $obsolete_id && $db_term_id eq $obsolete_id) {
+            # use the cvterm we got from the GOid, not the name
+            $cvterm = $embl_cvterm;
+          } else {
+            die "ID in EMBL file ($qualifier_term_id) " .
+              "doesn't match ID in Chado ($db_term_id) " .
+              "for EMBL term name $embl_term_name   (Chado term name: ",
+              $embl_cvterm->name(), ")\n";
+          }
+        }
       }
     } else {
-      die "database ID ($db_accession) doesn't contain a colon";
+      die "database ID ($qualifier_term_id) doesn't contain a colon";
     }
   }
 
   my $db_xref = delete $sub_qual_map->{db_xref};
-  my $pub = $self->get_pub_from_db_xref($term, $db_xref);
+  my $pub = $self->get_pub_from_db_xref($embl_term_name, $db_xref);
 
   my $is_not = 0;
 
@@ -296,80 +275,89 @@ method add_term_to_gene($pombe_gene, $cv_name, $term, $sub_qual_map,
   }
 
   my $featurecvterm =
-    $self->create_feature_cvterm($pombe_gene, $cvterm, $pub, $is_not);
+    $self->create_feature_cvterm($pombe_feature, $cvterm, $pub, $is_not);
 
   if ($self->is_go_cv_name($cv_name)) {
-    my $evidence_code = delete $sub_qual_map->{evidence};
-
-    my $evidence;
-
-    if (defined $evidence_code) {
-      $evidence = $self->objs()->{go_evidence_codes}->{$evidence_code};
-    } else {
-      warn "no evidence for: $term in ", $pombe_gene->uniquename(), "\n";
-      $evidence = "NO EVIDENCE";
-    }
+    $self->maybe_move_igi($qualifiers, $sub_qual_map);
 
     if (defined $sub_qual_map->{with}) {
-      $evidence .= " with " . delete $sub_qual_map->{with};
+      my @withs = split /\|/, delete $sub_qual_map->{with};
+      for (my $i = 0; $i < @withs; $i++) {
+        my $with = $withs[$i];
+        $self->add_feature_cvtermprop($featurecvterm, with => $with, $i);
+      }
     }
     if (defined $sub_qual_map->{from}) {
-      $evidence .= " from " . delete $sub_qual_map->{from};
-    }
-    $self->add_feature_cvtermprop($featurecvterm,
-                                  evidence => $evidence);
-
-    if (defined $sub_qual_map->{residue}) {
-      $self->add_feature_cvtermprop($featurecvterm,
-                                    residue => delete $sub_qual_map->{residue});
+      my @froms = split /\|/, delete $sub_qual_map->{from};
+      for (my $i = 0; $i < @froms; $i++) {
+        my $from = $froms[$i];
+        $self->add_feature_cvtermprop($featurecvterm, from => $from, $i);
+      }
     }
   }
 
   $self->add_feature_cvtermprop($featurecvterm, qualifier => [@qualifiers]);
+
+  my $evidence_code = delete $sub_qual_map->{evidence};
+  my $evidence = undef;
+
+  if (defined $evidence_code) {
+    $evidence = $self->objs()->{go_evidence_codes}->{$evidence_code};
+    if (!grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
+                                  'cellular_component')) {
+      warn "found evidence for $embl_term_name in $cv_name\n";
+    }
+  } else {
+    if (grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
+                                 'cellular_component')) {
+      warn "no evidence for $cv_name annotation: $embl_term_name in ", $pombe_feature->uniquename(), "\n";
+    }
+  }
+  if (defined $evidence_code) {
+    $self->add_feature_cvtermprop($featurecvterm, evidence => $evidence);
+  }
+
+  if (defined $sub_qual_map->{residue}) {
+    $self->add_feature_cvtermprop($featurecvterm,
+                                  residue => delete $sub_qual_map->{residue});
+  }
+
+  if (defined $sub_qual_map->{allele}) {
+    $self->add_feature_cvtermprop($featurecvterm,
+                                  allele => delete $sub_qual_map->{allele});
+  }
 
   my $date = $self->get_and_check_date($sub_qual_map);
   if (defined $date) {
     $self->add_feature_cvtermprop($featurecvterm, date => $date);
   }
 
-}
-
-method split_sub_qualifiers($cc_qualifier) {
-  my %map = ();
-
-  my @bits = split /;/, $cc_qualifier;
-
-  for my $bit (@bits) {
-    if ($bit =~ /\s*([^=]+?)\s*=\s*(.*?)\s*$/) {
-      my $name = $1;
-      my $value = $2;
-      if (exists $map{$name}) {
-        die "duplicated sub-qualifier '$name' from:
-/controlled_curation=\"$cc_qualifier\"";
-      }
-
-      if ($name eq 'qualifier') {
-        my @bits = split /\|/, $value;
-        $value = [@bits];
-      }
-
-      $map{$name} = $value;
-
-      if ($name =~ / /) {
-        warn "  qualifier name ('$name') contains a space\n" unless $self->verbose() == 10;
-      }
-
-      if ($name eq 'cv' && $value =~ / /) {
-        warn "  cv name ('$value') contains a space\n" unless $self->verbose() == 10;
-      }
-
-      if ($name eq 'db_xref' && $value =~ /\|/) {
-        warn "  annotation should be split into two qualifier: $name=$value\n";
-      }
+  if ($sub_qual_map->{annotation_extension}) {
+    push @{$self->config()->{post_process}->{$featurecvterm->feature_cvterm_id()}}, {
+      feature_cvterm => $featurecvterm,
+      qualifiers => $sub_qual_map,
     }
   }
 
-  return %map;
+  return 1;
+}
+
+method maybe_move_igi($qualifiers, $sub_qual_map) {
+  if ($sub_qual_map->{evidence} && $sub_qual_map->{evidence} eq 'IGI' &&
+      defined $qualifiers && @{$qualifiers} > 0 &&
+      $qualifiers->[0] eq 'localization_dependency') {
+    if (exists $sub_qual_map->{with}) {
+      my $with = delete $sub_qual_map->{with};
+
+      if (exists $sub_qual_map->{annotation_extension}) {
+        warn "annotation_extension already existing when converting IGI\n";
+      } else {
+        $sub_qual_map->{annotation_extension} = "localizes($with)";
+      }
+    } else {
+      warn "no 'with' qualifier on localization_dependency IGI\n"
+    }
+  }
 }
 
 method add_feature_relationship_pub($relationship, $pub) {
@@ -384,84 +372,93 @@ method add_feature_relationship_pub($relationship, $pub) {
 
 }
 
-method find_chado_feature ($systematic_id, $try_name) {
-  my $rs = $self->chado()->resultset('Sequence::Feature');
-  my $feature = $rs->find({ uniquename => $systematic_id });
-
-  if (defined $feature) {
-    return $feature;
-  } else {
-    warn "    no feature found using $systematic_id as uniquename\n" if $self->verbose();
-  }
-
-  if ($try_name) {
-    $feature = $rs->find({ name => $systematic_id });
-
-    return $feature if defined $feature;
-  }
-
-  die "can't find feature for: $systematic_id\n";
-}
-
-method process_ortholog($pombe_gene, $term, $sub_qual_map) {
+method process_ortholog($chado_object, $term, $sub_qual_map) {
+  warn "    process_ortholog()\n" if $self->verbose();
   my $org_name;
   my $gene_bit;
 
-  my $date = delete $sub_qual_map->{date};
+  my $chado_object_type = $chado_object->type()->name();
+  my $chado_object_uniquename = $chado_object->uniquename();
+
+  if ($chado_object_type ne 'gene' && $chado_object_type ne 'pseudogene') {
+    warn "  can't apply ortholog to $chado_object_type: $term\n" if $self->verbose();
+    return 0;
+  }
+
+  my $organism_common_name;
 
   if ($term =~ /^orthologous to S\. cerevisiae (.*)/) {
+    $organism_common_name = 'Scerevisiae';
     $gene_bit = $1;
   } else {
     if ($term =~ /^human\s+(.*?)\s+ortholog$/) {
+      $organism_common_name = 'human';
       $gene_bit = $1;
     } else {
-      warn "    not recognised as an ortholog curation: $term\n" if $self->verbose();
+      warn "  didn't find ortholog in: $term\n" if $self->verbose();
       return 0;
     }
   }
+
+  my $organism = $self->find_organism_by_common_name($organism_common_name);
 
   my @gene_names = ();
 
-  if ($gene_bit =~ /^\S+$/) {
-    push @gene_names, $gene_bit;
-  } else {
-    if ($gene_bit =~ /^(\S+) and (\S+)/) {
-      push @gene_names, $1, $2;
+  for my $gene_name (split /\s+and\s+/, $gene_bit) {
+    if ($gene_name =~ /^(\S+)(?:\s+\(([cn])-term\))?$/i) {
+      push @gene_names, { name => $1, term => $2 };
     } else {
-      warn qq(can't parse: "$gene_bit" from "$term"\n);
+      warn qq(gene name contains whitespace "$gene_name" from "$term");
       return 0;
     }
   }
 
-  for my $ortholog_name (@gene_names) {
-    warn "    creating ortholog from ", $pombe_gene->uniquename(),
+  my $date = $self->get_and_check_date($sub_qual_map);
+
+  for my $ortholog_conf (@gene_names) {
+    my $ortholog_name = $ortholog_conf->{name};
+    my $ortholog_term = $ortholog_conf->{term};
+
+    warn "    creating ortholog from ", $chado_object_uniquename,
       " to $ortholog_name\n" if $self->verbose();
 
     my $ortholog_feature = undef;
     try {
-      $ortholog_feature = $self->find_chado_feature($ortholog_name, 1);
+      $ortholog_feature =
+        $self->find_chado_feature($ortholog_name, 1, 1, $organism);
+    } catch {
+      warn "  caught exception: $_\n";
     };
 
     if (!defined $ortholog_feature) {
-      print "  ortholog ($ortholog_name) not found\n";
-      return 0;
+      warn "ortholog ($ortholog_name) not found\n";
+      next;
     }
 
     my $rel_rs = $self->chado()->resultset('Sequence::FeatureRelationship');
 
     try {
       my $orth_guard = $self->chado()->txn_scope_guard;
-      my $rel = $rel_rs->create({ object_id => $pombe_gene->feature_id(),
+      my $rel = $rel_rs->create({ object_id => $chado_object->feature_id(),
                                   subject_id => $ortholog_feature->feature_id(),
                                   type_id => $self->objs()->{orthologous_to_cvterm}->cvterm_id()
                                 });
-      $self->add_feature_relationshipprop($rel, 'date', $date);
+
+      if (defined $date) {
+        $self->add_feature_relationshipprop($rel, date => $date);
+      }
+
       my $db_xref = delete $sub_qual_map->{db_xref};
       my $pub = $self->get_pub_from_db_xref($term, $db_xref);
       $self->add_feature_relationship_pub($rel, $pub);
+      if (defined $ortholog_term) {
+        $self->add_feature_relationshipprop($rel, 'subject terminus', $ortholog_term);
+      }
       $orth_guard->commit();
+      warn "  created ortholog to $ortholog_name\n" if $self->verbose();
     } catch {
-      warn "  failed to create ortholog relation: $_\n";
+      warn "  failed to create ortholog relation from $chado_object_uniquename " .
+        "to $ortholog_name: $_\n";
       return 0;
     };
   }
@@ -469,9 +466,73 @@ method process_ortholog($pombe_gene, $term, $sub_qual_map) {
   return 1;
 }
 
+method process_paralog($chado_object, $term, $sub_qual_map) {
+  warn "    process_ortholog()\n" if $self->verbose();
+  my $other_gene;
 
-method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
-  my $systematic_id = $pombe_gene->uniquename();
+  my $chado_object_type = $chado_object->type()->name();
+  my $chado_object_uniquename = $chado_object->uniquename();
+
+  if ($chado_object_type ne 'gene' && $chado_object_type ne 'pseudogene') {
+    warn "  can't apply paralog to $chado_object_type: $term\n" if $self->verbose();
+    return 0;
+  }
+
+  my $related;
+
+  if ($term =~ /^(paralogous|similar|related) to S\. pombe (.*)/i) {
+    if ($1 eq 'related') {
+      $related = 1;
+    } else {
+      $related = 0;
+    }
+    my @other_gene_bits = split / and /, $2;
+
+    my $date = $self->get_and_check_date($sub_qual_map);
+
+    push @{$self->config()->{paralogs}->{$chado_object_uniquename}}, {
+      other_gene_names => [@other_gene_bits],
+      feature => $chado_object,
+      related => $related,
+      date => $date,
+    };
+
+    return 1;
+  } else {
+    warn "  didn't find paralog in: $term\n" if $self->verbose();
+    return 0;
+  }
+}
+
+method process_warning($chado_object, $term, $sub_qual_map)
+{
+  my $chado_object_type = $chado_object->type()->name();
+
+  warn "    process_warning()\n" if $self->verbose();
+  if ($chado_object_type ne 'gene' and $chado_object_type ne 'pseudogene') {
+    return 0;
+  }
+
+  if ($term =~ /WARNING: (.*)/) {
+    $self->add_term_to_gene($chado_object, 'warning', $1,
+                            $sub_qual_map, 1);
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+method process_family($chado_object, $term, $sub_qual_map)
+{
+  warn "    process_family()\n" if $self->verbose();
+  $self->add_term_to_gene($chado_object, 'PomBase family or domain', $term,
+                          $sub_qual_map, 1);
+  return 1;
+}
+
+method process_one_cc($chado_object, $bioperl_feature, $qualifier,
+                      $target_curations) {
+  my $systematic_id = $chado_object->uniquename();
 
   warn "    process_one_cc($systematic_id, $bioperl_feature, '$qualifier')\n"
     if $self->verbose();
@@ -490,10 +551,11 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
   }
 
   my $cv_name = delete $qual_map{cv};
+  my $cv_name_qual_exists = defined $cv_name;
   my $term = delete $qual_map{term};
 
   if (!defined $term || length $term == 0) {
-    print "  no term for: $qualifier\n";
+    warn "no term for: $qualifier\n" if $self->verbose();
     return ();
   }
 
@@ -508,35 +570,81 @@ method process_one_cc($pombe_gene, $bioperl_feature, $qualifier) {
     } keys %{$self->objs()->{cv_long_names}};
   }
 
-  if (defined $cv_name) {
-    $term =~ s/$cv_name, *//;
+  my $chado_object_type = $chado_object->type()->name();
 
-    if (exists $self->objs()->{cv_alt_names}->{$cv_name}) {
-      map { $term =~ s/^$_, *//; } @{$self->objs()->{cv_alt_names}->{$cv_name}};
+  if ($cv_name_qual_exists) {
+    if (!($term =~ s/$cv_name, *//)) {
+
+      (my $space_cv_name = $cv_name) =~ s/_/ /g;
+
+      if (!($term =~ s/$space_cv_name, *//)) {
+        my $name_substituted = 0;
+
+        if (exists $self->objs()->{cv_alt_names}->{$cv_name}) {
+          for my $alt_name (@{$self->objs()->{cv_alt_names}->{$cv_name}}) {
+            if ($term =~ s/^$alt_name, *//) {
+              $name_substituted = 1;
+              last;
+            }
+            $alt_name =~ s/_/ /g;
+            if ($term =~ s/^$alt_name, *//) {
+              $name_substituted = 1;
+              last;
+            }
+          }
+        }
+
+        if (!$name_substituted) {
+          if ($term =~ /(.*?),/) {
+            my $cv_name_in_term = $1;
+            if ($cv_name_in_term ne $cv_name) {
+              if ($chado_object_type ne 'gene' and $chado_object_type ne 'pseudogene') {
+                warn qq{cv_name ("$cv_name") doesn't match start of term ("$cv_name_in_term")\n};
+              }
+            }
+          }
+        }
+      }
     }
+  }
 
+  if (defined $cv_name) {
     if (grep { $_ eq $cv_name } keys %{$self->objs()->{cv_alt_names}}) {
+      if ($self->objs()->{gene_cvs}->{$cv_name} xor
+          ($chado_object_type eq 'gene' or $chado_object_type eq 'pseudogene')) {
+        return ();
+      }
       try {
-        $self->add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 1);
+        $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 1);
       } catch {
-        warn "    $_: failed to load qualifier '$qualifier' from $systematic_id\n";
+        warn "$_: failed to load qualifier '$qualifier' from $systematic_id\n";
         $self->dump_feature($bioperl_feature) if $self->verbose();
+        return ();
       };
       warn "    loaded: $qualifier\n" if $self->verbose();
     } else {
-      warn "  unknown cv $cv_name: $qualifier\n";
-    }
-  } else {
-    if (!$self->process_ortholog($pombe_gene, $term, \%qual_map)) {
-      print "  didn't process: $qualifier\n";
+      warn "CV name not recognised: $qualifier\n";
       return ();
     }
+  } else {
+      if (!$self->process_ortholog($chado_object, $term, \%qual_map)) {
+        if (!$self->process_paralog($chado_object, $term, \%qual_map)) {
+          if (!$self->process_warning($chado_object, $term, \%qual_map)) {
+            if (!$self->process_family($chado_object, $term, \%qual_map)) {
+              warn "qualifier not recognised: $qualifier\n";
+              return ();
+            }
+          }
+        }
+      }
   }
+
+  $self->check_unused_quals($qualifier, %qual_map);
 
   return %qual_map;
 }
 
-method process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
+method process_one_go_qual($chado_object, $bioperl_feature, $qualifier) {
   warn "    go qualifier: $qualifier\n" if $self->verbose();
 
   my %qual_map = ();
@@ -560,33 +668,39 @@ method process_one_go_qual($pombe_gene, $bioperl_feature, $qualifier) {
     my $term = delete $qual_map{term};
 
     try {
-      $self->add_term_to_gene($pombe_gene, $cv_name, $term, \%qual_map, 0);
+      $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 0);
+      $self->check_unused_quals($qualifier, %qual_map);
     } catch {
-      my $systematic_id = $pombe_gene->uniquename();
-      print "  $_: failed to load qualifier '$qualifier' from $systematic_id:\n";
+      my $systematic_id = $chado_object->uniquename();
+      warn "$_: failed to load qualifier '$qualifier' from $systematic_id:\n";
       $self->dump_feature($bioperl_feature) if $self->verbose();
       return ();
     };
-    print "    loaded: $qualifier\n" if $self->verbose();
+    warn "    loaded: $qualifier\n" if $self->verbose();
   } else {
-    print "  no aspect for: $qualifier\n";
+    warn "  no aspect for: $qualifier\n";
     return ();
   }
 
   return %qual_map;
 }
 
+method process_product($chado_feature, $product)
+{
+  $self->add_term_to_gene($chado_feature, 'PomBase gene products',
+                          $product, {}, 1);
+}
+
 method check_unused_quals
 {
-  return if $self->verbose();
-
   my $qual_text = shift;
   my %quals = @_;
 
   if (scalar(keys %quals) > 0) {
-    warn "  unprocessed sub qualifiers:\n";
+    warn "  unprocessed sub qualifiers:\n" if $self->verbose();
     while (my ($key, $value) = each %quals) {
-      warn "   $key => $value\n";
+      $self->config()->{stats}->{unused_qualifiers}->{$key}++;
+      warn "   $key => $value\n" if $self->verbose();
     }
   }
 }

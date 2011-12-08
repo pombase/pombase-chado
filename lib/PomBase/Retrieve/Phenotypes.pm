@@ -2,7 +2,7 @@ package PomBase::Retrieve::Phenotypes;
 
 =head1 NAME
 
-PomBase::Retrieve::Phenotypes - Retrieve phenotypes to a file
+PomBase::Retrieve::Phenotypes - Retrieve phenotypes from Chado
 
 =head1 SYNOPSIS
 
@@ -40,6 +40,8 @@ use Moose;
 
 use List::Gen 'iterate';
 
+with 'PomBase::Retriever';
+
 method retrieve() {
   my $chado = $self->chado();
 
@@ -61,4 +63,12 @@ method retrieve() {
   };
 }
 
-with 'PomBase::Retriever';
+method header
+{
+  return '';
+}
+
+method format_result($res)
+{
+  return join "\t", @$res;
+}

@@ -42,6 +42,10 @@ requires 'chado';
 
 method get_cv($cv_name)
 {
+  if (!defined $cv_name) {
+    croak "undefined value for cv name";
+  }
+
   state $cache = {};
 
   return $cache->{$cv_name} //
@@ -53,9 +57,17 @@ method get_cvterm($cv_name, $cvterm_name)
 {
   my $cv = $self->get_cv($cv_name);
 
+  if (!defined $cv) {
+    warn "no such CV: $cv_name\n";
+    return undef;
+  }
+
   state $cache = {};
 
-  if (exists $cache->{$cv_name}->{$cvterm_name}) {
+  if (defined $cache->{$cv_name}->{$cvterm_name}) {
+    warn "     get_cvterm('$cv_name', '$cvterm_name') - FOUND IN CACHE ",
+      $cache->{$cv_name}->{$cvterm_name}->cvterm_id(), "\n"
+      if $self->verbose();
     return $cache->{$cv_name}->{$cvterm_name};
   }
 
@@ -65,12 +77,36 @@ method get_cvterm($cv_name, $cvterm_name)
 
   $cache->{$cv_name}->{$cvterm_name} = $cvterm;
 
+  if (defined $cvterm) {
+    warn "     get_cvterm('$cv_name', '$cvterm_name') - FOUND ", $cvterm->cvterm_id(),"\n"
+      if $self->verbose();
+  } else {
+    warn "     get_cvterm('$cv_name', '$cvterm_name') - NOT FOUND\n"
+      if $self->verbose();
+  }
+
   return $cvterm;
 }
 
-method find_cvterm($cv, $term_name, %options) {
+# find cvterm by query with name or cvtermsynonym
+method find_cvterm_by_name($cv, $term_name, %options) {
+  if (!defined $cv) {
+    carp "cv is undefined";
+  }
+
   if (!ref $cv) {
-    $cv = $self->get_cv($cv);
+    my $cv_name = $cv;
+    $cv = $self->get_cv($cv_name);
+
+    if (!defined $cv) {
+      carp "no cv found with name '$cv_name'\n";
+    }
+  }
+
+  state $cache = {};
+
+  if (exists $cache->{$cv->name()}->{$term_name}) {
+    return $cache->{$cv->name()}->{$term_name};
   }
 
   my %search_options = ();
@@ -84,28 +120,97 @@ method find_cvterm($cv, $term_name, %options) {
                                 { %search_options });
 
   if (defined $cvterm) {
+    $cache->{$cv->name()}->{$term_name} = $cvterm;
     return $cvterm;
   } else {
     my $synonym_rs = $self->chado()->resultset('Cv::Cvtermsynonym');
-    my $exact_cvterm = $self->get_cvterm('PomBase synonym types', 'exact');
+    my $exact_cvterm = $self->get_cvterm('synonym_type', 'exact');
     my $search_rs =
       $synonym_rs->search({ synonym => $term_name,
-                            type_id => $exact_cvterm->cvterm_id() });
+                            type_id => $exact_cvterm->cvterm_id(),
+                            'cvterm.cv_id' => $cv->cv_id(),
+                          },
+                          {
+                            join => 'cvterm'
+                          });
 
     if ($search_rs->count() > 1) {
-      die "more than one cvtermsynonym found for $term_name";
+      warn "more than one exact cvtermsynonym found for $term_name\n";
+      return undef;
     } else {
-      my $synonym = $search_rs->next();
+      my $exact_synonym = $search_rs->first();
 
-      if (defined $synonym) {
-        return $cvterm_rs->find($synonym->cvterm_id());
+      if (defined $exact_synonym) {
+        warn "      found as synonym: $term_name\n" if $self->verbose();
+        return $cvterm_rs->find($exact_synonym->cvterm_id());
       } else {
-        return undef;
+        # try non-exact synonyms
+        $search_rs = $synonym_rs->search({ synonym => $term_name,
+                                           'cvterm.cv_id' => $cv->cv_id(),
+                                         },
+                                         {
+                                           join => 'cvterm'
+                                         });
+
+        if ($search_rs->count() > 1) {
+          die "more than one cvtermsynonym found for $term_name";
+        } else {
+          my $synonym = $search_rs->first();
+
+          if (defined $synonym) {
+            warn "      found as synonym (type: ", $synonym->type()->name(),
+              "): $term_name\n" if $self->verbose();
+            return $cvterm_rs->find($synonym->cvterm_id());
+          } else {
+            return undef;
+          }
+        }
       }
     }
   }
 
 }
-#memoize ('find_cvterm');
+
+method find_cvterm_by_term_id($term_id)
+{
+  state $cache = {};
+
+  if (exists $cache->{$term_id}) {
+    return $cache->{$term_id};
+  }
+
+  if ($term_id =~ /(.*):(.*)/) {
+    my $db_name = $1;
+    my $dbxref_accession = $2;
+
+    my $chado = $self->chado();
+    my $db = $chado->resultset('General::Db')->find({ name => $db_name });
+
+    if (!defined $db) {
+      croak "no Db found with name '$db_name'\n";
+    }
+
+    my @cvterms = $chado->resultset('General::Dbxref')
+      ->search({ db_id => $db->db_id(),
+                 accession => $dbxref_accession })
+      ->search_related('cvterm')
+      ->all();
+
+
+    if (@cvterms > 1) {
+      die "more than one cvterm for dbxref ($term_id)\n";
+    } else {
+      if (@cvterms == 1) {
+        $cache->{$term_id} = $cvterms[0];
+        return $cvterms[0];
+      } else {
+        return undef;
+      }
+    }
+  } else {
+    die "database ID ($term_id) doesn't contain a colon";
+  }
+}
+
 
 1;

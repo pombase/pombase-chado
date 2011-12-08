@@ -1,0 +1,15 @@
+---
+name: tetraspanin 6
+primary_identifier: ENSG00000000003
+secondary_identifier: 7105
+symbol: MTX1
+---
+name: tenomodulin
+primary_identifier: ENSG00000000005
+secondary_identifier: 64102
+symbol: TNMD
+---
+name: 'dolichyl-phosphate mannosyltransferase polypeptide 1, catalytic subunit'
+primary_identifier: ENSG00000000419
+secondary_identifier: 8813
+symbol: gene1

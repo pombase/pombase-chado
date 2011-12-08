@@ -80,17 +80,32 @@ method get_uniquename($feature, $so_type)
   }
 
   my $systematic_id = $systematic_ids[0];
-  my $orig_systematic_id = $systematic_id;
+
+#  warn "BEFORE $so_type - systematic_id: $systematic_id\n";
+
+  if ($systematic_id !~ /\.\d$/) {
+    $systematic_id .= '.1';
+  }
+
+#  warn "AFTER $so_type - systematic_id: $systematic_id\n";
 
   if (grep { $_ eq $embl_type } qw(intron 5'UTR 3'UTR)) {
-    my $key = "$systematic_id.1:$embl_type";
+    if ($systematic_id !~ /\.\d$/) {
+      $systematic_id .= '.1';
+    }
+
+    my $key = "$systematic_id:$embl_type";
     my $type_count = ++$type_seen->{$key};
     $systematic_id = "$key:$type_count";
   }
 
-  $feature->{chado_uniquename} = [$systematic_id, $orig_systematic_id, 1];
+  (my $transcript_systematic_id = $systematic_id) =~ s/^(.*?\.\d+c?\.\d).*/$1/;
+  (my $gene_systematic_id = $systematic_id) =~ s/^(.*?\.\d+c?).*/$1/;
 
-  return ($systematic_id, $orig_systematic_id, 1);
+  $feature->{chado_uniquename} =
+    [$systematic_id, $transcript_systematic_id, $gene_systematic_id, 1];
+
+  return @{$feature->{chado_uniquename}};
 }
 
 1;

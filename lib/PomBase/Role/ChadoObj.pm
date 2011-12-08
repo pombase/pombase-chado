@@ -38,7 +38,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-with 'PomBase::Role::ChadoUser';
+requires 'chado';
 
 has objs => (is => 'ro', isa => 'HashRef[Str]', default => sub { {} });
 
@@ -94,16 +94,15 @@ method BUILD
     localization => ['localisation'],
     phenotype => [],
     pt_mod => ['modification'],
-    gene_ex => ['expression'],
+    gene_ex => ['expression', 'gene expression'],
     m_f_g => ['misc functional group'],
     name_description => ['name description'],
     pathway => [],
     complementation => [],
-    protein_family => [],
-    ex_tools => [],
+    ex_tools => ['experimental tools'],
     misc => [],
     warning => [],
-    DNA_binding_specificity => [],
+    DNA_binding_specificity => ['DNA binding specificity'],
     subunit_composition => [],
     cat_act => ['catalytic activity'],
     disease_associated => ['disease associated'],
@@ -119,11 +118,19 @@ method BUILD
     'localization' => 'localization',
     'modification' => 'pt_mod',
     'expression' => 'gene_ex',
+    'gene expression' => 'gene_ex',
     'misc functional group' => 'm_f_g',
     'name description' => 'name_description',
     'catalytic activity' => 'cat_act',
     'phenotype' => 'phenotype',
     'disease associated' => 'disease_associated',
+    'DNA binding specificity' => 'DNA_binding_specificity',
+    'subunit composition' => 'subunit_composition',
+    'experimental tools' => 'ex_tools',
+  };
+
+  $self->objs()->{gene_cvs} = {
+    map { ($_, 1) } qw(gene_ex species_dist name_description misc warning genome_org localization phenotype m_f_g pathway complementation ex_tools DNA_binding_specificity subunit_composition cat_act disease_associated)
   };
 
   for my $cv_name (keys %{$self->objs()->{cv_alt_names}}) {
@@ -132,13 +139,19 @@ method BUILD
     }
   }
 
-  my $pombase_db = $db_rs->find_or_create({ name => 'PomBase' });
 
-  $self->objs()->{dbs_objects}->{$go_cv_map{P}} = $pombase_db;
-  $self->objs()->{dbs_objects}->{$go_cv_map{F}} = $pombase_db;
-  $self->objs()->{dbs_objects}->{$go_cv_map{C}} = $pombase_db;
+  my $pombase_name = $self->config()->{db_name_for_cv};
 
-  $dbs_objects{phenotype} = $db_rs->find_or_create({ name => 'SPO' });
+  my $pombase_db = $db_rs->find_or_create({ name => $pombase_name });
+
+  $dbs_objects{$go_cv_map{P}} = $pombase_db;
+  $dbs_objects{$go_cv_map{F}} = $pombase_db;
+  $dbs_objects{$go_cv_map{C}} = $pombase_db;
+
+  for my $cv_name (keys %{$self->config->{cvs}}) {
+    $dbs_objects{$cv_name} = $pombase_db;
+  }
+
   $self->objs()->{pombase_db} = $pombase_db;
 
   $dbs_objects{feature_cvtermprop_type} = $pombase_db;
@@ -149,22 +162,18 @@ method BUILD
   my $cv_rs = $chado->resultset('Cv::Cv');
 
   $cv_rs->find_or_create({ name => 'feature_cvtermprop_type' });
-  $cv_rs->find_or_create({ name => 'sequence_feature' });
 
   $self->objs()->{feature_relationshipprop_type_cv} =
     $cv_rs->find_or_create({ name => 'feature_relationshipprop_type' });
 
-  $self->objs()->{genedb_literature_cv} =
-    $cv_rs->find({ name => 'genedb_literature' });
+  $self->objs()->{publication_type_cv} =
+    $cv_rs->find({ name => 'PomBase publication types' });
 
   my $cvterm_rs = $chado->resultset('Cv::Cvterm');
 
-  $self->objs()->{unfetched_pub_cvterm} =
-    $cvterm_rs->find({ name => 'unfetched',
-                       cv_id => $self->objs()->{genedb_literature_cv}->cv_id() });
-
-
   for my $extra_cv_name (keys %{$self->objs()->{cv_alt_names}}) {
+    next if exists $self->config()->{mappings}->{$extra_cv_name};
+
     $cv_rs->find_or_create({ name => $extra_cv_name });
 
     if (!defined $self->objs()->{dbs_objects}->{$extra_cv_name}) {
@@ -173,7 +182,7 @@ method BUILD
   }
 
   $self->objs()->{null_pub_cvterm} =
-    $self->find_cvterm('PomBase publication types', 'null');
+    $self->find_cvterm_by_name('PomBase publication types', 'null');
 
   $self->objs()->{null_pub} =
     $chado->resultset('Pub::Pub')->find_or_create({
@@ -183,12 +192,13 @@ method BUILD
 
   $self->objs()->{orthologous_to_cvterm} =
     $chado->resultset('Cv::Cvterm')->find({ name => 'orthologous_to' });
-
+  $self->objs()->{paralogous_to_cvterm} =
+    $chado->resultset('Cv::Cvterm')->find({ name => 'paralogous_to' });
 
   $self->objs()->{synonym_type_cv} = $self->get_cv('synonym_type');
 
   $self->objs()->{exact_cvterm} =
-    $self->find_cvterm($self->objs()->{synonym_type_cv}, 'exact');
+    $self->find_cvterm_by_name($self->objs()->{synonym_type_cv}, 'exact');
 }
 
 1;

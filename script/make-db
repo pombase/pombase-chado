@@ -1,0 +1,39 @@
+#!/bin/sh -
+
+# A script to make a Chado db from scratch using GMOD tools.  Must be
+# run in the gmod-schema/chado directory.
+
+export PERL5LIB=lib
+
+DB=`perl -ne 'print "$1" if /CHADO_DB_NAME=(.*)/' $HOME/.gmod_profile`
+HOST=`perl -ne 'print "$1" if /CHADO_DB_HOST=(.*)/' $HOME/.gmod_profile`
+USER=kmr44
+PASSWORD=kmr44
+
+echo building database: $DB on $HOST
+
+dropdb $DB; createdb $DB || exit 1
+
+rm --verbose tmp/*/*$DB
+
+cd ~/extern/svn/gmod-schema/chado
+
+perl Makefile.PL
+make
+make load_schema
+make prepdb
+make ontologies
+
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mod_obo_text.xml || exit 1
+
+(cd /var/pomcur/sources/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml /var/pomcur/sources/phenotype_ontology/fypo_edit.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_obo_text.xml || exit 1
+
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD anex_rel_obo_text.xml || exit 1
+
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pro_small.obo | go-apply-xslt oboxml_to_chadoxml - > pro_small_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pro_small_obo_text.xml || exit 1
+
+echo populate cvtermpath 1>&2
+
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c molecular_function
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c cellular_component
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c biological_process

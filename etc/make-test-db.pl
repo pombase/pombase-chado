@@ -23,7 +23,7 @@ my $new_db_name = "load-test-$new_num";
 
 print "creating new database\n";
 
-system "createdb -T load-test-template $new_db_name";
+system "createdb -T pombase-chado-base-2011-12-02 $new_db_name";
 
 use IO::All;
 

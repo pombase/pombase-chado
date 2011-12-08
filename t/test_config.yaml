@@ -1,0 +1,123 @@
+data:
+  cv:
+    - name: relationship
+      cvterms:
+        - name: is_a
+          dbxref:
+            accession: is_a
+            db:
+              name: OBO_REL
+          cvtermsynonyms:
+            - synonym: isa
+              type:
+                name: exact
+                cv:
+                  name: synonym_type
+                dbxref:
+                  accession: exact
+                  db:
+                    name: internal
+            - synonym: ISA
+              type:
+                name: poor_synonym
+                cv:
+                  name: synonym_type
+                dbxref:
+                  accession: poor_synonym
+                  db:
+                    name: internal
+    - name: sequence
+      cvterms:
+        - name: gene
+          dbxref:
+            accession: gene
+            db:
+              name: SO
+        - name: mRNA
+          dbxref:
+            accession: mRNA
+            db:
+              name: SO
+        - name: polypeptide
+          dbxref:
+            accession: mpolypeptide
+            db:
+              name: SO
+    - name: molecular_function
+      cvterms:
+        - name: microtubule motor activity
+          dbxref:
+            accession: 0003777
+            db:
+              name: GO
+    - name: cellular_component
+      cvterms:
+        - name: spindle
+          dbxref:
+            accession: 0005819
+            db:
+              name: GO
+        - name: spindle pole body
+          dbxref:
+            accession: 0005816
+            db:
+              name: GO
+    - name: biological_process
+    - name: PSI-MOD
+    - name: feature_cvtermprop_type
+      cvterms:
+        - name: assigned_by
+          dbxref:
+            accession: assigned_by
+            db:
+              name: PomBase
+  extra_cvterm_terms:
+    - name: PomBase organism property types
+      cvterms:
+        - name: taxon_id
+          dbxref:
+            accession: taxon_id
+            db:
+              name: PomBase
+    - name: PomBase publication types
+      cvterms:
+        - name: paper
+          dbxref:
+            accession: paper
+            db:
+              name: PomBase
+  db:
+    - name: feature_cvtermprop_type
+  pub:
+    - uniquename: PMID:11739790
+      type:
+        name: paper
+  feature:
+    - uniquename: SPBC2F12.13
+      name: klp5
+      type:
+        name: gene
+      organism:
+        genus: Schizosacchaomyces
+        species: pombe
+    - uniquename: SPBC2F12.13.1
+      type:
+        name: mRNA
+      organism:
+        genus: Schizosacchaomyces
+        species: pombe
+  feature_cvterm:
+    - feature:
+        uniquename: SPBC2F12.13
+      cvterm:
+        name: spindle pole body
+      pub:
+        uniquename: PMID:11739790
+test_organism:
+  genus: Schizosacchaomyces
+  species: pombe
+  taxonid: 4896
+
+test_genes:
+  - uniquename: SPBC2F12.13
+  - uniquename: SPAC1093.06c

@@ -41,10 +41,12 @@ use Moose;
 use PomBase::Chado::LoadFeat;
 use Tie::Hash::Indexed;
 use Digest::MD5;
+use Bio::SeqIO;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::FeatureStorer';
 
 has verbose => (is => 'ro', isa => 'Bool');
 has organism => (is => 'ro',
@@ -62,6 +64,8 @@ method process_file($file)
                                   config => $self->config(),
                                   chado => $self->chado(),
                                   verbose => $self->verbose());
+
+  warn "reading from: $file\n";
 
   my $io = Bio::SeqIO->new(-file => $file, -format => "embl" );
   my $seq_obj = $io->next_seq;
@@ -84,7 +88,8 @@ method process_file($file)
   my $chromosome =
     $chado->resultset('Sequence::Feature')->create({%create_args});
 
-  print "reading database from $display_id\n";
+  $self->store_featureprop($chromosome, 'ena_id',
+                           $config->{contig_ena_ids}->{$display_id});
 
   my $anno_collection = $seq_obj->annotation;
 

@@ -49,7 +49,7 @@ method find_or_create_dbxref($db, $accession) {
 method find_or_create_pub($identifier) {
   my $pub_rs = $self->chado()->resultset('Pub::Pub');
 
-  my $paper_cvterm = $self->find_cvterm('PomBase publication types', 'paper');
+  my $paper_cvterm = $self->find_cvterm_by_name('PomBase publication types', 'paper');
 
   return $pub_rs->find_or_create({ uniquename => $identifier,
                                    type_id => $paper_cvterm->cvterm_id() });
@@ -58,8 +58,17 @@ method find_or_create_pub($identifier) {
 method find_db_by_name($db_name) {
   die 'no $db_name' unless defined $db_name;
 
-  return ($self->chado()->resultset('General::Db')->find({ name => $db_name })
-    or die "no db with name: $db_name");
+  state $cache = {};
+
+  if (exists $cache->{$db_name}) {
+    return $cache->{$db_name};
+  }
+
+  my $db = $self->chado()->resultset('General::Db')->find({ name => $db_name });
+  $cache->{$db_name} = $db;
+  die "no db with name: $db_name" unless defined $db;
+
+  return $db;
 }
 
 method add_feature_dbxref($feature, $dbxref_value)
@@ -91,22 +100,6 @@ method get_pub_from_db_xref($qual, $db_xref) {
       warn "    finding pub for $db_xref\n" if $self->verbose();
 
       my $pub = $self->find_or_create_pub($db_xref);
-
-      if (!defined $pub) {
-
-        warn "    pub not found for: $db_xref  ($db);\n" if $self->verbose();
-
-        my $pub_rs = $self->chado()->resultset('Pub::Pub');
-        $pub = $pub_rs->create({
-          uniquename => $db_xref,
-          type_id => $self->objs()->{unfetched_pub_cvterm}->cvterm_id()
-        });
-        my $dbxref = $self->find_or_create_dbxref($db, $accession);
-        my $pub_dbxref_rs = $self->chado()->resultset('Pub::PubDbxref');
-        $pub_dbxref_rs->create({ pub_id => $pub->pub_id(),
-                                 dbxref_id => $dbxref->dbxref_id() });
-        warn "    created new dbxref and pub for: $db_xref\n" if $self->verbose();
-      }
 
       warn "    using existing dbxref and pub for: $db_xref\n" if $self->verbose();
 
