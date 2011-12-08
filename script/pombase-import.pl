@@ -64,7 +64,8 @@ my $guard = $chado->txn_scope_guard;
 
 my $config = LoadFile($config_file);
 
-my $id_counter = PomBase::Chado::IdCounter->new();
+my $id_counter = PomBase::Chado::IdCounter->new(config => $config,
+                                                chado => $chado);
 $config->{id_counter} = $id_counter;
 
 my %import_modules = (
