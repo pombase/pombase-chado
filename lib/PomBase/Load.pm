@@ -170,21 +170,32 @@ func _load_cvterms($chado, $config)
 
       $cvterm_name =~ s/ /_/g;
 
-      my $accession = $config->{id_counter}->get_dbxref_id($db_name);
-      my $formatted_accession = sprintf "%07d", $accession;
+      my $cvterm =
+        $chado->resultset('Cv::Cvterm')
+          ->find({ name => $cvterm_name,
+                   cv_id => $cv->cv_id(),
+                   is_obsolete => 0,
+                 });
 
-      my $dbxref =
-        $chado->resultset('General::Dbxref')->create({
-          db_id => $db->db_id(),
-          accession => $formatted_accession,
-        });
+      if (!defined $cvterm) {
+        my $accession = $config->{id_counter}->get_dbxref_id($db_name);
+        my $formatted_accession = sprintf "%07d", $accession;
 
-      $chado->resultset('Cv::Cvterm')
-        ->find_or_create({ name => $cvterm_name,
-                           cv_id => $cv->cv_id(),
-                           dbxref_id => $dbxref->dbxref_id(),
-                           definition => $cvterm_definition,
-                         });
+        warn "creating $formatted_accession in $db_name, $cv_name / $cvterm_name\n";
+        my $dbxref =
+          $chado->resultset('General::Dbxref')->find_or_create({
+            db_id => $db->db_id(),
+            accession => $formatted_accession,
+          });
+
+        $chado->resultset('Cv::Cvterm')
+          ->create({ name => $cvterm_name,
+                     cv_id => $cv->cv_id(),
+                     dbxref_id => $dbxref->dbxref_id(),
+                     definition => $cvterm_definition,
+                     is_obsolete => 0,
+                   });
+      }
     }
   }
 }
