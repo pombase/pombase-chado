@@ -132,7 +132,7 @@ func _fix_annotation_extension_rels($chado, $config)
     } $chado->resultset('Cv::Cv')->search({ 'me.name' => 'go_annotation_relations' })
             ->search_related('cvterms');
 
-  $config->{cvs}->{cvterm_property_types} = [@new_annotation_rel_names];
+  $config->{cvs}->{cvterm_property_type} = [@new_annotation_rel_names];
 
 }
 

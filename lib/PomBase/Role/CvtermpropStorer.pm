@@ -43,7 +43,7 @@ requires 'chado';
 
 method store_cvtermprop($cvterm, $type_name, $value)
 {
-  my $type_cvterm = $self->get_cvterm('cvterm_property_types', $type_name);
+  my $type_cvterm = $self->get_cvterm('cvterm_property_type', $type_name);
 
   if (!defined $type_cvterm) {
     die "can't find cvterm for $type_name\n";
