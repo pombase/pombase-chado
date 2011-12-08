@@ -139,11 +139,10 @@ method BUILD
     }
   }
 
-  my $pombase_name = 'PomBase';
+
+  my $pombase_name = $self->config()->{db_name_for_cv};
 
   my $pombase_db = $db_rs->find_or_create({ name => $pombase_name });
-
-  $self->config()->{db_name_for_cv} = $pombase_name;
 
   $dbs_objects{$go_cv_map{P}} = $pombase_db;
   $dbs_objects{$go_cv_map{F}} = $pombase_db;

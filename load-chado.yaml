@@ -191,3 +191,5 @@ contig_ena_ids:
   mating_type_region: FP565355
   MISPCG: X54421.1
   AB325691: AB325691
+
+db_name_for_cv: PomBase
