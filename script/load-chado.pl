@@ -173,7 +173,8 @@ while (defined (my $line = <$mismatches>)) {
 close $mismatches;
 }
 
-my $id_counter = PomBase::Chado::IdCounter->new();
+my $id_counter = PomBase::Chado::IdCounter->new(chado => $chado,
+                                                config => $config);
 
 $config->{id_counter} = $id_counter;
 
