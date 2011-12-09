@@ -1,6 +1,8 @@
 # PomBase Chado load config file  -*- conf -*-
 test: 1
 cvs:
+  cvterm_property_type:
+    - nested_extension
   PomBase publication types:
     - paper
     - null

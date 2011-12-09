@@ -65,12 +65,18 @@ method store_extension($feature_cvterm, $extensions)
   for my $extension (@$extensions) {
     my $rel_name = $extension->{rel_name};
 
+    my $nested_extension = $extension->{nested_extension};
+
     $new_name .=  ' [' . $rel_name . '] ';
 
     if ($extension->{term}) {
       $new_name .= $extension->{term}->name();
     } else {
       $new_name .= $extension->{identifier};
+    }
+
+    if (defined $nested_extension) {
+      $new_name .= " ($nested_extension)";
     }
   }
 
@@ -85,6 +91,7 @@ method store_extension($feature_cvterm, $extensions)
     for my $extension (@$extensions) {
       my $rel_name = $extension->{rel_name};
       my $term = $extension->{term};
+      my $nested_extension = $extension->{nested_extension};
 
       if (defined $term) {
         my $rel = $self->find_cvterm_by_name($relationship_cv_name, $rel_name);
@@ -102,7 +109,11 @@ method store_extension($feature_cvterm, $extensions)
         warn qq'storing new cvterm_relationship of type "' . $rel->name() .
           " subject: " . $new_term->name() .
           " object: " . $term->name() . "\n" if $self->verbose();
-        $self->store_cvterm_rel($new_term, $term, $rel);
+        my $term_rel = $self->store_cvterm_rel($new_term, $term, $rel);
+
+        if (defined $nested_extension) {
+          $self->store_cvtermprop($new_term, 'nested_extension', $nested_extension);
+        }
       } else {
         my $identifier = $extension->{identifier};
         if ($rel_name eq 'localization_target_is') {
@@ -217,12 +228,20 @@ method process_one_annotation($featurecvterm, $qualifiers,
     split /(?<=\))\||,/, $qualifiers->{annotation_extension};
 
   my @extensions = map {
-    if (/^(\w+)\(([^\)]+)\)$/) {
+    if (/^(\w+)\((.+)\)$/) {
       my $rel_name = $1;
       my $detail = $2;
 
       map {
         my $identifier = $_;
+
+        my $nested_extension_bit = undef;
+        if ($identifier =~ /(.+?)(\^.*)/) {
+          # nested annotation extension - store and ignore
+          $identifier = $1;
+          $nested_extension_bit = $2;
+        }
+
         my $term_id = undef;
         my $term = undef;
         if ($identifier =~ /^\w+:\d+$/) {
@@ -248,7 +267,8 @@ method process_one_annotation($featurecvterm, $qualifiers,
           rel_name => $rel_name,
           term => $term,
           term_id => $term_id,
-          identifier => $identifier
+          identifier => $identifier,
+          nested_extension => $nested_extension_bit,
         }
       } split /\|/, $detail;
     } else {

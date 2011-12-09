@@ -252,7 +252,7 @@ FT                   annotation_extension=has_substrate(PR:000027604|PR:00002759
 FT                   evidence=IPI; db_xref=PMID:11242054;
 FT                   with=GeneDB_Spombe:SPBC1105.11c; date=20041110"
 FT                   /GO="aspect=C; term=chromosome, pericentric region;
-FT                   annotation_extension=requires_feature(SO:0001796);
+FT                   annotation_extension=requires_feature(SO:0001796),dependent_on(GO:0005515^has_substrate(GeneDB_Spombe:SPCC594.07c));
 FT                   GOid=GO:0000775; evidence=IDA; db_xref=PMID:17627824;
 FT                   date=20070718"
 FT   3'UTR           complement(6624..6797)
