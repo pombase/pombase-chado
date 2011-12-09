@@ -16,7 +16,7 @@ data:
                 dbxref:
                   accession: exact
                   db:
-                    name: internal
+                    name: PomBase
             - synonym: ISA
               type:
                 name: poor_synonym
@@ -25,22 +25,52 @@ data:
                 dbxref:
                   accession: poor_synonym
                   db:
-                    name: internal
+                    name: PomBase
     - name: sequence
       cvterms:
         - name: gene
           dbxref:
-            accession: gene
+            accession: 0000704
             db:
               name: SO
         - name: mRNA
           dbxref:
-            accession: mRNA
+            accession: 0000234
+            db:
+              name: SO
+        - name: chromosome
+          dbxref:
+            accession: 0000340
             db:
               name: SO
         - name: polypeptide
           dbxref:
-            accession: mpolypeptide
+            accession: 0000104
+            db:
+              name: SO
+        - name: intron
+          dbxref:
+            accession: 0000188
+            db:
+              name: SO
+        - name: exon
+          dbxref:
+            accession: 0000147
+            db:
+              name: SO
+        - name: region
+          dbxref:
+            accession: 0000001
+            db:
+              name: SO
+        - name: long_terminal_repeat
+          dbxref:
+            accession: 0000268
+            db:
+              name: SO
+        - name: repeat_region
+          dbxref:
+            accession: 0000657
             db:
               name: SO
     - name: molecular_function
@@ -68,10 +98,9 @@ data:
       cvterms:
         - name: assigned_by
           dbxref:
-            accession: 0000001
+            accession: 01000000
             db:
               name: PomBase
-  extra_cvterm_terms:
     - name: PomBase organism property types
       cvterms:
         - name: taxon_id
@@ -86,6 +115,7 @@ data:
             accession: 0000003
             db:
               name: PomBase
+  extra_cvterm_terms:
   db:
     - name: feature_cvtermprop_type
   pub:

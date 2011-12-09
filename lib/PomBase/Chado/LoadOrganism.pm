@@ -63,6 +63,7 @@ method load_organism($genus, $species, $common_name, $abbreviation, $taxon_id)
       cv_id => $org_prop_types_cv->cv_id(),
       dbxref_id => $taxon_id_dbxref->dbxref_id(),
       name => 'taxon_id',
+      is_obsolete => 0,
     });
 
   my $organism =
