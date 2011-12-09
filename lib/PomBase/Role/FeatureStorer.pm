@@ -110,6 +110,7 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
   }
 
   my $name = undef;
+  my $has_reserved_name = 0;
 
   if ($feature->has_tag('primary_name')) {
     my @primary_names = $feature->get_tag_values('primary_name');
@@ -132,6 +133,8 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
       }
 
       $name = $reserved_names[0];
+
+      $has_reserved_name = 1;
     } else {
       if ($so_type eq 'gene') {
         warn "no /primary_name qualifier for $uniquename\n" if $self->verbose();
@@ -170,6 +173,10 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
     for my $obsolete_name (@obsolete_names) {
       $self->store_feature_synonym($chado_feature, $obsolete_name, 0);
     }
+  }
+
+  if ($has_reserved_name) {
+    $self->store_featureprop($chado_feature, 'name_is_reserved', 'yes');
   }
 
   return $chado_feature;

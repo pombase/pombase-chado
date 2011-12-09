@@ -10,6 +10,7 @@ cvs:
     - comment
     - symbol
     - ena_id
+    - name_is_reserved
   PomBase annotation extension terms: []
   PomBase gene products: []
   PomBase family or domain: []
