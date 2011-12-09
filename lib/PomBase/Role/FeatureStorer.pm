@@ -193,6 +193,8 @@ method store_featureprop($feature, $type_name, $value)
   my $type_cvterm = $self->get_cvterm('PomBase feature property types',
                                       $type_name);
 
+  warn "  storing featureprop for ", $feature->uniquename(), " $type_name $value\n" if $self->verbose();
+
   $self->chado()->resultset('Sequence::Featureprop')->create({
     feature_id => $feature->feature_id(),
     type_id => $type_cvterm->cvterm_id(),
