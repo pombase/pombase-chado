@@ -6,6 +6,9 @@ cvs:
   PomBase publication types:
     - paper
     - null
+  synonym_type:
+    - reserved_name
+    - obsolete_name
   PomBase feature property types:
     - name: comment
       definition: >

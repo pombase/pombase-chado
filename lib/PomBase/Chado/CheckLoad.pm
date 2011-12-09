@@ -77,7 +77,7 @@ method check
   should ($feature_dbxref_rs->count(), 7);
 
   my $feature_synonym_rs = $chado->resultset('Sequence::FeatureSynonym');
-  should ($feature_synonym_rs->count(), 2);
+  should ($feature_synonym_rs->count(), 3);
 
   my $db_res = $chado->resultset('General::Db');
   assert($db_res->search({ name => 'warning' })->count() == 0);

@@ -81,13 +81,16 @@ method find_or_create_synonym($synonym_name, $type_name)
   });
 }
 
-method store_feature_synonym($feature, $synonym_name, $is_current)
+method store_feature_synonym($feature, $synonym_name, $type, $is_current)
 {
   $is_current //= 1;
 
-  my $synonym = $self->find_or_create_synonym($synonym_name, 'exact');
+  my $synonym = $self->find_or_create_synonym($synonym_name, $type);
 
   my $pub = $self->objs()->{null_pub};
+
+  warn "   creating synonym for ", $feature->uniquename(), " - $synonym_name, type: $type\n"
+    if $self->verbose();
 
   return $self->chado()->resultset('Sequence::FeatureSynonym')->find_or_create({
     feature_id => $feature->feature_id(),
@@ -110,6 +113,7 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
   }
 
   my $name = undef;
+  my $reserved_name = undef;
 
   if ($feature->has_tag('primary_name')) {
     my @primary_names = $feature->get_tag_values('primary_name');
@@ -131,7 +135,7 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
         warn "$uniquename has more than one /reserved_name\n";
       }
 
-      $name = $reserved_names[0];
+      $reserved_name = $reserved_names[0];
     } else {
       if ($so_type eq 'gene') {
         warn "no /primary_name qualifier for $uniquename\n" if $self->verbose();
@@ -162,13 +166,17 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
     next if $synonym eq $gene_uniquename;
     next if defined $name and $synonym eq $name;
 
-    $self->store_feature_synonym($chado_feature, $synonym);
+    $self->store_feature_synonym($chado_feature, $synonym, 'exact');
+  }
+
+  if (defined $reserved_name) {
+    $self->store_feature_synonym($chado_feature, $reserved_name, 'reserved_name');
   }
 
   if ($feature->has_tag('obsolete_name')) {
     my @obsolete_names = $feature->get_tag_values('obsolete_name');
     for my $obsolete_name (@obsolete_names) {
-      $self->store_feature_synonym($chado_feature, $obsolete_name, 0);
+      $self->store_feature_synonym($chado_feature, $obsolete_name, 'obsolete_name', 0);
     }
   }
 
