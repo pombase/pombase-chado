@@ -17,33 +17,33 @@ cvs:
   PomBase gene characterisation status:
     - name: published
       definition: >
-        A gene product characterised, or partially characterised in a small 
-        scale experiment to providing published information about the biological 
-        process. The biological process annotation must be equivalent to, or 
-        more specific than terms in the "GO slim"  
+        A gene product characterised, or partially characterised in a small
+        scale experiment to providing published information about the biological
+        process. The biological process annotation must be equivalent to, or
+        more specific than terms in the "GO slim"
         http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
     - name: biological role inferred
       definition: >
-        A gene product whose biological process is inferred from homology to an 
-        experimentally characterised gene product.  The biological process 
-        annotation must be equivalent to, or more specific than terms in the "GO 
+        A gene product whose biological process is inferred from homology to an
+        experimentally characterised gene product.  The biological process
+        annotation must be equivalent to, or more specific than terms in the "GO
         slim"  http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html
     - name: conserved unknown
       definition: >
-        A gene product which is conserved more broadly than the 
-        Schizosacchaomyces clade,  but cannot be assigned a biological process 
-        term,  equivalent to, or more specific than the terms in the "GO slim"  
-        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.htmlbased on 
+        A gene product which is conserved more broadly than the
+        Schizosacchaomyces clade,  but cannot be assigned a biological process
+        term,  equivalent to, or more specific than the terms in the "GO slim"
+        http://www.sanger.ac.uk/Projects/S_pombe/GO_slim.html based on
         experimental data from any organism
     - name: sequence orphan
       definition: >
         A gene product which is not conserved outside the Schizosacchaomyces clade
-        and where nothing is published about, or can be inferred from homology 
+        and where nothing is published about, or can be inferred from homology
         about the biological role
     - name: fission yeast specific family
       definition: >
         A gene product which is not conserved outside the Schizosacchaomyces clade
-        and where nothing is published about, or can be inferred from homology 
+        and where nothing is published about, or can be inferred from homology
         about the biological role
         but are present in more than one copy in fission yeast
     - name: dubious
