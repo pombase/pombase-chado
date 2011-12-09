@@ -68,7 +68,7 @@ data:
       cvterms:
         - name: assigned_by
           dbxref:
-            accession: assigned_by
+            accession: 0000001
             db:
               name: PomBase
   extra_cvterm_terms:
@@ -76,14 +76,14 @@ data:
       cvterms:
         - name: taxon_id
           dbxref:
-            accession: taxon_id
+            accession: 0000002
             db:
               name: PomBase
     - name: PomBase publication types
       cvterms:
         - name: paper
           dbxref:
-            accession: paper
+            accession: 0000003
             db:
               name: PomBase
   db:

@@ -15,7 +15,8 @@ my $config = $test_util->config();
 
 my $guard = $chado->txn_scope_guard;
 
-my $id_counter = PomBase::Chado::IdCounter->new();
+my $id_counter = PomBase::Chado::IdCounter->new(config => $config,
+                                                chado => $chado);
 $config->{id_counter} = $id_counter;
 
 my $organism = PomBase::Load::init_objects($chado, $config);

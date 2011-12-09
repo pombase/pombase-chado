@@ -143,11 +143,12 @@ method BUILD
   $self->test_config($test_config);
 
   my $config = LoadFile('load-chado.yaml');
-  my $id_counter = PomBase::Chado::IdCounter->new();
+  my $chado = $self->_make_test_db();
+  my $id_counter = PomBase::Chado::IdCounter->new(config => $config,
+                                                  chado => $chado);
   $config->{id_counter} = $id_counter;
   $self->config($config);
 
-  my $chado = $self->_make_test_db();
   $self->chado($chado);
   $self->_load_cv_db($chado);
   if ($self->load_test_features()) {
