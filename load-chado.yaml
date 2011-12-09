@@ -14,10 +14,6 @@ cvs:
     - symbol
     - name: ena_id
       definition: The European Nucleotide Archive ID of the feature.
-    - name: name_is_reserved
-      definition: >
-        If the value of the property is "yes", the name of this feature is
-        reserved, prior to publication.
   PomBase annotation extension terms: []
   PomBase gene products: []
   PomBase family or domain: []
