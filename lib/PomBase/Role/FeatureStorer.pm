@@ -123,10 +123,6 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
     }
 
     $name = $primary_names[0];
-
-    if ($feature->has_tag('reserved_name')) {
-      warn "$uniquename has a /reserved_name and a /primary_name\n";
-    }
   } else {
     if ($feature->has_tag('reserved_name')) {
       my @reserved_names = $feature->get_tag_values('reserved_name');
