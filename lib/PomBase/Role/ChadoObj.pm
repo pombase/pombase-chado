@@ -65,28 +65,6 @@ method BUILD
 
   my %dbs_objects = ();
 
-
-  $self->objs()->{go_evidence_codes} = {
-    EXP => 'Inferred from Experiment',
-    IDA => 'Inferred from Direct Assay',
-    IPI => 'Inferred from Physical Interaction',
-    IMP => 'Inferred from Mutant Phenotype',
-    IGI => 'Inferred from Genetic Interaction',
-    IEP => 'Inferred from Expression Pattern',
-    ISS => 'Inferred from Sequence or Structural Similarity',
-    ISO => 'Inferred from Sequence Orthology',
-    ISA => 'Inferred from Sequence Alignment',
-    ISM => 'Inferred from Sequence Model',
-    IGC => 'Inferred from Genomic Context',
-    RCA => 'inferred from Reviewed Computational Analysis',
-    TAS => 'Traceable Author Statement',
-    NAS => 'Non-traceable Author Statement',
-    IC => 'Inferred by Curator',
-    ND => 'No biological Data available',
-    IEA => 'Inferred from Electronic Annotation',
-    NR => 'Not Recorded',
-  };
-
   $self->objs()->{cv_alt_names} = {
     genome_org => ['genome organisation', 'genome organization'],
     sequence_feature => ['sequence feature', 'protein sequence feature'],

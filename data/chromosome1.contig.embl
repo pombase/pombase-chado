@@ -398,7 +398,7 @@ FT                   /systematic_id="SPAC637.07"
 FT                   /db_xref="SPD:35/35D10"
 FT                   /controlled_curation="term=phenotype, viable;
 FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
-FT                   date=20100406"
+FT                   date=20100406; evidence=FPR"
 FT                   /controlled_curation="term=species distribution, no
 FT                   apparent S. cerevisiae ortholog; date=19700101"
 FT                   /controlled_curation="term=species distribution, conserved

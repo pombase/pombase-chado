@@ -188,6 +188,8 @@ evidence_types:
     name: Not Recorded
   TAS:
     name: Traceable Author Statement
+  FPR:
+    name: Unknown evidence code FPR
   UNK:
     name: Unknown
 
