@@ -48,6 +48,11 @@ my %stored_cvterms = ();
 method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
   my $rs = $self->chado()->resultset('Sequence::FeatureCvterm');
 
+  if (!defined $cvterm) {
+    croak "cvterm not defined in create_feature_cvterm() for ",
+      $chado_object->uniquename(), "\n";
+  }
+
   my $systematic_id = $chado_object->uniquename();
 
   warn "NO PUB\n" unless $pub;
