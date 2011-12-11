@@ -7,7 +7,7 @@ DB=$2
 USER=$3
 PASSWORD=$4
 
-cd $HOME/pombe/pombe-embl/
+cd /var/pomcur/sources/pombe-embl/
 svn update || exit 1
 
 cd $HOME/git/pombase-run
@@ -22,23 +22,34 @@ $HOME/git/pombase-run/script/load-chado.pl \
   --mapping "pt_mod:PSI-MOD:$HOME/Dropbox/pombase/ontologies/PSI-MOD/modification_map.txt" \
   --mapping "phenotype:fission_yeast_phenotype:$HOME/Dropbox/pombase/ontologies/phenotype/phenotype-map.txt" \
   --obsolete-term-map $HOME/pombe/go-doc/obsoletes-exact $HOME/git/pombase-run/load-chado.yaml \
-  $HOST $DB $USER $PASSWORD $HOME/pombe/pombe-embl/*.contig 2>&1 | tee $log_file
+  $HOST $DB $USER $PASSWORD /var/pomcur/sources/pombe-embl/*.contig 2>&1 | tee $log_file
 $HOME/git/pombase-run/etc/process-log.pl $log_file
 
 echo starting import of biogrid data 1>&2
 
+(cd /var/pomcur/sources/biogrid
+mv BIOGRID-* old/
+wget http://thebiogrid.org/downloads/archives/Latest%20Release/BIOGRID-ORGANISM-LATEST.tab2.zip
+unzip -q BIOGRID-ORGANISM-LATEST.tab2.zip
+if [ ! -e BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt ]
+then
+  echo "no pombe BioGRID file found - exiting" 1>&2
+  exit 1
+fi
+)
+
 cd $HOME/git/pombase-run
-./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD < $HOME/downloads/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-3.1.78.tab2.txt
+./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD < /var/pomcur/sources/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt
 
 echo starting import of GOA GAF data 1>&2
 
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/go_comp.tex
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/go_proc.tex
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/go_func.tex
-./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$HOME/pombe/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=$HOME/pombe/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/sources/gene_association.GeneDB_Spombe.inf.gaf
+./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/sources/gene_association.GeneDB_Spombe.inf.gaf
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/From_curation_tool
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/GO_ORFeome_localizations2.tex
-./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$HOME/pombe/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=$HOME/pombe/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < ~/Work/pombe/gene_association.goa_uniprot.pombe
+./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < ~/Work/pombe/gene_association.goa_uniprot.pombe
 
 
 echo filtering redundant terms 1>&2
