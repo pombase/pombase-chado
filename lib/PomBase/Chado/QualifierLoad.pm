@@ -238,6 +238,9 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
           my $db_term_id = $db->name() . ":" . $dbxref->accession();
           my $embl_cvterm =
             $self->find_cvterm_by_term_id($qualifier_term_id);
+          if (!defined $embl_cvterm) {
+            die "internal error, failed to find cvterm for $qualifier_term_id ($db_term_id)\n";
+          }
           if (defined $obsolete_id && $db_term_id eq $obsolete_id) {
             # use the cvterm we got from the GOid, not the name
             $cvterm = $embl_cvterm;
