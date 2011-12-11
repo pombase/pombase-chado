@@ -51,7 +51,7 @@ with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 
 method store_all_paralogs($paralog_data)
 {
-  warn "    process_ortholog()\n" if $self->verbose();
+  warn "    store_all_paralogs()\n" if $self->verbose();
   my $org_name;
   my $gene_bit;
 

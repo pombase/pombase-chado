@@ -487,7 +487,7 @@ method process_paralog($chado_object, $term, $sub_qual_map) {
 
   my $related;
 
-  if ($term =~ /^(paralogous|similar|related) to S\. pombe (.*)/i) {
+  if ($term =~ /^(paralogous|similar|related) to S\. pombe (\S+)(?: \(paralog\))?/i) {
     if ($1 eq 'related') {
       $related = 1;
     } else {

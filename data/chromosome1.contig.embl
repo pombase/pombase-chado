@@ -446,6 +446,8 @@ FT                   /GO="aspect=P; term=spore wall chitin biosynthetic
 FT                   process; GOid=GO:0034217; evidence=IDA;
 FT                   db_xref=PMID:10632879; date=20050706"
 FT                   /systematic_id="SPAC13G6.12c"
+FT                   /controlled_curation="term=similar to S. pombe
+FT                   SPAC637.07 (paralog); date=19700101"
 SQ   Sequence 8613 BP; 2680 A; 1465 C; 1504 G; 2964 T; 0 other;
      ataacaacgg tttattgttt aaaggctaga agtaatgaaa atcgtctttt ataaaagtct        60
      aaatagtatg aaatttgata ttaagtaagc gagtggcctt aaacgctcta tattctggat       120
