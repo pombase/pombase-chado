@@ -52,7 +52,11 @@ while (defined (my $line = <>)) {
                 print $mapping_problems "$gene: $line";
               } else {
                 if ($line =~ /^processing (.*)/) {
-                  $gene = $1;
+                  if ($1 eq 'mRNA SPBC460.05.1') {
+                    $gene = '';
+                  } else {
+                    $gene = $1;
+                  }
                 } else {
                   if ($line =~ /duplicated sub-qualifier '(.*)'/) {
                     $line =~ s/^\s+//;
