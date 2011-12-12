@@ -39,7 +39,7 @@ fi
 )
 
 cd $HOME/git/pombase-run
-./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD < /var/pomcur/sources/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt
+cat /var/pomcur/sources/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt | ./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD
 
 echo starting import of GOA GAF data 1>&2
 
