@@ -316,7 +316,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
       warn "no evidence for $cv_name annotation: $embl_term_name in ", $pombe_feature->uniquename(), "\n";
     }
 
-    if ($cv_name eq 'fission_yeast_phenotype') {
+    if ($cv_name eq 'fission_yeast_phenotype' and $pub->uniquename() eq 'PMID:20473289') {
       $evidence_code = 'Microscopy';
       $evidence = 'Microscopy';
     }
