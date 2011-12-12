@@ -43,7 +43,7 @@ while (defined (my $line = <>)) {
             print $all_warnings "$line";
             print $unknown_cv_names "$gene: $line";
           } else {
-            if ($line =~ /no term for:|qualifier not recognised|unknown term name.*and unknown GO ID|annotation extension qualifier .* not understood|failed to add annotation extension/) {
+            if ($line =~ /no term for:|qualifier not recognised|unknown term name.*and unknown GO ID|annotation extension qualifier .* not understood|failed to add annotation extension|in annotation extension for/) {
               print $all_warnings "$line";
               print $qual_problems "$gene: $line";
             } else {
