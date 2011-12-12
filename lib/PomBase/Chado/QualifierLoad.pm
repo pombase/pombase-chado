@@ -283,18 +283,21 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   if ($self->is_go_cv_name($cv_name)) {
     $self->maybe_move_igi($qualifiers, $sub_qual_map);
 
-    if (defined $sub_qual_map->{with}) {
-      my @withs = split /\|/, delete $sub_qual_map->{with};
-      for (my $i = 0; $i < @withs; $i++) {
-        my $with = $withs[$i];
-        $self->add_feature_cvtermprop($featurecvterm, with => $with, $i);
-      }
-    }
     if (defined $sub_qual_map->{from}) {
       my @froms = split /\|/, delete $sub_qual_map->{from};
       for (my $i = 0; $i < @froms; $i++) {
         my $from = $froms[$i];
         $self->add_feature_cvtermprop($featurecvterm, from => $from, $i);
+      }
+    }
+  }
+
+  if ($self->is_go_cv_name($cv_name) || $cv_name eq 'fission_yeast_phenotype') {
+    if (defined $sub_qual_map->{with}) {
+      my @withs = split /\|/, delete $sub_qual_map->{with};
+      for (my $i = 0; $i < @withs; $i++) {
+        my $with = $withs[$i];
+        $self->add_feature_cvtermprop($featurecvterm, with => $with, $i);
       }
     }
   }
