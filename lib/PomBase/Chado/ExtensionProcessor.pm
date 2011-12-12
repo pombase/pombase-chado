@@ -257,7 +257,7 @@ method process_one_annotation($featurecvterm, $qualifiers,
             if ($identifier =~ /^(Pfam:PF\d+)$/) {
               $identifier = $1;
             } else {
-              warn "can't parse identifier: $identifier\n";
+              warn "in annotation extension for $feature_uniquename, can't parse identifier: $identifier\n";
               ();
             }
           }
