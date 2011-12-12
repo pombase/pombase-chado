@@ -461,6 +461,12 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
         $self->add_feature_relationshipprop($rel, date => $date);
       }
 
+      my $qualifier = delete $sub_qual_map->{qualifier};
+
+      if (defined $qualifier) {
+        $self->add_feature_relationshipprop($rel, 'ortholog qualifier', $qualifier);
+      }
+
       my $db_xref = delete $sub_qual_map->{db_xref};
       my $pub = $self->get_pub_from_db_xref($term, $db_xref);
       $self->add_feature_relationship_pub($rel, $pub);

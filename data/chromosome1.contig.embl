@@ -127,7 +127,7 @@ FT                   cv=sequence_feature; date=19700101"
 FT                   /controlled_curation="term=protein sequence feature,
 FT                   transmembrane helices; cv=sequence_feature; date=19700101"
 FT                   /controlled_curation="term=orthologous to S. cerevisiae
-FT                   YDL212W (N-term); date=19700101"
+FT                   YDL212W (N-term); date=19700101; qualifier=only on Mondays"
 FT                   /controlled_curation="term=species distribution, conserved
 FT                   in Fungi; date=20081110"
 FT                   /controlled_curation="term=species distribution,

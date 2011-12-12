@@ -65,6 +65,7 @@ cvs:
     - name: evidence
     - name: source database
     - name: homology type
+    - name: ortholog qualifier
   cat_act: []
   genome_org: []
   m_f_g: []
