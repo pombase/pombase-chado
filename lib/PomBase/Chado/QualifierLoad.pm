@@ -344,10 +344,11 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     $self->add_feature_cvtermprop($featurecvterm, date => $date);
   }
 
-  if ($sub_qual_map->{annotation_extension}) {
+  my $sub_qual_copy = { %$sub_qual_map };
+  if (delete $sub_qual_map->{annotation_extension}) {
     push @{$self->config()->{post_process}->{$featurecvterm->feature_cvterm_id()}}, {
       feature_cvterm => $featurecvterm,
-      qualifiers => $sub_qual_map,
+      qualifiers => $sub_qual_copy
     }
   }
 
