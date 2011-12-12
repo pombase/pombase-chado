@@ -713,6 +713,9 @@ method check_unused_quals
     warn "  unprocessed sub qualifiers:\n" if $self->verbose();
     while (my ($key, $value) = each %quals) {
       $self->config()->{stats}->{unused_qualifiers}->{$key}++;
+      if (ref $value) {
+        $value = "[@$value]";
+      }
       warn "   $key => $value\n" if $self->verbose();
     }
   }
