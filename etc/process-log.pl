@@ -29,7 +29,7 @@ while (defined (my $line = <>)) {
       print $all_warnings "$line";
       print $unknown_term_names "$gene: $line";
     } else {
-      if ($line =~ /ortholog.*not found/) {
+      if ($line =~ /ortholog.*not found|failed to create paralog/) {
         print $all_warnings "$line";
         print $ortholog_problems "$gene: $line";
       } else {
