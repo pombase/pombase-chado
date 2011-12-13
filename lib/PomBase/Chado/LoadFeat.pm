@@ -631,6 +631,26 @@ method finalise($chromosome)
     $self->store_feature_rel($chado_transcript, $chado_gene, 'part_of');
   }
 
+  my %handled_qualifiers = (
+    systematic_id => 1,
+    obsolete_name => 1,
+    synonym => 1,
+    gene => 1,
+    product => 1,
+    SO => 1,
+    GO => 1,
+    controlled_curation => 1,
+    colour => 1,
+    note => 1,
+    primary_name => 1,
+    fasta_file => 1,
+    pseudo => 1,
+    db_xref => 1,
+    EC_number => 1,
+    reserved_name => 1,
+    other_transcript => 1,
+  );
+
   warn "counts of EMBL qualifiers by feature type:\n";
 
   for my $feat_type (keys %{$self->{tag_counts}}) {
@@ -641,6 +661,7 @@ method finalise($chromosome)
     warn "  $feat_type ($feat_count)\n";
 
     for my $tag_name (keys %counts) {
+      next if $handled_qualifiers{$tag_name};
       my $count = $counts{$tag_name};
       warn "    $tag_name: $count\n";
     }
