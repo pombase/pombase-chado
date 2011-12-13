@@ -259,7 +259,7 @@ method process($feature, $chromosome)
     $self->get_uniquename($feature, $so_type);
 
   warn "processing $feat_type $uniquename",
-    defined $gene_uniquename ? " from gene: $gene_uniquename\n" : "\n";
+    (defined $gene_uniquename ? " from gene: $gene_uniquename" : ""), "\n";
 
   if ($feature_loader_conf{$feat_type}->{save}) {
     if ($so_type =~ /UTR/) {
