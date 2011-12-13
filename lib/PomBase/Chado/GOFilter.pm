@@ -47,14 +47,19 @@ method process()
 
   my $dbh = $chado->storage()->dbh();
 
-  my $query = <<'EOQ';
+  my $go_cvterms_query = <<'EOQ';
 CREATE TEMP TABLE go_cvterms AS
 SELECT cvterm.* FROM cvterm, cv
 WHERE
   cvterm.cv_id = cv.cv_id
 AND
   cv.name in ('biological_process', 'cellular_component', 'molecular_function');
+EOQ
 
+  my $sth = $dbh->prepare($go_cvterms_query);
+  $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+
+  my $poor_ev_query = <<'EOQ';
 CREATE TEMP TABLE poor_evidence_fcs AS
 SELECT feature_cvterm.* FROM feature_cvterm, feature_cvtermprop prop,
        cvterm prop_type, go_cvterms
@@ -70,9 +75,19 @@ AND
   prop.value in ('Inferred from Electronic Annotation',
    'Inferred from Expression Pattern','Non-traceable Author Statement',
    'inferred from Reviewed Computational Analysis');
+EOQ
 
+  $sth = $dbh->prepare($poor_ev_query);
+  $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+
+  my $poor_ev_index = <<'EOQ';
 CREATE INDEX poor_evidence_fsc_id on poor_evidence_fcs(cvterm_id);
+EOQ
 
+  $sth = $dbh->prepare($poor_ev_index);
+  $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+
+  my $fc_to_delete_query = <<'EOQ';
 CREATE TEMP TABLE fc_to_delete AS
 SELECT feature_cvterm_id
 FROM poor_evidence_fcs
@@ -96,7 +111,7 @@ OR
            FROM poor_evidence_fcs pefcs));
 EOQ
 
-  my $sth = $dbh->prepare($query);
+  $sth = $dbh->prepare($fc_to_delete_query);
   $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
   my $delete_query = <<'EOD';
