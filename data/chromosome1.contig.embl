@@ -77,7 +77,8 @@ FT                   date=20090727"
 FT                   /controlled_curation="term=orthologous to S. cerevisiae
 FT                   ylr138W; date=19700101"
 FT                   /controlled_curation="term=phenotype, viable;
-FT                   cv=phenotype; db_xref=PMID:1314171; date=20080227"
+FT                   cv=phenotype; annotation_extension=condition(at high
+FT                   temperature); db_xref=PMID:1314171; date=20080227"
 FT                   /controlled_curation="term=species distribution, conserved
 FT                   in Eukaryotes; date=20081110; cv=foobar"
 FT                   /controlled_curation="term=species distribution, conserved

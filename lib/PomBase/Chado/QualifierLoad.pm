@@ -280,6 +280,10 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   my $featurecvterm =
     $self->create_feature_cvterm($pombe_feature, $cvterm, $pub, $is_not);
 
+  if ($cv_name eq 'fission_yeast_phenotype') {
+    $self->move_condition_qual($featurecvterm, $sub_qual_map);
+  }
+
   if ($self->is_go_cv_name($cv_name)) {
     $self->maybe_move_igi($qualifiers, $sub_qual_map);
 
@@ -373,6 +377,14 @@ method maybe_move_igi($qualifiers, $sub_qual_map) {
     } else {
       warn "no 'with' qualifier on localization_dependency IGI\n"
     }
+  }
+}
+
+method move_condition_qual($feature_cvterm, $sub_qual_map) {
+  my $ex = $sub_qual_map->{annotation_extension};
+  if (defined $ex && $ex =~ /^condition\((.*)\)$/) {
+    $self->add_feature_cvtermprop($feature_cvterm, condition => $1);
+    delete $sub_qual_map->{annotation_extension};
   }
 }
 
