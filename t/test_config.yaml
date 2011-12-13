@@ -101,6 +101,11 @@ data:
             accession: 01000000
             db:
               name: PomBase
+        - name: evidence
+          dbxref:
+            accession: 01000001
+            db:
+              name: PomBase
     - name: PomBase organism property types
       cvterms:
         - name: taxon_id
@@ -141,6 +146,10 @@ data:
         uniquename: SPBC2F12.13
       cvterm:
         name: spindle pole body
+      feature_cvtermprops:
+        - type:
+            name: evidence
+          value: Inferred from Electronic Annotation
       pub:
         uniquename: PMID:11739790
 test_organism:
