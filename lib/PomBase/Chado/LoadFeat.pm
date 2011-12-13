@@ -407,6 +407,12 @@ method process_qualifiers($bioperl_feature, $chado_object)
 
   my $chado_object_type = $chado_object->type()->name();
 
+  my @tags = $bioperl_feature->all_tags();
+
+  map { $self->{tag_counts}->{$chado_object_type}->{$_}++ } @tags;
+
+  $self->{feature_counts}->{$chado_object_type}++;
+
   if ($bioperl_feature->has_tag("note")) {
     for my $note ($bioperl_feature->get_tag_values("note")) {
       $self->store_note($chado_object, $note);
@@ -623,5 +629,20 @@ method finalise($chromosome)
     }
 
     $self->store_feature_rel($chado_transcript, $chado_gene, 'part_of');
+  }
+
+  warn "counts of EMBL qualifiers by feature type:\n";
+
+  for my $feat_type (keys %{$self->{tag_counts}}) {
+    my %counts = %{$self->{tag_counts}->{$feat_type}};
+
+    my $feat_count = $self->{feature_counts}->{$feat_type};
+
+    warn "  $feat_type ($feat_count)\n";
+
+    for my $tag_name (keys %counts) {
+      my $count = $counts{$tag_name};
+      warn "    $tag_name: $count\n";
+    }
   }
 }
