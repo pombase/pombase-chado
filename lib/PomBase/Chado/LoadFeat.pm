@@ -231,7 +231,7 @@ method process($feature, $chromosome)
   my $feat_type = $feature->primary_tag();
   my $so_type = $feature_loader_conf{$feat_type}->{so_type};
 
-  if (!defined $so_type) {
+  if (!defined $so_type && $feat_type ne 'mRNA') {
     warn "no SO type for $feat_type - skipping\n";
     return;
   }
