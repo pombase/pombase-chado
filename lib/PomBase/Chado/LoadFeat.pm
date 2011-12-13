@@ -644,6 +644,7 @@ method finalise($chromosome)
     note => 1,
     primary_name => 1,
     fasta_file => 1,
+    clustalx_file => 1,
     pseudo => 1,
     db_xref => 1,
     EC_number => 1,
