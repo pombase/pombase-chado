@@ -45,6 +45,10 @@ with 'PomBase::Role::FeatureDumper';
 
 method get_uniquename($feature, $so_type)
 {
+  if (!defined $so_type) {
+    carp "no SO type for: ", $feature->uniquename();
+  }
+
   state $type_seen = {};
   state $feature_cache = {};
 
