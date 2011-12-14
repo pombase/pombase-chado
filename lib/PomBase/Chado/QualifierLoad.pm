@@ -263,6 +263,9 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   my $is_not = 0;
 
   my $qualifiers = delete $sub_qual_map->{qualifier};
+
+  $self->maybe_move_predicted($qualifiers, $sub_qual_map);
+
   my @qualifiers = ();
 
   if (defined $qualifiers) {
@@ -376,6 +379,22 @@ method maybe_move_igi($qualifiers, $sub_qual_map) {
       }
     } else {
       warn "no 'with' qualifier on localization_dependency IGI\n"
+    }
+  }
+}
+
+method maybe_move_predicted($qualifiers, $sub_qual_map) {
+  return unless defined $qualifiers;
+
+  for (my $i = 0; $i < @$qualifiers; $i++) {
+    if ($qualifiers->[$i] eq 'predicted') {
+      if (exists $sub_qual_map->{evidence}) {
+        warn "trying to assign ISS evidence to a feature that already has evidence\n";
+      } else {
+        splice @$qualifiers, $i, 1;
+        $sub_qual_map->{evidence} = 'ISS';
+      }
+      last;
     }
   }
 }
@@ -593,7 +612,7 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier,
   my $term = delete $qual_map{term};
 
   if (!defined $term || length $term == 0) {
-    warn "no term for: $qualifier\n" if $self->verbose();
+    warn "no term for: $qualifier\n";
     return ();
   }
 

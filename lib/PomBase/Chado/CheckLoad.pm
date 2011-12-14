@@ -131,14 +131,20 @@ method check
   my $feature_cvterm = $feature_cvterm_rs->next();
 
   my @props = sort map { $_->value(); } $feature_cvterm->feature_cvtermprops();
+  my @prop_types = sort map { $_->type()->name(); } $feature_cvterm->feature_cvtermprops();
 
+  should ($prop_types[0], 'date');
   should ($props[0], '19700101');
-  should ($props[1], 'predicted');
-  should ($props[2], 'region');
-  should(scalar(@props), 3);
+  should ($prop_types[1], 'evidence');
+  should ($props[1], 'Inferred from Direct Assay');
+  should ($prop_types[2], 'qualifier');
+  should ($props[2], 'predicted');
+  should ($prop_types[2], 'qualifier');
+  should ($props[3], 'region');
+  should(scalar(@props), 4);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 180);
+  should(scalar(@all_props), 185);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 71);
