@@ -49,6 +49,14 @@ has verbose => (is => 'ro');
 
 func should($this, $that)
 {
+  if (!defined $this) {
+    carp "first arg not defined in call to should()";
+    return;
+  }
+  if (!defined $that) {
+    carp "second arg not defined in call to should()";
+    return;
+  }
   if ($this ne $that) {
     my @call = caller(0);
     warn qq("$this" should be "$that" at $call[1] line $call[2].\n);
