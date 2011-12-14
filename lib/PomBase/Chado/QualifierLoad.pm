@@ -349,6 +349,11 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
                                   allele => delete $sub_qual_map->{allele});
   }
 
+  if (defined $sub_qual_map->{column_17}) {
+    $self->add_feature_cvtermprop($featurecvterm,
+                                  gene_product_form_id => delete $sub_qual_map->{column_17});
+  }
+
   my $date = $self->get_and_check_date($sub_qual_map);
   if (defined $date) {
     $self->add_feature_cvtermprop($featurecvterm, date => $date);
