@@ -479,11 +479,11 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
       my $qualifier = delete $sub_qual_map->{qualifier};
 
       if (defined $qualifier) {
-        if (ref $qualifier) {
-          map { $self->add_feature_relationshipprop($rel, 'ortholog qualifier', $_); } @$qualifier;
-        } else {
-          $self->add_feature_relationshipprop($rel, 'ortholog qualifier', $qualifier);
-        }
+        map {
+          if ($_ ne 'predicted') {
+            $self->add_feature_relationshipprop($rel, 'ortholog qualifier', $_);
+          }
+        } @$qualifier;
       }
 
       my $db_xref = delete $sub_qual_map->{db_xref};
