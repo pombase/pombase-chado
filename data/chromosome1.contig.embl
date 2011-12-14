@@ -92,6 +92,9 @@ FT                   /controlled_curation="term=species distribution, conserved
 FT                   in Fungi; date=20081110; qualifier=predicted"
 FT                   /controlled_curation="term=sequence feature, coiled-coil;
 FT                   qualifier=predicted|region; date=19700101; evidence=IDA"
+FT                   /GO="aspect=P; term=cytokinesis, contractile ring
+FT                   formation; column_17=PR:000027731; GOid=GO:0000915;
+FT                   evidence=IMP; db_xref=PMID:12589679; date=20040917"
 FT                   /db_xref="SPD:50/50G04"
 FT                   /gene="sod2"
 FT                   /gene="test1"
