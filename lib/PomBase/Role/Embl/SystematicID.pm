@@ -45,10 +45,6 @@ with 'PomBase::Role::FeatureDumper';
 
 method get_uniquename($feature, $so_type)
 {
-  if (!defined $so_type) {
-    carp "no SO type for: ", $feature->uniquename();
-  }
-
   state $type_seen = {};
   state $feature_cache = {};
 
@@ -58,6 +54,10 @@ method get_uniquename($feature, $so_type)
   }
 
   my $embl_type = $feature->primary_tag();
+
+  if (!defined $so_type) {
+    carp "no SO type for: $embl_type";
+  }
 
   if (!$feature->has_tag("systematic_id")) {
     if ($embl_type eq 'CDS') {
