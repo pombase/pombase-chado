@@ -650,6 +650,7 @@ method finalise($chromosome)
     EC_number => 1,
     reserved_name => 1,
     other_transcript => 1,
+    protein_id => 1,
   );
 
   warn "counts of EMBL qualifiers by feature type:\n";
