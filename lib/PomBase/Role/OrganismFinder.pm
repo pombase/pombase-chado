@@ -47,6 +47,16 @@ method find_organism_by_common_name($common_name)
     ->find({ common_name => $common_name });
 }
 
+method find_organism_by_full_name($full_name)
+{
+  if (my ($genus, $species) = $full_name =~ /^\s*(\S+)\s+(.*?)\s*$/) {
+    return $self->chado()->resultset('Organism::Organism')
+      ->find({ genus => $genus, species => $species });
+  } else {
+    croak 'argument to find_organism_by_full_name() needs to be "Genus species"';
+  }
+}
+
 method find_organism_by_taxonid($taxonid)
 {
   state $cache = {};

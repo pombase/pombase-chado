@@ -153,8 +153,9 @@ data:
       pub:
         uniquename: PMID:11739790
 test_organism:
-  genus: Schizosacchaomyces
+  genus: Schizosaccharomyces
   species: pombe
+  common_name: pombe
   taxonid: 4896
 
 test_genes:

@@ -103,6 +103,7 @@ method _load_test_features($chado)
     $chado->resultset('Organism::Organism')->create({
       genus => $org_data->{genus},
       species => $org_data->{species},
+      common_name => $org_data->{common_name},
     });
 
   $chado->resultset('Organism::Organismprop')->create({
