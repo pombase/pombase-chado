@@ -71,6 +71,7 @@ $config->{id_counter} = $id_counter;
 my %import_modules = (
   biogrid => 'PomBase::Import::BioGRID',
   gaf => 'PomBase::Import::GeneAssociationFile',
+  pomcur => 'PomBase::Import::PomCur',
 );
 
 my $import_module = $import_modules{$import_type};
