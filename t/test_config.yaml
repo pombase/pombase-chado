@@ -93,6 +93,24 @@ data:
             db:
               name: GO
     - name: biological_process
+      cvterms:
+        - name: transmembrane transport
+          dbxref:
+            accession: 0055085
+            db:
+              name: GO
+        - name: negative regulation of transmembrane transport
+          dbxref:
+            accession: 0034763
+            db:
+              name: GO
+    - name: fission_yeast_phenotype
+      cvterms:
+        - name: viability
+          dbxref:
+            accession: 00004
+            db:
+              name: FYPO
     - name: PSI-MOD
     - name: feature_cvtermprop_type
       cvterms:
@@ -161,3 +179,7 @@ test_organism:
 test_genes:
   - uniquename: SPBC2F12.13
   - uniquename: SPAC1093.06c
+  - uniquename: SPCC576.16c
+  - uniquename: SPAC27D7.13c
+  - uniquename: SPCC63.05
+  - uniquename: SPBC14F5.07
