@@ -3,26 +3,11 @@ use perl5i::2;
 use Test::More tests => 5;
 use MooseX::QuietCarping;
 
-{
-  package Test;
-  use perl5i::2;
-  use Moose;
-
-  with 'PomBase::Role::ChadoUser';
-  with 'PomBase::Role::CvQuery';
-
-  method verbose
-  {
-    return 0;
-  }
-
-  no Moose;
-}
-
 use PomBase::TestUtil;
+use PomBase::TestBase;
 
 my $test_util = PomBase::TestUtil->new();
-my $test = Test->new(chado => $test_util->chado());
+my $test = PomBase::TestBase->with_traits(qw(Role::CvQuery))->new(chado => $test_util->chado());
 
 my $cvterm = $test->get_cvterm('relationship', 'is_a');
 ok($cvterm);

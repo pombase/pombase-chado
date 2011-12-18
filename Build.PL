@@ -13,6 +13,7 @@ my $builder = Module::Build->new(
       'Bio::Chado::Schema'    => 0,
       'Text::CSV'             => 0,
       'Moose'                 => 0,
+      'MooseX::Traits'        => 0,
       'DBIx::Class'           => 0,
       'Bio::SeqIO'            => 0,
       'Carp::Assert'          => 0,
