@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 5;
+use Test::More tests => 4;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -25,9 +25,12 @@ $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 5);
 
 while (defined (my $fc = $annotations->next())) {
-  if ($fc->feature->uniquename() eq 'SPAC1093.06c.1') {
+  if ($fc->feature->uniquename() eq 'SPBC14F5.07.1') {
+    is ($fc->cvterm->name(),
+        'negative regulation of transmembrane transport');
+
     my @props = $fc->feature_cvtermprops()->all();
     ok (grep { $_->type()->name() eq 'with' &&
-               $_->value() eq 'InterPro:IPR004273' } @props);
+               $_->value() eq 'SPCC576.16c' } @props);
   }
 }

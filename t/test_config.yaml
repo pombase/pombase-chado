@@ -113,7 +113,7 @@ data:
       cvterms:
         - name: viability
           dbxref:
-            accession: 00004
+            accession: 0000004
             db:
               name: FYPO
     - name: PSI-MOD
