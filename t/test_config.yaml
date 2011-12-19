@@ -73,6 +73,11 @@ data:
             accession: 0000657
             db:
               name: SO
+        - name: tRNA
+          dbxref:
+            accession: 0000253
+            db:
+              name: SO
     - name: molecular_function
       cvterms:
         - name: microtubule motor activity
