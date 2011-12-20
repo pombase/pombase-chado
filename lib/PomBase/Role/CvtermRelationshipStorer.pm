@@ -43,6 +43,9 @@ requires 'chado';
 
 method store_cvterm_rel($subject, $object, $rel)
 {
+  warn "   storing ", $rel->name(), " relation from ", $subject->name(), ' to ',
+    $object->name(), "\n" if $self->verbose();
+
   $self->chado()->resultset('Cv::CvtermRelationship')
     ->create({ subject_id => $subject->cvterm_id(),
                object_id => $object->cvterm_id(),
