@@ -51,6 +51,8 @@ method store_feature($uniquename, $name, $synonyms, $so_type)
   warn "  storing $uniquename/", ($name ? $name : 'no_name'),
     " ($so_type)\n" if $self->verbose();
 
+  die "can't find cvterm for $so_type\n" unless defined $so_cvterm;
+
   my %create_args = (
     type_id => $so_cvterm->cvterm_id(),
     uniquename => $uniquename,
