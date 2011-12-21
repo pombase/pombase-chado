@@ -203,8 +203,7 @@ method process($post_process_data, $target_is_quals, $target_of_quals)
       my $qualifiers = $data->{qualifiers};
 
       try {
-        $self->process_one_annotation($feature_cvterm, $qualifiers,
-                                      $target_is_quals, $target_of_quals);
+        $self->process_one_annotation($feature_cvterm, $qualifiers->{annotation_extension});
       } catch {
         warn "failed to add annotation extension to ",
         $feature_cvterm->feature()->uniquename(), ' <-> ',
@@ -215,17 +214,14 @@ method process($post_process_data, $target_is_quals, $target_of_quals)
 
 }
 
-# $qualifier_data - an array ref of qualifiers
-method process_one_annotation($featurecvterm, $qualifiers,
-                              $target_is_quals, $target_of_quals)
+method process_one_annotation($featurecvterm, $extension_text)
 {
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
 
   warn "processing annotation extension for $feature_uniquename <-> ",
     $featurecvterm->cvterm()->name(), "\n" if $self->verbose();
 
-  my @extension_qualifiers =
-    split /(?<=\))\||,/, $qualifiers->{annotation_extension};
+  my @extension_qualifiers = split /(?<=\))\||,/, $extension_text;
 
   my @extensions = map {
     if (/^(\w+)\((.+)\)$/) {
