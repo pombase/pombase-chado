@@ -99,11 +99,17 @@ method retrieve() {
   my $constraint_value =  $self->{_constraint_value};
 
   my $query = "
-SELECT t.name, cv.name, db.name, x.accession
-  FROM cvterm t, cv, dbxref x, db
+SELECT t.name, cv.name, db.name, x.accession, obj.name, objdb.name, objdbxref.accession
+  FROM cv, dbxref x, db, cvterm t
+  LEFT OUTER JOIN cvterm_relationship r ON r.subject_id = t.cvterm_id AND r.type_id = (select cvterm_id from cvterm, cv where cvterm.cv_id = cv.cv_id and cv.name = 'relationship' and cvterm.name = 'is_a')
+  LEFT OUTER JOIN cvterm obj ON r.object_id = obj.cvterm_id
+  LEFT OUTER JOIN dbxref objdbxref ON objdbxref.dbxref_id = obj.dbxref_id
+  LEFT OUTER JOIN db objdb ON objdbxref.db_id = objdb.db_id
  WHERE
-   t.cv_id = cv.cv_id AND t.dbxref_id = x.dbxref_id AND
-   x.db_id = db.db_id AND $name_constraint
+   t.cv_id = cv.cv_id AND
+   t.dbxref_id = x.dbxref_id AND
+   x.db_id = db.db_id AND
+   $name_constraint
 ";
 
   my $it = do {
@@ -137,11 +143,17 @@ method format_result($data)
   my $id = $data->[2] . ':' . $data->[3];
   my $name = $data->[0];
   my $namespace = $data->[1];
+  my $parentname = $data->[4];
+  my $isa = '';
+  if (defined $parentname) {
+    my $parentid = $data->[5] . ':' . $data->[6];
+    $isa = "\nis_a: $parentid";
+  }
   return <<"EOF";
 [Term]
 id: $id
 name: $name
-namespace: $namespace
+namespace: $namespace$isa
 
 EOF
 }

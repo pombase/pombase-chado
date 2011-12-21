@@ -21,6 +21,7 @@ my $expected_term = "[Term]
 id: GO:0003777
 name: microtubule motor activity
 namespace: molecular_function
+is_a: GO:GO:0003674
 
 ";
 

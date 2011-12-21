@@ -85,6 +85,11 @@ data:
             accession: 0003777
             db:
               name: GO
+        - name: molecular_function
+          dbxref:
+            accession: GO:0003674
+            db:
+              name: GO
     - name: cellular_component
       cvterms:
         - name: spindle
@@ -143,6 +148,13 @@ data:
             accession: 0000003
             db:
               name: PomBase
+  cvterm_relationships:
+    - subject:
+        name: microtubule motor activity
+      object:
+        name: molecular_function
+      type:
+        name: is_a
   extra_cvterm_terms:
   db:
     - name: feature_cvtermprop_type

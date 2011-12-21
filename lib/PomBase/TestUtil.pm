@@ -76,7 +76,7 @@ method _load_feature_cvterms($chado, $feature_cvterm_conf)
 
 method _load_cv_db($chado)
 {
-my $test_data = $self->test_config()->{data};
+  my $test_data = $self->test_config()->{data};
 
   my $cv_conf = $test_data->{cv};
   $self->_load_cv($chado, $cv_conf);
@@ -84,6 +84,11 @@ my $test_data = $self->test_config()->{data};
   my $db_conf = $test_data->{db};
   for my $row (@$db_conf) {
     $chado->resultset("General::Db")->create($row);
+  }
+
+  my $cvterm_rels_conf = $test_data->{cvterm_relationships};
+  for my $row (@$cvterm_rels_conf) {
+    $chado->resultset("Cv::CvtermRelationship")->create($row);
   }
 }
 
