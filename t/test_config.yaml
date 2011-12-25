@@ -26,6 +26,16 @@ data:
                   accession: poor_synonym
                   db:
                     name: PomBase
+        - name: part_of
+          dbxref:
+            accession: part_of
+            db:
+              name: OBO_REL
+        - name: derives_from
+          dbxref:
+            accession: derives_from
+            db:
+              name: OBO_REL
     - name: sequence
       cvterms:
         - name: gene
@@ -76,6 +86,36 @@ data:
         - name: tRNA
           dbxref:
             accession: 0000253
+            db:
+              name: SO
+        - name: ncRNA
+          dbxref:
+            accession: 0000655
+            db:
+              name: SO
+        - name: three_prime_UTR
+          dbxref:
+            accession: 0000205
+            db:
+              name: SO
+        - name: five_prime_UTR
+          dbxref:
+            accession: 0000204
+            db:
+              name: SO
+        - name: pseudogenic_transcript
+          dbxref:
+            accession: 0000516
+            db:
+              name: SO
+        - name: pseudogenic_exon
+          dbxref:
+            accession: 0000507
+            db:
+              name: SO
+        - name: pseudogene
+          dbxref:
+            accession: 0000336
             db:
               name: SO
     - name: molecular_function
