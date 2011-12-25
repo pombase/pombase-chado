@@ -51,6 +51,18 @@ method store_feature_rel($subject, $object, $rel_type)
     $rel_cvterm = $self->get_cvterm('relationship', $rel_type);
   }
 
+  if (!defined $subject) {
+    croak "subject undefined in store_feature_rel()";
+  }
+
+  if (!defined $object) {
+    croak "object undefined in store_feature_rel()";
+  }
+
+  if (!defined $rel_cvterm) {
+    croak "no cvterm found for $rel_type in store_feature_rel()";
+  }
+
   state $ranks = {};
 
   my $key =
