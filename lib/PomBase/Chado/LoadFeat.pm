@@ -39,6 +39,8 @@ use perl5i::2;
 
 use Moose;
 
+use PomBase::Chado::QualifierLoad;
+
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
