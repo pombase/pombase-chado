@@ -79,6 +79,9 @@ method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
   if (!defined $value) {
     die "no value for $name\n";
   }
+  if (length $value == 0) {
+    die "empty string for value of $name\n";
+  }
 
   if (!defined $rank) {
     $rank = 0;

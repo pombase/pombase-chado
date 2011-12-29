@@ -119,6 +119,8 @@ method find_or_create_cvterm($cv, $term_name) {
 
   $cvterm_guard->commit();
 
+  die 'no cvterm found or created for: ' . $cv->name() . ' ' . $term_name unless defined $cvterm;
+
   return $cvterm;
 }
 
