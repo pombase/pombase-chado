@@ -277,8 +277,10 @@ method load($fh)
                                     $assigned_by);
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                     $long_evidence);
-      $self->add_feature_cvtermprop($feature_cvterm, 'with',
-                                    $with_or_from);
+      if (defined $with_or_from && length $with_or_from > 0) {
+        $self->add_feature_cvtermprop($feature_cvterm, 'with',
+                                      $with_or_from);
+      }
     };
 
     try {
