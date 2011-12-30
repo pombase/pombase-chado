@@ -43,7 +43,7 @@ while (defined (my $fc = $annotations->next())) {
         cmp_deeply(\%prop_hash,
                    {
                      assigned_by => 'PomBase',
-                     evidence => 'Inferred from Physical Interaction',
+                     evidence => 'Inferred from Direct Assay',
                    });
       } else {
         fail("unexpected term: " . $fc->cvterm->name());

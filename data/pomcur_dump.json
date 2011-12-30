@@ -64,7 +64,7 @@
                   },
                   {
                      "creation_date" : "2010-01-02",
-                     "evidence_code" : "IPI",
+                     "evidence_code" : "IDA",
                      "publication" : "PMID:19756689",
                      "status" : "new",
                      "term" : "GO:0022857",
