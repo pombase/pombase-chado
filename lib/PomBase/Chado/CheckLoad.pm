@@ -234,4 +234,18 @@ method check
     }
     $_->name() eq 'cellular protein localization [localizes] SPAC167.03c';
   } @ann_ex_go_terms);
+
+  # check for ISS convert to ISO when with=SGD
+  my @spbc409_20c_1_fcs = $ann_ex_gene->feature_cvterms();
+  warn "check for ISS -> ISO for $spbc409_20c_1:\n" if $self->verbose();
+  assert (grep {
+    warn '  ', $_->cvterm()->name(), "\n" if $self->verbose();
+    for my $prop ($_->feature_cvtermprops()) {
+      warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
+    }
+    if ($_->cvterm()->name() eq "mRNA 3'-UTR binding") {
+      grep { $_->type()->name() eq 'evidence' &&
+             $_->value() eq 'Inferred from Sequence Orthology'; } $_->feature_cvtermprops();
+    }
+  } @spbc409_20c_1_fcs);
 }
