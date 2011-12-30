@@ -54,6 +54,7 @@
             "Schizosaccharomyces pombe SPBC14F5.07" : {
                "annotations" : [
                   {
+                     "annotation_extension" : "exists_during(GO:0051329)|has_substrate(GeneDB_Spombe:SPBC1105.11c),requires_feature(Pfam:PF00564)",
                      "creation_date" : "2010-01-02",
                      "evidence_code" : "IPI",
                      "publication" : "PMID:19756689",
@@ -61,6 +62,14 @@
                      "term" : "GO:0034763",
                      "type" : "biological_process",
                      "with_gene" : "SPCC576.16c"
+                  },
+                  {
+                     "creation_date" : "2010-01-02",
+                     "evidence_code" : "IPI",
+                     "publication" : "PMID:19756689",
+                     "status" : "new",
+                     "term" : "GO:0022857",
+                     "type" : "molecular_function"
                   }
                ],
                "organism" : "Schizosaccharomyces pombe",
@@ -95,6 +104,14 @@
                      "status" : "new",
                      "term" : "FYPO:0000004",
                      "type" : "fission_yeast_phenotype"
+                  },
+                  {
+                     "creation_date" : "2010-01-02",
+                     "evidence_code" : "ISS",
+                     "publication" : "PMID:19756689",
+                     "status" : "new",
+                     "term" : "PSI-MOD:00017",
+                     "type" : "PSI-MOD"
                   }
                ],
                "organism" : "Schizosaccharomyces pombe",

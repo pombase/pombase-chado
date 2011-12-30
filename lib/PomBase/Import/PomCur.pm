@@ -41,6 +41,8 @@ use Moose;
 
 use JSON;
 
+use PomBase::Chado::ExtensionProcessor;
+
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::CvQuery';
@@ -52,6 +54,15 @@ with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 
 has verbose => (is => 'ro');
+has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
+                            builder => '_build_extension_processor');
+
+method _build_extension_processor
+{
+  my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
+                                                          config => $self->config());
+  return $processor;
+}
 
 method _store_ontology_annotation
 {
@@ -65,6 +76,7 @@ method _store_ontology_annotation
   my $gene_uniquename = $args{gene_uniquename};
   my $organism_name = $args{organism_name};
   my $with_gene = $args{with_gene};
+  my $annotation_extension = $args{annotation_extension};
 
   my $chado = $self->chado();
   my $config = $self->config();
@@ -100,6 +112,10 @@ method _store_ontology_annotation
     if (defined $with_gene) {
       $self->add_feature_cvtermprop($feature_cvterm, 'with',
                                     $with_gene);
+    }
+
+    if (defined $annotation_extension) {
+      $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
     }
   };
 
@@ -155,6 +171,8 @@ method load($fh)
 
           my $with_gene = delete $annotation->{with_gene};
 
+          my $annotation_extension = delete $annotation->{annotation_extension};
+
           if (keys %$annotation > 0) {
             my @keys = keys %$annotation;
 
@@ -170,7 +188,9 @@ method load($fh)
                                             gene_uniquename =>
                                               $gene_uniquename,
                                             organism_name => $organism_name,
-                                            with_gene => $with_gene);
+                                            with_gene => $with_gene,
+                                            annotation_extension =>
+                                              $annotation_extension);
         } else {
           warn "can't handle data of type $annotation_type\n";
         }

@@ -22,15 +22,32 @@ $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 5);
+is($annotations->count(), 6);
 
 while (defined (my $fc = $annotations->next())) {
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1') {
-    is ($fc->cvterm->name(),
-        'negative regulation of transmembrane transport');
-
-    my @props = $fc->feature_cvtermprops()->all();
-    ok (grep { $_->type()->name() eq 'with' &&
-               $_->value() eq 'SPCC576.16c' } @props);
+    if ($fc->cvterm->name() eq
+'negative regulation of transmembrane transport [exists_during] GO:0051329 [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564') {
+      my @props = $fc->feature_cvtermprops()->all();
+      my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
+      cmp_deeply(\%prop_hash,
+                 {
+                   assigned_by => 'PomBase',
+                   evidence => 'Inferred from Physical Interaction',
+                   with => 'SPCC576.16c',
+                 });
+    } else {
+      if ($fc->cvterm()->name() eq 'transmembrane transporter activity') {
+        my @props = $fc->feature_cvtermprops()->all();
+        my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
+        cmp_deeply(\%prop_hash,
+                   {
+                     assigned_by => 'PomBase',
+                     evidence => 'Inferred from Physical Interaction',
+                   });
+      } else {
+        fail("unexpected term: " . $fc->cvterm->name());
+      }
+    }
   }
 }

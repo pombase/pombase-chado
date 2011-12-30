@@ -127,7 +127,12 @@ data:
               name: GO
         - name: molecular_function
           dbxref:
-            accession: GO:0003674
+            accession: 0003674
+            db:
+              name: GO
+        - name: transmembrane transporter activity
+          dbxref:
+            accession: 0022857
             db:
               name: GO
     - name: cellular_component
@@ -149,6 +154,11 @@ data:
             accession: 0055085
             db:
               name: GO
+        - name: GO:0051329
+          dbxref:
+            accession: 0051329
+            db:
+              name: GO
         - name: negative regulation of transmembrane transport
           dbxref:
             accession: 0034763
@@ -162,6 +172,7 @@ data:
             db:
               name: FYPO
     - name: PSI-MOD
+    - name: PomBase annotation extension terms
     - name: feature_cvtermprop_type
       cvterms:
         - name: assigned_by
@@ -186,6 +197,45 @@ data:
         - name: paper
           dbxref:
             accession: 0000003
+            db:
+              name: PomBase
+        - name: null
+          dbxref:
+            accession: 0000004
+            db:
+              name: PomBase
+    - name: go_annotation_relations
+      cvterms:
+        - name: exists_during
+          dbxref:
+            accession: 0010000
+            db:
+              name: PomBase
+        - name: has_substrate
+          dbxref:
+            accession: 0010001
+            db:
+              name: PomBase
+        - name: requires_feature
+          dbxref:
+            accession: 0010002
+            db:
+              name: PomBase
+    - name: cvterm_property_type
+      cvterms:
+        - name: annotation_extension_relation-exists_during
+          dbxref:
+            accession: 0020000
+            db:
+              name: PomBase
+        - name: annotation_extension_relation-has_substrate
+          dbxref:
+            accession: 0020001
+            db:
+              name: PomBase
+        - name: annotation_extension_relation-requires_feature
+          dbxref:
+            accession: 0020002
             db:
               name: PomBase
   cvterm_relationships:
