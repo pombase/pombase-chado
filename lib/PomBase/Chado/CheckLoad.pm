@@ -76,7 +76,7 @@ method check
   should ($relprop_rs->count(), 9);
 
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
-  should ($loc_rs->count(), 64);
+  should ($loc_rs->count(), 65);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
   should ($feature_prop_rs->count(), 13);
@@ -155,7 +155,7 @@ method check
   should(scalar(@all_props), 188);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
-  should ($feat_rs->count(), 71);
+  should ($feat_rs->count(), 72);
 
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
 #    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
@@ -177,7 +177,7 @@ method check
     $chado->resultset('Sequence::Feature')
       ->search({ type_id => $intron_cvterm->cvterm_id() });
 
-  should($intron_rs->count(), 3);
+  should($intron_rs->count(), 4);
   should($intron_rs->search({ name => { '!=', undef }})->count(), 0);
 
   my $orthologous_to_cvterm = $self->get_cvterm('sequence', 'orthologous_to');

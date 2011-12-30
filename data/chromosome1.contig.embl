@@ -32,6 +32,9 @@ FT                   qualifier=predicted; db_xref=PMID:12597277; date=20050412"
 FT                   /controlled_curation="term=WARNING: no detectable long
 FT                   open reading frame; qualifier=predicted;
 FT                   db_xref=PMID:12597277; date=20050412"
+FT   intron          1302..1378
+FT                   /note="intron with no /systematic_id"
+FT                   /primary_name="sod2"
 FT   intron          1501..1600
 FT                   /systematic_id="SPAC977.10"
 FT                   /note="test intron"
