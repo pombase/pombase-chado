@@ -749,6 +749,10 @@ method process_one_go_qual($chado_object, $bioperl_feature, $qualifier) {
 
 method process_product($chado_feature, $product)
 {
+  if ($product =~ /\([^\)]*$|^[^\(]*\)/) {
+    warn "unbalanced parenthesis in product: $product\n";
+  }
+
   $self->add_term_to_gene($chado_feature, 'PomBase gene products',
                           $product, {}, 1);
 }

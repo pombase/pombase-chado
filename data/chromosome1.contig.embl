@@ -7,7 +7,7 @@ FH
 FT   tRNA            5..50
 FT                   /gene="SPBTRNAGLY.06"
 FT                   /systematic_id="SPBTRNAGLY.06"
-FT                   /product="tRNA Lysine"
+FT                   /product="tRNA Lysine (with unbalanced paren"
 FT                   /GO="aspect=C; term=cytoplasm; GOid=GO:0005737;
 FT                   evidence=RCA; db_xref=GOC:unpublished; date=20090711"
 FT                   /GO="aspect=P; term=translational elongation;
