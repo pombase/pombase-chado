@@ -154,7 +154,7 @@ data:
             accession: 0055085
             db:
               name: GO
-        - name: GO:0051329
+        - name: interphase of mitotic cell cycle
           dbxref:
             accession: 0051329
             db:
