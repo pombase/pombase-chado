@@ -88,6 +88,7 @@ method BUILD
 
   $self->{_name_constraint} = $name_constraint;
   $self->{_constraint_value} = $constraint_value;
+  $self->{_parents} = {};
 }
 
 method retrieve() {
@@ -118,12 +119,34 @@ SELECT t.name, cv.name, db.name, x.accession, obj.name, objdb.name, objdbxref.ac
       or die "Couldn't execute: " . $sth->errstr;
 
     iterate {
-      my @data = $sth->fetchrow_array();
+      my @data = ();
+
+      if (defined $sth) {
+        @data = $sth->fetchrow_array();
+        my $parentname = $data[4];
+        if (defined $parentname) {
+          my $termid = $data[5] . ':' . $data[6];
+          if (!exists $self->{_parents}->{$termid}) {
+            my $cvterm = $self->find_cvterm_by_term_id($termid);
+            $self->{_parents}->{$termid} = $cvterm;
+          }
+        }
+      }
 
       if (@data) {
         return [@data];
       } else {
-        return undef;
+        $sth = undef;
+        if (keys %{$self->{_parents}} > 0) {
+          my ($termid, $cvterm) = each %{$self->{_parents}};
+          return undef unless defined $termid;
+          delete $self->{_parents}->{$termid};
+          my $dbxref = $cvterm->dbxref();
+          return [$cvterm->name(), $cvterm->cv()->name(),
+                  $dbxref->db()->name(), $dbxref->accession()];
+        } else {
+          return ();
+        }
       }
     };
   };
@@ -138,15 +161,24 @@ default-namespace: pombase
 EOF
 }
 
+method _parentid($data)
+{
+  my $parentname = $data->[4];
+  if (defined $parentname) {
+    return $data->[5] . ':' . $data->[6];
+  } else {
+    return undef;
+  }
+}
+
 method format_result($data)
 {
   my $id = $data->[2] . ':' . $data->[3];
   my $name = $data->[0];
   my $namespace = $data->[1];
-  my $parentname = $data->[4];
   my $isa = '';
-  if (defined $parentname) {
-    my $parentid = $data->[5] . ':' . $data->[6];
+  my $parentid = $self->_parentid($data);
+  if (defined $parentid) {
     $isa = "\nis_a: $parentid";
   }
   return <<"EOF";

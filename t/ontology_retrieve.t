@@ -1,9 +1,10 @@
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 22;
 
 use PomBase::TestUtil;
 use PomBase::Retrieve::Ontology;
+use PomBase::Chado::ExtensionProcessor;
 
 my $test_util = PomBase::TestUtil->new();
 my $chado = $test_util->chado();
@@ -58,3 +59,50 @@ default-namespace: pombase
 ';
 
 is($retriever->header(), $expected_header);
+
+# test export of terms that have a parent in another ontology
+my $feat = $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPBC2F12.13.1' });
+my $fcs = $feat->feature_cvterms();
+
+is($fcs->count(), 1);
+
+my $fc = $fcs->first();
+my $orig_cvterm = $fc->cvterm();
+
+my $ex_processor = PomBase::Chado::ExtensionProcessor->new(chado => $chado,
+                                                           config => $config);
+
+$ex_processor->process_one_annotation($fc, 'has_substrate(GO:0051329)');
+
+my $fcs2 = $feat->feature_cvterms();
+my $fc_after = $fcs2->first();
+
+is($fc_after->cvterm()->name(), $orig_cvterm->name() . ' [has_substrate] interphase of mitotic cell cycle');
+
+
+my @options2 = ('--constraint-type', 'db_name',
+                '--constraint-value', 'PomBase');
+my $retriever2 = PomBase::Retrieve::Ontology->new(chado => $chado,
+                                                  config => $config,
+                                                  options => [@options2]);
+
+my $results2 = $retriever2->retrieve();
+
+my @parent_data = ();
+
+while (defined (my $data = $results2->next())) {
+  if ($data->[0] eq 'spindle pole body [has_substrate] interphase of mitotic cell cycle') {
+    is($data->[4], 'spindle pole body'); # parent
+    is($data->[5], 'GO');
+    is($data->[6], '0005816');
+  }
+  if ($data->[0] eq 'spindle pole body') {
+    @parent_data = @$data;
+  }
+}
+
+is($parent_data[0], 'spindle pole body');
+is($parent_data[1], 'cellular_component');
+is($parent_data[2], 'GO');
+is($parent_data[3], '0005816');
+
