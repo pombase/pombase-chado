@@ -27,7 +27,7 @@ is($annotations->count(), 6);
 while (defined (my $fc = $annotations->next())) {
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1') {
     if ($fc->cvterm->name() eq
-'negative regulation of transmembrane transport [exists_during] GO:0051329 [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564') {
+'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564') {
       my @props = $fc->feature_cvtermprops()->all();
       my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
       cmp_deeply(\%prop_hash,
