@@ -268,7 +268,7 @@ data:
         species: pombe
   feature_cvterm:
     - feature:
-        uniquename: SPBC2F12.13
+        uniquename: SPBC2F12.13.1
       cvterm:
         name: spindle pole body
       feature_cvtermprops:
