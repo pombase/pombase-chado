@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 9;
 
 use PomBase::TestUtil;
 use PomBase::Retrieve::Ontology;
@@ -24,6 +24,12 @@ namespace: molecular_function
 is_a: GO:0003674
 
 ";
+my $expected_parent = "[Term]
+id: GO:0003674
+name: molecular_function
+namespace: molecular_function
+
+";
 
 while (my $data = $results->next()) {
   if ($data->[0] eq 'microtubule motor activity') {
@@ -34,6 +40,15 @@ while (my $data = $results->next()) {
     my $formatted_results = $retriever->format_result($data);
 
     is($formatted_results, $expected_term);
+  }
+  if ($data->[0] eq 'molecular_function') {
+    is($data->[1], 'molecular_function');
+    is($data->[2], 'GO');
+    is($data->[3], '0003674');
+
+    my $formatted_results = $retriever->format_result($data);
+
+    is($formatted_results, $expected_parent);
   }
 }
 
