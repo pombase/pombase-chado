@@ -230,7 +230,7 @@ FT                   GOid=GO:0006530; evidence=ISS; db_xref=GO_REF:0000024;
 FT                   with=Pfam:PF00710; date=20080804"
 FT                   /GO="aspect=C; term=cell division site; GOid=GO:0032153;
 FT                   evidence=IDA; db_xref=PMID:15975911;
-FT                   annotation_extension=independent_of(GO:0031941|GO:0015630);
+FT                   annotation_extension=independent_of(GO:0031941)|independent_of(GO:0015630);
 FT                   date=20050420"
 FT                   /GO="aspect=C; term=cell surface; GOid=GO:0009986;
 FT                   evidence=NAS; db_xref=GOC:unpublished; date=20080822;
@@ -256,12 +256,12 @@ FT                   in Fungi; date=20081110"
 FT                   /gene="SPAC977.12"
 FT                   /GO="aspect=F; term=nucleosomal histone binding;
 FT                   GOid=GO:0031493;
-FT                   annotation_extension=has_substrate(PR:000027604|PR:000027591|PR:000027604);
+FT                   annotation_extension=has_substrate(PR:000027604)|has_substrate(PR:000027591)|has_substrate(PR:000027604);
 FT                   evidence=IPI; db_xref=PMID:11242054;
 FT                   with=GeneDB_Spombe:SPBC1105.11c; date=20041110"
 FT                   /GO="aspect=F; term=nucleosomal histone binding;
 FT                   GOid=GO:0031493;
-FT                   annotation_extension=has_substrate(PR:000027604|PR:000027591);
+FT                   annotation_extension=has_substrate(PR:000027604)|has_substrate(PR:000027591);
 FT                   evidence=IPI; db_xref=PMID:11242054;
 FT                   with=GeneDB_Spombe:SPBC1105.11c; date=20041110"
 FT                   /GO="aspect=C; term=chromosome, pericentric region;
