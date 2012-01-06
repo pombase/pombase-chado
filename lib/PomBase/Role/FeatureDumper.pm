@@ -43,6 +43,14 @@ use Moose::Role;
 
 method dump_feature($feature)
 {
+  my $loc = $feature->location();
+
+  my $seq = $feature->entire_seq();
+  my $seq_display_id = $seq->display_id();
+
+  my $loc_text =  $seq_display_id . '-' .
+      '_' . $loc->start() . '..' . $loc->end();
+  warn " loc: $loc_text\n";
   for my $tag ($feature->get_all_tags) {
     warn "    tag: ", $tag, "\n";
     for my $value ($feature->get_tag_values($tag)) {
