@@ -383,6 +383,8 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     }
   }
 
+  $self->check_unused_quals(%$sub_qual_map);
+
   return 1;
 }
 
@@ -719,7 +721,7 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier,
       }
   }
 
-  $self->check_unused_quals($qualifier, %qual_map);
+  $self->check_unused_quals(%qual_map);
 
   return %qual_map;
 }
@@ -748,8 +750,17 @@ method process_one_go_qual($chado_object, $bioperl_feature, $qualifier) {
     my $term = delete $qual_map{term};
 
     try {
-      $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 0);
-      $self->check_unused_quals($qualifier, %qual_map);
+      my $extension = $qual_map{annotation_extension};
+      if ($extension && $extension =~ /\|/) {
+          # split into multiple annotations
+        for my $bit (split /\|/, $extension) {
+          my $qual_copy = { %qual_map };
+          $qual_copy->{annotation_extension} = $bit;
+          $self->add_term_to_gene($chado_object, $cv_name, $term, $qual_copy, 0);
+        }
+      } else {
+        $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 0);
+      }
     } catch {
       my $systematic_id = $chado_object->uniquename();
       warn "$_: failed to load qualifier '$qualifier' from $systematic_id:\n";
@@ -777,7 +788,6 @@ method process_product($chado_feature, $product)
 
 method check_unused_quals
 {
-  my $qual_text = shift;
   my %quals = @_;
 
   if (scalar(keys %quals) > 0) {

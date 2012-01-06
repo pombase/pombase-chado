@@ -129,7 +129,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence', 'coiled_coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 119);
+  should(scalar(@all_feature_cvterm), 124);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
@@ -152,7 +152,7 @@ method check
   should(scalar(@props), 4);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 188);
+  should(scalar(@all_props), 201);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 72);
@@ -214,7 +214,7 @@ method check
   my @ann_ex_go_terms =
     $ann_ex_gene->feature_cvterms()->search_related('cvterm');
 
-  should(scalar(@ann_ex_go_terms), 8);
+  should(scalar(@ann_ex_go_terms), 9);
 
   # check for annotation extension targeting genes
   warn "cvterms for $spbc409_20c_1:\n" if $self->verbose();
@@ -223,7 +223,7 @@ method check
     for my $prop ($_->cvtermprops()) {
       warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
     }
-    $_->name() eq 'protein-lysine N-methyltransferase activity [has_downstream_target] SPAC977.10 [has_downstream_target] SPBC409.20c';
+    $_->name() eq 'protein-lysine N-methyltransferase activity [has_downstream_target] SPAC977.10';
   } @ann_ex_go_terms);
 
   # check for IGI converted to annotation extension
