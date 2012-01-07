@@ -697,6 +697,9 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier,
         return ();
       }
       try {
+        if (defined $qual_map{qualifier}) {
+          $self->maybe_move_predicted($qual_map{qualifier}, { %qual_map });
+        }
         $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 1);
       } catch {
         warn "$_: failed to load qualifier '$qualifier' from $systematic_id\n";
