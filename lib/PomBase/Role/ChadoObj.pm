@@ -69,7 +69,6 @@ method BUILD
     genome_org => ['genome organisation', 'genome organization'],
     sequence_feature => ['sequence feature', 'protein sequence feature'],
     species_dist => ['species distribution'],
-    localization => ['localisation'],
     phenotype => [],
     pt_mod => ['modification'],
     gene_ex => ['expression', 'gene expression'],
@@ -92,8 +91,6 @@ method BUILD
     'protein sequence feature' => 'sequence_feature',
     'sequence feature' => 'sequence_feature',
     'species distribution' => 'species_dist',
-    'localisation' => 'localization',
-    'localization' => 'localization',
     'modification' => 'pt_mod',
     'expression' => 'gene_ex',
     'gene expression' => 'gene_ex',
@@ -108,7 +105,7 @@ method BUILD
   };
 
   $self->objs()->{gene_cvs} = {
-    map { ($_, 1) } qw(gene_ex species_dist name_description misc warning genome_org localization phenotype m_f_g pathway complementation ex_tools DNA_binding_specificity subunit_composition cat_act disease_associated)
+    map { ($_, 1) } qw(gene_ex species_dist name_description misc warning genome_org phenotype m_f_g pathway complementation ex_tools DNA_binding_specificity subunit_composition cat_act disease_associated)
   };
 
   for my $cv_name (keys %{$self->objs()->{cv_alt_names}}) {
