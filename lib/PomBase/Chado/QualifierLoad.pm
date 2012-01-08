@@ -288,7 +288,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   }
 
   if ($self->is_go_cv_name($cv_name)) {
-    $self->maybe_move_igi($qualifiers, $sub_qual_map);
+    $self->maybe_move_igi(\@qualifiers, $sub_qual_map);
 
     if (defined $sub_qual_map->{from}) {
       my @froms = split /\|/, delete $sub_qual_map->{from};
@@ -396,9 +396,10 @@ method maybe_move_igi($qualifiers, $sub_qual_map) {
       my $with = delete $sub_qual_map->{with};
 
       if (exists $sub_qual_map->{annotation_extension}) {
-        warn "annotation_extension already existing when converting IGI\n";
+        warn "annotation_extension already exists when converting IGI\n";
       } else {
         $sub_qual_map->{annotation_extension} = "localizes($with)";
+        shift @$qualifiers;
       }
     } else {
       warn "no 'with' qualifier on localization_dependency IGI\n"
