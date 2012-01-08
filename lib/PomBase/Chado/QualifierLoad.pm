@@ -411,7 +411,7 @@ method maybe_move_predicted($qualifiers, $sub_qual_map) {
 
   for (my $i = 0; $i < @$qualifiers; $i++) {
     if ($qualifiers->[$i] eq 'predicted') {
-      if (exists $sub_qual_map->{evidence}) {
+      if (exists $sub_qual_map->{evidence} && $sub_qual_map->{evidence} ne 'ISS') {
         warn "trying to assign ISS evidence to a feature that already has evidence\n";
       } else {
         splice @$qualifiers, $i, 1;
