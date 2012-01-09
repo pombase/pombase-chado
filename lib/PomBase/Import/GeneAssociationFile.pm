@@ -70,10 +70,11 @@ method _load_first_column($filename)
     or die "can't open $filename: $!\n";
 
   while (defined (my $line = <$file>)) {
+    next if $line =~ /^\w*$/;
     if ($line =~ /^(\S+)/ and length $1 > 0) {
       $ret_val{$1} = 1;
     } else {
-      warn "line has no first column: $line";
+      warn "line from $filename has no columns: $line";
     }
   }
 
