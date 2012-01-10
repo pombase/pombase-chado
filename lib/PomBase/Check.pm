@@ -53,8 +53,9 @@ method _do_query_checks() {
   for my $check (@query_checks) {
     my $name = $check->{name};
     my $query = $check->{query};
-    my $expected = $check->{expected};
-    say "running $name: $query\n";
+    my $expected = $check->{expected} //
+      die "expected value not set for $name\n";
+    print "$name";
 
     my $sth = $dbh->prepare($query);
     $sth->execute() or die "Couldn't execute: " . $sth->errstr;
@@ -64,7 +65,9 @@ method _do_query_checks() {
     die "query ('$query') didn't return exactly one row" if @data != 1;
 
     if ($data[0] ne $expected) {
-      say "  - FAILED: expected $expected but got $data[0]\n";
+      say " - FAILED: expected $expected but got $data[0]";
+    } else {
+      say " - SUCCESS"
     }
   }
 }
