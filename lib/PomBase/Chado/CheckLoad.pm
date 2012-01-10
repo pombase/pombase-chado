@@ -152,8 +152,6 @@ method check
   should(scalar(@props), 4);
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  open my $out, '>', '/tmp/before';
-  map { print $out $_, "\n" } sort map { $_->value(); } @all_props;
   should(scalar(@all_props), 200);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
