@@ -7,6 +7,8 @@ DB=$2
 USER=$3
 PASSWORD=$4
 
+LOG_DIR=`pwd`
+
 cd /var/pomcur/sources/pombe-embl/
 svn update || exit 1
 
@@ -15,7 +17,7 @@ git pull || exit 1
 
 export PERL5LIB=$HOME/git/pombase-run/lib
 
-cd $HOME/chado/embl_load
+cd $LOG_DIR
 log_file=log.`date_string`
 $HOME/git/pombase-run/script/load-chado.pl \
   --mapping "sequence_feature:sequence:$HOME/Dropbox/pombase/ontologies/SO/features-to-so_mapping_only.txt" \
@@ -25,7 +27,7 @@ $HOME/git/pombase-run/script/load-chado.pl \
   $HOST $DB $USER $PASSWORD /var/pomcur/sources/pombe-embl/*.contig 2>&1 | tee $log_file
 $HOME/git/pombase-run/etc/process-log.pl $log_file
 
-echo starting import of biogrid data 1>&2
+echo starting import of biogrid data | tee $log_file.biogrid
 
 (cd /var/pomcur/sources/biogrid
 mv BIOGRID-* old/
@@ -36,12 +38,13 @@ then
   echo "no pombe BioGRID file found - exiting" 1>&2
   exit 1
 fi
-)
+) 2>&1 | tee -a $log_file.biogrid
 
 cd $HOME/git/pombase-run
-cat /var/pomcur/sources/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt | ./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD
+cat /var/pomcur/sources/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt | ./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD 2>&1 | tee -a $LOG_DIR/$log_file.biogrid
 
-echo starting import of GOA GAF data 1>&2
+(
+echo starting import of GOA GAF data
 
 echo $HOME/Work/pombe/pombe-embl/external-go-data/go_comp.tex
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/go_comp.tex 
@@ -58,6 +61,7 @@ echo $HOME/Work/pombe/pombe-embl/external-go-data/GO_ORFeome_localizations2.tex
 echo /var/pomcur/sources/gene_association.goa_uniprot.pombe
 ./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < /var/pomcur/sources/gene_association.goa_uniprot.pombe
 
+) 2>&1 | tee $LOG_DIR/$log_file.gaf
 
 echo filtering redundant terms 1>&2
 
