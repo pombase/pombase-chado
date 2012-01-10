@@ -6,4 +6,4 @@ query_checks:
     query: |
       select count(*) from feature f, cvterm cvt, organism o where
       f.type_id = cvt.cvterm_id and f.organism_id = o.organism_id and
-      o.common_name = 'Spombe' and cvt.name = 'gene';
+      o.common_name = 'pombe' and cvt.name = 'gene';
