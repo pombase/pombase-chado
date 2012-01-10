@@ -120,7 +120,7 @@ FT                   /GO="aspect=P; term=vesicle-mediated transport;
 FT                   GOid=GO:0016192; evidence=IMP; db_xref=PMID:11069779;
 FT                   date=20050322"
 FT                   /GO="aspect=P; term=cellular protein localization;
-FT                   qualifier=localization_dependency; GOid=GO:0034613;
+FT                   qualifier=dummy|localization_dependency; GOid=GO:0034613;
 FT                   evidence=IGI; db_xref=PMID:15620657;
 FT                   with=GeneDB_Spombe:SPAC167.03c; date=20050923"
 FT                   /colour=2
