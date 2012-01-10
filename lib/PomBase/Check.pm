@@ -37,6 +37,7 @@ under the same terms as Perl itself.
 
 use perl5i::2;
 use Moose;
+use feature qw(switch);
 
 use Module::Find;
 
@@ -53,9 +54,9 @@ method _do_query_checks() {
   for my $check (@query_checks) {
     my $name = $check->{name};
     my $query = $check->{query};
-    my $expected = $check->{expected} //
+    my $expected_conf = $check->{expected} //
       die "expected value not set for $name\n";
-    print "$name";
+    print "$name - ";
 
     my $sth = $dbh->prepare($query);
     $sth->execute() or die "Couldn't execute: " . $sth->errstr;
@@ -64,10 +65,52 @@ method _do_query_checks() {
 
     die "query ('$query') didn't return exactly one row" if @data != 1;
 
-    if ($data[0] ne $expected) {
-      say " - FAILED: expected $expected but got $data[0]";
+    my $type = '=';
+    my $expected;
+
+    if ($expected_conf =~ /^(>|<|<=|>=)?\s*(\d+)$/) {
+      if (defined $1) {
+        $type = $1;
+      }
+      $expected = $2;
     } else {
-      say " - SUCCESS"
+      die "expected value not understood: $expected_conf\n";
+    }
+
+    my $failure;
+
+    given ($type) {
+      when ('=') {
+        if ($data[0] ne $expected) {
+          $failure = " expected $expected but got $data[0]";
+        }
+      }
+      when ('<') {
+        if ($data[0] >= $expected) {
+          $failure = " expected less than $expected but got $data[0]";
+        }
+      }
+      when ('>') {
+        if ($data[0] <= $expected) {
+          $failure = " expected greater than $expected but got $data[0]";
+        }
+      }
+      when ('<=') {
+        if ($data[0] > $expected) {
+          $failure = " expected $type $expected but got $data[0]";
+        }
+      }
+      when ('>=') {
+        if ($data[0] < $expected) {
+          $failure = " expected $type $expected but got $data[0]";
+        }
+      }
+    }
+
+    if ($failure) {
+      say "FAILURE: $failure";
+    } else {
+      say "SUCCESS";
     }
   }
 }
