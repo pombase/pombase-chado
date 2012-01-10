@@ -61,7 +61,7 @@ method _do_query_checks() {
 
     my @data = $sth->fetchrow_array();
 
-    die "query ('$query') didn't exactly one row" if @data != 1;
+    die "query ('$query') didn't return exactly one row" if @data != 1;
 
     if ($data[0] ne $expected) {
       say "  - FAILED: expected $expected but got $data[0]\n";
