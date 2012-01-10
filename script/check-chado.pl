@@ -12,17 +12,18 @@ BEGIN {
 
 use PomBase::Check;
 
-if (@ARGV != 4) {
-  die "$0: needs four arguments:
-  eg. $0 config_file database_name user_name password\n";
+if (@ARGV != 5) {
+  die "$0: needs five arguments:
+  eg. $0 config_file database_host database_name user_name password\n";
 }
 
 my $config_file = shift;
+my $host = shift;
 my $database = shift;
 my $username = shift;
 my $password = shift;
 
-my $chado = PomBase::Chado::connect($database, $username, $password);
+my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
 my $config = LoadFile($config_file);
 
