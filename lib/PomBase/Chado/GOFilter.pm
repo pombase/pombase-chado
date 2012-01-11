@@ -108,7 +108,14 @@ OR
        AND fc1.feature_id = poor_evidence_fcs.feature_id
        AND fc1.feature_cvterm_id NOT IN (
          SELECT pefcs.feature_cvterm_id
-           FROM poor_evidence_fcs pefcs));
+           FROM poor_evidence_fcs pefcs))
+OR
+  EXISTS ( -- delete all but one poor evidence annotation
+    SELECT fc1.feature_cvterm_id
+      FROM feature_cvterm fc1
+     WHERE fc1.feature_cvterm_id > poor_evidence_fcs.feature_cvterm_id
+       AND fc1.cvterm_id = poor_evidence_fcs.cvterm_id
+       AND fc1.feature_id = poor_evidence_fcs.feature_id);
 EOQ
 
   $sth = $dbh->prepare($fc_to_delete_query);
