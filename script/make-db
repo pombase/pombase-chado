@@ -16,6 +16,9 @@ dropdb $DB; createdb $DB || exit 1
 
 rm --verbose tmp/*/*$DB
 
+echo update GO
+(cd /var/pomcur/sources/go; cvs up)
+
 cd ~/extern/svn/gmod-schema/chado
 
 perl Makefile.PL
