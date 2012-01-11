@@ -288,7 +288,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   }
 
   if ($self->is_go_cv_name($cv_name)) {
-    $self->maybe_move_igi(\@qualifiers, $sub_qual_map);
+    $self->maybe_move_igi($cvterm, \@qualifiers, $sub_qual_map);
 
     if (defined $sub_qual_map->{from}) {
       my @froms = split /\|/, delete $sub_qual_map->{from};
@@ -388,7 +388,20 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   return 1;
 }
 
-method maybe_move_igi($qualifiers, $sub_qual_map) {
+method maybe_move_igi($term, $qualifiers, $sub_qual_map) {
+  my $dbxref = $term->dbxref();
+  my $termid = $dbxref->db()->name() . ':' . $dbxref->accession();
+
+  my %terms = (
+    'GO:0034613' => 1,
+    'GO:0034501' => 1,
+    'GO:0034504' => 1,
+    'GO:0034502' => 1,
+    'GO:0034504' => 1,
+    'GO:0006606' => 1);
+
+  return unless $terms{$termid};
+
   if ($sub_qual_map->{evidence} && $sub_qual_map->{evidence} eq 'IGI' &&
       defined $qualifiers && @{$qualifiers} > 0 &&
       grep { $_ eq 'localization_dependency'; } @$qualifiers) {
