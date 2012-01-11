@@ -66,3 +66,6 @@ echo /var/pomcur/sources/gene_association.goa_uniprot.pombe
 echo filtering redundant terms 1>&2
 
 ./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $DB $USER $PASSWORD
+
+echo running consistency checks
+./script/check-chado.pl ./check-db.yaml $HOST $DB $USER $PASSWORD
