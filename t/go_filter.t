@@ -30,7 +30,7 @@ cmp_deeply($deleted_counts,
              UniProtKB => 0,
            });
 my $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 7);
+is($annotations->count(), 9);
 close $fh;
 
 
@@ -40,5 +40,5 @@ my $filter = PomBase::Chado::GOFilter->new(chado => $chado,
 $filter->process();
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 4);
+is($annotations->count(), 6);
 
