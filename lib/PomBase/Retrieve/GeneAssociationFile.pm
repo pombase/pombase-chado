@@ -57,15 +57,24 @@ method retrieve() {
         },
         {
           'me.name' => 'molecular_function'
-        }]);
+        },
+      ]);
 
     my $cvterm_rs =
       $chado->resultset('Cv::Cvterm')->search({
-        cv_id => { -in => $cv_rs->get_column('cv_id')->as_query() } });
+        cv_id => { -in => $cv_rs->get_column('cv_id')->as_query() } },
+                                              {
+                                              });
 
     my $results =
-      $chado->resultset('Sequence::FeatureCvterm')->search({
-        cvterm_id => { -in => $cvterm_rs->get_column('cvterm_id')->as_query() } });
+      $chado->resultset('Sequence::FeatureCvterm')->search(
+        {
+          'me.cvterm_id' => { -in => $cvterm_rs->get_column('cvterm_id')->as_query() }
+        },
+        {
+          prefetch => { cvterm => { dbxref => 'db' } }
+        },
+      );
 
     iterate {
       my $row = $results->next();
