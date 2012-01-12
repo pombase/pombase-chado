@@ -204,7 +204,7 @@ data:
             accession: 0000004
             db:
               name: PomBase
-    - name: go_annotation_relations
+    - name: go/extensions/gorel
       cvterms:
         - name: exists_during
           dbxref:

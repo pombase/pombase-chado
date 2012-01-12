@@ -129,7 +129,7 @@ func _fix_annotation_extension_rels($chado, $config)
   my @new_annotation_rel_names =
     map {
       'annotation_extension_relation-' . $_->name();
-    } $chado->resultset('Cv::Cv')->search({ 'me.name' => 'go_annotation_relations' })
+    } $chado->resultset('Cv::Cv')->search({ 'me.name' => 'go/extensions/gorel' })
             ->search_related('cvterms');
 
   push @{$config->{cvs}->{cvterm_property_type}}, @new_annotation_rel_names;

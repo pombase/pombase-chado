@@ -60,7 +60,7 @@ method store_extension($feature_cvterm, $extensions)
 
   my $new_name = $old_cvterm->name();
 
-  my $relationship_cv_name = 'go_annotation_relations';
+  my $relationship_cv_name = 'go/extensions/gorel';
 
   for my $extension (@$extensions) {
     my $rel_name = $extension->{rel_name};
