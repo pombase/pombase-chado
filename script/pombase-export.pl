@@ -57,7 +57,7 @@ $retrieve_module->new(chado => \$chado, config => \$config,
 };
   die "$@" if $@;
 
-  print $retriever->header(), "\n";
+  print $retriever->header();
 
   my $results = $retriever->retrieve();
 
