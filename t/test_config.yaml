@@ -185,6 +185,11 @@ data:
             accession: 01000001
             db:
               name: PomBase
+        - name: date
+          dbxref:
+            accession: 01000002
+            db:
+              name: PomBase
     - name: PomBase organism property types
       cvterms:
         - name: taxon_id
@@ -266,6 +271,15 @@ data:
       organism:
         genus: Schizosacchaomyces
         species: pombe
+  feature_relationships:
+    - subject:
+        uniquename: SPBC2F12.13.1
+      type:
+        name: part_of
+        cv:
+          name: relationship
+      object:
+        uniquename: SPBC2F12.13
   feature_cvterm:
     - feature:
         uniquename: SPBC2F12.13.1
@@ -275,6 +289,9 @@ data:
         - type:
             name: evidence
           value: Inferred from Electronic Annotation
+        - type:
+            name: date
+          value: 20091023
       pub:
         uniquename: PMID:11739790
 test_organism:

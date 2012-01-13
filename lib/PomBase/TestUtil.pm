@@ -74,6 +74,13 @@ method _load_feature_cvterms($chado, $feature_cvterm_conf)
   }
 }
 
+method _load_feature_relationships($chado, $feature_rel_conf)
+{
+  for my $row (@$feature_rel_conf) {
+    $chado->resultset("Sequence::FeatureRelationship")->create($row);
+  }
+}
+
 method _load_cv_db($chado)
 {
   my $test_data = $self->test_config()->{data};
@@ -139,6 +146,7 @@ method _load_test_features($chado)
   }
 
   $self->_load_feature_cvterms($chado, $test_data->{feature_cvterm});
+  $self->_load_feature_relationships($chado, $test_data->{feature_relationships});
 }
 
 method BUILD
