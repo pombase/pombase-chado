@@ -40,6 +40,8 @@ use Moose;
 
 use Carp::Assert qw(assert);
 
+use Data::Compare;
+
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
@@ -134,7 +136,7 @@ method check
   my ($localizes_term) = grep { $_->cvterm()->name() =~ /cellular protein localization \[localizes\] SPAC167.03c/ } @all_feature_cvterm;
   assert(defined $localizes_term);
 
-  should($localizes_term->feature_cvtermprops()->count(), 3);
+  should($localizes_term->feature_cvtermprops()->count(), 4);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
@@ -143,21 +145,18 @@ method check
 
   my $feature_cvterm = $feature_cvterm_rs->next();
 
-  my @props = sort map { $_->value(); } $feature_cvterm->feature_cvtermprops();
-  my @prop_types = sort map { $_->type()->name(); } $feature_cvterm->feature_cvtermprops();
+  {
+    my @actual_props = map { ( $_->type()->name(), $_->value() ) } $feature_cvterm->feature_cvtermprops();
 
-  should ($prop_types[0], 'date');
-  should ($props[0], '19700101');
-  should ($prop_types[1], 'evidence');
-  should ($props[1], 'Inferred from Direct Assay');
-  should ($prop_types[2], 'qualifier');
-  should ($props[2], 'predicted');
-  should ($prop_types[2], 'qualifier');
-  should ($props[3], 'region');
-  should(scalar(@props), 4);
+    my @expected_props = ( 'qualifier', 'predicted', 'qualifier',
+                           'region', 'evidence', 'Inferred from Direct Assay',
+                           'date', '19700101');
+
+    assert(Compare(\@expected_props, \@actual_props));
+  }
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 201);
+  should(scalar(@all_props), 244);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 72);
@@ -223,13 +222,26 @@ method check
 
   # check for annotation extension targeting genes
   warn "cvterms for $spbc409_20c_1:\n" if $self->verbose();
-  assert (grep {
+  my ($methyltransferase_activity_term) = grep {
     warn '  ', $_->name(), "\n" if $self->verbose();
     for my $prop ($_->cvtermprops()) {
       warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
     }
     $_->name() eq 'protein-lysine N-methyltransferase activity [has_downstream_target] SPAC977.10';
-  } @ann_ex_go_terms);
+  } @ann_ex_go_terms;
+
+  {
+    my $fcs = $methyltransferase_activity_term->feature_cvterms();
+    my @actual_props = map { ( $_->type()->name(), $_->value() ) } $fcs->first()->feature_cvtermprops();
+
+    my @expected_props = ( 'assigned_by', 'PomBase',
+                           'evidence', 'Inferred from Mutant Phenotype',
+                           'date', '20050510', );
+
+    should(scalar(@expected_props), scalar(@actual_props));
+
+    assert(Compare(\@expected_props, \@actual_props));
+  }
 
   # check for IGI converted to annotation extension
   assert (grep {
@@ -243,14 +255,22 @@ method check
   # check for ISS convert to ISO when with=SGD
   my @spbc409_20c_1_fcs = $ann_ex_gene->feature_cvterms();
   warn "check for ISS -> ISO for $spbc409_20c_1:\n" if $self->verbose();
-  assert (grep {
+  my ($binding_fc) = grep {
     warn '  ', $_->cvterm()->name(), "\n" if $self->verbose();
     for my $prop ($_->feature_cvtermprops()) {
       warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
     }
-    if ($_->cvterm()->name() eq "mRNA 3'-UTR binding") {
-      grep { $_->type()->name() eq 'evidence' &&
-             $_->value() eq 'Inferred from Sequence Orthology'; } $_->feature_cvtermprops();
-    }
-  } @spbc409_20c_1_fcs);
+    $_->cvterm()->name() eq "mRNA 3'-UTR binding";
+  } @spbc409_20c_1_fcs;
+
+  my @actual_props = map { ( $_->type()->name(), $_->value() ) } $binding_fc->feature_cvtermprops();
+
+  my @expected_props = ( 'assigned_by', 'PomBase',
+                         'with', 'SGD:S000002371',
+                         'evidence', 'Inferred from Sequence Orthology',
+                         'date', '20050322', );
+
+  assert(scalar(@expected_props) == scalar(@actual_props));
+
+  assert(Compare(\@expected_props, \@actual_props));
 }

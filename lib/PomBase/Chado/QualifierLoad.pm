@@ -288,6 +288,8 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   }
 
   if ($self->is_go_cv_name($cv_name)) {
+    $self->add_feature_cvtermprop($featurecvterm, assigned_by => $self->config()->{db_name_for_cv});
+
     $self->maybe_move_igi($cvterm, \@qualifiers, $sub_qual_map);
 
     if (defined $sub_qual_map->{from}) {
