@@ -172,6 +172,23 @@ func _safe_join($expr, $array)
   }
 }
 
+func _get_qualifier($fc, $fc_props)
+{
+  my @qual_bits;
+
+  if (defined $fc_props->{qualifier}) {
+    @qual_bits = @{$fc_props->{qualifier}};
+  } else {
+    @qual_bits = ();
+  }
+
+  if ($fc->is_not()) {
+    push @qual_bits, "NOT"
+  }
+
+  join('|', @qual_bits);
+}
+
 method retrieve() {
   my $chado = $self->chado();
 
@@ -224,7 +241,7 @@ method retrieve() {
         my $cv_name = $cvterm->cv()->name();
         my $base_cvterm = _get_base_term($cvterm);
         my $base_cv_name = $base_cvterm->cv()->name();
-        my $qualifier = _safe_join('|', $row_fc_props{qualifier});
+        my $qualifier = _get_qualifier($row, \%row_fc_props);
         my $dbxref = $base_cvterm->dbxref();
         my $id = $dbxref->db()->name() . ':' . $dbxref->accession();
         my $evidence = _safe_join('|', $row_fc_props{evidence});

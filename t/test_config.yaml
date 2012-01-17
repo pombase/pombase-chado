@@ -290,6 +290,7 @@ data:
         uniquename: SPBC2F12.13.1
       cvterm:
         name: spindle pole body
+      is_not: 0
       feature_cvtermprops:
         - type:
             name: evidence
@@ -297,6 +298,20 @@ data:
         - type:
             name: date
           value: 20091023
+      pub:
+        uniquename: PMID:11739790
+    - feature:
+        uniquename: SPBC2F12.13.1
+      cvterm:
+        name: interphase of mitotic cell cycle
+      is_not: 1
+      feature_cvtermprops:
+        - type:
+            name: evidence
+          value: Inferred from Direct Assay
+        - type:
+            name: date
+          value: 20091020
         - type:
             name: qualifier
           value: contributes_to
