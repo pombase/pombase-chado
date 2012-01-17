@@ -142,7 +142,6 @@ method _get_feature_details
     my $rel = $_;
     my $object = $rel->object();
     my $type = $rel->type();
-      print $rel->subject()->uniquename(), " ", $type->name(), " ", $rel->object()->uniquename(), "\n";
     if ($type->name() eq 'part_of') {
       if (defined $ret_map{$rel->subject_id()}->{gene}) {
         die "feature has two part_of parents";
