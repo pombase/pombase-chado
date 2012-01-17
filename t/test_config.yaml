@@ -190,6 +190,11 @@ data:
             accession: 01000002
             db:
               name: PomBase
+        - name: qualifier
+          dbxref:
+            accession: 01000003
+            db:
+              name: PomBase
     - name: PomBase organism property types
       cvterms:
         - name: taxon_id
@@ -292,6 +297,9 @@ data:
         - type:
             name: date
           value: 20091023
+        - type:
+            name: qualifier
+          value: contributes_to
       pub:
         uniquename: PMID:11739790
 test_organism:

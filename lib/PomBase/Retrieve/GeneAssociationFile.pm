@@ -158,6 +158,20 @@ method _get_feature_details
   return %ret_map;
 }
 
+method _get_extension_text($fc)
+{
+  return '';
+}
+
+func _safe_join($expr, $array)
+{
+  if (defined $array) {
+    return join $expr, @{$array};
+  } else {
+    return '';
+  }
+}
+
 method retrieve() {
   my $chado = $self->chado();
 
@@ -191,7 +205,7 @@ method retrieve() {
       search({}, { prefetch => [ 'type' ] });;
 
     while (defined (my $prop = $fc_props_rs->next())) {
-      $fc_props{$prop->feature_cvterm_id()}->{$prop->type()->name()} = $prop->value();
+      push @{$fc_props{$prop->feature_cvterm_id()}->{$prop->type()->name()}}, $prop->value();
     }
 
     my $results =
@@ -210,13 +224,13 @@ method retrieve() {
         my $cv_name = $cvterm->cv()->name();
         my $base_cvterm = _get_base_term($cvterm);
         my $base_cv_name = $base_cvterm->cv()->name();
-        my $qualifier = 'QUALIFIER';
+        my $qualifier = _safe_join('|', $row_fc_props{qualifier});
         my $dbxref = $base_cvterm->dbxref();
         my $id = $dbxref->db()->name() . ':' . $dbxref->accession();
-        my $evidence = $row_fc_props{evidence};
+        my $evidence = _safe_join('|', $row_fc_props{evidence});
         my $evidence_code = $self->{_evidence_to_code}->{$evidence}
           // die "can't find evidence code for $evidence\n";
-        my $with_from = $row_fc_props{with} // '';
+        my $with_from = _safe_join('|', $row_fc_props{with});
         my $aspect = $cv_abbreviations{$base_cv_name};
         my $pub = $row->pub();
         my $feature = $row->feature();
@@ -227,9 +241,9 @@ method retrieve() {
         my $synonyms = join '|', @{$synonyms_ref};
         my $product = $details->{product} // '';
         my $taxon = 'taxon:' . $self->{_organism_taxonid};
-        my $date = $row_fc_props{date};
-        my $annotation_extension = "ANNOTATION_EXTENSION";
-        my $gene_product_form_id = $row_fc_props{gene_product_form_id} // '';
+        my $date = _safe_join('|', $row_fc_props{date});
+        my $annotation_extension = $self->_get_extension_text($row);
+        my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
         return [$db_name, $feature->uniquename(), $gene_name,
                 $qualifier, $id, $pub->uniquename(),
                 $evidence,
