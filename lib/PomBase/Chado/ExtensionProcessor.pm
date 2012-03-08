@@ -52,6 +52,8 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::FeatureFinder';
 
 has verbose => (is => 'ro');
+has cache => (is => 'ro', init_arg => undef,
+              default => sub { {} });
 
 method store_extension($feature_cvterm, $extensions)
 {
@@ -87,6 +89,12 @@ method store_extension($feature_cvterm, $extensions)
 
     my $isa_cvterm = $self->get_cvterm('relationship', 'is_a');
     $self->store_cvterm_rel($new_term, $old_cvterm, $isa_cvterm);
+  }
+
+  if (!exists $self->cache()->{$new_name}) {
+    # we load cvterms from older builds from an OBO file but the file
+    # doesn't store the non-isa relations and the props - recreate them
+    $self->cache()->{$new_name} = 1;
 
     for my $extension (@$extensions) {
       my $rel_name = $extension->{rel_name};

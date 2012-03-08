@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 4;
+use Test::More tests => 11;
 
 use PomBase::TestUtil;
 
@@ -69,9 +69,19 @@ is ($new_cvterm->cvtermprops()->count(), 0);
 # new processor with a fresh cache
 $ex_processor = PomBase::Chado::ExtensionProcessor->new(verbose => 0, chado => $chado, config => $config);
 
-my $new_cvterm_after_prop_delete = $ex_processor->store_extension($SPAC2F7_03c_spindle_fc, $extensions);
+sub check_SPAC2F7_03c {
+  my $new_cvterm_after_prop_delete = $ex_processor->store_extension($SPAC2F7_03c_spindle_fc, $extensions);
+  my $new_cvterm_after_delete_prop_rs = $new_cvterm_after_prop_delete->cvtermprops();
+  is ($new_cvterm_after_delete_prop_rs->count(), 1);
+}
 
-my $new_cvterm_after_delete_prop_rs = $new_cvterm_after_prop_delete->cvtermprops();
+check_SPAC2F7_03c();
 
-is ($new_cvterm_after_delete_prop_rs->count(), 1);
+# reset the fc to check that we don't create more props for the
+# extended term if we use it again
+
+$SPAC2F7_03c_spindle_fc->cvterm($spindle_cvterm);
+
+check_SPAC2F7_03c();
+
 
