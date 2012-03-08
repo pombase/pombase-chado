@@ -12,7 +12,7 @@ my $config = $test_util->config();
 use PomBase::Import::PomCur;
 
 my $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 1);
+is($annotations->count(), 2);
 
 my $importer =
   PomBase::Import::PomCur->new(chado => $chado, config => $config);
@@ -22,7 +22,7 @@ $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 6);
+is($annotations->count(), 7);
 
 while (defined (my $fc = $annotations->next())) {
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1') {
