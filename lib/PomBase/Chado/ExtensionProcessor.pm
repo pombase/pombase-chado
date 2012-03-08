@@ -133,6 +133,8 @@ method store_extension($feature_cvterm, $extensions)
   $feature_cvterm->cvterm($new_term);
 
   $feature_cvterm->update();
+
+  return $new_term;
 }
 
 method check_targets($target_is_quals, $target_of_quals)
