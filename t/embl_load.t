@@ -29,3 +29,7 @@ my $load_file = PomBase::Chado::LoadFile->new(chado => $chado,
 $load_file->process_file('data/chromosome1.contig.embl');
 
 $guard->commit();
+
+my $feature_rs = $chado->resultset('Sequence::Feature');
+
+is ($feature_rs->count(), 83);

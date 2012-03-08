@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 22;
+use Test::More tests => 25;
 
 use PomBase::TestUtil;
 use PomBase::Retrieve::Ontology;
@@ -64,10 +64,13 @@ is($retriever->header(), $expected_header);
 my $feat = $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPBC2F12.13.1' });
 my $fcs = $feat->feature_cvterms();
 
-is($fcs->count(), 1);
+is($fcs->count(), 2);
 
-my $fc = $fcs->first();
-my $orig_cvterm = $fc->cvterm();
+my $spindle_cvterm = $chado->resultset('Cv::Cvterm')->find({ name => 'spindle pole body' });
+ok (defined $spindle_cvterm);
+
+my $fc = $fcs->find({ cvterm_id => $spindle_cvterm->cvterm_id() });
+ok (defined $fc);
 
 my $ex_processor = PomBase::Chado::ExtensionProcessor->new(chado => $chado,
                                                            config => $config);
@@ -75,9 +78,9 @@ my $ex_processor = PomBase::Chado::ExtensionProcessor->new(chado => $chado,
 $ex_processor->process_one_annotation($fc, 'has_substrate(GO:0051329)');
 
 my $fcs2 = $feat->feature_cvterms();
-my $fc_after = $fcs2->first();
+ok (defined $fcs2);
 
-is($fc_after->cvterm()->name(), $orig_cvterm->name() . ' [has_substrate] interphase of mitotic cell cycle');
+is($fc->cvterm()->name(), $spindle_cvterm->name() . ' [has_substrate] interphase of mitotic cell cycle');
 
 
 my @options2 = ('--constraint-type', 'db_name',

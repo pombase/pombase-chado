@@ -33,8 +33,10 @@ sub _check_res
 
   while (my $data = $results->next()) {
     if ($data->[4] eq 'GO:0005816') {
-      die if defined $result_data_0005816;
-      $result_data_0005816 = $data;
+      if ($data->[1] eq 'SPBC2F12.13.1') {
+        die if defined $result_data_0005816;
+        $result_data_0005816 = $data;
+      }
     } else {
       if ($data->[4] eq 'GO:0051329') {
         die if defined $result_data_0051329;

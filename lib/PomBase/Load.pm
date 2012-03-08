@@ -37,6 +37,7 @@ under the same terms as Perl itself.
 =cut
 
 use perl5i::2;
+use Carp;
 
 use PomBase::External;
 use PomBase::Chado::LoadOrganism;
@@ -55,10 +56,17 @@ func _load_genes($chado, $organism, $test_mode) {
                                             cv_id => $feature_types_cv->cv_id() });
   my $file_name = $organism->species() . "_genes";
 
+  if ($test_mode) {
+    $file_name = "data/$file_name";
+  }
+
   if (-e $file_name) {
     warn "loading from cache file: $file_name\n";
     @res = LoadFile($file_name);
   } else {
+    if ($test_mode) {
+      croak "test data missing: $file_name";
+    }
     warn "getting gene information via InterMine API for $org_name\n";
     @res = PomBase::External::get_genes($org_name);
     DumpFile($file_name, @res);

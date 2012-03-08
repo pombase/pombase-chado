@@ -374,3 +374,5 @@ test_genes:
   - uniquename: SPCC63.05
   - uniquename: SPBC14F5.07
   - uniquename: SPAC2F7.03c
+
+test_mode: 1
