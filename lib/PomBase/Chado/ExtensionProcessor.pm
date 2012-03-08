@@ -128,9 +128,11 @@ method store_extension($feature_cvterm, $extensions)
           $rel_name = 'localization_target';
         }
 
-        $self->store_cvtermprop($new_term,
-                                'annotation_extension_relation-' . $rel_name,
-                                $identifier);
+        my $ex_type = 'annotation_extension_relation-' . $rel_name;
+
+        warn qq{storing extension as cvtermprop: $ex_type -> $identifier\n} if $self->verbose();
+
+        $self->store_cvtermprop($new_term, $ex_type, $identifier);
       }
     }
   }
