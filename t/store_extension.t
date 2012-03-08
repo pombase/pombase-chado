@@ -8,17 +8,29 @@ my $test_util = PomBase::TestUtil->new();
 my $chado = $test_util->chado();
 my $config = $test_util->config();
 
-use PomBase::Import::ExtensionProcessor;
+use PomBase::Chado::ExtensionProcessor;
 
 my $fc_rs = $chado->resultset('Sequence::FeatureCvterm');
 
-my $spindle_fc;
+my $SPBC2F12_13_spindle_fc;
+my $SPAC2F7_03c_spindle_fc;
+my $spindle_cvterm;
 
 while (defined (my $fc = $fc_rs->next())) {
   if ($fc->cvterm()->name() eq 'spindle pole body') {
-    $spindle_fc = $fc;
+    $spindle_cvterm = $fc->cvterm();
+    if ($fc->feature()->uniquename() eq 'SPBC2F12.13.1') {
+      $SPBC2F12_13_spindle_fc = $fc;
+    } else {
+      if ($fc->feature()->uniquename() eq 'SPAC2F7.03c.1') {
+        $SPAC2F7_03c_spindle_fc = $fc;
+      }
+    }
   }
 }
+
+ok (defined $SPBC2F12_13_spindle_fc);
+ok (defined $SPAC2F7_03c_spindle_fc);
 
 my $extensions = [
   {
@@ -27,6 +39,39 @@ my $extensions = [
   },
 ];
 
-my $ex_processor = PomBase::Import::ExtensionProcessor->new(verbose => 0);
+my $ex_processor = PomBase::Chado::ExtensionProcessor->new(verbose => 0, chado => $chado, config => $config);
+my $new_cvterm = $ex_processor->store_extension($SPBC2F12_13_spindle_fc, $extensions);
 
-$ex_processor->store_extension($spindle_fc, $extensions);
+ok ($new_cvterm->cvterm_id() != $spindle_cvterm->cvterm_id());
+is ($new_cvterm->name(), 'spindle pole body [dependent_on] Pfam:PF00069');
+
+# check new term parent
+my $new_term_isa_rel =
+  $chado->resultset('Cv::CvtermRelationship')->search({ subject_id => $new_cvterm->cvterm_id(),
+                                                        object_id => $spindle_cvterm->cvterm_id() });
+
+is ($new_term_isa_rel->count(), 1);
+
+my $new_term_props_rs = $new_cvterm->cvtermprops();
+
+is ($new_term_props_rs->count(), 1);
+
+my $new_term_prop = $new_term_props_rs->first();
+
+is ($new_term_prop->value, 'Pfam:PF00069');
+is ($new_term_prop->type()->name(), 'annotation_extension_relation-dependent_on');
+
+# delete the property and check that it's re-created
+$new_term_prop->delete();
+
+is ($new_cvterm->cvtermprops()->count(), 0);
+
+# new processor with a fresh cache
+$ex_processor = PomBase::Chado::ExtensionProcessor->new(verbose => 0, chado => $chado, config => $config);
+
+my $new_cvterm_after_prop_delete = $ex_processor->store_extension($SPAC2F7_03c_spindle_fc, $extensions);
+
+my $new_cvterm_after_delete_prop_rs = $new_cvterm_after_prop_delete->cvtermprops();
+
+is ($new_cvterm_after_delete_prop_rs->count(), 1);
+

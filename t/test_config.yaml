@@ -248,6 +248,11 @@ data:
             accession: 0020002
             db:
               name: PomBase
+        - name: annotation_extension_relation-dependent_on
+          dbxref:
+            accession: 0020003
+            db:
+              name: PomBase
   cvterm_relationships:
     - subject:
         name: microtubule motor activity
@@ -276,6 +281,19 @@ data:
       organism:
         genus: Schizosacchaomyces
         species: pombe
+    - uniquename: SPAC2F7.03c
+      name: pom1
+      type:
+        name: gene
+      organism:
+        genus: Schizosacchaomyces
+        species: pombe
+    - uniquename: SPAC2F7.03c.1
+      type:
+        name: mRNA
+      organism:
+        genus: Schizosacchaomyces
+        species: pombe
   feature_relationships:
     - subject:
         uniquename: SPBC2F12.13.1
@@ -285,6 +303,14 @@ data:
           name: relationship
       object:
         uniquename: SPBC2F12.13
+    - subject:
+        uniquename: SPAC2F7.03c.1
+      type:
+        name: part_of
+        cv:
+          name: relationship
+      object:
+        uniquename: SPAC2F7.03c
   feature_cvterm:
     - feature:
         uniquename: SPBC2F12.13.1
@@ -317,6 +343,23 @@ data:
           value: contributes_to
       pub:
         uniquename: PMID:11739790
+    - feature:
+        uniquename: SPAC2F7.03c.1
+      cvterm:
+        name: spindle pole body
+      is_not: 0
+      feature_cvtermprops:
+        - type:
+            name: evidence
+          value: Inferred from Electronic Annotation
+        - type:
+            name: date
+          value: 20091020
+        - type:
+            name: qualifier
+          value: contributes_to
+      pub:
+        uniquename: PMID:11739790
 test_organism:
   genus: Schizosaccharomyces
   species: pombe
@@ -330,3 +373,4 @@ test_genes:
   - uniquename: SPAC27D7.13c
   - uniquename: SPCC63.05
   - uniquename: SPBC14F5.07
+  - uniquename: SPAC2F7.03c
