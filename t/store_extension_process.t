@@ -32,7 +32,7 @@ my $ex_processor = PomBase::Chado::ExtensionProcessor->new(verbose => 0, chado =
 my $new_cvterm = $ex_processor->process_one_annotation($SPBC2F12_13_spindle_fc, $extension_text);
 
 ok ($new_cvterm->cvterm_id() != $spindle_cvterm->cvterm_id());
-is ($new_cvterm->name(), 'spindle pole body [has_substrate] SPBC1105.11c [exists_during] negative regulation of transmembrane transport [requires_feature] Pfam:PF00564');
+is ($new_cvterm->name(), 'spindle pole body [exists_during] negative regulation of transmembrane transport [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564');
 
 # check new term parent
 my $new_term_isa_rel =

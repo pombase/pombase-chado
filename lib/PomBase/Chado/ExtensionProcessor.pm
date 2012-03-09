@@ -233,7 +233,7 @@ method process_one_annotation($featurecvterm, $extension_text)
   warn "processing annotation extension for $feature_uniquename <-> ",
     $featurecvterm->cvterm()->name(), "\n" if $self->verbose();
 
-  my @extension_qualifiers = split /(?<=\))\||,/, $extension_text;
+  my @extension_qualifiers = sort split /(?<=\))\||,/, $extension_text;
 
   my @extensions = map {
     if (/^(\w+)\((.+)\)$/) {
