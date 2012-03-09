@@ -46,7 +46,9 @@ while (defined (my $fc = $annotations->next())) {
                      evidence => 'Inferred from Direct Assay',
                    });
       } else {
-        fail("unexpected term: " . $fc->cvterm->name());
+        if ($fc->cvterm()->name() ne 'negative regulation of transmembrane transport') {
+          fail("unexpected term: " . $fc->cvterm->name());
+        }
       }
     }
   }

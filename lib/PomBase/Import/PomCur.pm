@@ -76,7 +76,12 @@ method _store_ontology_annotation
   my $gene_uniquename = $args{gene_uniquename};
   my $organism_name = $args{organism_name};
   my $with_gene = $args{with_gene};
-  my $annotation_extension = $args{annotation_extension};
+  my $extension_text = $args{extension_text};
+
+  if (defined $extension_text && $extension_text =~ /\|/) {
+    warn "not loading annotation with '|' in extension\n";
+    return;
+  }
 
   my $chado = $self->chado();
   my $config = $self->config();
@@ -114,8 +119,23 @@ method _store_ontology_annotation
                                     $with_gene);
     }
 
-    if (defined $annotation_extension) {
-      $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
+    if (defined $extension_text) {
+      my @bits = split /,/, $extension_text;
+      my %by_type = ();
+      for my $bit (@bits) {
+        if ($bit =~/(.*)=(.*)/) {
+          push @{$by_type{$1}}, $2;
+        }
+      }
+      my $annotation_extension_data = delete $by_type{annotation_extension};
+      if (defined $annotation_extension_data) {
+        my $annotation_extension = join ',', @$annotation_extension_data;
+        $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
+      }
+
+      for my $type (keys %by_type) {
+        warn "unhandled type: $type\n";
+      }
     }
   };
 
@@ -171,12 +191,12 @@ method load($fh)
 
           my $with_gene = delete $annotation->{with_gene};
 
-          my $annotation_extension = delete $annotation->{annotation_extension};
+          my $extension_text = delete $annotation->{annotation_extension};
 
           if (keys %$annotation > 0) {
             my @keys = keys %$annotation;
 
-            die "some data from annotation isn't used: @keys\n";
+            warn "some data from annotation isn't used: @keys\n";
           }
 
           $self->_store_ontology_annotation(type => $annotation_type,
@@ -185,12 +205,10 @@ method load($fh)
                                             publication_uniquename =>
                                               $publication_uniquename,
                                             evidence_code => $evidence_code,
-                                            gene_uniquename =>
-                                              $gene_uniquename,
+                                            gene_uniquename => $gene_uniquename,
                                             organism_name => $organism_name,
                                             with_gene => $with_gene,
-                                            annotation_extension =>
-                                              $annotation_extension);
+                                            extension_text => $extension_text);
         } else {
           warn "can't handle data of type $annotation_type\n";
         }
