@@ -40,6 +40,7 @@ use perl5i::2;
 use Moose;
 
 use JSON;
+use Clone qw(clone);
 
 use PomBase::Chado::ExtensionProcessor;
 
@@ -141,6 +142,68 @@ method _store_ontology_annotation
   $chado->txn_do($proc);
 }
 
+# split any annotation with an extension with a vertical bar into multiple
+# annotations
+method _split_vert_bar($annotation)
+{
+  my $extension_text = $annotation->{annotation_extension};
+
+  my @ex_bits = split /\|/, $extension_text;
+
+  if (@ex_bits > 1) {
+    return map { my $new_annotation = clone $annotation;
+                 $new_annotation->{annotation_extension} = $_; } @ex_bits;
+  } else {
+    return $annotation;
+  }
+}
+
+method _process_annotation($gene_data, $annotation)
+{
+  my $annotation_type = delete $annotation->{type};
+  my $creation_date = delete $annotation->{creation_date};
+  my $publication_uniquename = delete $annotation->{publication};
+
+  if ($annotation_type eq 'biological_process' or
+      $annotation_type eq 'molecular_function' or
+      $annotation_type eq 'cellular_component' or
+      $annotation_type eq 'fission_yeast_phenotype') {
+    my $termid = delete $annotation->{term};
+    my $evidence_code = delete $annotation->{evidence_code};
+    my $status = delete $annotation->{status};
+
+    if ($status ne 'new') {
+      die "unhandled status type: $status\n";
+    }
+
+    my $with_gene = delete $annotation->{with_gene};
+
+    my $extension_text = delete $annotation->{annotation_extension};
+
+    if (keys %$annotation > 0) {
+      my @keys = keys %$annotation;
+
+      warn "some data from annotation isn't used: @keys\n";
+    }
+
+    my $organism_name = $gene_data->{organism};
+    my $gene_uniquename = $gene_data->{uniquename};
+
+    $self->_store_ontology_annotation(type => $annotation_type,
+                                      creation_date => $creation_date,
+                                      termid => $termid,
+                                      publication_uniquename =>
+                                        $publication_uniquename,
+                                      evidence_code => $evidence_code,
+                                      gene_uniquename => $gene_uniquename,
+                                      organism_name => $organism_name,
+                                      with_gene => $with_gene,
+                                      extension_text => $extension_text);
+  } else {
+    warn "can't handle data of type $annotation_type\n";
+  }
+}
+
 method load($fh)
 {
   my $decoder = JSON->new()->utf8();
@@ -164,51 +227,12 @@ method load($fh)
 
       next unless exists $gene_data{annotations};
 
-      my $organism_name = $gene_data{organism};
-      my $gene_uniquename = $gene_data{uniquename};
-
       my @annotations = @{$gene_data{annotations}};
 
+      @annotations = map { $self->_split_vert_bar($_); } @annotations;
+
       for my $annotation (@annotations) {
-        my $annotation_type = delete $annotation->{type};
-        my $creation_date = delete $annotation->{creation_date};
-        my $publication_uniquename = delete $annotation->{publication};
-
-        if ($annotation_type eq 'biological_process' or
-            $annotation_type eq 'molecular_function' or
-            $annotation_type eq 'cellular_component' or
-            $annotation_type eq 'fission_yeast_phenotype') {
-          my $termid = delete $annotation->{term};
-          my $evidence_code = delete $annotation->{evidence_code};
-          my $status = delete $annotation->{status};
-
-          if ($status ne 'new') {
-            die "unhandled status type: $status\n";
-          }
-
-          my $with_gene = delete $annotation->{with_gene};
-
-          my $extension_text = delete $annotation->{annotation_extension};
-
-          if (keys %$annotation > 0) {
-            my @keys = keys %$annotation;
-
-            warn "some data from annotation isn't used: @keys\n";
-          }
-
-          $self->_store_ontology_annotation(type => $annotation_type,
-                                            creation_date => $creation_date,
-                                            termid => $termid,
-                                            publication_uniquename =>
-                                              $publication_uniquename,
-                                            evidence_code => $evidence_code,
-                                            gene_uniquename => $gene_uniquename,
-                                            organism_name => $organism_name,
-                                            with_gene => $with_gene,
-                                            extension_text => $extension_text);
-        } else {
-          warn "can't handle data of type $annotation_type\n";
-        }
+        $self->_process_annotation(\%gene_data, $annotation);
       }
     }
   }
