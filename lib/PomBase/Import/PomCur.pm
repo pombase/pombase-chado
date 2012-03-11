@@ -100,7 +100,6 @@ method _store_ontology_annotation
 
   my $proc = sub {
     my $pub = $self->find_or_create_pub($publication_uniquename);
-
     my $cvterm = $self->find_cvterm_by_term_id($termid);
 
     if (!defined $cvterm) {
@@ -154,12 +153,10 @@ method load($fh)
   }
 
   my $pomcur_data = decode_json($json_text);
-
   my %curation_sessions = %{$pomcur_data->{curation_sessions}};
 
   for my $curs_key (keys %curation_sessions) {
     my %session_data = %{$curation_sessions{$curs_key}};
-
     my %genes = %{$session_data{genes}};
 
     for my $gene_tag (keys %genes) {
@@ -180,7 +177,7 @@ method load($fh)
         if ($annotation_type eq 'biological_process' or
             $annotation_type eq 'molecular_function' or
             $annotation_type eq 'cellular_component' or
-            $annotation_type eq  'fission_yeast_phenotype') {
+            $annotation_type eq 'fission_yeast_phenotype') {
           my $termid = delete $annotation->{term};
           my $evidence_code = delete $annotation->{evidence_code};
           my $status = delete $annotation->{status};
