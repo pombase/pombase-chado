@@ -124,7 +124,10 @@ method _store_ontology_annotation
       my %by_type = ();
       for my $bit (@bits) {
         if ($bit =~/(.*)=(.*)/) {
-          push @{$by_type{$1}}, $2;
+          my $key = $1->trim();
+          my $value = $2->trim();
+
+          push @{$by_type{$key}}, $value;
         }
       }
       my $annotation_extension_data = delete $by_type{annotation_extension};

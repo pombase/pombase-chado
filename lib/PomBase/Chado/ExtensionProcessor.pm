@@ -236,7 +236,7 @@ method process_one_annotation($featurecvterm, $extension_text)
   my @extension_qualifiers = sort split /(?<=\))\||,/, $extension_text;
 
   my @extensions = map {
-    if (/^(\w+)\((.+)\)$/) {
+    if (/^\s*(\w+)\((.+)\)\s*$/) {
       my $rel_name = $1;
       my $detail = $2;
 
