@@ -148,11 +148,16 @@ method _split_vert_bar($annotation)
 {
   my $extension_text = $annotation->{annotation_extension};
 
-  my @ex_bits = split /\|/, $extension_text;
+  if (defined $extension_text) {
+    my @ex_bits = split /\|/, $extension_text;
 
-  if (@ex_bits > 1) {
-    return map { my $new_annotation = clone $annotation;
-                 $new_annotation->{annotation_extension} = $_; } @ex_bits;
+    if (@ex_bits > 1) {
+      return map { my $new_annotation = clone $annotation;
+                   $new_annotation->{annotation_extension} = $_;
+                   $new_annotation; } @ex_bits;
+    } else {
+      return $annotation;
+    }
   } else {
     return $annotation;
   }
