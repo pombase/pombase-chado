@@ -111,16 +111,18 @@ method store_extension($feature_cvterm, $extensions)
         if ($self->get_cvterm_rel($new_term, $term, $rel)->count() > 0) {
           my $dbxref = $term->dbxref();
           my $accession = $dbxref->db()->name() . ":" . $dbxref->accession();
-          die "duplicated annotation extension for ", $rel->name(), " (", $accession, ")\n";
-        }
+          my $feature_uniquename = $feature_cvterm->feature()->uniquename();
+          warn "in $feature_uniquename, duplicated annotation extension for ",
+            $rel->name(), " (", $accession, ")\n";
+        } else {
+          warn qq'storing new cvterm_relationship of type "' . $rel->name() .
+            " subject: " . $new_term->name() .
+            " object: " . $term->name() . "\n" if $self->verbose();
+          my $term_rel = $self->store_cvterm_rel($new_term, $term, $rel);
 
-        warn qq'storing new cvterm_relationship of type "' . $rel->name() .
-          " subject: " . $new_term->name() .
-          " object: " . $term->name() . "\n" if $self->verbose();
-        my $term_rel = $self->store_cvterm_rel($new_term, $term, $rel);
-
-        if (defined $nested_extension) {
-          $self->store_cvtermprop($new_term, 'nested_extension', $nested_extension);
+          if (defined $nested_extension) {
+            $self->store_cvtermprop($new_term, 'nested_extension', $nested_extension);
+          }
         }
       } else {
         my $identifier = $extension->{identifier};
