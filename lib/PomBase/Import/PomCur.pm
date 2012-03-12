@@ -120,14 +120,15 @@ method _store_ontology_annotation
       $self->add_feature_cvtermprop($feature_cvterm, 'with',
                                     $with_gene);
     }
-
     if (defined $residue) {
       $self->add_feature_cvtermprop($feature_cvterm,
                                     residue => $residue);
     }
-
     if (defined $allele) {
       $self->add_feature_cvtermprop($feature_cvterm, allele => $allele);
+    }
+    if (defined $creation_date) {
+      $self->add_feature_cvtermprop($feature_cvterm, date => $creation_date);
     }
 
     if (defined $extension_text) {
