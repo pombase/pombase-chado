@@ -193,7 +193,7 @@ method _process_annotation($gene_data, $annotation)
   if ($annotation_type eq 'biological_process' or
       $annotation_type eq 'molecular_function' or
       $annotation_type eq 'cellular_component' or
-      $annotation_type eq 'fission_yeast_phenotype') {
+      $annotation_type eq 'phenotype') {
     my $termid = delete $annotation->{term};
     my $evidence_code = delete $annotation->{evidence_code};
     my $status = delete $annotation->{status};
