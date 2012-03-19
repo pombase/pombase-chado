@@ -53,13 +53,13 @@ echo $HOME/Work/pombe/pombe-embl/external-go-data/go_proc.tex
 echo $HOME/Work/pombe/pombe-embl/external-go-data/go_func.tex
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/go_func.tex
 echo $HOME/Work/pombe/sources/gene_association.GeneDB_Spombe.inf.gaf
-./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < /var/pomcur/sources/go/scratch/gaf-inference/gene_association.pombase.inf.gaf
+./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < /var/pomcur/sources/go/scratch/gaf-inference/gene_association.pombase.inf.gaf
 echo $HOME/Work/pombe/pombe-embl/external-go-data/From_curation_tool
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/From_curation_tool
 echo $HOME/Work/pombe/pombe-embl/external-go-data/GO_ORFeome_localizations2.tex
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/GO_ORFeome_localizations2.tex
 echo /var/pomcur/sources/gene_association.goa_uniprot.pombe
-./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_GO_IDs --db-ref-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < /var/pomcur/sources/gene_association.goa_uniprot.pombe
+./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < /var/pomcur/sources/gene_association.goa_uniprot.pombe
 
 ) 2>&1 | tee $LOG_DIR/$log_file.gaf
 
