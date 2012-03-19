@@ -89,10 +89,16 @@ method _store_ontology_annotation
   my $chado = $self->chado();
   my $config = $self->config();
 
-  my $long_evidence =
-    $config->{evidence_types}->{$evidence_code}->{name};
+  my $long_evidence;
 
-  if (!defined $long_evidence) {
+  if (exists $config->{evidence_types}->{$evidence_code}) {
+    my $ev_data = $config->{evidence_types}->{$evidence_code};
+    if (defined $ev_data) {
+      $long_evidence = $ev_data->{name};
+    } else {
+      $long_evidence = $evidence_code;
+    }
+  } else {
     die "unknown evidence code: $evidence_code\n";
   }
 

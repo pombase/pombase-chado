@@ -144,14 +144,14 @@ db_names_for_cvs:
 
 evidence_types:
   IMP:
-    name: Inferred from Mutant Phenotype
+    name: Inferred from mutant phenotype
   IDA:
-    name: Inferred from Direct Assay
+    name: Inferred from direct assay
   IGI:
-    name: Inferred from Genetic Interaction
+    name: Inferred from genetic interaction
     with_gene: 1
   IPI:
-    name: Inferred from Physical Interaction
+    name: Inferred from physical interaction
     with_gene: 1
   EXP:
     name: Inferred from Experiment
@@ -189,10 +189,53 @@ evidence_types:
     name: Not Recorded
   TAS:
     name: Traceable Author Statement
-  FPR:
-    name: Unknown evidence code FPR
   UNK:
     name: Unknown
+  Microscopy: ~
+  'Cell growth assay': ~
+  'Other': ~
+  'Affinity Capture-Luminescence': ~
+  'Affinity Capture-MS': ~
+  'Affinity Capture-RNA': ~
+  'Affinity Capture-Western': ~
+  'Biochemical Activity': ~
+  'Co-crystal Structure': ~
+  'Co-fractionation': ~
+  'Co-localization': ~
+  'Co-purification': ~
+  'Dosage Growth Defect': ~
+  'Dosage Lethality': ~
+  'Dosage Rescue': ~
+  'FRET':
+    name: FRET
+  'Far Western': ~
+  'Negative Genetic': ~
+  'PCA':
+    name: PCA
+  'Phenotypic Enhancement': ~
+  'Phenotypic Suppression': ~
+  'Positive Genetic': ~
+  'Protein-RNA': ~
+  'Protein-peptide': ~
+  'Reconstituted Complex': ~
+  'Synthetic Growth Defect': ~
+  'Synthetic Haploinsufficiency': ~
+  'Synthetic Lethality': ~
+  'Synthetic Rescue': ~
+  'Two-hybrid': ~
+  'Reporter gene assay': ~
+  'Enzyme assay data': ~
+  'Flow cytometry data': ~
+  'Chromatin immunoprecipitation experiment': ~
+  'Quantitative PCR': ~
+  'Fusion protein localization experiment': ~
+  'Immunolocalization experiment data': ~
+  'Epitope-tagged protein immunolocalization experiment data': ~
+  'Protein localization experiment': ~
+  'Co-immunoprecipitation experiment': ~
+  'Electrophoretic mobility shift assay data': ~
+  'Northern assay evidence': ~
+  'Western blot assay': ~
 
 suppressible_evidence_codes:
 
