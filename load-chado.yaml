@@ -209,6 +209,7 @@ evidence_types:
   'FRET':
     name: FRET
   'Far Western': ~
+  'Microarray RNA expression level data': ~
   'Negative Genetic': ~
   'PCA':
     name: PCA
