@@ -156,7 +156,7 @@ method check
   }
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 244);
+  should(scalar(@all_props), 242);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 72);
@@ -207,7 +207,7 @@ method check
     for my $prop ($_->cvtermprops()) {
       warn '    ', $prop->type()->name(), ' => ', $prop->value(), "\n" if $self->verbose();
     }
-    $_->name() =~ /chromosome, centromeric region \[requires_feature\] regional_centromere_central_core/;
+    $_->name() eq 'chromosome, centromeric region [dependent_on] protein binding (^has_substrate(GeneDB_Spombe:SPCC594.07c)) [requires_feature] regional_centromere_central_core';
   } @so_ann_ex_go_terms);
 
   my $spbc409_20c_1 = 'SPBC409.20c.1';
