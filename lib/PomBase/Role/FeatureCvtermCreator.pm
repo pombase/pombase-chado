@@ -39,11 +39,41 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-with 'PomBase::Role::ChadoUser';
-
 requires 'find_or_create_cvterm';
+requires 'chado';
 
-my %stored_cvterms = ();
+has stored_cvterms => (is => 'rw', isa => 'HashRef',
+                       lazy => 1, builder => '_build_stored_cvterms');
+
+# preinitialise the hash of ranks of the existing feature_cvterms
+method _build_stored_cvterms() {
+  my $chado = $self->chado();
+
+  my $options = { prefetch => ['cvterm', 'pub', 'feature'] };
+
+  my $rs = $chado->resultset('Sequence::FeatureCvterm')->search({}, $options);
+
+  my $stored_cvterms = {};
+
+  while (defined (my $fc = $rs->next())) {
+    my $feature_uniquename = $fc->feature()->uniquename();
+    my $pub_uniquename = $fc->pub()->uniquename();
+    my $term_name = $fc->cvterm()->name();
+
+    my $rank = $fc->rank();
+    if (exists $stored_cvterms->{$term_name}->{$feature_uniquename}->{$pub_uniquename}) {
+      if ($rank > $stored_cvterms->{$term_name}->{$feature_uniquename}->{$pub_uniquename}) {
+        $stored_cvterms->{$term_name}->{$feature_uniquename}->{$pub_uniquename} = $rank;
+      } else {
+        return;
+      }
+    } else {
+      $stored_cvterms->{$term_name}->{$feature_uniquename}->{$pub_uniquename} = $rank;
+    }
+  }
+
+  return $stored_cvterms;
+}
 
 method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
   my $rs = $self->chado()->resultset('Sequence::FeatureCvterm');
@@ -55,14 +85,21 @@ method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
 
   my $systematic_id = $chado_object->uniquename();
 
-  warn "NO PUB\n" unless $pub;
-
-  if (!exists $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}) {
-    $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()} = 0;
+  if (!defined $pub) {
+    croak "no pub passed to create_feature_cvterm()";
   }
 
-  my $rank =
-    $stored_cvterms{$cvterm->name()}{$systematic_id}{$pub->uniquename()}++;
+  my $rank;
+
+  if (exists $self->stored_cvterms()->{$cvterm->name()}{$systematic_id}{$pub->uniquename()}) {
+    $rank = ++$self->stored_cvterms()->{$cvterm->name()}{$systematic_id}{$pub->uniquename()};
+  } else {
+    if (!$self->stored_cvterms()) {
+      die longmess();
+    }
+    $self->stored_cvterms()->{$cvterm->name()}{$systematic_id}{$pub->uniquename()} = 0;
+    $rank = 0;
+  }
 
   return $rs->create({ feature_id => $chado_object->feature_id(),
                        cvterm_id => $cvterm->cvterm_id(),
