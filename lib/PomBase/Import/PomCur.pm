@@ -257,7 +257,13 @@ method load($fh)
       @annotations = map { $self->_split_vert_bar($_); } @annotations;
 
       for my $annotation (@annotations) {
-        $self->_process_annotation(\%gene_data, $annotation);
+        try {
+          $self->_process_annotation(\%gene_data, $annotation);
+        } catch {
+          (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
+          chomp $message;
+          warn "error in $curs_key: $message\n";
+        }
       }
     }
   }
