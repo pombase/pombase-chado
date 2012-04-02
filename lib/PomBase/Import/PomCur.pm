@@ -79,8 +79,6 @@ method _store_ontology_annotation
   my $organism_name = $args{organism_name};
   my $with_gene = $args{with_gene};
   my $extension_text = $args{extension_text};
-  my $residue = $args{residue};
-  my $allele = $args{allele};
 
   if (defined $extension_text && $extension_text =~ /\|/) {
     warn "not loading annotation with '|' in extension\n";
@@ -127,13 +125,6 @@ method _store_ontology_annotation
       $self->add_feature_cvtermprop($feature_cvterm, 'with',
                                     $with_gene);
     }
-    if (defined $residue) {
-      $self->add_feature_cvtermprop($feature_cvterm,
-                                    residue => $residue);
-    }
-    if (defined $allele) {
-      $self->add_feature_cvtermprop($feature_cvterm, allele => $allele);
-    }
     if (defined $creation_date) {
       $self->add_feature_cvtermprop($feature_cvterm, date => $creation_date);
     }
@@ -152,6 +143,15 @@ method _store_ontology_annotation
       if (defined $annotation_extension_data) {
         my $annotation_extension = join ',', @$annotation_extension_data;
         $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
+      }
+
+      my @props_to_store = qw(allele residue qualifier condition);
+
+      for my $prop_name (@props_to_store) {
+        if (defined (my $prop_val = delete $by_type{$prop_name})) {
+          $self->add_feature_cvtermprop($feature_cvterm,
+                                        $prop_name, $prop_val);
+        }
       }
 
       for my $type (keys %by_type) {
@@ -203,8 +203,6 @@ method _process_annotation($gene_data, $annotation)
     }
 
     my $with_gene = delete $annotation->{with_gene};
-    my $residue = delete $annotation->{residue};
-    my $allele = delete $annotation->{allele};
     my $extension_text = delete $annotation->{annotation_extension};
 
     if (keys %$annotation > 0) {
@@ -225,9 +223,7 @@ method _process_annotation($gene_data, $annotation)
                                       gene_uniquename => $gene_uniquename,
                                       organism_name => $organism_name,
                                       with_gene => $with_gene,
-                                      extension_text => $extension_text,
-                                      residue => $residue,
-                                      allele => $allele);
+                                      extension_text => $extension_text);
   } else {
     warn "can't handle data of type $annotation_type\n";
   }
