@@ -45,6 +45,16 @@ go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pro_small.obo | go-apply-xslt o
 echo pombase_terms.obo
 go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombase_terms.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
 
+echo mini chebi.obo
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/chebi.obo | go-apply-xslt oboxml_to_chadoxml > chebi.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD chebi.xml || exit 1
+
+echo mini cl.obo
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/cl.obo | go-apply-xslt oboxml_to_chadoxml > cl.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD cl.xml || exit 1
+
+echo mini pato.obo
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/pato.obo | go-apply-xslt oboxml_to_chadoxml > pato.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pato.xml || exit 1
+
+
 echo populate cvtermpath
 
 date; echo starting molecular_function
