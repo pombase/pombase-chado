@@ -14,12 +14,15 @@ echo building database: $DB on $HOST
 
 dropdb $DB; createdb $DB || exit 1
 
+cd ~/extern/svn/gmod-schema/chado
+
 rm --verbose tmp/*/*$DB
+
+(cd /var/pomcur/sources/pombe-embl/; svn update || exit 1)
+
 
 echo update GO
 (cd /var/pomcur/sources/go; cvs up)
-
-cd ~/extern/svn/gmod-schema/chado
 
 perl Makefile.PL
 make
