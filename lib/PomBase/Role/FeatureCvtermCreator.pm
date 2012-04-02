@@ -67,8 +67,6 @@ method _build_stored_cvterms() {
     }
   }
 
-warn "made $stored_cvterms\n";
-
   return $stored_cvterms;
 }
 
