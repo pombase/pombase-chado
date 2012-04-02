@@ -38,6 +38,7 @@ under the same terms as Perl itself.
 
 use perl5i::2;
 use Moose;
+use charnames ':full';
 
 use JSON;
 use Clone qw(clone);
@@ -142,9 +143,8 @@ method _store_ontology_annotation
       my %by_type = ();
       for my $bit (@bits) {
         if ($bit =~/(.*)=(.*)/) {
-          my $key = $1->trim();
-          my $value = $2->trim();
-
+          my $key = $1->trim("\\s\N{ZERO WIDTH SPACE}");
+          my $value = $2->trim("\\s\N{ZERO WIDTH SPACE}");
           push @{$by_type{$key}}, $value;
         }
       }
