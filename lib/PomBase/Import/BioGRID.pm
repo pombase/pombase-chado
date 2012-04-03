@@ -47,6 +47,7 @@ with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::XrefStorer';
+with 'PomBase::Role::InteractionStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
@@ -59,11 +60,6 @@ method load($fh)
   my $chado = $self->chado();
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
-
-  my $genetic_interaction_type =
-    $self->get_cvterm('PomBase interaction types', 'interacts_genetically');
-  my $physical_interaction_type =
-    $self->get_cvterm('PomBase interaction types', 'interacts_physically');
 
   $csv->column_names ($csv->getline($fh));
 
@@ -139,25 +135,26 @@ method load($fh)
 
     my $pub = $self->find_or_create_pub($pubmed_id);
 
-    my $rel_type;
+    my $rel_type_name;
 
     if ($experimental_system_type eq 'genetic') {
-      $rel_type = $genetic_interaction_type;
+      $rel_type_name = 'interacts_genetically';
     } else {
       if ($experimental_system_type eq 'physical') {
-        $rel_type = $physical_interaction_type;
+        $rel_type_name = 'interacts_physically';
       } else {
         die "unknown experimental_system_type: $experimental_system_type\n";
       }
     }
 
-    my $rel = $self->store_feature_rel($feature_a, $feature_b, $rel_type);
-
-    $self->store_feature_relationshipprop($rel, 'evidence',
-                                          $experimental_system);
-    $self->store_feature_relationshipprop($rel, 'source_database',
-                                          $source_db);
-    $self->store_feature_rel_pub($rel, $pub);
+    $self->store_interaction(
+      feature_a => $feature_a,
+      feature_b => $feature_b,
+      rel_type_name => $rel_type_name,
+      evidence_code => $experimental_system,
+      source_db => $source_db,
+      pub => $pub,
+    );
   }
 
   return undef;
