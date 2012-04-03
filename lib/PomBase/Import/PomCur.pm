@@ -248,6 +248,8 @@ method load($fh)
     my %session_data = %{$curation_sessions{$curs_key}};
     my %genes = %{$session_data{genes}};
 
+    my $error_prefix = "error in $curs_key: ";
+
     for my $gene_tag (keys %genes) {
       my %gene_data = %{$genes{$gene_tag}};
 
@@ -259,11 +261,21 @@ method load($fh)
 
       for my $annotation (@annotations) {
         try {
-          $self->_process_annotation(\%gene_data, $annotation);
+          my ($out, $err) = capture {
+            $self->_process_annotation(\%gene_data, $annotation);
+          };
+          if (length $out > 0) {
+            $out =~ s/^/$error_prefix/mg;
+            print $out;
+          }
+          if (length $err > 0) {
+            $err =~ s/^/$error_prefix/mg;
+            print $err;
+          }
         } catch {
           (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
           chomp $message;
-          warn "error in $curs_key: $message\n";
+          warn $error_prefix . "$message\n";
         }
       }
     }
