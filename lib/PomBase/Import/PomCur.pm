@@ -89,7 +89,8 @@ method _store_interaction_annotation
   my $feature_a = $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
 
   my $proc = sub {
-    for my $feature_b_uniquename (@$interacting_genes) {
+    for my $feature_b_data (@$interacting_genes) {
+      my $feature_b_uniquename = $feature_b_data->{primary_identifier};
       my $feature_b = $self->find_chado_feature($feature_b_uniquename, 1, 1, $organism);
       $self->store_interaction(
         feature_a => $feature_a,
