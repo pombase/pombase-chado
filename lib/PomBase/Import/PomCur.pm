@@ -92,7 +92,7 @@ method _store_interaction_annotation
         feature_a => $feature_a,
         feature_b => $feature_b,
         rel_type_name => $annotation_type,
-        evidence_code => $long_evidence,
+        evidence_type => $long_evidence,
         source_db => $config->{db_name_for_cv},
         pub => $publication,
         creation_date => $creation_date,
@@ -218,6 +218,8 @@ method _process_annotation($gene_data, $annotation)
   }
 
   my $long_evidence;
+
+  my $config = $self->config();
 
   if (exists $config->{evidence_types}->{$evidence_code}) {
     my $ev_data = $config->{evidence_types}->{$evidence_code};

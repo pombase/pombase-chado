@@ -151,7 +151,7 @@ method load($fh)
       feature_a => $feature_a,
       feature_b => $feature_b,
       rel_type_name => $rel_type_name,
-      evidence_code => $experimental_system,
+      evidence_type => $experimental_system,
       source_db => $source_db,
       pub => $pub,
     );

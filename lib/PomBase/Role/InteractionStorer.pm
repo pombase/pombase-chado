@@ -38,9 +38,11 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-has genetic_interaction_type => (is => ro, init_arg => undef,
+has genetic_interaction_type => (is => 'ro', init_arg => undef,
+                                 lazy => 1,
                                  builder => '_build_genetic_interaction');
-has physical_interaction_type => (is => ro, init_arg => undef,
+has physical_interaction_type => (is => 'ro', init_arg => undef,
+                                  lazy => 1,
                                   builder => '_build_physical_interaction');
 
 
@@ -60,7 +62,7 @@ method store_interaction()
   my $feature_a = $args{feature_a};
   my $feature_b = $args{feature_b};
   my $rel_type_name = $args{rel_type_name};
-  my $evidence_code = $args{evidence_code};
+  my $evidence_type = $args{evidence_type};
   my $source_db = $args{source_db};
   my $pub = $args{pub};
   my $creation_date = $args{creation_date};
@@ -80,7 +82,7 @@ method store_interaction()
   my $rel = $self->store_feature_rel($feature_a, $feature_b, $rel_type);
 
   $self->store_feature_relationshipprop($rel, 'evidence',
-                                        $experimental_system);
+                                        $evidence_type);
   $self->store_feature_relationshipprop($rel, 'source_database',
                                         $source_db);
   $self->store_feature_relationshipprop($rel, 'creation_date',
