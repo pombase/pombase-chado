@@ -142,10 +142,10 @@ method _store_ontology_annotation
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $cvterm, $publication, 0);
 
-    $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by',
-                                  $config->{db_name_for_cv});
-    $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
-                                  $long_evidence);
+    $self->add_feature_cvtermprop($feature_cvterm,
+                                  assigned_by => $config->{db_name_for_cv});
+    $self->add_feature_cvtermprop($feature_cvterm,
+                                  evidence => $long_evidence);
     if (defined $with_gene) {
       $self->add_feature_cvtermprop($feature_cvterm, 'with',
                                     $with_gene);
