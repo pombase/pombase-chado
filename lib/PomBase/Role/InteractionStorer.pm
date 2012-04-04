@@ -85,14 +85,10 @@ method store_interaction()
 
   my $rel = $self->store_feature_rel($feature_a, $feature_b, $rel_type);
 
-  $self->store_feature_relationshipprop($rel, 'evidence',
-                                        $evidence_type);
-  $self->store_feature_relationshipprop($rel, 'source_database',
-                                        $source_db);
-  $self->store_feature_relationshipprop($rel, 'creation_date',
-                                        $source_db);
+  $self->store_feature_relationshipprop($rel, evidence => $evidence_type);
+  $self->store_feature_relationshipprop($rel, source_database => $source_db);
+  $self->store_feature_relationshipprop($rel, date => $source_db);
   $self->store_feature_rel_pub($rel, $pub);
-
 }
 
 1;
