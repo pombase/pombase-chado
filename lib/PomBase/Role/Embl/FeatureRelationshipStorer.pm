@@ -41,6 +41,36 @@ use Moose::Role;
 requires 'chado';
 requires 'get_cvterm';
 
+has ranks => (is => 'ro',
+              lazy => 1, builder => '_build_ranks');
+
+# preinitialise the hash of ranks of the existing feature_relationships
+method _build_ranks() {
+  my $chado = $self->chado();
+
+  my $rs = $chado->resultset('Sequence::FeatureRelationship');
+
+  my $ranks = {};
+
+  while (defined (my $rel = $rs->next())) {
+    my $key = $rel->subject_id() . '-' . $rel->object_id() . '-' . $rel->type_id();
+    my $rank = $rel->rank();
+    if (exists $ranks->{$key}) {
+      if ($rank > $ranks->{$key}) {
+        $ranks->{$key} = $rank;
+      } else {
+        next;
+      }
+    } else {
+      $ranks->{$key} = $rank;
+    }
+  }
+
+  return $ranks;
+}
+
+
+
 method store_feature_rel($subject, $object, $rel_type)
 {
   my $rel_cvterm;
@@ -71,10 +101,10 @@ method store_feature_rel($subject, $object, $rel_type)
 
   my $rank = 0;
 
-  if (exists $ranks->{$key}) {
-    $rank = ++$ranks->{$key};
+  if (exists $self->ranks()->{$key}) {
+    $rank = ++$self->ranks()->{$key};
   } else {
-    $ranks->{$key} = 0;
+    $self->ranks()->{$key} = 0;
   }
 
   my %create_args = (
