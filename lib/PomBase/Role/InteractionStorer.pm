@@ -38,6 +38,10 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
+requires 'store_feature_relationshipprop';
+requires 'store_feature_rel_pub';
+requires 'store_feature_rel';
+
 has genetic_interaction_type => (is => 'ro', init_arg => undef,
                                  lazy => 1,
                                  builder => '_build_genetic_interaction');
