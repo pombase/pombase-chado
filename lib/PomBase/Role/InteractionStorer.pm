@@ -70,6 +70,9 @@ method store_interaction()
   my $source_db = $args{source_db};
   my $pub = $args{pub};
   my $creation_date = $args{creation_date};
+  my $curator = $args{curator};
+  my $approver_email = $args{approver_email};
+  my $approved_timestamp = $args{approved_timestamp};
 
   my $rel_type;
 
@@ -88,6 +91,15 @@ method store_interaction()
   $self->store_feature_relationshipprop($rel, evidence => $evidence_type);
   $self->store_feature_relationshipprop($rel, source_database => $source_db);
   $self->store_feature_relationshipprop($rel, date => $source_db);
+  if (defined $curator) {
+    $self->store_feature_relationshipprop($rel, curator => $curator);
+  }
+  if (defined $approved_timestamp) {
+    $self->store_feature_relationshipprop($rel, approved_timestamp => $approved_timestamp);
+  }
+  if (defined $approver_email) {
+    $self->store_feature_relationshipprop($rel, approver_email => $approver_email);
+  }
   $self->store_feature_rel_pub($rel, $pub);
 }
 

@@ -82,6 +82,7 @@ method _store_interaction_annotation
   my $long_evidence = $args{long_evidence};
   my $gene_uniquename = $args{gene_uniquename};
   my $organism = $args{organism};
+  my $curator = $args{submitter_email};
 
   my $chado = $self->chado();
   my $config = $self->config();
@@ -100,6 +101,7 @@ method _store_interaction_annotation
         source_db => $config->{db_name_for_cv},
         pub => $publication,
         creation_date => $creation_date,
+        curator => $curator,
       );
     }
   };
@@ -120,6 +122,10 @@ method _store_ontology_annotation
   my $organism = $args{organism};
   my $with_gene = $args{with_gene};
   my $extension_text = $args{extension_text};
+  my $curator = $args{submitter_email};
+  my $approved_timestamp = $args{submitter_email};
+  my $approver_email = $args{approver_email};
+
 
   if (defined $extension_text && $extension_text =~ /\|/) {
     warn "not loading annotation with '|' in extension\n";
@@ -146,6 +152,12 @@ method _store_ontology_annotation
                                   assigned_by => $config->{db_name_for_cv});
     $self->add_feature_cvtermprop($feature_cvterm,
                                   evidence => $long_evidence);
+    $self->add_feature_cvtermprop($feature_cvterm,
+                                  curator => $curator);
+    $self->add_feature_cvtermprop($feature_cvterm,
+                                  approved_timestamp => $approved_timestamp);
+    $self->add_feature_cvtermprop($feature_cvterm,
+                                  approver_email => $approver_email);
     if (defined $with_gene) {
       $self->add_feature_cvtermprop($feature_cvterm, 'with',
                                     $with_gene);
@@ -209,7 +221,7 @@ method _split_vert_bar($annotation)
   }
 }
 
-method _process_annotation($gene_data, $annotation)
+method _process_annotation($gene_data, $annotation, $session_metadata)
 {
   my $annotation_type = delete $annotation->{type};
   my $creation_date = delete $annotation->{creation_date};
@@ -242,6 +254,11 @@ method _process_annotation($gene_data, $annotation)
   my $gene_uniquename = $gene_data->{uniquename};
   my $publication = $self->find_or_create_pub($publication_uniquename);
 
+  my %useful_session_data =
+    map {
+      ($_, $session_metadata->{$_});
+    } qw(submitter_email approver_email approved_timestamp);
+
   if ($annotation_type eq 'biological_process' or
       $annotation_type eq 'molecular_function' or
       $annotation_type eq 'cellular_component' or
@@ -265,7 +282,8 @@ method _process_annotation($gene_data, $annotation)
                                       gene_uniquename => $gene_uniquename,
                                       organism => $organism,
                                       with_gene => $with_gene,
-                                      extension_text => $extension_text);
+                                      extension_text => $extension_text,
+                                      %useful_session_data);
   } else {
     if ($annotation_type eq 'genetic_interaction' or
         $annotation_type eq 'physical_interaction') {
@@ -276,7 +294,8 @@ method _process_annotation($gene_data, $annotation)
                                              publication => $publication,
                                              long_evidence => $long_evidence,
                                              gene_uniquename => $gene_uniquename,
-                                             organism => $organism);
+                                             organism => $organism,
+                                             %useful_session_data);
       } else {
         die "no interacting_genes data found in interaction annotation\n";
       }
@@ -318,7 +337,8 @@ method load($fh)
       for my $annotation (@annotations) {
         try {
           my ($out, $err) = capture {
-            $self->_process_annotation(\%gene_data, $annotation);
+            $self->_process_annotation(\%gene_data, $annotation,
+                                       $session_data{metadata});
           };
           if (length $out > 0) {
             $out =~ s/^/$error_prefix/mg;
