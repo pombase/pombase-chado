@@ -66,6 +66,9 @@ cvs:
     - name: source database
     - name: homology type
     - name: ortholog qualifier
+    - name: curator
+    - name: approved_timestamp
+    - name: approver_email
   cat_act: []
   genome_org: []
   m_f_g: []
