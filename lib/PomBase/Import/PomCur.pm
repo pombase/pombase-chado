@@ -186,6 +186,9 @@ method _store_ontology_annotation
 
       for my $prop_name (@props_to_store) {
         if (defined (my $prop_val = delete $by_type{$prop_name})) {
+          if (ref $prop_val) {
+            croak "$prop_val is a reference\n";
+          }
           $self->add_feature_cvtermprop($feature_cvterm,
                                         $prop_name, $prop_val);
         }
