@@ -70,7 +70,8 @@ method BUILD
   my %evidence_to_code = ();
 
   while (my ($code, $details) = each %{$self->config()->{evidence_types}}) {
-    $evidence_to_code{$details->{name}} = $code;
+    my $ev_name = $details->{name} // $code;
+    $evidence_to_code{$ev_name} = $code;
   }
 
   $self->{_evidence_to_code} = \%evidence_to_code;
