@@ -76,7 +76,6 @@ AND
    'Inferred from Expression Pattern','Non-traceable Author Statement',
    'inferred from Reviewed Computational Analysis',
    'Traceable Author Statement', 'Inferred by Curator')
-);
 EOQ
 
   $sth = $dbh->prepare($poor_ev_query);
