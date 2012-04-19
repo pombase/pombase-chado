@@ -3,6 +3,7 @@ use warnings;
 use Test::More tests => 14;
 
 use Test::Deep;
+use Data::Dumper;
 
 use PomBase::TestUtil;
 use PomBase::Retrieve::GeneAssociationFile;
@@ -42,7 +43,9 @@ sub _check_res
         die if defined $result_data_0051329;
         $result_data_0051329 = $data;
       } else {
-        fail("unexpected row");
+        if ($data->[4] ne 'GO:0004930' && $data->[4] ne 'GO:0007186') {
+          fail("unexpected row: " . Dumper($data));
+        }
       }
     }
   }

@@ -135,6 +135,11 @@ data:
             accession: 0022857
             db:
               name: GO
+        - name: G-protein coupled receptor activity
+          dbxref:
+            accession: 0004930
+            db:
+              name: GO
     - name: cellular_component
       cvterms:
         - name: spindle
@@ -149,6 +154,11 @@ data:
               name: GO
     - name: biological_process
       cvterms:
+        - name: biological_process
+          dbxref:
+            accession: 0008150
+            db:
+              name: GO
         - name: transmembrane transport
           dbxref:
             accession: 0055085
@@ -162,6 +172,11 @@ data:
         - name: negative regulation of transmembrane transport
           dbxref:
             accession: 0034763
+            db:
+              name: GO
+        - name: G-protein coupled receptor signaling pathway
+          dbxref:
+            accession: 0007186
             db:
               name: GO
     - name: fission_yeast_phenotype
@@ -260,6 +275,24 @@ data:
         name: molecular_function
       type:
         name: is_a
+    - subject:
+        name: G-protein coupled receptor signaling pathway
+      object:
+        name: biological_process
+      type:
+        name: is_a
+    - subject:
+        name: G-protein coupled receptor activity
+      object:
+        name: molecular_function
+      type:
+        name: is_a
+    - subject:
+        name: G-protein coupled receptor activity
+      object:
+        name: G-protein coupled receptor signaling pathway
+      type:
+        name: part_of
   extra_cvterm_terms:
   db:
     - name: feature_cvtermprop_type
@@ -358,6 +391,34 @@ data:
         - type:
             name: qualifier
           value: contributes_to
+      pub:
+        uniquename: PMID:11739790
+    - feature:
+        uniquename: SPAC2F7.03c.1
+      cvterm:
+        name: G-protein coupled receptor activity
+      is_not: 0
+      feature_cvtermprops:
+        - type:
+            name: evidence
+          value: Inferred from Direct Assay
+        - type:
+            name: date
+          value: 20091020
+      pub:
+        uniquename: PMID:11739790
+    - feature:
+        uniquename: SPAC2F7.03c.1
+      cvterm:
+        name: G-protein coupled receptor signaling pathway
+      is_not: 0
+      feature_cvtermprops:
+        - type:
+            name: evidence
+          value: Inferred from Direct Assay
+        - type:
+            name: date
+          value: 20091020
       pub:
         uniquename: PMID:11739790
 test_organism:
