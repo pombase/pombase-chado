@@ -43,7 +43,8 @@ sub _check_res
         die if defined $result_data_0051329;
         $result_data_0051329 = $data;
       } else {
-        if ($data->[4] ne 'GO:0004930' && $data->[4] ne 'GO:0007186') {
+        if ($data->[4] ne 'GO:0004930' && $data->[4] ne 'GO:0007186' &&
+            $data->[4] ne 'GO:0003674') {
           fail("unexpected row: " . Dumper($data));
         }
       }

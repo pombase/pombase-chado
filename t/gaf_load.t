@@ -29,7 +29,7 @@ cmp_deeply($deleted_counts,
              UniProtKB => 0,
            });
 my $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 13);
+is($annotations->count(), 14);
 close $fh;
 
 # make sure we can re-load, existing data should be deleted
@@ -43,7 +43,7 @@ cmp_deeply($deleted_counts,
              UniProtKB => 4,
            });
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 13);
+is($annotations->count(), 14);
 
 while (defined (my $fc = $annotations->next())) {
   if ($fc->feature->uniquename() eq 'SPAC1093.06c.1') {

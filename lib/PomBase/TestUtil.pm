@@ -97,6 +97,11 @@ method _load_cv_db($chado)
   for my $row (@$cvterm_rels_conf) {
     $chado->resultset("Cv::CvtermRelationship")->create($row);
   }
+
+  my $cvtermpaths_conf = $test_data->{cvtermpath};
+  for my $row (@$cvtermpaths_conf) {
+    $chado->resultset("Cv::Cvtermpath")->create($row);
+  }
 }
 
 method _load_test_features($chado)

@@ -410,6 +410,20 @@ data:
     - feature:
         uniquename: SPAC2F7.03c.1
       cvterm:
+        name: molecular_function
+      is_not: 0
+      feature_cvtermprops:
+        - type:
+            name: evidence
+          value: Inferred from Electronic Annotation
+        - type:
+            name: date
+          value: 20091020
+      pub:
+        uniquename: PMID:11739790
+    - feature:
+        uniquename: SPAC2F7.03c.1
+      cvterm:
         name: G-protein coupled receptor signaling pathway
       is_not: 0
       feature_cvtermprops:
@@ -421,6 +435,61 @@ data:
           value: 20091020
       pub:
         uniquename: PMID:11739790
+  cvtermpath:
+    - subject:
+        name: microtubule motor activity
+      object:
+        name: molecular_function
+      type:
+        name: is_a
+      cv:
+        name: molecular_function
+      pathdistance: 1
+    - subject:
+        name: molecular_function
+      object:
+        name: microtubule motor activity
+      type:
+        name: is_a
+      cv:
+        name: molecular_function
+      pathdistance: -1
+    - subject:
+        name: G-protein coupled receptor signaling pathway
+      object:
+        name: biological_process
+      type:
+        name: is_a
+      cv:
+        name: biological_process
+      pathdistance: 1
+    - subject:
+        name: biological_process
+      object:
+        name: G-protein coupled receptor signaling pathway
+      type:
+        name: is_a
+      cv:
+        name: biological_process
+      pathdistance: -1
+    - subject:
+        name: G-protein coupled receptor activity
+      object:
+        name: molecular_function
+      type:
+        name: is_a
+      cv:
+        name: molecular_function
+      pathdistance: 1
+    - subject:
+        name: molecular_function
+      object:
+        name: G-protein coupled receptor activity
+      type:
+        name: is_a
+      cv:
+        name: molecular_function
+      pathdistance: -1
 test_organism:
   genus: Schizosaccharomyces
   species: pombe

@@ -30,7 +30,7 @@ cmp_deeply($deleted_counts,
              UniProtKB => 0,
            });
 my $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 13);
+is($annotations->count(), 14);
 close $fh;
 
 
