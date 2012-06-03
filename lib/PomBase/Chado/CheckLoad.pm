@@ -131,7 +131,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence', 'coiled_coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 124);
+  should(scalar(@all_feature_cvterm), 112);
 
   my ($localizes_term) = grep { $_->cvterm()->name() =~ /cellular protein localization \[localizes\] SPAC167.03c/ } @all_feature_cvterm;
   assert(defined $localizes_term);
@@ -156,7 +156,7 @@ method check
   }
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 242);
+  should(scalar(@all_props), 228);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 72);
@@ -218,7 +218,7 @@ method check
   my @ann_ex_go_terms =
     $ann_ex_gene->feature_cvterms()->search_related('cvterm');
 
-  should(scalar(@ann_ex_go_terms), 9);
+  should(scalar(@ann_ex_go_terms), 8);
 
   # check for annotation extension targeting genes
   warn "cvterms for $spbc409_20c_1:\n" if $self->verbose();

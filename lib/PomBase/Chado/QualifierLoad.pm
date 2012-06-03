@@ -468,7 +468,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 
   if ($chado_object_type ne 'gene' && $chado_object_type ne 'pseudogene') {
     warn "  can't apply ortholog to $chado_object_type: $term\n" if $self->verbose();
-    return 0;
+    return 1;
   }
 
   my $organism_common_name;
