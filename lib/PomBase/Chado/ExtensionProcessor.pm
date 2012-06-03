@@ -52,12 +52,30 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::FeatureFinder';
 
 has verbose => (is => 'ro');
-has cache => (is => 'ro', init_arg => undef,
-              default => sub { {} });
+has cache => (is => 'ro', init_arg => undef, lazy_build => 1,
+              builder => '_build_cache');
+has pre_init_cache => (is => 'rw', default => 0);
+
+my $extension_cv_name = 'PomBase annotation extension terms';
+
+method _build_cache
+{
+  if ($self->pre_init_cache()) {
+    my $extension_cv =
+      $self->chado()->resultset('Cv::Cv')->find({ name => $extension_cv_name });
+    my $rs = $self->chado()->resultset('Cv::Cvterm')->search({ cv_id => $extension_cv->cv_id() });
+    my %cache = ();
+    while (defined (my $cvterm = $rs->next())) {
+      $cache{$cvterm->name()} = 1;
+    }
+    return \%cache;
+  } else {
+    return {};
+  }
+}
 
 method store_extension($feature_cvterm, $extensions)
 {
-  my $extension_cv_name = 'PomBase annotation extension terms';
   my $old_cvterm = $feature_cvterm->cvterm();
 
   my $new_name = $old_cvterm->name();

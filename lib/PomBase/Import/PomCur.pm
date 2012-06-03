@@ -67,7 +67,8 @@ has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
 method _build_extension_processor
 {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
-                                                          config => $self->config());
+                                                          config => $self->config(),
+                                                          pre_init_cache => 1);
   return $processor;
 }
 
