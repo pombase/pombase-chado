@@ -563,7 +563,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 }
 
 method process_paralog($chado_object, $term, $sub_qual_map) {
-  warn "    process_ortholog()\n" if $self->verbose();
+  warn "    process_paralog()\n" if $self->verbose();
   my $other_gene;
 
   my $chado_object_type = $chado_object->type()->name();
