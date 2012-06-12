@@ -47,10 +47,10 @@ with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::XrefStorer';
-with 'PomBase::Role::InteractionStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
+with 'PomBase::Role::InteractionStorer';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
