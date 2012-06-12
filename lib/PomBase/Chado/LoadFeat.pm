@@ -472,6 +472,12 @@ method store_feature_parts($uniquename, $bioperl_feature, $chromosome, $so_type)
     my $chado_sub_feature =
       $self->store_feature($part_uniquename, undef, [], $so_type);
 
+    if ($bioperl_feature->has_tag("db_xref")) {
+      for my $dbxref_value ($bioperl_feature->get_tag_values("db_xref")) {
+        warn "store_feature_parts() - $part_uniquename -> $dbxref_value\n";
+        $self->add_feature_dbxref($chado_sub_feature, $dbxref_value);
+      }
+    }
     push @new_parts, $chado_sub_feature;
 
     my $strand = $bioperl_feature->location()->strand();
