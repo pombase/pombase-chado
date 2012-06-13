@@ -76,10 +76,12 @@ method store_interaction()
 
   my $rel_type;
 
-  if ($rel_type_name eq 'genetic_interaction') {
+  if ($rel_type_name eq 'interacts_genetically' or
+      $rel_type_name eq 'genetic_interaction') {
     $rel_type = $self->genetic_interaction_type();
   } else {
-    if ($rel_type_name eq 'physical_interaction') {
+    if ($rel_type_name eq 'interacts_physically' or
+        $rel_type_name eq 'physical_interaction') {
       $rel_type = $self->physical_interaction_type();
     } else {
       croak qq(unknown interaction type $rel_type_name\n);
