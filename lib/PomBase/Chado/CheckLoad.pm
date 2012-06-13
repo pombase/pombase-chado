@@ -164,6 +164,14 @@ method check
     assert(Compare(\@expected_props, \@actual_props));
   }
 
+  my $ortholog_cvterm_rs =
+    $chado->resultset('Cv::Cvterm')->search({ name => { -like => 'orthologous to%' } });
+  should($ortholog_cvterm_rs->count(), 0);
+
+  while (defined (my $orth_term = $ortholog_cvterm_rs->next())) {
+    warn $orth_term->name(), "\n";
+  }
+
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
   should(scalar(@all_props), 228);
 
