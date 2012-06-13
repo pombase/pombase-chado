@@ -490,7 +490,7 @@ method process_ortholog($chado_object, $term, $sub_qual_map) {
 
   my @gene_names = ();
 
-  for my $gene_name (split /\s+and\s+/, $gene_bit) {
+  for my $gene_name (split /\s+(and|or)\s+/, $gene_bit) {
     if ($gene_name =~ /^(\S+)(?:\s+\(([cn])-term\))?$/i) {
       push @gene_names, { name => $1, term => $2 };
     } else {
