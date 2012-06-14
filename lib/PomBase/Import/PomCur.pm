@@ -82,13 +82,13 @@ method _store_interaction_annotation
   my $publication = $args{publication};
   my $long_evidence = $args{long_evidence};
   my $gene_uniquename = $args{gene_uniquename};
-  my $organism = $args{organism};
   my $curator = $args{submitter_email};
+  my $feature_a = $args{feature};
+
+  my $organism = $feature_a->organism();
 
   my $chado = $self->chado();
   my $config = $self->config();
-
-  my $feature_a = $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
 
   my $proc = sub {
     for my $feature_b_data (@$interacting_genes) {
@@ -119,8 +119,7 @@ method _store_ontology_annotation
   my $termid = $args{termid};
   my $publication = $args{publication};
   my $long_evidence = $args{long_evidence};
-  my $gene_uniquename = $args{gene_uniquename};
-  my $organism = $args{organism};
+  my $feature = $args{feature};
   my $with_gene = $args{with_gene};
   my $extension_text = $args{extension_text};
   my $curator = $args{submitter_email};
@@ -135,9 +134,6 @@ method _store_ontology_annotation
 
   my $chado = $self->chado();
   my $config = $self->config();
-
-  my $transcript_name = "$gene_uniquename.1";
-  my $feature = $self->find_chado_feature($transcript_name, 1, 1, $organism);
 
   my $proc = sub {
     my $cvterm = $self->find_cvterm_by_term_id($termid);
@@ -225,17 +221,24 @@ method _split_vert_bar($annotation)
   }
 }
 
-method _process_annotation($gene_data, $annotation, $session_metadata)
+method _process_feature
 {
-  my $annotation_type = delete $annotation->{type};
-  my $creation_date = delete $annotation->{creation_date};
-  my $publication_uniquename = delete $annotation->{publication};
-  my $evidence_code = delete $annotation->{evidence_code};
-  my $status = delete $annotation->{status};
+  my $annotation = shift;
+  my $session_metadata = shift;
+  my $feature = shift;
 
-  if ($status ne 'new') {
-    die "unhandled status type: $status\n";
-  }
+  my $annotation_type = $annotation->{type};
+  my $creation_date = $annotation->{creation_date};
+  my $publication_uniquename = $annotation->{publication};
+  my $evidence_code = $annotation->{evidence_code};
+  my $status = $annotation->{status};
+
+  my $publication = $self->find_or_create_pub($publication_uniquename);
+
+  my %useful_session_data =
+    map {
+      ($_, $session_metadata->{$_});
+    } qw(submitter_email approver_email approved_timestamp);
 
   my $long_evidence;
 
@@ -251,17 +254,6 @@ method _process_annotation($gene_data, $annotation, $session_metadata)
   } else {
     die "unknown evidence code: $evidence_code\n";
   }
-
-  my $organism_name = $gene_data->{organism};
-  my $organism = $self->find_organism_by_full_name($organism_name);
-
-  my $gene_uniquename = $gene_data->{uniquename};
-  my $publication = $self->find_or_create_pub($publication_uniquename);
-
-  my %useful_session_data =
-    map {
-      ($_, $session_metadata->{$_});
-    } qw(submitter_email approver_email approved_timestamp);
 
   if ($annotation_type eq 'biological_process' or
       $annotation_type eq 'molecular_function' or
@@ -283,8 +275,7 @@ method _process_annotation($gene_data, $annotation, $session_metadata)
                                       termid => $termid,
                                       publication => $publication,
                                       long_evidence => $long_evidence,
-                                      gene_uniquename => $gene_uniquename,
-                                      organism => $organism,
+                                      feature => $feature,
                                       with_gene => $with_gene,
                                       extension_text => $extension_text,
                                       %useful_session_data);
@@ -297,14 +288,68 @@ method _process_annotation($gene_data, $annotation, $session_metadata)
                                              interacting_genes => $annotation->{interacting_genes},
                                              publication => $publication,
                                              long_evidence => $long_evidence,
-                                             gene_uniquename => $gene_uniquename,
-                                             organism => $organism,
+                                             feature => $feature,
                                              %useful_session_data);
       } else {
         die "no interacting_genes data found in interaction annotation\n";
       }
     } else {
       warn "can't handle data of type $annotation_type\n";
+    }
+  }
+
+}
+
+method _get_gene($gene_data)
+{
+  my $gene_uniquename = $gene_data->{uniquename};
+  my $organism_name = $gene_data->{organism};
+  my $organism = $self->find_organism_by_full_name($organism_name);
+
+  my $transcript_name = "$gene_uniquename.1";
+  return $self->find_chado_feature($transcript_name, 1, 1, $organism);
+}
+
+method _get_allele($allele_data)
+{
+  my $allele;
+  my $gene = $self->_get_gene($allele_data->{gene});
+  if ($allele_data->{type} eq 'existing') {
+    $allele = $self->chado()->resultset('Sequence::Feature')
+                   ->find({ uniquename => $allele_data->{primary_identifier},
+                            organism_id => $gene->organism()->organism_id() });
+  } else {
+    my $gene = $self->_get_gene($allele_data->{gene});
+    die "not implemented";
+  }
+
+  if (!defined $allele) {
+    use Data::Dumper;
+    die "failed to create allele from: ", Dumper([$allele_data]);
+  }
+
+  return $allele;
+}
+
+method _process_annotation($annotation, $session_metadata)
+{
+  my $status = delete $annotation->{status};
+
+  if ($status ne 'new') {
+    die "unhandled status type: $status\n";
+  }
+
+  if (defined $annotation->{genes}) {
+    for my $gene_data (values %{$annotation->{genes}}) {
+      my $gene = $self->_get_gene($gene_data);
+      $self->_process_feature($annotation, $session_metadata, $gene)
+    }
+  }
+
+  if (defined $annotation->{alleles}) {
+    for my $allele_data (@{$annotation->{alleles}}) {
+      my $allele = $self->_get_allele($allele_data);
+      $self->_process_feature($annotation, $session_metadata, $allele)
     }
   }
 }
@@ -325,38 +370,30 @@ method load($fh)
 
   for my $curs_key (keys %curation_sessions) {
     my %session_data = %{$curation_sessions{$curs_key}};
-    my %genes = %{$session_data{genes}};
+
+    my @annotations = @{$session_data{annotations}};
 
     my $error_prefix = "error in $curs_key: ";
 
-    for my $gene_tag (keys %genes) {
-      my %gene_data = %{$genes{$gene_tag}};
+    @annotations = map { $self->_split_vert_bar($_); } @annotations;
 
-      next unless exists $gene_data{annotations};
-
-      my @annotations = @{$gene_data{annotations}};
-
-      @annotations = map { $self->_split_vert_bar($_); } @annotations;
-
-      for my $annotation (@annotations) {
-        try {
-          my ($out, $err) = capture {
-            $self->_process_annotation(\%gene_data, $annotation,
-                                       $session_data{metadata});
-          };
-          if (length $out > 0) {
-            $out =~ s/^/$error_prefix/mg;
-            print $out;
-          }
-          if (length $err > 0) {
-            $err =~ s/^/$error_prefix/mg;
-            print $err;
-          }
-        } catch {
-          (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
-          chomp $message;
-          warn $error_prefix . "$message\n";
+    for my $annotation (@annotations) {
+      try {
+        my ($out, $err) = capture {
+          $self->_process_annotation($annotation, $session_data{metadata});
+        };
+        if (length $out > 0) {
+          $out =~ s/^/$error_prefix/mg;
+          print $out;
         }
+        if (length $err > 0) {
+          $err =~ s/^/$error_prefix/mg;
+          print $err;
+        }
+      } catch {
+        (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
+        chomp $message;
+        warn $error_prefix . "$message\n";
       }
     }
   }

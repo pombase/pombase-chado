@@ -2,24 +2,24 @@
    "curation_sessions" : {
       "aaaa0006" : {
          "annotation_status" : "CURATION_IN_PROGRESS",
-         "genes" : {
-            "Schizosaccharomyces pombe SPCC576.16c" : {
-               "annotations" : [
-                  {
-                     "creation_date" : "2010-01-02",
-                     "evidence_code" : "IMP",
-                     "publication" : "PMID:19756689",
-                     "status" : "new",
-                     "term" : "GO:0055085",
-                     "type" : "biological_process"
+         "annotations" : [
+            {
+               "creation_date" : "2010-01-02",
+               "evidence_code" : "IMP",
+               "genes" : {
+                  "Schizosaccharomyces pombe SPCC576.16c" : {
+                     "organism" : "Schizosaccharomyces pombe",
+                     "uniquename" : "SPCC576.16c"
                   }
-               ],
-               "organism" : "Schizosaccharomyces pombe",
-               "uniquename" : "SPCC576.16c"
+               },
+               "publication" : "PMID:18426916",
+               "status" : "new",
+               "term" : "GO:0055085",
+               "type" : "biological_process"
             }
-         },
+         ],
          "metadata" : {
-            "curation_pub_id" : "PMID:19756689",
+            "curation_pub_id" : "PMID:18426916",
             "curs_key" : "aaaa0006",
             "first_contact_email" : "henar@usal.es",
             "first_contact_name" : "Henar Valdivieso",
@@ -33,99 +33,122 @@
             }
          },
          "publications" : {
-            "PMID:19756689" : {}
+            "PMID:18426916" : {}
          },
          "session_genes_count" : "1",
          "session_term_suggestions_count" : "0"
       },
       "aaaa0007" : {
          "annotation_status" : "CURATION_IN_PROGRESS",
-         "genes" : {
-            "Schizosaccharomyces pombe SPAC27D7.13c" : {
-               "annotations" : [
+         "annotations" : [
+            {
+               "creation_date" : "2010-01-02",
+               "evidence_code" : "IMP",
+               "genes" : {
+                  "Schizosaccharomyces pombe SPAC27D7.13c" : {
+                     "organism" : "Schizosaccharomyces pombe",
+                     "uniquename" : "SPAC27D7.13c"
+                  }
+               },
+               "publication" : "PMID:19756689",
+               "status" : "new",
+               "term" : "GO:0055085",
+               "term_suggestion" : {
+                  "definition" : "The process in which miscellaneous stuff is transported from one side of a membrane to the other.",
+                  "name" : "miscellaneous transmembrane transport"
+               },
+               "type" : "biological_process"
+            },
+            {
+               "annotation_extension" : "annotation_extension=exists_during(GO:0051329),annotation_extension=has_substrate(GeneDB_Spombe:SPBC1105.11c),annotation_extension=requires_feature(Pfam:PF00564),residue=T31,residue=T586(T586),qualifier=NOT,condition=PCO:0000012,allele=SPAC9.02cdelta(deletion)",
+               "creation_date" : "2010-01-02",
+               "evidence_code" : "IPI",
+               "genes" : {
+                  "Schizosaccharomyces pombe SPBC14F5.07" : {
+                     "organism" : "Schizosaccharomyces pombe",
+                     "uniquename" : "SPBC14F5.07"
+                  }
+               },
+               "publication" : "PMID:19756689",
+               "status" : "new",
+               "term" : "GO:0034763",
+               "type" : "biological_process",
+               "with_gene" : "SPCC576.16c"
+            },
+            {
+               "creation_date" : "2010-01-02",
+               "evidence_code" : "IDA",
+               "genes" : {
+                  "Schizosaccharomyces pombe SPBC14F5.07" : {
+                     "organism" : "Schizosaccharomyces pombe",
+                     "uniquename" : "SPBC14F5.07"
+                  }
+               },
+               "publication" : "PMID:19756689",
+               "status" : "new",
+               "term" : "GO:0022857",
+               "type" : "molecular_function"
+            },
+            {
+               "creation_date" : "2010-01-02",
+               "evidence_code" : "Synthetic Haploinsufficiency",
+               "genes" : {
+                  "Schizosaccharomyces pombe SPCC63.05" : {
+                     "organism" : "Schizosaccharomyces pombe",
+                     "uniquename" : "SPCC63.05"
+                  }
+               },
+               "interacting_genes" : [
                   {
-                     "creation_date" : "2010-01-02",
-                     "evidence_code" : "IMP",
-                     "publication" : "PMID:19756689",
-                     "status" : "new",
-                     "term" : "GO:0055085",
-                     "term_suggestion" : {
-                        "definition" : "The process in which miscellaneous stuff is transported from one side of a membrane to the other.",
-                        "name" : "miscellaneous transmembrane transport"
+                     "primary_identifier" : "SPBC14F5.07"
+                  },
+                  {
+                     "primary_identifier" : "SPAC27D7.13c"
+                  }
+               ],
+               "publication" : "PMID:19756689",
+               "status" : "new",
+               "type" : "genetic_interaction"
+            },
+            {
+               "alleles" : [
+                  {
+                     "description" : "deletion",
+                     "gene" : {
+                        "organism" : "Schizosaccharomyces pombe",
+                        "uniquename" : "SPAC27D7.13c"
                      },
-                     "type" : "biological_process"
+                     "name" : "ssm4delta",
+                     "primary_identifier" : "SPAC27D7.13c:allele-1",
+                     "type" : "existing"
                   }
                ],
-               "organism" : "Schizosaccharomyces pombe",
-               "uniquename" : "SPAC27D7.13c"
-            },
-            "Schizosaccharomyces pombe SPBC14F5.07" : {
-               "annotations" : [
-                  {
-                     "annotation_extension" : "annotation_extension=exists_during(GO:0051329),annotation_extension=has_substrate(GeneDB_Spombe:SPBC1105.11c),annotation_extension=requires_feature(Pfam:PF00564),residue=T31,residue=T586(T586),qualifier=NOT,condition=PCO:0000012,allele=SPAC9.02cdelta(deletion)",
-                     "creation_date" : "2010-01-02",
-                     "evidence_code" : "IPI",
-                     "publication" : "PMID:19756689",
-                     "status" : "new",
-                     "term" : "GO:0034763",
-                     "type" : "biological_process",
-                     "with_gene" : "SPCC576.16c"
-                  },
-                  {
-                     "creation_date" : "2010-01-02",
-                     "evidence_code" : "IDA",
-                     "publication" : "PMID:19756689",
-                     "status" : "new",
-                     "term" : "GO:0022857",
-                     "type" : "molecular_function"
-                  }
+               "conditions" : [
+                  "high temperature"
                ],
-               "organism" : "Schizosaccharomyces pombe",
-               "uniquename" : "SPBC14F5.07"
+               "creation_date" : "2010-01-02",
+               "evidence_code" : "Epitope-tagged protein immunolocalization experiment data",
+               "expression" : "Overexpression",
+               "publication" : "PMID:19756689",
+               "status" : "new",
+               "term" : "FYPO:0000013",
+               "type" : "phenotype"
             },
-            "Schizosaccharomyces pombe SPCC576.16c" : {
-               "annotations" : [],
-               "organism" : "Schizosaccharomyces pombe",
-               "uniquename" : "SPCC576.16c"
-            },
-            "Schizosaccharomyces pombe SPCC63.05" : {
-               "annotations" : [
-                  {
-                     "creation_date" : "2010-01-02",
-                     "evidence_code" : "Synthetic Haploinsufficiency",
-                     "interacting_genes" : [
-                        {
-                           "primary_identifier" : "SPBC14F5.07"
-                        },
-                        {
-                           "primary_identifier" : "SPAC27D7.13c"
-                        }
-                     ],
-                     "publication" : "PMID:19756689",
-                     "status" : "new",
-                     "type" : "genetic_interaction"
-                  },
-                  {
-                     "creation_date" : "2010-01-02",
-                     "evidence_code" : "IDA",
-                     "publication" : "PMID:19756689",
-                     "status" : "new",
-                     "term" : "FYPO:0000004",
-                     "type" : "fission_yeast_phenotype"
-                  },
-                  {
-                     "creation_date" : "2010-01-02",
-                     "evidence_code" : "ISS",
-                     "publication" : "PMID:19756689",
-                     "status" : "new",
-                     "term" : "PSI-MOD:00017",
-                     "type" : "PSI-MOD"
+            {
+               "creation_date" : "2010-01-02",
+               "evidence_code" : "ISS",
+               "genes" : {
+                  "Schizosaccharomyces pombe SPCC63.05" : {
+                     "organism" : "Schizosaccharomyces pombe",
+                     "uniquename" : "SPCC63.05"
                   }
-               ],
-               "organism" : "Schizosaccharomyces pombe",
-               "uniquename" : "SPCC63.05"
+               },
+               "publication" : "PMID:19756689",
+               "status" : "new",
+               "term" : "MOD:01157",
+               "type" : "post_translational_modification"
             }
-         },
+         ],
          "metadata" : {
             "curation_pub_id" : "PMID:19756689",
             "curs_key" : "aaaa0007",
@@ -342,7 +365,7 @@
          "assigned_curator" : null,
          "curation_statuses" : [],
          "properties" : [],
-         "triage_status" : "New",
+         "triage_status" : "Curatable",
          "type" : "unknown"
       },
       "PMID:18430926" : {
@@ -398,7 +421,7 @@
          "assigned_curator" : null,
          "curation_statuses" : [],
          "properties" : [],
-         "triage_status" : "New",
+         "triage_status" : "Sequence feature or region",
          "type" : "unknown"
       },
       "PMID:19436749" : {
@@ -433,7 +456,7 @@
          "assigned_curator" : null,
          "curation_statuses" : [],
          "properties" : [],
-         "triage_status" : "New",
+         "triage_status" : "Curatable",
          "type" : "unknown"
       },
       "PMID:20622008" : {
