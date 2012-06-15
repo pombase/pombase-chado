@@ -188,6 +188,18 @@ data:
               name: FYPO
     - name: PSI-MOD
     - name: PomBase annotation extension terms
+    - name: PomBase interaction types
+      cvterms:
+        - name: interacts_physically
+          dbxref:
+            accession: 111000001
+            db:
+              name: PomBase
+        - name: interacts_genetically
+          dbxref:
+            accession: 111000002
+            db:
+              name: PomBase
     - name: feature_cvtermprop_type
       cvterms:
         - name: assigned_by
@@ -208,6 +220,13 @@ data:
         - name: qualifier
           dbxref:
             accession: 01000003
+            db:
+              name: PomBase
+    - name: feature_relationshipprop_type
+      cvterms:
+        - name: evidence
+          dbxref:
+            accession: 011000001
             db:
               name: PomBase
     - name: PomBase organism property types
