@@ -55,6 +55,7 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
+with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
@@ -182,12 +183,12 @@ method _store_ontology_annotation
       my @props_to_store = qw(allele residue qualifier condition);
 
       for my $prop_name (@props_to_store) {
-        if (defined (my $prop_val = delete $by_type{$prop_name})) {
-          if (ref $prop_val) {
-            croak "$prop_val is a reference\n";
+        if (defined (my $prop_vals = delete $by_type{$prop_name})) {
+          for my $prop_val (@$prop_vals) {
+            $self->add_feature_cvtermprop($feature_cvterm,
+                                          $prop_name, $prop_val);
+
           }
-          $self->add_feature_cvtermprop($feature_cvterm,
-                                        $prop_name, $prop_val);
         }
       }
 
@@ -306,8 +307,7 @@ method _get_gene($gene_data)
   my $organism_name = $gene_data->{organism};
   my $organism = $self->find_organism_by_full_name($organism_name);
 
-  my $transcript_name = "$gene_uniquename.1";
-  return $self->find_chado_feature($transcript_name, 1, 1, $organism);
+  return $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
 }
 
 method _get_allele($allele_data)
@@ -318,14 +318,24 @@ method _get_allele($allele_data)
     $allele = $self->chado()->resultset('Sequence::Feature')
                    ->find({ uniquename => $allele_data->{primary_identifier},
                             organism_id => $gene->organism()->organism_id() });
+    if (!defined $allele) {
+      use Data::Dumper;
+      die "failed to create allele from: ", Dumper([$allele_data]);
+    }
   } else {
-    my $gene = $self->_get_gene($allele_data->{gene});
-    die "not implemented";
-  }
+    my $allele_cvterm = $self->get_cvterm('sequence', 'allele');
+    my $organism_id = $gene->organism()->organism_id();
+    my $gene_uniquename = $gene->uniquename();
 
-  if (!defined $allele) {
-    use Data::Dumper;
-    die "failed to create allele from: ", Dumper([$allele_data]);
+    my $new_name = $self->get_new_uniquename($gene_uniquename . ':allele-', 1);
+    $allele = $self->chado()->resultset('Sequence::Feature')
+                   ->create({ uniquename => $new_name,
+                              name => $allele_data->{name},
+                              organism_id => $organism_id,
+                              type_id =>$allele_cvterm->cvterm_id() });
+    if (defined $allele_data->{description}) {
+      $self->store_featureprop($allele, 'description', $allele_data->{description});
+    }
   }
 
   return $allele;

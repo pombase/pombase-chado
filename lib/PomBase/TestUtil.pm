@@ -136,6 +136,7 @@ method _load_test_features($chado)
 
   my $gene_type = $self->get_cvterm('sequence', 'gene');
   my $mrna_type = $self->get_cvterm('sequence', 'mRNA');
+  my $allele_type = $self->get_cvterm('sequence', 'allele');
 
   for my $gene_data (@{$self->test_config()->{test_genes}}) {
     $chado->resultset('Sequence::Feature')->create({
@@ -148,6 +149,17 @@ method _load_test_features($chado)
       organism_id => $organism->organism_id(),
       type_id => $mrna_type->cvterm_id(),
     });
+
+    if (exists $gene_data->{alleles}) {
+      for my $allele_data (@{$gene_data->{alleles}}) {
+        $chado->resultset('Sequence::Feature')->create({
+          uniquename => $allele_data->{uniquename},
+          organism_id => $organism->organism_id(),
+          type_id => $allele_type->cvterm_id(),
+        });
+
+      }
+    }
   }
 
   $self->_load_feature_cvterms($chado, $test_data->{feature_cvterm});

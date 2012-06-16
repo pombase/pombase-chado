@@ -15,6 +15,7 @@ cvs:
         A comment or note about the feature, similar to a /note qualifier in
         EMBL format files.
     - symbol
+    - description
     - name: ena_id
       definition: The European Nucleotide Archive ID of the feature.
   PomBase annotation extension terms: []

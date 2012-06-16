@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -12,7 +12,11 @@ my $config = $test_util->config();
 use PomBase::Import::PomCur;
 
 my $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 3);
+is($annotations->count(), 6);
+
+my $feature_rs = $chado->resultset('Sequence::Feature');
+is($feature_rs->count(), 15);
+
 
 my $importer =
   PomBase::Import::PomCur->new(chado => $chado, config => $config);
@@ -22,7 +26,7 @@ $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 8);
+is($annotations->count(), 6);
 
 while (defined (my $fc = $annotations->next())) {
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1') {
@@ -53,3 +57,13 @@ while (defined (my $fc = $annotations->next())) {
     }
   }
 }
+
+my $allele = $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPAC27D7.13c:allele-2' });
+ok(defined $allele);
+
+is($allele->name(), 'ssm4-D4');
+is($allele->search_featureprops('description')->first()->value(), 'del_100-200');
+
+$feature_rs = $chado->resultset('Sequence::Feature');
+is($feature_rs->count(), 16);
+

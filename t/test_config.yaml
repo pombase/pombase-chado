@@ -118,6 +118,11 @@ data:
             accession: 0000336
             db:
               name: SO
+        - name: allele
+          dbxref:
+            accession: 0001023
+            db:
+              name: SO
     - name: molecular_function
       cvterms:
         - name: microtubule motor activity
@@ -186,7 +191,23 @@ data:
             accession: 0000004
             db:
               name: FYPO
+        - name: elongated cells
+          dbxref:
+            accession: 0000017
+            db:
+              name: FYPO
+        - name: T-shaped cells
+          dbxref:
+            accession: 0000013
+            db:
+              name: FYPO
     - name: PSI-MOD
+      cvterms:
+        - name: protein modification categorized by amino acid modified
+          dbxref:
+            accession: 01157
+            db:
+              name: MOD
     - name: PomBase annotation extension terms
     - name: PomBase interaction types
       cvterms:
@@ -227,6 +248,21 @@ data:
         - name: evidence
           dbxref:
             accession: 011000001
+            db:
+              name: PomBase
+        - name: source_database
+          dbxref:
+            accession: 011000002
+            db:
+              name: PomBase
+        - name: date
+          dbxref:
+            accession: 011000003
+            db:
+              name: PomBase
+        - name: curator
+          dbxref:
+            accession: 011000004
             db:
               name: PomBase
     - name: PomBase organism property types
@@ -285,6 +321,13 @@ data:
         - name: annotation_extension_relation-dependent_on
           dbxref:
             accession: 0020003
+            db:
+              name: PomBase
+    - name: PomBase feature property types
+      cvterms:
+        - name: description
+          dbxref:
+            accession: 0030001
             db:
               name: PomBase
   cvterm_relationships:
@@ -372,9 +415,13 @@ data:
       feature_cvtermprops:
         - type:
             name: evidence
+            cv:
+              name: feature_cvtermprop_type
           value: Inferred from Electronic Annotation
         - type:
             name: date
+            cv:
+              name: feature_cvtermprop_type
           value: 20091023
       pub:
         uniquename: PMID:11739790
@@ -386,9 +433,13 @@ data:
       feature_cvtermprops:
         - type:
             name: evidence
+            cv:
+              name: feature_cvtermprop_type
           value: Inferred from Direct Assay
         - type:
             name: date
+            cv:
+              name: feature_cvtermprop_type
           value: 20091020
         - type:
             name: qualifier
@@ -403,9 +454,13 @@ data:
       feature_cvtermprops:
         - type:
             name: evidence
+            cv:
+              name: feature_cvtermprop_type
           value: Inferred from Electronic Annotation
         - type:
             name: date
+            cv:
+              name: feature_cvtermprop_type
           value: 20091020
         - type:
             name: qualifier
@@ -420,9 +475,13 @@ data:
       feature_cvtermprops:
         - type:
             name: evidence
+            cv:
+              name: feature_cvtermprop_type
           value: Inferred from Direct Assay
         - type:
             name: date
+            cv:
+              name: feature_cvtermprop_type
           value: 20091020
       pub:
         uniquename: PMID:11739790
@@ -434,9 +493,13 @@ data:
       feature_cvtermprops:
         - type:
             name: evidence
+            cv:
+              name: feature_cvtermprop_type
           value: Inferred from Electronic Annotation
         - type:
             name: date
+            cv:
+              name: feature_cvtermprop_type
           value: 20091020
       pub:
         uniquename: PMID:11739790
@@ -448,9 +511,13 @@ data:
       feature_cvtermprops:
         - type:
             name: evidence
+            cv:
+              name: feature_cvtermprop_type
           value: Inferred from Direct Assay
         - type:
             name: date
+            cv:
+              name: feature_cvtermprop_type
           value: 20091020
       pub:
         uniquename: PMID:11739790
@@ -520,6 +587,8 @@ test_genes:
   - uniquename: SPAC1093.06c
   - uniquename: SPCC576.16c
   - uniquename: SPAC27D7.13c
+    alleles:
+      - uniquename: 'SPAC27D7.13c:allele-1'
   - uniquename: SPCC63.05
   - uniquename: SPBC14F5.07
   - uniquename: SPAC2F7.03c
