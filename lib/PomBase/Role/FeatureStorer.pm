@@ -209,4 +209,23 @@ method store_featureprop($feature, $type_name, $value)
   });
 }
 
+method get_new_uniquename($prefix, $first_suffix)
+{
+  my $next_suffix = $first_suffix // 1;
+  my $rs = $self->chado()->resultset('Sequence::Feature')
+                ->search({ uniquename => { -like => $prefix . '%' } });
+
+  while (defined (my $feature = $rs->next())) {
+    my $uniquename = $feature->uniquename();
+
+    if ($uniquename =~ /^$prefix(\d+)$/) {
+      if ($1 >= $next_suffix) {
+        $next_suffix = $1 + 1;
+      }
+    }
+  }
+
+  return $prefix . $next_suffix;
+}
+
 1;
