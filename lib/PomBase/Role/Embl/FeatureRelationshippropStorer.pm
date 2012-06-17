@@ -47,7 +47,8 @@ method store_feature_relationshipprop($feature_relationship, $type_name, $value)
   my $type_cvterm = $self->get_cvterm('feature_relationshipprop_type', $type_name);
 
   if (!defined $type_cvterm) {
-    die "can't find cvterm for $type_name";
+    use Carp qw(longmess);
+    die "can't find cvterm for $type_name - ", longmess();
   }
 
   return $self->chado()->resultset('Sequence::FeatureRelationshipprop')
