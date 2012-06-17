@@ -36,6 +36,11 @@ data:
             accession: derives_from
             db:
               name: OBO_REL
+        - name: instance_of
+          dbxref:
+            accession: instance_of
+            db:
+              name: OBO_REL
     - name: sequence
       cvterms:
         - name: gene

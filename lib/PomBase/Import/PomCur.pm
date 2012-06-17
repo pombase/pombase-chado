@@ -143,6 +143,41 @@ method _store_ontology_annotation
       die "can't load annotation, $termid not found in database\n";
     }
 
+    my $orig_feature = $feature;
+
+    my %by_type = ();
+
+    if (defined $extension_text) {
+      my @bits = split /,/, $extension_text;
+      for my $bit (@bits) {
+        if ($bit =~/(.*)=(.*)/) {
+          my $key = $1->trim("\\s\N{ZERO WIDTH SPACE}");
+          my $value = $2->trim("\\s\N{ZERO WIDTH SPACE}");
+          push @{$by_type{$key}}, $value;
+        }
+      }
+    }
+
+    my $allele_qual = delete $by_type{allele};
+
+    if (defined $allele_qual && length $allele_qual > 0 ) {
+      if ($allele_qual =~ /^\s*(.*)\((.*)\)/) {
+        my $organism = $feature->organism();
+        my %allele_data = (
+          name => $1,
+          description => $2,
+          gene => {
+            organism => $organism->genus() . ' ' . $organism->species(),
+            uniquename => $feature->uniquename(),
+          },
+          type => 'new',
+        );
+        $feature = $self->_get_allele(\%allele_data);
+      } else {
+        die qq|allele qualifier "$allele_qual" isn't in the form "name(description)"|;
+      }
+    }
+
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $cvterm, $publication, 0);
 
@@ -152,10 +187,14 @@ method _store_ontology_annotation
                                   evidence => $long_evidence);
     $self->add_feature_cvtermprop($feature_cvterm,
                                   curator => $curator);
-    $self->add_feature_cvtermprop($feature_cvterm,
-                                  approved_timestamp => $approved_timestamp);
-    $self->add_feature_cvtermprop($feature_cvterm,
-                                  approver_email => $approver_email);
+    if (defined $approved_timestamp) {
+      $self->add_feature_cvtermprop($feature_cvterm,
+                                    approved_timestamp => $approved_timestamp);
+    }
+    if (defined $approver_email) {
+      $self->add_feature_cvtermprop($feature_cvterm,
+                                    approver_email => $approver_email);
+    }
     if (defined $with_gene) {
       $self->add_feature_cvtermprop($feature_cvterm, 'with',
                                     $with_gene);
@@ -164,29 +203,21 @@ method _store_ontology_annotation
       $self->add_feature_cvtermprop($feature_cvterm, date => $creation_date);
     }
 
-    if (defined $extension_text) {
-      my @bits = split /,/, $extension_text;
-      my %by_type = ();
-      for my $bit (@bits) {
-        if ($bit =~/(.*)=(.*)/) {
-          my $key = $1->trim("\\s\N{ZERO WIDTH SPACE}");
-          my $value = $2->trim("\\s\N{ZERO WIDTH SPACE}");
-          push @{$by_type{$key}}, $value;
-        }
-      }
+    if (keys %by_type > 0) {
       my $annotation_extension_data = delete $by_type{annotation_extension};
       if (defined $annotation_extension_data) {
         my $annotation_extension = join ',', @$annotation_extension_data;
         $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
       }
 
-      my @props_to_store = qw(allele residue qualifier condition);
+      my @props_to_store = qw(residue qualifier condition);
 
       for my $prop_name (@props_to_store) {
         if (defined (my $prop_vals = delete $by_type{$prop_name})) {
-          for my $prop_val (@$prop_vals) {
+          for (my $i = 0; $i < @$prop_vals; $i++) {
+            my $prop_val = $prop_vals->[$i];
             $self->add_feature_cvtermprop($feature_cvterm,
-                                          $prop_name, $prop_val);
+                                          $prop_name, $prop_val, $i);
 
           }
         }
@@ -333,6 +364,8 @@ method _get_allele($allele_data)
                               name => $allele_data->{name},
                               organism_id => $organism_id,
                               type_id =>$allele_cvterm->cvterm_id() });
+    $self->store_feature_rel($allele, $gene, 'instance_of');
+
     if (defined $allele_data->{description}) {
       $self->store_featureprop($allele, 'description', $allele_data->{description});
     }
@@ -349,15 +382,17 @@ method _process_annotation($annotation, $session_metadata)
     die "unhandled status type: $status\n";
   }
 
-  if (defined $annotation->{genes}) {
-    for my $gene_data (values %{$annotation->{genes}}) {
+  my $genes = delete $annotation->{genes};
+  if (defined $genes) {
+    for my $gene_data (values %$genes) {
       my $gene = $self->_get_gene($gene_data);
       $self->_process_feature($annotation, $session_metadata, $gene)
     }
   }
 
-  if (defined $annotation->{alleles}) {
-    for my $allele_data (@{$annotation->{alleles}}) {
+  my $alleles = delete $annotation->{alleles};
+  if (defined $alleles) {
+    for my $allele_data (@$alleles) {
       my $allele = $self->_get_allele($allele_data);
       $self->_process_feature($annotation, $session_metadata, $allele)
     }
@@ -389,17 +424,17 @@ method load($fh)
 
     for my $annotation (@annotations) {
       try {
-        my ($out, $err) = capture {
+#        my ($out, $err) = capture {
           $self->_process_annotation($annotation, $session_data{metadata});
-        };
-        if (length $out > 0) {
-          $out =~ s/^/$error_prefix/mg;
-          print $out;
-        }
-        if (length $err > 0) {
-          $err =~ s/^/$error_prefix/mg;
-          print $err;
-        }
+#        };
+#        if (length $out > 0) {
+#          $out =~ s/^/$error_prefix/mg;
+#          warn $out;
+#        }
+#        if (length $err > 0) {
+#          $err =~ s/^/$error_prefix/mg;
+#          warn $err;
+#        }
       } catch {
         (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
         chomp $message;

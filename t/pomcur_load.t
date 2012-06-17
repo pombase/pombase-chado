@@ -26,7 +26,7 @@ $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 6);
+is($annotations->count(), 13);
 
 while (defined (my $fc = $annotations->next())) {
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1') {
@@ -65,5 +65,5 @@ is($allele->name(), 'ssm4-D4');
 is($allele->search_featureprops('description')->first()->value(), 'del_100-200');
 
 $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 16);
+is($feature_rs->count(), 17);
 
