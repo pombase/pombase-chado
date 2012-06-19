@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 5;
+use Test::More tests => 12;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -28,35 +28,43 @@ close $fh;
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 13);
 
+my $test_term_count = 0;
+
 while (defined (my $fc = $annotations->next())) {
-  if ($fc->feature->uniquename() eq 'SPBC14F5.07.1') {
-    if ($fc->cvterm->name() eq
-'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564') {
-      my @props = $fc->feature_cvtermprops()->all();
-      my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
-      cmp_deeply(\%prop_hash,
-                 {
-                   assigned_by => 'PomBase',
-                   evidence => 'Inferred from Physical Interaction',
-                   with => 'SPCC576.16c',
-                 });
-    } else {
-      if ($fc->cvterm()->name() eq 'transmembrane transporter activity') {
-        my @props = $fc->feature_cvtermprops()->all();
-        my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
-        cmp_deeply(\%prop_hash,
-                   {
-                     assigned_by => 'PomBase',
-                     evidence => 'Inferred from Direct Assay',
-                   });
-      } else {
-        if ($fc->cvterm()->name() ne 'negative regulation of transmembrane transport') {
-          fail("unexpected term: " . $fc->cvterm->name());
-        }
-      }
-    }
+  if ($fc->feature->uniquename() eq 'SPBC14F5.07.1:allele-1' &&
+      $fc->cvterm->name() eq
+      'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564') {
+    my @props = $fc->feature_cvtermprops()->all();
+    my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
+    $test_term_count++;
+    cmp_deeply(\%prop_hash,
+               {
+                 'date' => '2010-01-02',
+                 'curator' => 'Ken.Sawin@ed.ac.uk',
+                 'residue' => 'T586(T586)',
+                 'qualifier' => 'NOT',
+                 'evidence' => 'Inferred from Physical Interaction',
+                 'assigned_by' => 'PomBase',
+                 'with' => 'SPCC576.16c',
+                 'condition' => 'PCO:0000012'
+               });
+  }
+  if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
+      $fc->cvterm()->name() eq 'transmembrane transporter activity') {
+    my @props = $fc->feature_cvtermprops()->all();
+    my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
+    $test_term_count++;
+    cmp_deeply(\%prop_hash,
+               {
+                 'date' => '2010-01-02',
+                 'evidence' => 'Inferred from Direct Assay',
+                 'curator' => 'Ken.Sawin@ed.ac.uk',
+                 'assigned_by' => 'PomBase'
+               });
   }
 }
+
+is($test_term_count, 2);
 
 my $allele = $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPAC27D7.13c:allele-2' });
 ok(defined $allele);
@@ -67,3 +75,6 @@ is($allele->search_featureprops('description')->first()->value(), 'del_100-200')
 $feature_rs = $chado->resultset('Sequence::Feature');
 is($feature_rs->count(), 17);
 
+my @allele_cvterms = map { $_->cvterm(); } $allele->feature_cvterms();
+is(@allele_cvterms, 1);
+is($allele_cvterms[0]->name(), 'elongated cells');

@@ -124,7 +124,7 @@
                   }
                ],
                "conditions" : [
-                  "high temperature"
+                  "PCO:0000004"
                ],
                "creation_date" : "2010-01-02",
                "evidence_code" : "Epitope-tagged protein immunolocalization experiment data",

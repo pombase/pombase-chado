@@ -121,10 +121,12 @@ method _store_ontology_annotation
   my $publication = $args{publication};
   my $long_evidence = $args{long_evidence};
   my $feature = $args{feature};
+  my $expression = $args{expression};
+  my $conditions = $args{conditions};
   my $with_gene = $args{with_gene};
   my $extension_text = $args{extension_text};
   my $curator = $args{submitter_email};
-  my $approved_timestamp = $args{submitter_email};
+  my $approved_timestamp = $args{approved_timestamp};
   my $approver_email = $args{approver_email};
 
 
@@ -202,6 +204,15 @@ method _store_ontology_annotation
     if (defined $creation_date) {
       $self->add_feature_cvtermprop($feature_cvterm, date => $creation_date);
     }
+    if (defined $expression) {
+      $self->add_feature_cvtermprop($feature_cvterm, expression => $expression);
+    }
+    if (defined $conditions) {
+      map {
+        my $termid = $_;
+        $self->add_feature_cvtermprop($feature_cvterm, condition => $termid);
+      } @$conditions;
+    }
 
     if (keys %by_type > 0) {
       my $annotation_extension_data = delete $by_type{annotation_extension};
@@ -259,11 +270,10 @@ method _process_feature
   my $session_metadata = shift;
   my $feature = shift;
 
-  my $annotation_type = $annotation->{type};
-  my $creation_date = $annotation->{creation_date};
-  my $publication_uniquename = $annotation->{publication};
-  my $evidence_code = $annotation->{evidence_code};
-  my $status = $annotation->{status};
+  my $annotation_type = delete $annotation->{type};
+  my $creation_date = delete $annotation->{creation_date};
+  my $publication_uniquename = delete $annotation->{publication};
+  my $evidence_code = delete $annotation->{evidence_code};
 
   my $publication = $self->find_or_create_pub($publication_uniquename);
 
@@ -295,6 +305,8 @@ method _process_feature
     my $termid = delete $annotation->{term};
     my $with_gene = delete $annotation->{with_gene};
     my $extension_text = delete $annotation->{annotation_extension};
+    my $expression = delete $annotation->{expression};
+    my $conditions = delete $annotation->{conditions};
 
     if (keys %$annotation > 0) {
       my @keys = keys %$annotation;
@@ -308,6 +320,8 @@ method _process_feature
                                       publication => $publication,
                                       long_evidence => $long_evidence,
                                       feature => $feature,
+                                      expression => $expression,
+                                      conditions => $conditions,
                                       with_gene => $with_gene,
                                       extension_text => $extension_text,
                                       %useful_session_data);
@@ -339,6 +353,15 @@ method _get_gene($gene_data)
   my $organism = $self->find_organism_by_full_name($organism_name);
 
   return $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
+}
+
+method _get_transcript($gene_data)
+{
+  my $gene_uniquename = $gene_data->{uniquename};
+  my $organism_name = $gene_data->{organism};
+  my $organism = $self->find_organism_by_full_name($organism_name);
+
+  return $self->find_chado_feature("$gene_uniquename.1", 1, 1, $organism);
 }
 
 method _get_allele($allele_data)
@@ -385,8 +408,8 @@ method _process_annotation($annotation, $session_metadata)
   my $genes = delete $annotation->{genes};
   if (defined $genes) {
     for my $gene_data (values %$genes) {
-      my $gene = $self->_get_gene($gene_data);
-      $self->_process_feature($annotation, $session_metadata, $gene)
+      my $transcript = $self->_get_transcript($gene_data);
+      $self->_process_feature($annotation, $session_metadata, $transcript)
     }
   }
 
