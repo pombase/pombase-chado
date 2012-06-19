@@ -266,7 +266,7 @@ method _split_vert_bar($annotation)
 
 method _process_feature
 {
-  my $annotation = shift;
+  my $annotation = clone(shift);
   my $session_metadata = shift;
   my $feature = shift;
 
