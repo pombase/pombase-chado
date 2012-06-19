@@ -408,8 +408,15 @@ method _process_annotation($annotation, $session_metadata)
   my $genes = delete $annotation->{genes};
   if (defined $genes) {
     for my $gene_data (values %$genes) {
-      my $transcript = $self->_get_transcript($gene_data);
-      $self->_process_feature($annotation, $session_metadata, $transcript)
+      my $feature;
+      if ($annotation->{type} eq 'phenotype' or
+          $annotation->{type} eq 'genetic_interaction' or
+          $annotation->{type} eq 'physical_interaction') {
+        $feature = $self->_get_gene($gene_data);
+      } else {
+        $feature = $self->_get_transcript($gene_data);
+      }
+      $self->_process_feature($annotation, $session_metadata, $feature)
     }
   }
 
