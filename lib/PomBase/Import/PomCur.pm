@@ -291,15 +291,19 @@ method _process_feature
 
   my $config = $self->config();
 
-  if (exists $config->{evidence_types}->{$evidence_code}) {
-    my $ev_data = $config->{evidence_types}->{$evidence_code};
-    if (defined $ev_data) {
-      $long_evidence = $ev_data->{name};
-    } else {
-      $long_evidence = $evidence_code;
-    }
+  if (!defined $evidence_code or length $evidence_code == 0) {
+    die "no evidence code\n";
   } else {
-    die "unknown evidence code: $evidence_code\n";
+    if (exists $config->{evidence_types}->{$evidence_code}) {
+      my $ev_data = $config->{evidence_types}->{$evidence_code};
+      if (defined $ev_data) {
+        $long_evidence = $ev_data->{name};
+      } else {
+        $long_evidence = $evidence_code;
+      }
+    } else {
+      die "unknown evidence code: $evidence_code\n";
+    }
   }
 
   if ($annotation_type eq 'biological_process' or
