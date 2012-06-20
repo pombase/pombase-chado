@@ -208,10 +208,10 @@ method _store_ontology_annotation
       $self->add_feature_cvtermprop($feature_cvterm, expression => $expression);
     }
     if (defined $conditions) {
-      map {
-        my $termid = $_;
-        $self->add_feature_cvtermprop($feature_cvterm, condition => $termid);
-      } @$conditions;
+      for (my $i = 0; $i < @$conditions; $i++) {
+        my $termid = $conditions->[$i];
+        $self->add_feature_cvtermprop($feature_cvterm, condition => $termid, $i);
+      }
     }
 
     if (keys %by_type > 0) {
