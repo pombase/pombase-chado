@@ -240,7 +240,7 @@ method _store_ontology_annotation
       }
 
       for my $type (keys %by_type) {
-        warn "unhandled type: $type\n";
+        die "unhandled type: $type\n";
       }
     }
   };
