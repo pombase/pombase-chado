@@ -246,6 +246,24 @@ method process($post_process_data, $target_is_quals, $target_of_quals)
 
 }
 
+my $comma_substitute = "<<COMMA>>";
+
+sub _replace_commas
+{
+  my $string = shift;
+
+  $string =~ s/,/$comma_substitute/g;
+  return $string;
+}
+
+sub _unreplace_commas
+{
+  my $string = shift;
+
+  $string =~ s/$comma_substitute/,/g;
+  return $string;
+}
+
 method process_one_annotation($featurecvterm, $extension_text)
 {
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
@@ -253,10 +271,13 @@ method process_one_annotation($featurecvterm, $extension_text)
   warn "processing annotation extension for $feature_uniquename <-> ",
     $featurecvterm->cvterm()->name(), "\n" if $self->verbose();
 
-  my @extension_qualifiers = sort split /(?<=\))\||,/, $extension_text;
+  (my $extension_copy = $extension_text) =~ s/(\([^\)]+\))/_replace_commas($1)/eg;
+
+  my @extension_qualifiers = sort split /(?<=\))\||,/, $extension_copy;
 
   my @extensions = map {
-    if (/^\s*(\w+)\((.+)\)\s*$/) {
+    my $bit = _unreplace_commas($_);
+    if ($bit =~ /^\s*(\w+)\((.+)\)\s*$/) {
       my $rel_name = $1;
       my $detail = $2;
 
