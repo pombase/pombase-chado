@@ -111,6 +111,24 @@ method _store_interaction_annotation
   $chado->txn_do($proc);
 }
 
+my $comma_substitute = "<<COMMA>>";
+
+sub _replace_commas
+{
+  my $string = shift;
+
+  $string =~ s/,/$comma_substitute/g;
+  return $string;
+}
+
+sub _unreplace_commas
+{
+  my $string = shift;
+
+  $string =~ s/$comma_substitute/,/g;
+  return $string;
+}
+
 method _store_ontology_annotation
 {
   my %args = @_;
@@ -150,11 +168,18 @@ method _store_ontology_annotation
     my %by_type = ();
 
     if (defined $extension_text) {
-      my @bits = split /,/, $extension_text;
+      (my $extension_copy = $extension_text) =~ s/(\([^\)]+\))/_replace_commas($1)/eg;
+      my @bits = split /,/, $extension_copy;
       for my $bit (@bits) {
+        $bit = _unreplace_commas($bit);
         if ($bit =~/(.*)=(.*)/) {
           my $key = $1->trim("\\s\N{ZERO WIDTH SPACE}");
           my $value = $2->trim("\\s\N{ZERO WIDTH SPACE}");
+
+          if ($value =~ /\(/ && $value !~ /\(.*\)/) {
+            die "unmatched parenthesis in $key=$value\n";
+          }
+
           push @{$by_type{$key}}, $value;
         }
       }
