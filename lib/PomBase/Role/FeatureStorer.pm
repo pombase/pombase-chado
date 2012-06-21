@@ -201,6 +201,9 @@ method store_featureprop($feature, $type_name, $value)
 
   warn "  storing featureprop for ", $feature->uniquename(), " $type_name $value\n" if $self->verbose();
 
+  die "can't find type for $type_name\n" unless defined $type_cvterm;
+  die "can't store a reference as a value\n" if ref $value;
+
   $self->chado()->resultset('Sequence::Featureprop')->create({
     feature_id => $feature->feature_id(),
     type_id => $type_cvterm->cvterm_id(),
