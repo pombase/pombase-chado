@@ -69,7 +69,8 @@ method _build_extension_processor
 {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
-                                                          pre_init_cache => 1);
+                                                          pre_init_cache => 1,
+                                                          verbose => $self->verbose());
   return $processor;
 }
 
