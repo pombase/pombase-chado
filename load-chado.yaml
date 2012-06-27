@@ -198,11 +198,13 @@ evidence_types:
   Microscopy: ~
   'Cell growth assay': ~
   'Other': ~
+  'Other direct evidence': ~
   'Affinity Capture-Luminescence': ~
   'Affinity Capture-MS': ~
   'Affinity Capture-RNA': ~
   'Affinity Capture-Western': ~
   'Biochemical Activity': ~
+  'Chromatography evidence': ~
   'Co-crystal Structure': ~
   'Co-fractionation': ~
   'Co-localization': ~
