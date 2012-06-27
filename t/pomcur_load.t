@@ -41,7 +41,7 @@ while (defined (my $fc = $annotations->next())) {
                {
                  'date' => '2010-01-02',
                  'curator' => 'Ken.Sawin@ed.ac.uk',
-                 'residue' => 'T586(T586)',
+                 'residue' => 'T586(T586,X123)',
                  'qualifier' => 'NOT',
                  'evidence' => 'Inferred from Physical Interaction',
                  'assigned_by' => 'PomBase',
