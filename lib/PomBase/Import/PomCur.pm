@@ -412,16 +412,13 @@ method _get_allele($allele_data)
       die "failed to create allele from: ", Dumper([$allele_data]);
     }
   } else {
-    my $allele_cvterm = $self->get_cvterm('sequence', 'allele');
-    my $organism_id = $gene->organism()->organism_id();
     my $gene_uniquename = $gene->uniquename();
 
-    my $new_name = $self->get_new_uniquename($gene_uniquename . ':allele-', 1);
-    $allele = $self->chado()->resultset('Sequence::Feature')
-                   ->create({ uniquename => $new_name,
-                              name => $allele_data->{name},
-                              organism_id => $organism_id,
-                              type_id =>$allele_cvterm->cvterm_id() });
+    my $new_uniquename = $self->get_new_uniquename($gene_uniquename . ':allele-', 1);
+    $allele = $self->store_feature($new_uniquename,
+                                   $allele_data->{name}, [], 'allele',
+                                   $gene->organism());
+
     $self->store_feature_rel($allele, $gene, 'instance_of');
 
     if (defined $allele_data->{description}) {
