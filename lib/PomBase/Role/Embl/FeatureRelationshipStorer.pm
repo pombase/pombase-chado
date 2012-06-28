@@ -93,6 +93,12 @@ method store_feature_rel($subject, $object, $rel_type)
     croak "no cvterm found for $rel_type in store_feature_rel()";
   }
 
+  if ($self->verbose()) {
+    warn "  storing feature_relationship with type ", $rel_cvterm->name(),
+      " subject: ", $subject->uniquename(), " to object: ",
+      $object->uniquename(), "\n";
+  }
+
   state $ranks = {};
 
   my $key =

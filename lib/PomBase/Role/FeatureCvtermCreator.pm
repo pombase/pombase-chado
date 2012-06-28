@@ -95,6 +95,12 @@ method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
     $rank = 0;
   }
 
+  if ($self->verbose()) {
+    warn "  storing feature_cvterm from: ", $chado_object->uniquename(),
+      " to: ", $cvterm->name(), " pub: ", $pub->uniquename(), " is_not: ",
+      ($is_not // 0), " rank: $rank\n";
+  }
+
   my $create_args = { feature_id => $chado_object->feature_id(),
                       cvterm_id => $cvterm->cvterm_id(),
                       pub_id => $pub->pub_id(),
