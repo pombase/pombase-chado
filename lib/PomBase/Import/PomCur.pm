@@ -506,4 +506,9 @@ method load($fh)
   }
 }
 
+method results_summary($results)
+{
+  return '';
+}
+
 1;
