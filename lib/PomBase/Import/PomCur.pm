@@ -130,6 +130,33 @@ sub _unreplace_commas
   return $string;
 }
 
+sub _extensions_by_type
+{
+  my $extension_text = shift;
+
+  my %by_type = ();
+
+  (my $extension_copy = $extension_text) =~ s/(\([^\)]+\))/_replace_commas($1)/eg;
+  warn "splitting: $extension_text ($extension_copy)\n";
+  my @bits = split /,/, $extension_copy;
+  for my $bit (@bits) {
+    $bit = _unreplace_commas($bit);
+    if ($bit =~/(.*)=(.*)/) {
+      my $key = $1->trim("\\s\N{ZERO WIDTH SPACE}");
+      my $value = $2->trim("\\s\N{ZERO WIDTH SPACE}");
+
+      warn "key='$key' value='$value'\n";
+      if ($value =~ /\(/ && $value !~ /\(.*\)/) {
+        die "unmatched parenthesis in $key=$value\n";
+      }
+
+      push @{$by_type{$key}}, $value;
+    }
+  }
+
+  return %by_type;
+}
+
 method _store_ontology_annotation
 {
   my %args = @_;
@@ -169,21 +196,7 @@ method _store_ontology_annotation
     my %by_type = ();
 
     if (defined $extension_text) {
-      (my $extension_copy = $extension_text) =~ s/(\([^\)]+\))/_replace_commas($1)/eg;
-      my @bits = split /,/, $extension_copy;
-      for my $bit (@bits) {
-        $bit = _unreplace_commas($bit);
-        if ($bit =~/(.*)=(.*)/) {
-          my $key = $1->trim("\\s\N{ZERO WIDTH SPACE}");
-          my $value = $2->trim("\\s\N{ZERO WIDTH SPACE}");
-
-          if ($value =~ /\(/ && $value !~ /\(.*\)/) {
-            die "unmatched parenthesis in $key=$value\n";
-          }
-
-          push @{$by_type{$key}}, $value;
-        }
-      }
+      %by_type = _extensions_by_type($extension_text);
     }
 
     my $allele_quals = delete $by_type{allele};
