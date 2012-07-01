@@ -224,8 +224,23 @@ method _store_ontology_annotation
       }
     }
 
+    my $is_not = 0;
+
+    if (exists $by_type{qualifier}) {
+      warn "old: @{$by_type{qualifier}}\n";
+      @{$by_type{qualifier}} = grep {
+        if (lc $_ eq 'not') {
+          $is_not = 1;
+          0;
+        } else {
+          1;
+        }
+      } @{$by_type{qualifier}};
+      warn "new: @{$by_type{qualifier}}  - $is_not\n";
+    }
+
     my $feature_cvterm =
-      $self->create_feature_cvterm($feature, $cvterm, $publication, 0);
+      $self->create_feature_cvterm($feature, $cvterm, $publication, $is_not);
 
     $self->add_feature_cvtermprop($feature_cvterm,
                                   assigned_by => $config->{db_name_for_cv});
