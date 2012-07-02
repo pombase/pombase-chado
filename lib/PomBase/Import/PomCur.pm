@@ -222,6 +222,14 @@ method _store_ontology_annotation
       }
     }
 
+    if ($type =~ /phenotype/) {
+      for my $bad_type (qw(qualifier residue)) {
+        if (exists $by_type{$bad_type}) {
+          die "$type can't have $bad_type=";
+        }
+      }
+    }
+
     my $is_not = 0;
 
     if (exists $by_type{qualifier}) {
