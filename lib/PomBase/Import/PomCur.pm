@@ -201,7 +201,7 @@ method _store_ontology_annotation
 
     if (defined $allele_quals && @$allele_quals > 0 ) {
       if (@$allele_quals > 1) {
-        die "can't process annotation with two allele qualifers";
+        die "can't process annotation with two allele qualifiers\n";
       } else {
         my $allele_qual = $allele_quals->[0];
         if ($allele_qual =~ /^\s*(.*)\((.*)\)/) {
