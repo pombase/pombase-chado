@@ -137,7 +137,6 @@ sub _extensions_by_type
   my %by_type = ();
 
   (my $extension_copy = $extension_text) =~ s/(\([^\)]+\))/_replace_commas($1)/eg;
-  warn "splitting: $extension_text ($extension_copy)\n";
   my @bits = split /,/, $extension_copy;
   for my $bit (@bits) {
     $bit = _unreplace_commas($bit);
@@ -145,7 +144,6 @@ sub _extensions_by_type
       my $key = $1->trim("\\s\N{ZERO WIDTH SPACE}");
       my $value = $2->trim("\\s\N{ZERO WIDTH SPACE}");
 
-      warn "key='$key' value='$value'\n";
       if ($value =~ /\(/ && $value !~ /\(.*\)/) {
         die "unmatched parenthesis in $key=$value\n";
       }
@@ -227,7 +225,6 @@ method _store_ontology_annotation
     my $is_not = 0;
 
     if (exists $by_type{qualifier}) {
-      warn "old: @{$by_type{qualifier}}\n";
       @{$by_type{qualifier}} = grep {
         if (lc $_ eq 'not') {
           $is_not = 1;
@@ -236,7 +233,6 @@ method _store_ontology_annotation
           1;
         }
       } @{$by_type{qualifier}};
-      warn "new: @{$by_type{qualifier}}  - $is_not\n";
     }
 
     my $feature_cvterm =
