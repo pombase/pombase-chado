@@ -470,7 +470,8 @@ method store_feature_parts($uniquename, $bioperl_feature, $chromosome, $so_type)
     my $prefix = "$uniquename:$so_type:";
     my $part_uniquename = $prefix . ($i + 1);
     my $chado_sub_feature =
-      $self->store_feature($part_uniquename, undef, [], $so_type);
+      $self->store_feature($part_uniquename, undef, [], $so_type,
+                           $self->organism());
 
     if ($bioperl_feature->has_tag("db_xref")) {
       for my $dbxref_value ($bioperl_feature->get_tag_values("db_xref")) {
@@ -527,7 +528,8 @@ method store_transcript_parts($bioperl_cds, $chromosome,
   }
 
   my $chado_transcript = $self->store_feature($uniquename, undef, [],
-                                        $transcript_so_type);
+                                              $transcript_so_type,
+                                              $self->organism());
   my $strand = $bioperl_cds->location()->strand();
   $self->store_location($chado_transcript, $chromosome, $strand,
                         $transcript_start, $transcript_end);
@@ -563,7 +565,8 @@ method store_transcript_parts($bioperl_cds, $chromosome,
 
   if ($transcript_so_type eq 'mRNA') {
     my $chado_peptide = $self->store_feature("$uniquename:pep", undef,
-                                             [], 'polypeptide');
+                                             [], 'polypeptide',
+                                             $self->organism());
 
     $self->store_feature_rel($chado_peptide, $chado_transcript, 'derives_from');
 
