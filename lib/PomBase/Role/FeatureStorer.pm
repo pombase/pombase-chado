@@ -153,7 +153,8 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
     $so_type = 'pseudogene';
   }
 
-  my $chado_feature = $self->store_feature($uniquename, $name, [], $so_type);
+  my $chado_feature = $self->store_feature($uniquename, $name, [], $so_type,
+                                           $chromosome->organism());
 
   my $start = $start_arg // $feature->location()->start();
   my $end = $end_arg // $feature->location()->end();
