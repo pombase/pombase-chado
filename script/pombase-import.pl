@@ -22,6 +22,7 @@ sub usage
   import_type   - possibilities:
                     - "biogrid": interaction data in BioGRID BioTAB 2.0 format
                     - "gaf": GO gene association file format
+                    - "pomcur": curation data in curation tool YAML format
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
