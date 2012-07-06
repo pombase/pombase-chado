@@ -172,7 +172,7 @@ method _store_ontology_annotation
   my $curator = $args{submitter_email};
   my $approved_timestamp = $args{approved_timestamp};
   my $approver_email = $args{approver_email};
-
+  my $curs_key = $args{curs_key};
 
   if (defined $extension_text && $extension_text =~ /\|/) {
     warn "not loading annotation with '|' in extension\n";
@@ -252,6 +252,8 @@ method _store_ontology_annotation
                                   evidence => $long_evidence);
     $self->add_feature_cvtermprop($feature_cvterm,
                                   curator => $curator);
+    $self->add_feature_cvtermprop($feature_cvterm,
+                                  curs_key => $curs_key);
     if (defined $approved_timestamp) {
       $self->add_feature_cvtermprop($feature_cvterm,
                                     approved_timestamp => $approved_timestamp);
@@ -332,6 +334,7 @@ method _process_feature
   my $annotation = clone(shift);
   my $session_metadata = shift;
   my $feature = shift;
+  my $curs_key = shift;
 
   my $annotation_type = delete $annotation->{type};
   my $creation_date = delete $annotation->{creation_date};
@@ -391,6 +394,7 @@ method _process_feature
                                       conditions => $conditions,
                                       with_gene => $with_gene,
                                       extension_text => $extension_text,
+                                      curs_key => $curs_key,
                                       %useful_session_data);
   } else {
     if ($annotation_type eq 'genetic_interaction' or
@@ -402,6 +406,7 @@ method _process_feature
                                              publication => $publication,
                                              long_evidence => $long_evidence,
                                              feature => $feature,
+                                             curs_key => $curs_key,
                                              %useful_session_data);
       } else {
         die "no interacting_genes data found in interaction annotation\n";
@@ -461,7 +466,7 @@ method _get_allele($allele_data)
   return $allele;
 }
 
-method _process_annotation($annotation, $session_metadata)
+method _process_annotation($annotation, $session_metadata, $curs_key)
 {
   my $status = delete $annotation->{status};
 
@@ -480,7 +485,7 @@ method _process_annotation($annotation, $session_metadata)
       } else {
         $feature = $self->_get_transcript($gene_data);
       }
-      $self->_process_feature($annotation, $session_metadata, $feature)
+      $self->_process_feature($annotation, $session_metadata, $feature, $curs_key);
     }
   }
 
@@ -488,7 +493,7 @@ method _process_annotation($annotation, $session_metadata)
   if (defined $alleles) {
     for my $allele_data (@$alleles) {
       my $allele = $self->_get_allele($allele_data);
-      $self->_process_feature($annotation, $session_metadata, $allele)
+      $self->_process_feature($annotation, $session_metadata, $allele, $curs_key);
     }
   }
 }
@@ -519,7 +524,7 @@ method load($fh)
     for my $annotation (@annotations) {
       try {
 #        my ($out, $err) = capture {
-          $self->_process_annotation($annotation, $session_data{metadata});
+          $self->_process_annotation($annotation, $session_data{metadata}, $curs_key);
 #        };
 #        if (length $out > 0) {
 #          $out =~ s/^/$error_prefix/mg;

@@ -73,6 +73,7 @@ method store_interaction()
   my $curator = $args{curator};
   my $approver_email = $args{approver_email};
   my $approved_timestamp = $args{approved_timestamp};
+  my $curs_key = $args{curs_key};
 
   my $rel_type;
 
@@ -101,6 +102,9 @@ method store_interaction()
   }
   if (defined $approver_email) {
     $self->store_feature_relationshipprop($rel, approver_email => $approver_email);
+  }
+  if (defined $curs_key) {
+    $self->store_feature_relationshipprop($rel, curs_key => $curs_key);
   }
   $self->store_feature_rel_pub($rel, $pub);
 }
