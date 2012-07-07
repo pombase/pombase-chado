@@ -198,7 +198,7 @@ evidence_types:
   Microscopy: ~
   'Cell growth assay': ~
   'Other': ~
-  'Other direct evidence': ~
+  'Other direct assay': ~
   'Affinity Capture-Luminescence': ~
   'Affinity Capture-MS': ~
   'Affinity Capture-RNA': ~
