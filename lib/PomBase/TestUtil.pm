@@ -115,30 +115,42 @@ method _load_test_features($chado)
     $chado->resultset("Pub::Pub")->create($row);
   }
 
-  my $org_data = $self->test_config()->{test_organism};
-  my $organism =
-    $chado->resultset('Organism::Organism')->create({
-      genus => $org_data->{genus},
-      species => $org_data->{species},
-      common_name => $org_data->{common_name},
+  my %orgs_by_taxon = ();
+
+  my @org_data_list = @{$self->test_config()->{test_organisms}};
+
+  for my $org_data (@org_data_list) {
+    my $organism =
+      $chado->resultset('Organism::Organism')->create({
+        genus => $org_data->{genus},
+        species => $org_data->{species},
+        common_name => $org_data->{common_name},
+      });
+
+    $chado->resultset('Organism::Organismprop')->create({
+      value => $org_data->{taxonid},
+      type => {
+        name => 'taxon_id',
+        cv => {
+          name => 'PomBase organism property types',
+        }
+      },
+      organism_id => $organism->organism_id(),
     });
 
-  $chado->resultset('Organism::Organismprop')->create({
-    value => $org_data->{taxonid},
-    type => {
-      name => 'taxon_id',
-      cv => {
-        name => 'PomBase organism property types',
-      }
-    },
-    organism_id => $organism->organism_id(),
-  });
+    $orgs_by_taxon{$org_data->{taxonid}} = $organism;
+
+    if ($self->verbose()) {
+      warn " added org: ", $org_data->{taxonid}, "\n";
+    }
+  }
 
   my $gene_type = $self->get_cvterm('sequence', 'gene');
   my $mrna_type = $self->get_cvterm('sequence', 'mRNA');
   my $allele_type = $self->get_cvterm('sequence', 'allele');
 
   for my $gene_data (@{$self->test_config()->{test_genes}}) {
+    my $organism = $orgs_by_taxon{$gene_data->{taxonid}};
     $chado->resultset('Sequence::Feature')->create({
       uniquename => $gene_data->{uniquename},
       organism_id => $organism->organism_id(),

@@ -44,6 +44,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::FeatureFinder';
+with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
@@ -56,8 +57,10 @@ has publication => (is => 'rw', init_arg => undef);
 has organism_1 => (is => 'rw', init_arg => undef);
 has organism_2 => (is => 'rw', init_arg => undef);
 
-method BUILD
+sub BUILD
 {
+  my $self = shift;
+
   my $swap_direction = 0;
   my $publication_uniquename = undef;
   my $organism_1_taxonid = undef;
@@ -89,7 +92,9 @@ method BUILD
     die "the --organism_2_taxonid argument is required\n";
   }
   my $organism_1 = $self->find_organism_by_taxonid($organism_1_taxonid);
+  $self->organism_1($organism_1);
   my $organism_2 = $self->find_organism_by_taxonid($organism_2_taxonid);
+  $self->organism_2($organism_2);
 }
 
 =head2 load
@@ -121,19 +126,30 @@ method load($fh)
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $org1_identifier = $columns_ref->{"org1_identifier"};
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
+
+    last unless defined $org1_identifier and defined $org2_identifiers;
+
     my @org2_identifiers = split (',', $org2_identifiers);
 
-    my $org1_feature =
-      $self->find_chado_feature($org1_identifier, 0, 0, $self->organism_1());
+    my $org1_feature;
+    eval {
+      $org1_feature = $self->find_chado_feature($org1_identifier, 0, 0, $self->organism_1());
+    };
     if (!defined $org1_feature) {
-      die "can't find feature into Chado for $org1_identifier";
+      $org1_feature =
+        $self->store_feature($org1_identifier, undef, [], 'gene',
+                             $self->organism_1());
     }
 
     for my $org2_identifier (@org2_identifiers) {
-      my $org2_feature =
-        $self->find_chado_feature($org2_identifier, 0, 0, $self->organism_2());
+      my $org2_feature;
+      eval {
+        $org2_feature = $self->find_chado_feature($org2_identifier, 0, 0, $self->organism_2());
+      };
       if (!defined $org2_feature) {
-        die "can't find feature into Chado for $org2_identifier";
+        $org2_feature =
+          $self->store_feature($org2_identifier, undef, [], 'gene',
+                               $self->organism_2());
       }
 
       my $proc = sub {

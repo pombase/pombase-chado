@@ -128,6 +128,11 @@ data:
             accession: 0001023
             db:
               name: SO
+        - name: orthologous_to
+          dbxref:
+            accession: orthologous_to
+            db:
+              name: SO
     - name: molecular_function
       cvterms:
         - name: microtubule motor activity
@@ -368,6 +373,12 @@ data:
       type:
         name: paper
   feature:
+    - uniquename: SPBC2G5.03
+      type:
+        name: gene
+      organism:
+        genus: Schizosacchaomyces
+        species: pombe
     - uniquename: SPBC2F12.13
       name: klp5
       type:
@@ -394,6 +405,12 @@ data:
       organism:
         genus: Schizosacchaomyces
         species: pombe
+    - uniquename: ENSG00000124562
+      type:
+        name: gene
+      organism:
+        genus: Homo
+        species: sapiens
   feature_relationships:
     - subject:
         uniquename: SPBC2F12.13.1
@@ -581,21 +598,36 @@ data:
       cv:
         name: molecular_function
       pathdistance: -1
-test_organism:
-  genus: Schizosaccharomyces
-  species: pombe
-  common_name: pombe
-  taxonid: 4896
+test_organisms:
+  - genus: Schizosaccharomyces
+    species: pombe
+    common_name: pombe
+    taxonid: 4896
+  - genus: Homo
+    species: sapiens
+    common_name: human
+    taxonid: 9606
 
 test_genes:
   - uniquename: SPBC2F12.13
+    taxonid: 4896
   - uniquename: SPAC1093.06c
+    taxonid: 4896
   - uniquename: SPCC576.16c
+    taxonid: 4896
   - uniquename: SPAC27D7.13c
+    taxonid: 4896
     alleles:
       - uniquename: 'SPAC27D7.13c:allele-1'
   - uniquename: SPCC63.05
+    taxonid: 4896
   - uniquename: SPBC14F5.07
+    taxonid: 4896
   - uniquename: SPAC2F7.03c
+    taxonid: 4896
+  - uniquename: SPBC2G5.03
+    taxonid: 4896
+  - uniquename: ENSG00000124562
+    taxonid: 9606
 
 test_mode: 1
