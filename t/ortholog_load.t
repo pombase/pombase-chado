@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 5;
+use Test::More tests => 7;
 
 use PomBase::TestUtil;
 
@@ -40,5 +40,8 @@ while (defined ($rel = $rel_rs->next())) {
 my $rel_pubs_rs = $rel->feature_relationship_pubs();
 is($rel_pubs_rs->count(), 1);
 is($rel_pubs_rs->first()->pub()->uniquename(), $pub_uniquename);
+
+is($rel->subject()->organism()->common_name(), "human");
+is($rel->object()->organism()->common_name(), "pombe");
 
 close $fh;
