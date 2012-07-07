@@ -23,10 +23,24 @@ sub usage
                     - "biogrid": interaction data in BioGRID BioTAB 2.0 format
                     - "gaf": GO gene association file format
                     - "pomcur": curation data in curation tool YAML format
+                    - "orthologs": a file of orthologs
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
   password      - the database password
+
+The orthologs file should be tab delimited with two columns.  The
+first column should contain an identifier.  The second column should
+contain the identifier of one or more orthologs, separated by commas.
+
+The orthologs type has tree required arguments:
+  --publication        - the PubMed ID to add as dbxref
+  --organism_1_taxonid - the taxon ID of genes in column 1
+  --organism_2_taxonid - taxon ID of genes in column 2
+and one optional argument:
+  --swap_direction     - if present the column 1 gene with be used as
+                         the object of the feature_relationship,
+                         rather than the subject
 
 usage:
   $0 <args> < input_file
@@ -73,6 +87,7 @@ my %import_modules = (
   biogrid => 'PomBase::Import::BioGRID',
   gaf => 'PomBase::Import::GeneAssociationFile',
   pomcur => 'PomBase::Import::PomCur',
+  orthologs => 'PomBase::Import::Orthologs',
 );
 
 my $import_module = $import_modules{$import_type};
