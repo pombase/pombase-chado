@@ -43,9 +43,9 @@ fi
 cd $HOME/git/pombase-run
 cat /var/pomcur/sources/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt | ./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD 2>&1 | tee -a $LOG_DIR/$log_file.biogrid
 
-(
-echo starting import of GOA GAF data
+echo starting import of GOA GAF data 1>&2
 
+(
 echo $HOME/Work/pombe/pombe-embl/external-go-data/go_comp.tex
 ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $HOME/Work/pombe/pombe-embl/external-go-data/go_comp.tex 
 echo $HOME/Work/pombe/pombe-embl/external-go-data/go_proc.tex
@@ -62,6 +62,10 @@ echo /var/pomcur/sources/gene_association.goa_uniprot.pombe
 ./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=/var/pomcur/sources/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < /var/pomcur/sources/gene_association.goa_uniprot.pombe
 
 ) 2>&1 | tee $LOG_DIR/$log_file.gaf
+
+echo load Compara orthologs 1>&2
+
+./script/pombase-import.pl load-chado.yaml orthologs --publication=PMID:19029536 --organism_1_taxonid=4896 --organism_2_taxonid=9606 --swap-direction $HOST $DB $USER $PASSWORD < /var/pomcur/sources/pombe-embl/orthologs/compara_orths.tsv
 
 echo filtering redundant terms 1>&2
 
