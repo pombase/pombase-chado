@@ -110,11 +110,13 @@ method load($fh)
   my $config = $self->config();
 
   my $orthologous_to_term =
-    $self->get_cvterm('feature_cvtermprop_type', 'assigned_by');
+    $self->get_cvterm('sequence', 'orthologous_to');
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
 
   $csv->column_names(qw(org1_identifier org2_identifiers));
+
+  my $load_orthologs_count = 0;
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $org1_identifier = $columns_ref->{"org1_identifier"};
@@ -129,7 +131,7 @@ method load($fh)
 
     for my $org2_identifier (@org2_identifiers) {
       my $org2_feature =
-        $self->find_chado_feature($org1_identifier, 0, 0, $self->organism_2());
+        $self->find_chado_feature($org2_identifier, 0, 0, $self->organism_2());
       if (!defined $org2_feature) {
         die "can't find feature into Chado for $org2_identifier";
       }
@@ -143,6 +145,8 @@ method load($fh)
           $feature_rel = $self->store_feature_rel($org1_feature, $org2_feature, $orthologous_to_term);
         }
 
+        $load_orthologs_count++;
+
         $self->store_feature_rel_pub($feature_rel, $self->publication());
       };
 
@@ -153,6 +157,8 @@ method load($fh)
       }
     }
   }
+
+  return $load_orthologs_count;
 }
 
 method results_summary($results)
