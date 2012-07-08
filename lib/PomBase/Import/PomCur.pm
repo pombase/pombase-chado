@@ -286,7 +286,7 @@ method _store_ontology_annotation
         $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
       }
 
-      my @props_to_store = qw(residue qualifier condition);
+      my @props_to_store = qw(col17 residue qualifier condition);
 
       for my $prop_name (@props_to_store) {
         if (defined (my $prop_vals = delete $by_type{$prop_name})) {
