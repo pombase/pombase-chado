@@ -107,7 +107,7 @@ method get_pub_from_db_xref($qual, $db_xref) {
     } else {
       warn "    qualifier ($qual)",
         " has unknown format db_xref (", $db_xref,
-          ") - using null publication\n" if $self->verbose();
+          ") - using null publication\n";
       return $self->objs()->{null_pub};
     }
   } else {
