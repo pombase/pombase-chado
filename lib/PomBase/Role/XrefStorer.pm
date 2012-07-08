@@ -91,7 +91,7 @@ method add_feature_dbxref($feature, $dbxref_value)
 
 method get_pub_from_db_xref($qual, $db_xref) {
   if (defined $db_xref) {
-    if ($db_xref =~ /^((.*):(.*))/) {
+    if ($db_xref =~ /^((\w+):(.+))/) {
       my $db_name = $2;
       my $accession = $3;
 
