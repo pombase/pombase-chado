@@ -84,7 +84,7 @@ method check
   should ($feature_prop_rs->count(), 13);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
-  should ($feature_dbxref_rs->count(), 29);
+  should ($feature_dbxref_rs->count(), 33);
 
   my $feature_synonym_rs = $chado->resultset('Sequence::FeatureSynonym');
   should ($feature_synonym_rs->count(), 3);

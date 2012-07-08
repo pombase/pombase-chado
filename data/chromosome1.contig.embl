@@ -83,16 +83,16 @@ FT                   /controlled_curation="term=phenotype, viable;
 FT                   cv=phenotype; annotation_extension=condition(at high
 FT                   temperature); db_xref=PMID:1314171; date=20080227"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Eukaryotes; date=20081110; cv=foobar"
+FT                   in eukaryotes; date=20081110; cv=foobar"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Bacteria; date=20081110"
+FT                   in bacteria; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Metazoa; date=20081110"
+FT                   in metazoa; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
 FT                   in Vertebrates; date=20081110; qualifier=predicted|region;
 FT                   evidence=IDA"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Fungi; date=20081110; qualifier=predicted"
+FT                   in fungi; date=20081110; qualifier=predicted"
 FT                   /controlled_curation="term=sequence feature, coiled-coil;
 FT                   qualifier=predicted|region; date=19700101; evidence=IDA"
 FT                   /GO="aspect=P; term=cytokinesis, contractile ring
@@ -107,8 +107,9 @@ FT   3'UTR           complement(1174480..1174828)
 FT                   /systematic_id="SPBC409.20c"
 FT                   /db_xref="PMID:21511999"
 FT   CDS             complement(join(1174829..1175365,1175755..1175865))
+FT                   /db_xref="PMID:21511999"
 FT                   /GO="aspect=C; term=endoplasmic reticulum;
-FT                   GOid=GO:0005783; evidence=IDA; db_xref=PMID:11069779;
+FT                   GOid=GO:0005783; evidence=IDA; db_xref==PMID:11069779;
 FT                   date=20050322"
 FT                   /GO="aspect=F; term=mRNA binding 3'-UTR binding;
 FT                   GOid=GO:0003730; evidence=ISS; db_xref=GOC:unpublished;
@@ -142,14 +143,14 @@ FT                   transmembrane helices; cv=sequence_feature; date=19700101"
 FT                   /controlled_curation="term=orthologous to S. cerevisiae
 FT                   YDL212W (N-term); date=19700101; qualifier=only on Mondays"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Fungi; date=20081110"
+FT                   in fungi; date=20081110"
 FT                   /controlled_curation="term=species distribution,
 FT                   predominantly uniformly single copy (one to one);
 FT                   date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Fungi only; date=20081110"
+FT                   in fungi only; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Eukaryotes; date=20080202"
+FT                   in eukaryotes; date=20080202"
 FT                   /GO="aspect=F; term=protein binding;
 FT                   annotation_extension=dependent_on(Pfam:PF00069);
 FT                   GOid=GO:0005515; evidence=IPI; db_xref=PMID:12475973;
@@ -205,12 +206,12 @@ FT                   YAL001C and Gene1 (C-term); date=19700101"
 FT                   /controlled_curation="term=sequence feature, transmembrane
 FT                   helices; cv=sequence_feature; date=19700101"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Fungi; date=20081110"
+FT                   in fungi; date=20081110"
 FT                   /controlled_curation="term=species distribution,
 FT                   predominantly uniformly single copy (one to one);
 FT                   date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Bacteria; date=20081110"
+FT                   in bacteria; date=20081110"
 FT                   /gene="SPAC977.11"
 FT                   /controlled_curation="term=protein sequence feature,
 FT                   destruction box; cv=sequence_feature; qualifier=predicted;
@@ -244,15 +245,15 @@ FT                   /controlled_curation="term=orthologous to S. cerevisiae
 FT                   YLR155C and YLR157C and YLR158C and YLR160C;
 FT                   date=19700101"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Eukaryotes; date=20081110"
+FT                   in eukaryotes; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Bacteria; date=20081110"
+FT                   in bacteria; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Metazoa; date=20081110"
+FT                   in metazoa; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Vertebrates; date=20081110"
+FT                   in vertebrates; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Fungi; date=20081110"
+FT                   in fungi; date=20081110"
 FT                   /gene="SPAC977.12"
 FT                   /GO="aspect=F; term=nucleosomal histone binding;
 FT                   GOid=GO:0031493;
@@ -415,18 +416,18 @@ FT                   date=20100406; evidence=FPR"
 FT                   /controlled_curation="term=species distribution, no
 FT                   apparent S. cerevisiae ortholog; date=19700101"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Eukaryotes; date=20081110"
+FT                   in eukaryotes; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Metazoa; date=20081110"
+FT                   in metazoa; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Vertebrates; date=20081110"
+FT                   in vertebrates; date=20081110"
 FT                   /controlled_curation="term=species distribution,
 FT                   predominantly uniformly single copy (one to one);
 FT                   date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Fungi; date=20081110"
+FT                   in fungi; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
-FT                   in Eukaryotes only; date=20081110"
+FT                   in eukaryotes only; date=20081110"
 FT                   /controlled_curation="term=phenotype, viable;
 FT                   cv=phenotype; db_xref=PMID:11705997; date=20081211"
 FT                   /controlled_curation="term=phenotype, sensitive to
