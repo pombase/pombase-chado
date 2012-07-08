@@ -711,6 +711,10 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier,
     }
   }
 
+  if ($term =~ /^conserved in / && !defined $cv_name) {
+    $cv_name = 'species_dist';
+  }
+
   if (defined $cv_name) {
     if (grep { $_ eq $cv_name } keys %{$self->objs()->{cv_alt_names}}) {
       if ($self->objs()->{gene_cvs}->{$cv_name} xor

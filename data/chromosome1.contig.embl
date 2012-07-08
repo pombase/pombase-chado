@@ -424,8 +424,7 @@ FT                   in vertebrates; date=20081110"
 FT                   /controlled_curation="term=species distribution,
 FT                   predominantly uniformly single copy (one to one);
 FT                   date=20081110"
-FT                   /controlled_curation="term=species distribution, conserved
-FT                   in fungi; date=20081110"
+FT                   /controlled_curation="term=conserved in fungi; date=20081110"
 FT                   /controlled_curation="term=species distribution, conserved
 FT                   in eukaryotes only; date=20081110"
 FT                   /controlled_curation="term=phenotype, viable;
