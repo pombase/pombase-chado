@@ -36,6 +36,9 @@ go2fmt.pl -p obo_text -w xml /var/pomcur/sources/PSI-MOD.obo | go-apply-xslt obo
 echo fypo_edit.obo
 (cd /var/pomcur/sources/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml /var/pomcur/sources/phenotype_ontology/fypo_edit.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_obo_text.xml || exit 1
 
+echo fypo_edit.obo
+(cd /var/pomcur/sources/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml /var/pomcur/sources/phenotype_ontology/supplemental_files/fypo_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_ex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_ex_rel_obo_text.xml || exit 1
+
 echo go_annotation_extension_relations.obo
 GET http://viewvc.geneontology.org/viewvc/GO-SVN/trunk/ontology/extensions/go_annotation_extension_relations.obo > /var/pomcur/sources/go_annotation_extension_relations.obo
 go2fmt.pl -p obo_text -w xml /var/pomcur/sources/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD anex_rel_obo_text.xml || exit 1
