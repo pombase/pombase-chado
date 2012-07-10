@@ -121,6 +121,16 @@ method store_extension($feature_cvterm, $extensions)
 
       if (defined $term) {
         my $rel = $self->find_cvterm_by_name($relationship_cv_name, $rel_name);
+        my $old_cv_name = $old_cvterm->cv()->name();
+        my $restrictions_conf = $self->config()->{extension_restrictions}->{$old_cv_name};
+
+        if (defined $restrictions_conf) {
+          if (exists $restrictions_conf->{allowed}) {
+            if (!grep { $_ eq $rel_name } @{$restrictions_conf->{allowed}}) {
+              die "$rel_name() not allowed for $old_cv_name\n";
+            }
+          }
+        }
 
         if (!defined $rel) {
           die "can't find relation cvterm for: $rel_name\n";

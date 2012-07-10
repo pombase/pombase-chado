@@ -85,6 +85,15 @@ cvs:
   disease_associated: []
   EC numbers: []
 
+# define the allow extension relation for each annotation type
+extension_restrictions:
+  fission_yeast_phenotype:
+    allowed:
+      - is_bearer_of
+      - has_penetrance
+      - assayed_using
+      - has_expressivity
+
 cv_definitions:
   biological_process: Gene Ontology biological process terms
   cat_act: Catalytic activity attributes (Kd, rate, etc.)
