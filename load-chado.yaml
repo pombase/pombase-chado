@@ -93,6 +93,9 @@ extension_restrictions:
       - has_penetrance
       - assayed_using
       - has_expressivity
+  all:
+    not_allowed:
+      - during
 
 cv_definitions:
   biological_process: Gene Ontology biological process terms
