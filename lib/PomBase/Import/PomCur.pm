@@ -184,6 +184,7 @@ method _store_ontology_annotation
 
   my $proc = sub {
     my $cvterm = $self->find_cvterm_by_term_id($termid);
+    my $term_name = $cvterm->name();
 
     if (!defined $cvterm) {
       die "can't load annotation, $termid not found in database\n";
@@ -227,6 +228,10 @@ method _store_ontology_annotation
         if (exists $by_type{$bad_type}) {
           die "$type can't have $bad_type=";
         }
+      }
+
+      if ($feature->type()->name() ne 'allele') {
+        die qq(phenotype annotation for "$term_name" must have allele information\n);
       }
     }
 
