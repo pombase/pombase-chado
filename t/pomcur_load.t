@@ -15,7 +15,7 @@ my $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 6);
 
 my $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 15);
+is($feature_rs->count(), 19);
 
 
 my $importer =
@@ -42,11 +42,11 @@ while (defined (my $fc = $annotations->next())) {
                  'date' => '2010-01-02',
                  'curator' => 'Ken.Sawin@ed.ac.uk',
                  'residue' => 'T586(T586,X123)',
-                 'qualifier' => 'NOT',
                  'evidence' => 'Inferred from Physical Interaction',
                  'assigned_by' => 'PomBase',
                  'with' => 'SPCC576.16c',
-                 'condition' => 'PCO:0000012'
+                 'condition' => 'PCO:0000012',
+                 'curs_key' => 'aaaa0007',
                });
   }
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
@@ -59,7 +59,8 @@ while (defined (my $fc = $annotations->next())) {
                  'date' => '2010-01-02',
                  'evidence' => 'Inferred from Direct Assay',
                  'curator' => 'Ken.Sawin@ed.ac.uk',
-                 'assigned_by' => 'PomBase'
+                 'assigned_by' => 'PomBase',
+                 'curs_key' => 'aaaa0007',
                });
   }
 }
@@ -73,7 +74,7 @@ is($allele->name(), 'ssm4-D4');
 is($allele->search_featureprops('description')->first()->value(), 'del_100-200');
 
 $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 17);
+is($feature_rs->count(), 21);
 
 my @allele_cvterms = map { $_->cvterm(); } $allele->feature_cvterms();
 is(@allele_cvterms, 1);

@@ -191,6 +191,7 @@ method _store_ontology_annotation
     }
 
     my $orig_feature = $feature;
+    my $organism = $feature->organism();
 
     my %by_type = ();
 
@@ -200,26 +201,49 @@ method _store_ontology_annotation
 
     my $allele_quals = delete $by_type{allele};
 
-    if (defined $allele_quals && @$allele_quals > 0 ) {
-      if (@$allele_quals > 1) {
+    if (defined $allele_quals && @$allele_quals > 0) {
+      my @processed_allele_quals = map {
+        my $delete_me = 0;
+        if (/^\s*(.*)\((.*)\)/) {
+          my $name = $1;
+          my $description = $2;
+
+          if ($name eq 'noname' and
+              grep /^$description$/, qw(overexpression endogenous knockdown)) {
+            if (defined $expression) {
+              die "can't have expression=$expression AND allele=$name($description)\n";
+            } else {
+              $expression = ucfirst $description;
+              if (@$allele_quals > 1) {
+                $delete_me = 1;
+              } else {
+                $description = 'unknown';
+              }
+            }
+          }
+
+          if ($delete_me) {
+            ();
+          } else {
+            {
+              name => $name,
+              description => $description,
+              gene => {
+                organism => $organism->genus() . ' ' . $organism->species(),
+                uniquename => $feature->uniquename(),
+              },
+              type => 'new',
+            }
+          }
+        } else {
+          die qq|allele qualifier "$_" isn't in the form "name(description)"\n|;
+        }
+      } @$allele_quals;
+
+      if (@processed_allele_quals > 1) {
         die "can't process annotation with two allele qualifiers\n";
       } else {
-        my $allele_qual = $allele_quals->[0];
-        if ($allele_qual =~ /^\s*(.*)\((.*)\)/) {
-          my $organism = $feature->organism();
-          my %allele_data = (
-            name => $1,
-            description => $2,
-            gene => {
-              organism => $organism->genus() . ' ' . $organism->species(),
-              uniquename => $feature->uniquename(),
-            },
-            type => 'new',
-          );
-          $feature = $self->_get_allele(\%allele_data);
-        } else {
-          die qq|allele qualifier "$allele_qual" isn't in the form "name(description)"\n|;
-        }
+        $feature = $self->_get_allele($processed_allele_quals[0]);
       }
     }
 
