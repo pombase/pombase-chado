@@ -93,6 +93,7 @@ extension_restrictions:
       - has_penetrance
       - assayed_using
       - has_expressivity
+      - occurs_in
   all:
     not_allowed:
       - during
