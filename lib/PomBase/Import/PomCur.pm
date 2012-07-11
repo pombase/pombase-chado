@@ -425,6 +425,9 @@ method _process_feature
 
 method _get_gene($gene_data)
 {
+  if (!defined $gene_data) {
+    croak 'no $gene_data passed to _get_gene()';
+  }
   my $gene_uniquename = $gene_data->{uniquename};
   my $organism_name = $gene_data->{organism};
   my $organism = $self->find_organism_by_full_name($organism_name);
