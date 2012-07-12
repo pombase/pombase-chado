@@ -80,7 +80,8 @@ method store_extension($feature_cvterm, $extensions)
 
   my $new_name = $old_cvterm->name();
 
-  my $relationship_cv_name = 'go/extensions/gorel';
+  my $go_relationship_cv_name = 'go/extensions/gorel';
+  my $phenotype_relationship_cv_name = 'fypo_extension_relations';
 
   for my $extension (@$extensions) {
     my $rel_name = $extension->{rel_name};
@@ -120,7 +121,10 @@ method store_extension($feature_cvterm, $extensions)
       my $nested_extension = $extension->{nested_extension};
 
       if (defined $term) {
-        my $rel = $self->find_cvterm_by_name($relationship_cv_name, $rel_name);
+        my $rel = $self->find_cvterm_by_name($go_relationship_cv_name, $rel_name);
+        if (!defined $rel) {
+          $rel = $self->find_cvterm_by_name($phenotype_relationship_cv_name, $rel_name);
+        }
         my $old_cv_name = $old_cvterm->cv()->name();
         my $extension_restriction_conf = $self->config()->{extension_restrictions};
         my $cv_restrictions_conf = $extension_restriction_conf->{$old_cv_name};
