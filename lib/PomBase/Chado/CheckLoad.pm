@@ -80,6 +80,9 @@ method check
   my $loc_rs = $chado->resultset('Sequence::Featureloc');
   should ($loc_rs->count(), 65);
 
+  my $phase_loc_rs = $loc_rs->search({ phase => { -not => undef }});
+  should ($phase_loc_rs->count(), 9);
+
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
   should ($feature_prop_rs->count(), 13);
 

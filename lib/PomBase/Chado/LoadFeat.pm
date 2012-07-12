@@ -531,8 +531,34 @@ method store_transcript_parts($bioperl_cds, $chromosome,
                                               $transcript_so_type,
                                               $self->organism());
   my $strand = $bioperl_cds->location()->strand();
+
+  my $phase = undef;
+
+  if ($transcript_so_type eq 'mRNA') {
+    $phase = 0;
+    if ($bioperl_cds->has_tag("codon_start")) {
+      my @codon_starts = $bioperl_cds->get_tag_values("codon_start");
+
+      if (@codon_starts > 1) {
+        warn "$uniquename has ", scalar(@codon_starts), " /codon_start qualifier(s)\n"
+      }
+
+      my $codon_start = $codon_starts[0];
+
+      if ($codon_start == 1) {
+        # use default - no phase
+      } else {
+        if ($codon_start == 2 || $codon_start == 3) {
+          $phase = $codon_start - 1;
+        } else {
+          warn "$uniquename has an illegal /codon_start =$codon_start\n";
+        }
+      }
+    }
+  }
+
   $self->store_location($chado_transcript, $chromosome, $strand,
-                        $transcript_start, $transcript_end);
+                        $transcript_start, $transcript_end, $phase);
 
   my @exons = $self->store_feature_parts($uniquename, $bioperl_cds,
                                          $chromosome, $exon_so_type);

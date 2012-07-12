@@ -42,7 +42,7 @@ use Moose::Role;
 
 requires 'chado';
 
-method store_location($feature, $chromosome, $strand, $start, $end)
+method store_location($feature, $chromosome, $strand, $start, $end, $phase)
 {
   my $chado = $self->chado();
 
@@ -52,7 +52,7 @@ method store_location($feature, $chromosome, $strand, $start, $end)
     fmin => $start - 1,
     fmax => $end,
     strand => $strand,
-    phase => undef,
+    phase => $phase,
     residue_info => undef,
   );
 
