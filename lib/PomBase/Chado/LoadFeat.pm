@@ -689,7 +689,7 @@ method finalise($chromosome)
     protein_id => 1,
   );
 
-  warn "counts of EMBL qualifiers by feature type:\n";
+  warn "counts of EMBL qualifiers by feature type and un-handled qualifiers:\n";
 
   for my $feat_type (keys %{$self->{tag_counts}}) {
     my %counts = %{$self->{tag_counts}->{$feat_type}};
