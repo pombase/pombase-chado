@@ -27,7 +27,6 @@ my $builder = Module::Build->new(
       'Webservice::InterMine' => 0,
       'YAML'                  => 0,
       'YAML::Any'             => 0,
-      'stringification'       => 0,
     },
     build_requires => {
         'Test::More' => 0,

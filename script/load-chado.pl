@@ -21,8 +21,6 @@ use PomBase::Chado::IdCounter;
 use PomBase::Chado::ExtensionProcessor;
 use PomBase::Chado::ParalogProcessor;
 
-no stringification;
-
 my $verbose = 0;
 my $quiet = 0;
 my $dry_run = 0;
