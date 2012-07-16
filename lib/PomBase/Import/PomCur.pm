@@ -255,7 +255,7 @@ method _store_ontology_annotation
       }
 
       if ($feature->type()->name() ne 'allele') {
-        die qq(phenotype annotation for "$term_name" must have allele information\n);
+        die qq(phenotype annotation for "$term_name ($termid)" must have allele information\n);
       }
     }
 
