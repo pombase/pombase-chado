@@ -250,7 +250,7 @@ method _store_ontology_annotation
     if ($type =~ /phenotype/) {
       for my $bad_type (qw(qualifier residue)) {
         if (exists $by_type{$bad_type}) {
-          die "$type can't have $bad_type=";
+          die "$type can't have $bad_type=\n";
         }
       }
 
