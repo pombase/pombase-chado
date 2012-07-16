@@ -57,4 +57,21 @@ sub db_connect
                                      { auto_savepoint => 1 });
 }
 
+=head2 id_of_cvterm
+
+ Usage   : my $termid = PomBase::Chado::id_of_cvterm($cvterm);
+ Function: Return the term ID of a cvterm (eg. "GO:0000278") by
+           querying its dbxref.
+ Args    : $cvterm - the Cvterm ref
+ Returns : the ID
+
+=cut
+sub id_of_cvterm
+{
+  my $cvterm = shift;
+
+  my $dbxref = $cvterm->dbxref();
+  return $dbxref->db()->name() . ':' . $dbxref->accession();
+}
+
 1;
