@@ -312,7 +312,15 @@ method _store_ontology_annotation
       my $annotation_extension_data = delete $by_type{annotation_extension};
       if (defined $annotation_extension_data) {
         my $annotation_extension = join ',', @$annotation_extension_data;
+        my ($out, $err) = capture {
         $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
+        };
+        if (length $out > 0) {
+          die $out;
+        }
+        if (length $err > 0) {
+          die $err;
+        }
       }
 
       my @props_to_store = qw(col17 residue qualifier condition);
