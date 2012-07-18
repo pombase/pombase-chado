@@ -3,22 +3,46 @@
 # A script to make a Chado db from scratch using GMOD tools.  Must be
 # run in the gmod-schema/chado directory.
 
+if [ ! $# = 4 ]
+then
+  echo "$0: needs 4 arguments: db_name_suffix host username password" 1>&2
+  exit 1
+fi
+
 export PERL5LIB=lib
 
-DB=`perl -ne 'print "$1" if /CHADO_DB_NAME=(.*)/' $HOME/.gmod_profile`
-HOST=`perl -ne 'print "$1" if /CHADO_DB_HOST=(.*)/' $HOME/.gmod_profile`
-USER=kmr44
-PASSWORD=kmr44
+replace() {
+  var=$1
+  new_val=$2
+  file=$3
+  perl -pne "s/$var=.*/$var=$new_val/" $file > $file.new
+  mv $file.new $file
+}
 
-echo building database: $DB on $HOST
+DB_NAME_SUFFIX=$1
+HOST=$2
+USER=$3
+PASSWORD=$4
 
-dropdb $DB; createdb $DB || exit 1
+DB=pombase-chado-base-$DB_NAME_SUFFIX
+
+echo "building database: $DB on $HOST"
+
+replace CHADO_DB_NAME $DB $HOME/.gmod_profile
+replace CHADO_DB_HOST $HOST $HOME/.gmod_profile
+replace CHADO_DB_USER $USER $HOME/.gmod_profile
+replace CHADO_DB_PASS $PASSWORD $HOME/.gmod_profile
+
+replace DBNAME $DB build.conf
+replace DBHOSE $HOST build.conf
+replace DBUSER $USER build.conf
+replace DBPASS $PASSWORD build.conf
+
+
+#dropdb $DB; createdb $DB || exit 1
 
 rm --verbose -rf tmp
 
-perl -pne "s/DBNAME=.*/DBNAME=$DB/" build.conf > build.conf.new
-
-mv build.conf.new build.conf
 
 (cd /var/pomcur/sources/pombe-embl/; svn update || exit 1)
 
@@ -72,3 +96,11 @@ date; echo starting cellular_component
 date; echo starting biological_process
 ./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c biological_process
 date; echo finished
+
+
+echo make copies
+
+for i in `seq 1 5`
+do
+  createdb -T $DB pombase-build-$DB_NAME_SUFFIX-v$i
+done
