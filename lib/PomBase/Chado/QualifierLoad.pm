@@ -258,6 +258,13 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   }
 
   my $db_xref = delete $sub_qual_map->{db_xref};
+
+  if ($self->is_go_cv_name($cv_name) || $cv_name eq 'fission_yeast_phenotype') {
+    if (!defined $db_xref) {
+      die "no db_xref for $embl_term_name\n";
+    }
+  }
+
   my $pub = $self->get_pub_from_db_xref($embl_term_name, $db_xref);
 
   my $is_not = 0;
