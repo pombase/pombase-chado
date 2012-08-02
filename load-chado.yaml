@@ -94,7 +94,13 @@ extension_restrictions:
       - assayed_using
       - has_expressivity
       - occurs_in
-  all:
+  biological_process:
+    not_allowed:
+      - during
+  molecular_function:
+    not_allowed:
+      - during
+  cellular_component:
     not_allowed:
       - during
 

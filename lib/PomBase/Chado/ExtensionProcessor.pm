@@ -135,6 +135,11 @@ method store_extension($feature_cvterm, $extensions)
               die "$rel_name() not allowed for $old_cv_name\n";
             }
           }
+          if (exists $cv_restrictions_conf->{not_allowed}) {
+            if (grep { $_ eq $rel_name } @{$cv_restrictions_conf->{not_allowed}}) {
+              die "$rel_name() not allowed for $old_cv_name\n";
+            }
+          }
         }
 
         my $all_not_allowed_rels = $extension_restriction_conf->{all}->{not_allowed};
