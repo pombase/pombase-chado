@@ -85,7 +85,7 @@ cvs:
   disease_associated: []
   EC numbers: []
 
-# define the allow extension relation for each annotation type
+# define the allowed extension relation for each annotation type
 extension_restrictions:
   fission_yeast_phenotype:
     allowed:
