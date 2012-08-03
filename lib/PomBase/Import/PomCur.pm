@@ -184,11 +184,12 @@ method _store_ontology_annotation
 
   my $proc = sub {
     my $cvterm = $self->find_cvterm_by_term_id($termid);
-    my $term_name = $cvterm->name();
 
     if (!defined $cvterm) {
       die "can't load annotation, $termid not found in database\n";
     }
+
+    my $term_name = $cvterm->name();
 
     my $orig_feature = $feature;
     my $organism = $feature->organism();
