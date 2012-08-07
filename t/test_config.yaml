@@ -253,6 +253,11 @@ data:
             accession: 01000003
             db:
               name: PomBase
+        - name: curs_key
+          dbxref:
+            accession: 01000004
+            db:
+              name: PomBase
     - name: feature_relationshipprop_type
       cvterms:
         - name: evidence
@@ -273,6 +278,11 @@ data:
         - name: curator
           dbxref:
             accession: 011000004
+            db:
+              name: PomBase
+        - name: curs_key
+          dbxref:
+            accession: 011000005
             db:
               name: PomBase
     - name: PomBase organism property types

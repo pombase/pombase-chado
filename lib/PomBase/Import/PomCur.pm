@@ -86,6 +86,7 @@ method _store_interaction_annotation
   my $gene_uniquename = $args{gene_uniquename};
   my $curator = $args{submitter_email};
   my $feature_a = $args{feature};
+  my $curs_key = $args{curs_key};
 
   my $organism = $feature_a->organism();
 
@@ -105,6 +106,7 @@ method _store_interaction_annotation
         pub => $publication,
         creation_date => $creation_date,
         curator => $curator,
+        curs_key => $curs_key,
       );
     }
   };
