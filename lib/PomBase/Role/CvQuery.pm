@@ -190,11 +190,16 @@ method find_cvterm_by_term_id($term_id)
       croak "no Db found with name '$db_name'\n";
     }
 
-    my @cvterms = $chado->resultset('General::Dbxref')
+    my $dbxref_rs = $chado->resultset('General::Dbxref')
       ->search({ db_id => $db->db_id(),
-                 accession => $dbxref_accession })
+                 accession => $dbxref_accession });
+
+    my @cvterms = $dbxref_rs
       ->search_related('cvterm')
       ->all();
+
+    push @cvterms, $dbxref_rs->search_related('cvterm_dbxrefs')
+                             ->search_related('cvterm')->all();
 
 
     if (@cvterms > 1) {
