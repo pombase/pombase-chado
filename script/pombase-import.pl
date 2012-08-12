@@ -33,7 +33,7 @@ The orthologs file should be tab delimited with two columns.  The
 first column should contain an identifier.  The second column should
 contain the identifier of one or more orthologs, separated by commas.
 
-The orthologs type has tree required arguments:
+The orthologs type has three required arguments:
   --publication        - the PubMed ID to add as dbxref
   --organism_1_taxonid - the taxon ID of genes in column 1
   --organism_2_taxonid - taxon ID of genes in column 2
