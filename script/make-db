@@ -86,6 +86,8 @@ go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/pato
 echo mini PR.obo
 go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/pombe_mini_PR.obo | go-apply-xslt oboxml_to_chadoxml > mini-pr.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mini-pr.xml || exit 1
 
+echo PSI-MOD_extension_relations.obo
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml > PSI-MOD_extension_relations.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD PSI-MOD_extension_relations.xml || exit 1
 
 echo populate cvtermpath
 
