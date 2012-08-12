@@ -70,6 +70,7 @@ cvs:
     - name: curator
     - name: approved_timestamp
     - name: approver_email
+    - name: curs_key
   cat_act: []
   genome_org: []
   m_f_g: []
