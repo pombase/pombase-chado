@@ -67,9 +67,17 @@ echo load Compara orthologs 1>&2
 
 ./script/pombase-import.pl load-chado.yaml orthologs --publication=PMID:19029536 --organism_1_taxonid=4896 --organism_2_taxonid=9606 --swap-direction $HOST $DB $USER $PASSWORD < /var/pomcur/sources/pombe-embl/orthologs/compara_orths.tsv
 
+echo copying $DB to $DB-l1
+createdb -T $DB $DB-l1
+
+CURATION_TOOL_DATA=current-prod-dump.json
+scp pomcur@pombe-prod:/var/pomcur/backups/$CURATION_TOOL_DATA .
+
+./script/pombase-import.pl load-chado.yaml pomcur $HOST $DB-l1 $USER $PASSWORD < $CURATION_TOOL_DATA
+
 echo filtering redundant terms 1>&2
 
-./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $DB $USER $PASSWORD
+./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $DB-l1 $USER $PASSWORD
 
 echo running consistency checks
-./script/check-chado.pl ./check-db.yaml $HOST $DB $USER $PASSWORD
+./script/check-chado.pl ./check-db.yaml $HOST $DB-l1 $USER $PASSWORD
