@@ -102,5 +102,7 @@ echo make copies
 
 for i in `seq 1 5`
 do
-  createdb -T $DB pombase-build-$DB_NAME_SUFFIX-v$i
+  NEW_DB=pombase-build-$DB_NAME_SUFFIX-v$i
+  echo $NEW_DB
+  createdb -T $DB $NEW_DB
 done
