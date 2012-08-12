@@ -199,6 +199,7 @@ method find_cvterm_by_term_id($term_id)
       ->all();
 
     push @cvterms, $dbxref_rs->search_related('cvterm_dbxrefs')
+                             ->search({ is_for_definition => 0 })
                              ->search_related('cvterm')->all();
 
 
