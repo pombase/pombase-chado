@@ -60,6 +60,7 @@ with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::InteractionStorer';
+with 'PomBase::Role::PhenotypeFeatureFinder';
 
 has verbose => (is => 'ro');
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
@@ -246,7 +247,7 @@ method _store_ontology_annotation
       if (@processed_allele_quals > 1) {
         die "can't process annotation with two allele qualifiers\n";
       } else {
-        $feature = $self->_get_allele($processed_allele_quals[0]);
+        $feature = $self->get_allele($processed_allele_quals[0]);
       }
     }
 
@@ -458,57 +459,6 @@ method _process_feature
 
 }
 
-method _get_gene($gene_data)
-{
-  if (!defined $gene_data) {
-    croak 'no $gene_data passed to _get_gene()';
-  }
-  my $gene_uniquename = $gene_data->{uniquename};
-  my $organism_name = $gene_data->{organism};
-  my $organism = $self->find_organism_by_full_name($organism_name);
-
-  return $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
-}
-
-method _get_transcript($gene_data)
-{
-  my $gene_uniquename = $gene_data->{uniquename};
-  my $organism_name = $gene_data->{organism};
-  my $organism = $self->find_organism_by_full_name($organism_name);
-
-  return $self->find_chado_feature("$gene_uniquename.1", 1, 1, $organism);
-}
-
-method _get_allele($allele_data)
-{
-  my $allele;
-  my $gene = $self->_get_gene($allele_data->{gene});
-  if ($allele_data->{type} eq 'existing') {
-    $allele = $self->chado()->resultset('Sequence::Feature')
-                   ->find({ uniquename => $allele_data->{primary_identifier},
-                            organism_id => $gene->organism()->organism_id() });
-    if (!defined $allele) {
-      use Data::Dumper;
-      die "failed to create allele from: ", Dumper([$allele_data]);
-    }
-  } else {
-    my $gene_uniquename = $gene->uniquename();
-
-    my $new_uniquename = $self->get_new_uniquename($gene_uniquename . ':allele-', 1);
-    $allele = $self->store_feature($new_uniquename,
-                                   $allele_data->{name}, [], 'allele',
-                                   $gene->organism());
-
-    $self->store_feature_rel($allele, $gene, 'instance_of');
-
-    if (defined $allele_data->{description}) {
-      $self->store_featureprop($allele, 'description', $allele_data->{description});
-    }
-  }
-
-  return $allele;
-}
-
 method _process_annotation($annotation, $session_metadata, $curs_key)
 {
   my $status = delete $annotation->{status};
@@ -524,9 +474,9 @@ method _process_annotation($annotation, $session_metadata, $curs_key)
       if ($annotation->{type} eq 'phenotype' or
           $annotation->{type} eq 'genetic_interaction' or
           $annotation->{type} eq 'physical_interaction') {
-        $feature = $self->_get_gene($gene_data);
+        $feature = $self->get_gene($gene_data);
       } else {
-        $feature = $self->_get_transcript($gene_data);
+        $feature = $self->get_transcript($gene_data);
       }
       $self->_process_feature($annotation, $session_metadata, $feature, $curs_key);
     }
@@ -535,7 +485,7 @@ method _process_annotation($annotation, $session_metadata, $curs_key)
   my $alleles = delete $annotation->{alleles};
   if (defined $alleles) {
     for my $allele_data (@$alleles) {
-      my $allele = $self->_get_allele($allele_data);
+      my $allele = $self->get_allele($allele_data);
       $self->_process_feature($annotation, $session_metadata, $allele, $curs_key);
     }
   }
