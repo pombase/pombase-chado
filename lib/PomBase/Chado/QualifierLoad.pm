@@ -90,12 +90,14 @@ method add_feature_relationshipprop($feature_relationship, $name, $value) {
                        rank => 0 });
 }
 
+my $current_year = 1900 + (localtime(time))[5];
+
 method get_and_check_date($sub_qual_map) {
   my $date = delete $sub_qual_map->{date};
 
   if (defined $date) {
     if ($date =~ /(\d\d\d\d)(\d\d)(\d\d)/) {
-      if ($1 > 2011) {
+      if ($1 > $current_year) {
         warn "date is in the future: $date\n";
       } else {
         if ($2 < 1 || $2 > 12) {
