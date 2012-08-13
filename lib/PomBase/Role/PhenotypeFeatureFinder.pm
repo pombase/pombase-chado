@@ -63,7 +63,14 @@ method get_transcript($gene_data)
 method get_allele($allele_data)
 {
   my $allele;
-  my $gene = $self->get_gene($allele_data->{gene});
+  my $gene;
+
+  if (ref $allele_data->{gene} eq 'HASH') {
+    $gene = $self->get_gene($allele_data->{gene});
+  } else {
+    $gene = $allele_data->{gene};
+  }
+
   if ($allele_data->{type} eq 'existing') {
     $allele = $self->chado()->resultset('Sequence::Feature')
                    ->find({ uniquename => $allele_data->{primary_identifier},

@@ -52,8 +52,11 @@ with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::FeatureFinder';
+with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::QualifierSplitter';
+with 'PomBase::Role::PhenotypeFeatureFinder';
 
 has verbose => (is => 'ro', isa => 'Bool');
 
@@ -374,8 +377,23 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   }
 
   if (defined $sub_qual_map->{allele}) {
-    $self->add_feature_cvtermprop($featurecvterm,
-                                  allele => delete $sub_qual_map->{allele});
+    my $allele = $sub_qual_map->{allele};
+
+    my %args = (gene => $pombe_feature);
+
+    if ($allele =~ /^(.+)\((.+)\)$/) {
+      $args{name} = $1;
+      $args{description} = $2;
+    } else {
+      warn qq|allele "$allele" is not in the form "name(description)" - storing as "$allele(unknown)"\n|;
+      $args{name} = $allele;
+      $args{description} = 'unknown';
+    }
+
+    my $allele_feature = $self->get_allele(\%args);
+
+    $featurecvterm->feature($allele_feature);
+    $featurecvterm->update();
   }
 
   if (defined $sub_qual_map->{column_17}) {
