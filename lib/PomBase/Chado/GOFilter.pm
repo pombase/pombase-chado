@@ -101,6 +101,19 @@ WHERE
        AND pathdistance > 0
     )
 OR
+  poor_evidence_fcs.cvterm_id in (  -- check for child term + extension
+    SELECT path.object_id
+      FROM cvtermpath path, feature_cvterm fc2, cvterm extension_term,
+           cvterm_relationship extension_rel
+     WHERE extension_term.cvterm_id = fc2.cvterm_id
+       AND extension_term.cvterm_id = extension_rel.subject_id
+       AND path.subject_id = extension_rel.object_id
+       AND extension_rel.type_id =
+           (select cvterm_id from cvterm where name = 'is_a')
+       AND fc2.feature_id = poor_evidence_fcs.feature_id
+       AND pathdistance > 0
+    )
+OR
   EXISTS ( -- check for annotation with better evidence
     SELECT fc1.feature_cvterm_id
       FROM feature_cvterm fc1
