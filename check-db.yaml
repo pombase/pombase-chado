@@ -17,3 +17,12 @@ query_checks:
       feature_cvterm_id in (select feature_cvterm_id from feature_cvtermprop
       where type_id in (select cvterm_id from cvterm where name = 'allele')) and
       cv.name <> 'fission_yeast_phenotype';
+  - name: no_duplicate_pombe_gene_names
+    expected: 0
+    query: |
+      with duplicates as (select count(feature_id), name from feature where
+      name is not null and type_id = (select cvterm_id from cvterm where cv_id
+      = (select cv_id from cv where name = 'sequence') and name = 'gene') and
+      organism_id = (select organism_id from organism where abbreviation =
+      'Spombe') group by name having count(feature_id) > 1) select count(*)
+      from duplicates;
