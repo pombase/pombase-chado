@@ -2,21 +2,11 @@
   min_count: 10000
 query_checks:
   - name: pombe_genes
-    expected: '>= 7000'
+    expected: '>= 6980'
     query: |
       select count(*) from feature f, cvterm cvt, organism o where
       f.type_id = cvt.cvterm_id and f.organism_id = o.organism_id and
       o.common_name = 'pombe' and cvt.name = 'gene';
-  - name: non_phenotype_alleles
-    description: check that only phenotype annotations have allele properties
-    expected: 0
-    query: |
-      select count(fc.feature_cvterm_id)
-      from feature_cvterm fc, cvterm t, cv
-      where t.cv_id = cv.cv_id and fc.cvterm_id = t.cvterm_id and
-      feature_cvterm_id in (select feature_cvterm_id from feature_cvtermprop
-      where type_id in (select cvterm_id from cvterm where name = 'allele')) and
-      cv.name <> 'fission_yeast_phenotype';
   - name: no_duplicate_pombe_gene_names
     expected: 0
     query: |
