@@ -58,6 +58,11 @@ make ontologies
 echo PSI-MOD.obo
 go2fmt.pl -p obo_text -w xml /var/pomcur/sources/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mod_obo_text.xml || exit 1
 
+echo mini iao.obo
+# needed for fypo-simple.obo
+echo mini cl.obo
+go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/iao.obo | go-apply-xslt oboxml_to_chadoxml > iao.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD iao.xml || exit 1
+
 echo fypo-simple.obo
 (cd /var/pomcur/sources/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml /var/pomcur/sources/phenotype_ontology/releases/latest/fypo-simple.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_obo_text.xml || exit 1
 
