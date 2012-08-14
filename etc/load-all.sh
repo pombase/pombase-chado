@@ -1,6 +1,8 @@
-#!/bin/sh -
+#!/bin/bash -
 
 # run script/make-db first
+
+set -o pipefail
 
 HOST=$1
 DB=$2
@@ -26,7 +28,8 @@ $HOME/git/pombase-run/script/load-chado.pl \
   --mapping "pt_mod:PSI-MOD:$HOME/Dropbox/pombase/ontologies/PSI-MOD/modification_map.txt" \
   --mapping "phenotype:fission_yeast_phenotype:$HOME/Dropbox/pombase/ontologies/phenotype/phenotype-map.txt" \
   --obsolete-term-map $HOME/pombe/go-doc/obsoletes-exact $HOME/git/pombase-run/load-chado.yaml \
-  $HOST $DB $USER $PASSWORD $SOURCES/pombe-embl/*.contig 2>&1 | tee $log_file
+  $HOST $DB $USER $PASSWORD $SOURCES/pombe-embl/*.contig 2>&1 | tee $log_file || (echo exiting after failure; exit 1)
+
 $HOME/git/pombase-run/etc/process-log.pl $log_file
 
 echo starting import of biogrid data | tee $log_file.biogrid
