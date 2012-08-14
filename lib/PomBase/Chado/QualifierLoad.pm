@@ -445,6 +445,7 @@ method maybe_move_igi($term, $qualifiers, $sub_qual_map) {
         warn "annotation_extension already exists when converting IGI\n";
       } else {
         $sub_qual_map->{annotation_extension} = "localizes($with)";
+        $sub_qual_map->{evidence} = 'IMP';
         @$qualifiers = grep { $_ ne 'localization_dependency'; } @$qualifiers;
       }
     } else {
