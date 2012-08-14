@@ -176,7 +176,6 @@ method check
   }
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  map { warn $_->value(), "\n"; } @all_props;
   should(scalar(@all_props), 224);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
