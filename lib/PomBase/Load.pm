@@ -97,7 +97,7 @@ func _load_genes($config, $chado, $organism, $test_mode) {
 
     if (defined $name and length $name > 0) {
       if (exists $seen_names{lc $name}) {
-        warn "seen name twice: $name(from $primary_identifier) and from "
+        warn "seen name twice: $name from $primary_identifier and "
           . $seen_names{lc $name};
         $name = $primary_identifier;
       } else {
