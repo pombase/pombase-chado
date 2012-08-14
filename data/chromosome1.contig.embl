@@ -71,8 +71,8 @@ FT                   /systematic_id="SPAC977.10"
 FT                   /controlled_curation="term=modification, phosphorylated;
 FT                   db_xref=PMID:19547744; cv=pt_mod; date=20100606"
 FT                   /controlled_curation="term=phenotype, viable;
-FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
-FT                   date=20100406"
+FT                   db_xref=PMID:20473289; cv=phenotype;
+FT                   date=20100406; allele=aname(desc)"
 FT                   /controlled_curation="term=phenotype, growth auxotrophic
 FT                   for ethanolamine; cv=phenotype; db_xref=PMID:198286980;
 FT                   allele=deletion;
