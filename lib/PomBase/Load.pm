@@ -44,7 +44,7 @@ use PomBase::Chado::LoadOrganism;
 
 use YAML::Any qw(DumpFile LoadFile);
 
-func _load_genes($chado, $organism, $test_mode) {
+func _load_genes($config, $chado, $organism, $test_mode) {
   my $gene_type = $chado->resultset('Cv::Cvterm')->find({ name => 'gene' });
   my $org_name = $organism->genus() . ' ' . $organism->species();
   my @res;
@@ -68,7 +68,7 @@ func _load_genes($chado, $organism, $test_mode) {
       croak "test data missing: $file_name";
     }
     warn "getting gene information via InterMine API for $org_name\n";
-    @res = PomBase::External::get_genes($org_name);
+    @res = PomBase::External::get_genes($config, $org_name);
     DumpFile($file_name, @res);
   }
 
@@ -79,21 +79,17 @@ func _load_genes($chado, $organism, $test_mode) {
   for my $gene (@res) {
     my $primary_identifier = $gene->{primary_identifier};
 
-    my $name;
+    my $name = $gene->{secondary_identifier};
 
     if ($org_name eq 'Saccharomyces cerevisiae') {
-      $name = $gene->{secondary_identifier};
-    } else {
-      if (defined $gene->{symbol}) {
-        if ($gene->{symbol} eq 'RAD51L3') {
+      if (defined $name) {
+        if ($name eq 'RAD51L3') {
           warn "translating: RAD51L3\n";
           $name = 'RAD51D';
         } else {
-          if ($gene->{symbol} eq 'CEP110') {
+          if ($name eq 'CEP110') {
             warn "translating: CEP111\n";
             $name = 'CNTRL';
-          } else {
-            $name = $gene->{symbol};
           }
         }
       }
@@ -110,21 +106,14 @@ func _load_genes($chado, $organism, $test_mode) {
 
     $seen_names{lc $name} = $primary_identifier;
 
+warn "LOADING: $primary_identifier $name\n";
+
     my $feature = $chado->resultset('Sequence::Feature')->create({
       uniquename => $primary_identifier,
       name => $name,
       organism_id => $organism->organism_id(),
       type_id => $gene_type->cvterm_id()
     });
-
-    if ($org_name eq 'Saccharomyces cerevisiae' && defined $gene->{symbol} &&
-        length $gene->{symbol} > 0) {
-      $chado->resultset('Sequence::Featureprop')->create({
-        feature_id => $feature->feature_id(),
-        value => $gene->{symbol},
-        type_id => $symbol_cvterm->cvterm_id()
-      });
-    }
 
     last if $test_mode and scalar(keys %seen_names) >= 3;
   }
@@ -256,8 +245,8 @@ func init_objects($chado, $config) {
   _load_cv_defs($chado, $config);
   _load_dbs($chado, $config);
 
-  _load_genes($chado, $scerevisiae, $config->{test_mode});
-  _load_genes($chado, $human, $config->{test_mode});
+  _load_genes($config, $chado, $scerevisiae, $config->{test_mode});
+  _load_genes($config, $chado, $human, $config->{test_mode});
 
   return $pombe_org;
 }

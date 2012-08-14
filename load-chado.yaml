@@ -275,3 +275,17 @@ contig_ena_ids:
   AB325691: AB325691
 
 db_name_for_cv: PomBase
+
+ensembl_dbs:
+  'Homo sapiens':
+    host: ensembldb.ensembl.org
+    port: 5306
+    user: anonymous
+    group: core
+    dbname: homo_sapiens_core_68_37
+  'Saccharomyces cerevisiae':
+    host: ensembldb.ensembl.org
+    port: 5306
+    user: anonymous
+    group: core
+    dbname: saccharomyces_cerevisiae_core_68_4

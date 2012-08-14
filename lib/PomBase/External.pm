@@ -37,7 +37,9 @@ under the same terms as Perl itself.
 
 use perl5i::2;
 use Moose;
-use Webservice::InterMine 0.9412;
+use Bio::EnsEMBL::Registry;
+use Bio::EnsEMBL::DBSQL::DBAdaptor;
+use Bio::EnsEMBL::DBEntry;
 
 =head2 get_genes
 
@@ -53,58 +55,47 @@ use Webservice::InterMine 0.9412;
  Returns : an array of arrays of results
 
 =cut
-func get_genes($species) {
-  my $service_uri;
-  given ($species){
-    when ('Homo sapiens') {
-      $service_uri = 'http://www.metabolicmine.org/beta/service';
-    }
-    when ('Saccharomyces cerevisiae') {
-      $service_uri =
-        'http://yeastmine.yeastgenome.org/yeastmine/service';
-    }
-    default {
-      croak "unknown species: $species";
+func get_genes($config, $species) {
+  (my $ensembl_species = "\L$species") =~ s/ /_/g;
+
+  my $ensembl_conf = $config->{ensembl_dbs}->{$species};
+
+  my $db =
+    Bio::EnsEMBL::DBSQL::DBAdaptor->new(
+      '-host'    => $ensembl_conf->{host},
+      '-port'    => $ensembl_conf->{port},
+      '-user'    => $ensembl_conf->{user},
+      '-group'   => $ensembl_conf->{group},
+      '-species' => $ensembl_species,
+      '-dbname'  => $ensembl_conf->{dbname},
+    );
+
+  my $slice_adaptor = $db->get_sliceAdaptor();
+  my $slices        = $slice_adaptor->fetch_all('toplevel');
+
+  my @gene_data;
+
+  my %seen_chromosomes = ();
+
+  SLICE: while (my $slice = shift @{$slices})
+  {       # Ugly, but supposedly more memory-efficient way of doing things
+          # cf: http://ncbi36.ensembl.org/info/docs/api/core/core_tutorial.html
+    my $chromosome_name = $slice->seq_region_name();
+    next if $seen_chromosomes{$chromosome_name}++;
+
+    warn "Processing slice $chromosome_name\n";
+
+    my $genes = $slice->get_all_Genes;   # load genes lazily - then they can be dumped later
+
+    for my $gene (@$genes) {
+      push @gene_data, {
+        primary_identifier => $gene->stable_id(),
+        secondary_identifier => $gene->external_name(),
+      };
     }
   }
 
-  my $service = Webservice::InterMine->get_service($service_uri);
-
-
-  my $query = $service->new_query;
-
-  my $primary_tag = 'Gene.primaryIdentifier';
-  my $secondary_tag = 'Gene.secondaryIdentifier';
-  my $name_tag = 'Gene.name';
-  my $symbol_tag = 'Gene.symbol';
-
-  my @view = ($primary_tag, $secondary_tag, $name_tag, $symbol_tag);
-
-  $query->add_view(@view);
-
-  $query->add_constraint(
-    path  => 'Gene.primaryIdentifier',
-    op    => 'IS NOT NULL',
-  );
-
-  $query->add_constraint(
-    path  => 'Gene.organism.name',
-    op    => '=',
-    value => $species,
-  );
-
-  my $res = $query->results(as => 'hashrefs');
-
-  return map {
-    my $secondary_identifier = $_->{$secondary_tag} // $_->{$primary_tag};
-    {
-      primary_identifier => $_->{$primary_tag},
-      secondary_identifier => $secondary_identifier,
-      name => $_->{$name_tag},
-      symbol => $_->{$symbol_tag},
-      description => $_->{$symbol_tag},
-    }
-  } @$res;
+  return @gene_data;
 }
 
 1;
