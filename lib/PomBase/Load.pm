@@ -106,8 +106,6 @@ func _load_genes($config, $chado, $organism, $test_mode) {
 
     $seen_names{lc $name} = $primary_identifier;
 
-warn "LOADING: $primary_identifier $name\n";
-
     my $feature = $chado->resultset('Sequence::Feature')->create({
       uniquename => $primary_identifier,
       name => $name,
