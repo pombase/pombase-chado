@@ -387,9 +387,16 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
       $args{name} = $1;
       $args{description} = $2;
     } else {
-      warn qq|allele "$allele" is not in the form "name(description)" - storing as "$allele(unknown)"\n|;
-      $args{name} = $allele;
-      $args{description} = 'unknown';
+      if ($allele eq 'deletion') {
+        my $new_name = ($pombe_feature->name() // $pombe_feature->uniquename()) . 'delta';
+        $args{name} = $new_name;
+        $args{description} = 'deletion';
+        warn qq|storing allele=$allele as "$new_name(description)"\n|;
+      } else {
+        warn qq|allele "$allele" is not in the form "name(description)" - storing as "$allele(unknown)"\n|;
+        $args{name} = $allele;
+        $args{description} = 'unknown';
+      }
     }
 
     my $allele_feature = $self->get_allele(\%args);

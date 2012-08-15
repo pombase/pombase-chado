@@ -72,7 +72,7 @@ method check
   warn "checking results ...\n";
 
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-  should ($rel_rs->count(), 58);
+  should ($rel_rs->count(), 57);
 
   my $relprop_rs = $chado->resultset('Sequence::FeatureRelationshipprop');
   should ($relprop_rs->count(), 9);
