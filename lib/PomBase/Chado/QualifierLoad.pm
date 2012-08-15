@@ -357,7 +357,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   } else {
     if (grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
                                  'cellular_component')) {
-      warn "no evidence for $cv_name annotation: $embl_term_name in ", $pombe_feature->uniquename(), "\n";
+      warn "no evidence for $cv_name annotation: $embl_term_name in ", $uniquename, "\n";
     }
 
     if ($cv_name eq 'fission_yeast_phenotype' and $pub->uniquename() eq 'PMID:20473289') {
