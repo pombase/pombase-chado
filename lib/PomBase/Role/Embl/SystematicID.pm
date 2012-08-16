@@ -59,7 +59,12 @@ method get_uniquename($feature, $so_type)
     carp "no SO type for: $embl_type";
   }
 
-  if (!$feature->has_tag("systematic_id")) {
+  if ($so_type eq 'region' && $feature->has_tag("systematic_id")) {
+    my @systematic_ids = $feature->get_tag_values("systematic_id");
+    warn qq(ignoring /systematic_id=$systematic_ids[0] on $embl_type\n);
+  }
+
+  if ($so_type eq 'region' || !$feature->has_tag("systematic_id")) {
     if ($embl_type eq 'CDS') {
       $self->dump_feature($feature);
       croak('CDS feature has no systematic_id');
@@ -70,8 +75,10 @@ method get_uniquename($feature, $so_type)
     my $seq = $feature->entire_seq();
     my $seq_display_id = $seq->display_id();
 
-    return $seq_display_id . '_' . $so_type .
-      '_' . $loc->start() . '..' . $loc->end(), undef, 0;
+    $feature->{chado_uniquename} =
+      [$seq_display_id . '_' . $so_type .
+       '_' . $loc->start() . '..' . $loc->end(), undef, 0];
+    return @{$feature->{chado_uniquename}};
   }
 
   my @systematic_ids = $feature->get_tag_values("systematic_id");

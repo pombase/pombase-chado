@@ -166,8 +166,8 @@ FT                   /systematic_id="SPBC409.20c"
 FT                   /db_xref="PMID:21511999"
 FT   misc_feature    1302..1307
 FT                   /colour=6
-FT                   /SO="SO:0001005"
 FT                   /note="gtacgt, splice donor sequence"
+FT                   /systematic_id="SPAC977.10"
 FT   misc_feature    1362..1378
 FT                   /colour=6
 FT                   /note="ctaatactagtgtgtag, splice branch and acceptor"
