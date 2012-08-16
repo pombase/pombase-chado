@@ -67,7 +67,7 @@ func _load_genes($config, $chado, $organism, $test_mode) {
     if ($test_mode) {
       croak "test data missing: $file_name";
     }
-    warn "getting gene information via InterMine API for $org_name\n";
+    warn "getting gene information Ensembl for $org_name\n";
     @res = PomBase::External::get_genes($config, $org_name);
     DumpFile($file_name, @res);
   }
