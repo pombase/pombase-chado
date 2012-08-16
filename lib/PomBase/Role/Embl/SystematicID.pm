@@ -46,7 +46,6 @@ with 'PomBase::Role::FeatureDumper';
 method get_uniquename($feature, $so_type)
 {
   state $type_seen = {};
-  state $feature_cache = {};
 
   if ($feature->{chado_uniquename}) {
     # cached so we don't increment the counter
