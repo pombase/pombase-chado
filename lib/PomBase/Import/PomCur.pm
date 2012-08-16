@@ -152,6 +152,9 @@ sub _extensions_by_type
       }
 
       push @{$by_type{$key}}, $value;
+    } else {
+      warn "assuming annotation_extension= for: $bit\n";
+      push @{$by_type{annotation_extension}}, $bit;
     }
   }
 

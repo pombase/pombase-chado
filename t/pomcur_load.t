@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 14;
+use Test::More tests => 15;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -31,11 +31,12 @@ is($annotations->count(), 14);
 my $test_term_count = 0;
 
 while (defined (my $fc = $annotations->next())) {
+  my @props = $fc->feature_cvtermprops()->all();
+  my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
+
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1:allele-1' &&
       $fc->cvterm->name() eq
       'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564') {
-    my @props = $fc->feature_cvtermprops()->all();
-    my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
     $test_term_count++;
     cmp_deeply(\%prop_hash,
                {
@@ -51,8 +52,6 @@ while (defined (my $fc = $annotations->next())) {
   }
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
       $fc->cvterm()->name() eq 'transmembrane transporter activity') {
-    my @props = $fc->feature_cvtermprops()->all();
-    my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
     $test_term_count++;
     cmp_deeply(\%prop_hash,
                {
@@ -63,9 +62,23 @@ while (defined (my $fc = $annotations->next())) {
                  'curs_key' => 'aaaa0007',
                });
   }
+
+  if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
+      $fc->cvterm()->name() eq 'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c') {
+    $test_term_count++;
+    cmp_deeply(\%prop_hash,
+               {
+                 'date' => '2010-01-02',
+                 'evidence' => 'Inferred from Physical Interaction',
+                 'curator' => 'Ken.Sawin@ed.ac.uk',
+                 'assigned_by' => 'PomBase',
+                 'with' => 'SPCC576.16c',
+                 'curs_key' => 'aaaa0007',
+               });
+  }
 }
 
-is($test_term_count, 2);
+is($test_term_count, 3);
 
 my $allele = $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPAC27D7.13c:allele-2' });
 ok(defined $allele);
