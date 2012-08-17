@@ -198,10 +198,12 @@ method find_cvterm_by_term_id($term_id)
       ->search_related('cvterm')
       ->all();
 
-    push @cvterms, $dbxref_rs->search_related('cvterm_dbxrefs')
-                             ->search({ is_for_definition => 0 })
-                             ->search_related('cvterm')->all();
-
+    if (!@cvterms) {
+      # try alt_id instead
+      push @cvterms, $dbxref_rs->search_related('cvterm_dbxrefs')
+                               ->search({ is_for_definition => 0 })
+                               ->search_related('cvterm')->all();
+    }
 
     if (@cvterms > 1) {
       die "more than one cvterm for dbxref ($term_id)\n";
