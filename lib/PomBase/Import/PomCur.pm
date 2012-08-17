@@ -139,13 +139,19 @@ sub _extensions_by_type
 
   my %by_type = ();
 
+  my $whitespace_re = "\\s\N{ZERO WIDTH SPACE}";
+
   (my $extension_copy = $extension_text) =~ s/(\([^\)]+\))/_replace_commas($1)/eg;
+
+  $extension_copy =~ s/[^[:ascii:]]//g;
+
   my @bits = split /,/, $extension_copy;
   for my $bit (@bits) {
+    $bit = $bit->trim($whitespace_re);
     $bit = _unreplace_commas($bit);
     if ($bit =~/(.*)=(.*)/) {
-      my $key = $1->trim("\\s\N{ZERO WIDTH SPACE}");
-      my $value = $2->trim("\\s\N{ZERO WIDTH SPACE}");
+      my $key = $1->trim($whitespace_re);
+      my $value = $2->trim($whitespace_re);
 
       if ($value =~ /\(/ && $value !~ /\(.*\)/) {
         die "unmatched parenthesis in $key=$value\n";
@@ -153,7 +159,6 @@ sub _extensions_by_type
 
       push @{$by_type{$key}}, $value;
     } else {
-      warn "assuming annotation_extension= for: $bit\n";
       push @{$by_type{annotation_extension}}, $bit;
     }
   }

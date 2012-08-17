@@ -94,7 +94,13 @@ method get_allele($allele_data)
 
     return $allele;
   } else {
-    if (!defined $allele_data->{name} && !defined $allele_data->{description}) {
+    my $new_allele_name = $allele_data->{name};
+    $new_allele_name = undef if defined $new_allele_name && $new_allele_name eq 'noname';
+
+    my $new_allele_description = $allele_data->{description};
+    $new_allele_description =~ s/[\s\N{ZERO WIDTH SPACE}]*,[\s\N{ZERO WIDTH SPACE}]*/,/g;
+
+    if (!defined $new_allele_name && !defined $new_allele_description) {
       croak "internal error - no name or description passed to get_allele()";
     }
 
@@ -105,12 +111,12 @@ method get_allele($allele_data)
                                     { prefetch => 'subject' })
                            ->search_related('subject');
 
-    if (defined $allele_data->{name}) {
-      $existing_rs = $existing_rs->search({ name => $allele_data->{name} });
+    if (defined $new_allele_name) {
+      $existing_rs = $existing_rs->search({ name => $new_allele_name });
 
       if ($existing_rs->count() > 1) {
         die 'database inconsistency - there exists more than one allele feature ' .
-        'with the name "' . $allele_data->{name} . '"' . "\n";
+        'with the name "' . $new_allele_name . '"' . "\n";
       }
 
       my $existing_allele = $existing_rs->first();
@@ -118,17 +124,17 @@ method get_allele($allele_data)
       if (defined $existing_allele) {
         my $existing_description = _get_allele_description($existing_allele);
 
-        if ($existing_allele->name() eq $allele_data->{name}) {
-          if (defined $existing_description && defined $allele_data->{description} &&
-              $existing_description eq $allele_data->{description} ||
-              !defined $existing_description && !defined $allele_data->{description}) {
+        if ($existing_allele->name() eq $new_allele_name) {
+          if (defined $existing_description && defined $new_allele_description &&
+              $existing_description eq $new_allele_description ||
+              !defined $existing_description && !defined $new_allele_description) {
             # descriptions match - same allele
             return $existing_allele;
           } else {
-            die 'description for new allele "' . $allele_data->{name} . '(' .
-              ($allele_data->{description}  // 'undefined') . ')" does not ' .
+            die 'description for new allele "' . $new_allele_name . '(' .
+              ($new_allele_description  // 'undefined') . ')" does not ' .
               'match the existing allele with the same name "' .
-              $allele_data->{name} . '(' . ($existing_description // 'undefined') . ')"' . "\n";
+              $new_allele_name . '(' . ($existing_description // 'undefined') . ')"' . "\n";
           }
         }
       }
@@ -137,7 +143,7 @@ method get_allele($allele_data)
       while (defined (my $existing_allele = $existing_rs->next())) {
         my $existing_description = _get_allele_description($existing_allele);
 
-        if ($allele_data->{description} eq $existing_description) {
+        if ($new_allele_description eq $existing_description) {
           return $existing_allele;
         }
       }
@@ -146,13 +152,13 @@ method get_allele($allele_data)
     # fall through - no allele exists with matching name or description
     my $new_uniquename = $self->get_new_uniquename($gene_uniquename . ':allele-', 1);
     $allele = $self->store_feature($new_uniquename,
-                                   $allele_data->{name}, [], 'allele',
+                                   $new_allele_name, [], 'allele',
                                    $gene->organism());
 
     $self->store_feature_rel($allele, $gene, $instance_of_cvterm);
 
-    if (defined $allele_data->{description}) {
-      $self->store_featureprop($allele, 'description', $allele_data->{description});
+    if (defined $new_allele_description) {
+      $self->store_featureprop($allele, 'description', $new_allele_description);
     }
 
     return $allele;
