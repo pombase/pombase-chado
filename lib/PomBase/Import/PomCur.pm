@@ -310,6 +310,15 @@ method _store_ontology_annotation
     if (defined $creation_date) {
       $self->add_feature_cvtermprop($feature_cvterm, date => $creation_date);
     }
+
+    if (exists $by_type{expression}) {
+      if (defined $expression && $expression ne $by_type{expression}) {
+        die "two different expression levels given: $expression and $by_type{expression}\n";
+      } else {
+        $expression = delete $by_type{expression};
+      }
+    }
+
     if (defined $expression) {
       $self->add_feature_cvtermprop($feature_cvterm, expression => $expression);
     }
