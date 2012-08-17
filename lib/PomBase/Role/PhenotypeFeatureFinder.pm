@@ -66,9 +66,9 @@ method get_transcript($gene_data)
 func _get_allele_description($allele) {
   my $description_prop = $allele->search_featureprops('description')->first();
   if (defined $description_prop) {
-    return $description_prop->value();
+    return ($description_prop->value(), $description_prop);
   } else {
-    return undef;
+    return ();
   }
 }
 
@@ -122,7 +122,7 @@ method get_allele($allele_data)
       my $existing_allele = $existing_rs->first();
 
       if (defined $existing_allele) {
-        my $existing_description = _get_allele_description($existing_allele);
+        my ($existing_description, $existing_description_prop) = _get_allele_description($existing_allele);
 
         if ($existing_allele->name() eq $new_allele_name) {
           if (defined $existing_description && defined $new_allele_description &&
@@ -131,6 +131,21 @@ method get_allele($allele_data)
             # descriptions match - same allele
             return $existing_allele;
           } else {
+            if ($new_allele_description eq 'unknown') {
+              # that's OK, just use the previous description
+              return $existing_allele;
+            }
+
+            if ($existing_description eq 'unknown') {
+              # that's OK, just set the existing description
+              if (defined $existing_description_prop) {
+                $existing_description_prop->value($new_allele_description);
+                $existing_description_prop->update();
+              } else {
+                $self->store_featureprop($existing_allele, 'description', $new_allele_description);
+              }
+            }
+
             die 'description for new allele "' . $new_allele_name . '(' .
               ($new_allele_description  // 'undefined') . ')" does not ' .
               'match the existing allele with the same name "' .
@@ -144,7 +159,7 @@ method get_allele($allele_data)
         # we can have multiple alleles with no name and the description "unknown"
       } else {
         while (defined (my $existing_allele = $existing_rs->next())) {
-          my $existing_description = _get_allele_description($existing_allele);
+          my ($existing_description, $existing_description_prop) = _get_allele_description($existing_allele);
 
           if ($new_allele_description eq $existing_description) {
             return $existing_allele;
