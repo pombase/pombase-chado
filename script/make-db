@@ -77,8 +77,8 @@ go2fmt.pl -p obo_text -w xml $SOURCES_DIR/go_annotation_extension_relations.obo 
 echo pro_small.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pro_small.obo | go-apply-xslt oboxml_to_chadoxml - > pro_small_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pro_small_obo_text.xml || exit 1
 
-echo pombase_terms.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombase_terms.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
+echo load pombase terms
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombase/pombase_terms-v23.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
 
 echo mini chebi.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/chebi.obo | go-apply-xslt oboxml_to_chadoxml > chebi.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD chebi.xml || exit 1
