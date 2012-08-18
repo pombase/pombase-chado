@@ -53,6 +53,7 @@ echo starting import of GOA GAF data 1>&2
 (
 for gaf_file in go_comp.txt go_proc.txt go_func.txt From_curation_tool GO_ORFeome_localizations2.txt
 do
+  echo reading $gaf_file
   ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=GeneDB_Spombe $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/external-go-data/$gaf_file
 done
 
