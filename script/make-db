@@ -38,16 +38,17 @@ replace DBHOSE $HOST build.conf
 replace DBUSER $USER build.conf
 replace DBPASS $PASSWORD build.conf
 
+SOURCES_DIR=/var/pomcur/sources
 
 #dropdb $DB; createdb $DB || exit 1
 
 rm --verbose -rf tmp
 
 
-(cd /var/pomcur/sources/pombe-embl/; svn update || exit 1)
+(cd $SOURCES_DIR/pombe-embl/; svn update || exit 1)
 
 echo update GO
-(cd /var/pomcur/sources/go; cvs up)
+(cd $SOURCES_DIR/go; cvs up)
 
 perl Makefile.PL
 make
@@ -56,43 +57,43 @@ make prepdb
 make ontologies
 
 echo PSI-MOD.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mod_obo_text.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mod_obo_text.xml || exit 1
 
 echo mini iao.obo
 # needed for fypo-simple.obo
 echo mini cl.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/iao.obo | go-apply-xslt oboxml_to_chadoxml > iao.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD iao.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/iao.obo | go-apply-xslt oboxml_to_chadoxml > iao.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD iao.xml || exit 1
 
 echo fypo-simple.obo
-(cd /var/pomcur/sources/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml /var/pomcur/sources/phenotype_ontology/releases/latest/fypo-simple.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_obo_text.xml || exit 1
+(cd $SOURCES_DIR/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml $SOURCES_DIR/phenotype_ontology/releases/latest/fypo-simple.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_obo_text.xml || exit 1
 
 echo fypo_extension_relations.obo
-(cd /var/pomcur/sources/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml /var/pomcur/sources/phenotype_ontology/supplemental_files/fypo_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_ex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_ex_rel_obo_text.xml || exit 1
+(cd $SOURCES_DIR/phenotype_ontology/; up) && go2fmt.pl -p obo_text -w xml $SOURCES_DIR/phenotype_ontology/supplemental_files/fypo_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_ex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_ex_rel_obo_text.xml || exit 1
 
 echo go_annotation_extension_relations.obo
-GET http://viewvc.geneontology.org/viewvc/GO-SVN/trunk/ontology/extensions/go_annotation_extension_relations.obo > /var/pomcur/sources/go_annotation_extension_relations.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD anex_rel_obo_text.xml || exit 1
+GET http://viewvc.geneontology.org/viewvc/GO-SVN/trunk/ontology/extensions/go_annotation_extension_relations.obo > $SOURCES_DIR/go_annotation_extension_relations.obo
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD anex_rel_obo_text.xml || exit 1
 
 echo pro_small.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pro_small.obo | go-apply-xslt oboxml_to_chadoxml - > pro_small_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pro_small_obo_text.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pro_small.obo | go-apply-xslt oboxml_to_chadoxml - > pro_small_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pro_small_obo_text.xml || exit 1
 
 echo pombase_terms.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombase_terms.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombase_terms.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
 
 echo mini chebi.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/chebi.obo | go-apply-xslt oboxml_to_chadoxml > chebi.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD chebi.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/chebi.obo | go-apply-xslt oboxml_to_chadoxml > chebi.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD chebi.xml || exit 1
 
 echo mini cl.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/cl.obo | go-apply-xslt oboxml_to_chadoxml > cl.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD cl.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/cl.obo | go-apply-xslt oboxml_to_chadoxml > cl.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD cl.xml || exit 1
 
 echo mini pato.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/pato.obo | go-apply-xslt oboxml_to_chadoxml > pato.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pato.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/pato.obo | go-apply-xslt oboxml_to_chadoxml > pato.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pato.xml || exit 1
 
 echo mini PR.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/pombe_mini_PR.obo | go-apply-xslt oboxml_to_chadoxml > mini-pr.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mini-pr.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/pombe_mini_PR.obo | go-apply-xslt oboxml_to_chadoxml > mini-pr.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mini-pr.xml || exit 1
 
 echo PSI-MOD_extension_relations.obo
-go2fmt.pl -p obo_text -w xml /var/pomcur/sources/pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml > PSI-MOD_extension_relations.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD PSI-MOD_extension_relations.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml > PSI-MOD_extension_relations.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD PSI-MOD_extension_relations.xml || exit 1
 
 echo populate cvtermpath
 
