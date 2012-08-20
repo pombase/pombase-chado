@@ -436,6 +436,10 @@ method _process_feature
     my $expression = delete $annotation->{expression};
     my $conditions = delete $annotation->{conditions};
 
+    if (defined delete $annotation->{term_suggestion}) {
+      die "annotation with term suggestion not loaded";
+    }
+
     if (keys %$annotation > 0) {
       my @keys = keys %$annotation;
 
