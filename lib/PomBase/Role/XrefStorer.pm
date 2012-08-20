@@ -105,13 +105,12 @@ method get_pub_from_db_xref($qual, $db_xref) {
 
       return $pub;
     } else {
-      warn "    qualifier ($qual)",
-        " has unknown format db_xref (", $db_xref,
+      warn "qualifier ($qual) has unknown format db_xref (", $db_xref,
           ") - using null publication\n";
       return $self->objs()->{null_pub};
     }
   } else {
-    warn "    qualifier ($qual)",
+    warn "qualifier ($qual)",
       " has no db_xref - using null publication\n" if $self->verbose();
     return $self->objs()->{null_pub};
   }
