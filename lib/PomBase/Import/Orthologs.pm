@@ -136,9 +136,7 @@ method load($fh)
       $org1_feature = $self->find_chado_feature($org1_identifier, 0, 0, $self->organism_1());
     };
     if (!defined $org1_feature) {
-      $org1_feature =
-        $self->store_feature($org1_identifier, undef, [], 'gene',
-                             $self->organism_1());
+      warn "can't find feature in Chado for $org1_identifier\n";
     }
 
     for my $org2_identifier (@org2_identifiers) {
@@ -147,9 +145,7 @@ method load($fh)
         $org2_feature = $self->find_chado_feature($org2_identifier, 0, 0, $self->organism_2());
       };
       if (!defined $org2_feature) {
-        $org2_feature =
-          $self->store_feature($org2_identifier, undef, [], 'gene',
-                               $self->organism_2());
+        warn "can't find feature in Chado for $org2_identifier\n";
       }
 
       my $proc = sub {
