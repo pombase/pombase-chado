@@ -83,8 +83,6 @@ func get_genes($config, $species) {
     my $chromosome_name = $slice->seq_region_name();
     next if $seen_chromosomes{$chromosome_name}++;
 
-    warn "Processing slice $chromosome_name\n";
-
     my $genes = $slice->get_all_Genes;   # load genes lazily - then they can be dumped later
 
     for my $gene (@$genes) {
@@ -93,6 +91,8 @@ func get_genes($config, $species) {
         secondary_identifier => $gene->external_name(),
       };
     }
+
+    warn "Processed ", scalar(@$genes), " genes from slice $chromosome_name\n";
   }
 
   return @gene_data;
