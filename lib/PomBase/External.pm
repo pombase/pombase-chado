@@ -78,11 +78,8 @@ func get_genes($config, $species) {
   my %seen_chromosomes = ();
 
   SLICE: while (my $slice = shift @{$slices})
-  {       # Ugly, but supposedly more memory-efficient way of doing things
-          # cf: http://ncbi36.ensembl.org/info/docs/api/core/core_tutorial.html
-    my $chromosome_name = $slice->seq_region_name();
-    next if $seen_chromosomes{$chromosome_name}++;
-
+  {
+    my $slice_identifier = $slice->seq_region_name();
     my $genes = $slice->get_all_Genes;   # load genes lazily - then they can be dumped later
 
     for my $gene (@$genes) {
@@ -92,7 +89,7 @@ func get_genes($config, $species) {
       };
     }
 
-    warn "Processed ", scalar(@$genes), " genes from slice $chromosome_name\n";
+    warn "Processed ", scalar(@$genes), " genes from slice $slice_identifier\n";
   }
 
   return @gene_data;
