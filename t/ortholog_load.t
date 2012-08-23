@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 use PomBase::TestUtil;
 
@@ -25,11 +25,16 @@ my $importer = PomBase::Import::Orthologs->new(chado => $chado,
                                                options => [@options]);
 
 open my $fh, '<', "data/ortholog.tsv" or die;
-my $load_count = $importer->load($fh);
-is ($load_count, 2);
+
+my ($out, $err) = capture {
+  my $load_count = $importer->load($fh);
+  is ($load_count, 1);
+};
+
+like($err, qr|can't find feature in Chado for ENSG00000142544|);
 
 $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-is($rel_rs->count(), 4);
+is($rel_rs->count(), 3);
 
 my $rel;
 
