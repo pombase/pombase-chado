@@ -134,7 +134,7 @@ FT                   /gene="psh3"
 FT                   /gene="SPBC409.20c"
 FT                   /systematic_id="SPBC409.20c"
 FT                   /controlled_curation="term=phenotype, viable;
-FT                   qualifier=deletion; db_xref=PMID:20473289; cv=phenotype;
+FT                   qualifier=deletion; db_xref=20473289; cv=phenotype;
 FT                   date=20100406"
 FT                   /controlled_curation="term=protein sequence feature,
 FT                   N-terminal signal sequence; qualifier=predicted;
