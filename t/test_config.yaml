@@ -350,6 +350,13 @@ data:
             accession: 0030001
             db:
               name: PomBase
+    - name: species_dist
+      cvterms:
+        - name: 'predominantly single copy (one to one)'
+          dbxref:
+            accession: 0040001
+            db:
+              name: PomBase
   cvterm_relationships:
     - subject:
         name: microtubule motor activity
@@ -379,6 +386,10 @@ data:
   db:
     - name: feature_cvtermprop_type
   pub:
+    - uniquename: null
+      miniref: null
+      type:
+        name: paper
     - uniquename: PMID:11739790
       type:
         name: paper

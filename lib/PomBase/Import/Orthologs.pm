@@ -47,6 +47,7 @@ with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::XrefStorer';
+with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 
@@ -56,6 +57,7 @@ has swap_direction => (is => 'rw', init_arg => undef);
 has publication => (is => 'rw', init_arg => undef);
 has organism_1 => (is => 'rw', init_arg => undef);
 has organism_2 => (is => 'rw', init_arg => undef);
+has organism_1_term => (is => 'rw', init_arg => undef);
 
 sub BUILD
 {
@@ -65,11 +67,15 @@ sub BUILD
   my $publication_uniquename = undef;
   my $organism_1_taxonid = undef;
   my $organism_2_taxonid = undef;
+  my $org_1_term_name = undef;
+  my $org_1_term_cv_name = undef;
 
   my @opt_config = ("swap-direction" => \$swap_direction,
                     "publication=s" => \$publication_uniquename,
                     "organism_1_taxonid=s" => \$organism_1_taxonid,
                     "organism_2_taxonid=s" => \$organism_2_taxonid,
+                    "add_org_1_term_name=s" => \$org_1_term_name,
+                    "add_org_1_term_cv=s" => \$org_1_term_cv_name,
                   );
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
@@ -95,6 +101,21 @@ sub BUILD
   $self->organism_1($organism_1);
   my $organism_2 = $self->find_organism_by_taxonid($organism_2_taxonid);
   $self->organism_2($organism_2);
+
+  if (defined $org_1_term_name && !defined $org_1_term_cv_name) {
+    die "--add_org_1_term_name needs --add_org_1_term_cv\n";
+  }
+  if (!defined $org_1_term_name && defined $org_1_term_cv_name) {
+    die "--add_org_1_term_cv needs --add_org_1_term_name\n";
+  }
+
+  if (defined $org_1_term_name) {
+    $self->organism_1_term($self->get_cvterm($org_1_term_cv_name, $org_1_term_name));
+
+    if (!defined $self->organism_1_term()) {
+      die qq(term "$org_1_term_name" not found in cv "$org_1_term_cv_name"\n);
+    }
+  }
 }
 
 =head2 load
@@ -121,9 +142,13 @@ method load($fh)
 
   $csv->column_names(qw(org1_identifier org2_identifiers));
 
+  my $organism_1_term = $self->organism_1_term();
+
   my $load_orthologs_count = 0;
 
-  while (my $columns_ref = $csv->getline_hr($fh)) {
+  my $null_pub = $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
+
+  ROW: while (my $columns_ref = $csv->getline_hr($fh)) {
     my $org1_identifier = $columns_ref->{"org1_identifier"};
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
 
@@ -133,40 +158,51 @@ method load($fh)
 
     my $org1_feature;
     eval {
-      $org1_feature = $self->find_chado_feature($org1_identifier, 0, 0, $self->organism_1());
+      $org1_feature = $self->find_chado_feature($org1_identifier, 1, 0, $self->organism_1());
     };
     if (!defined $org1_feature) {
       warn "can't find feature in Chado for $org1_identifier\n";
+      next ROW;
     }
 
+    if (defined $organism_1_term) {
+      my $add_term_rs = $org1_feature->search_related('feature_cvterms')
+                           ->search({ cvterm_id => $organism_1_term->cvterm_id() });
+      if ($add_term_rs->count() == 0) {
+        $chado->resultset('Sequence::FeatureCvterm')
+              ->create({ feature_id => $org1_feature->feature_id(),
+                         cvterm_id => $organism_1_term->cvterm_id(),
+                         pub_id => $null_pub->pub_id() });
+      }
+    }
     for my $org2_identifier (@org2_identifiers) {
       my $org2_feature;
       eval {
-        $org2_feature = $self->find_chado_feature($org2_identifier, 0, 0, $self->organism_2());
+        $org2_feature = $self->find_chado_feature($org2_identifier, 1, 0, $self->organism_2());
       };
       if (!defined $org2_feature) {
         warn "can't find feature in Chado for $org2_identifier\n";
+        next ROW;
       }
 
       my $proc = sub {
+        try {
+          my $feature_rel;
+          if ($self->swap_direction()) {
+            $feature_rel = $self->store_feature_rel($org2_feature, $org1_feature, $orthologous_to_term);
+          } else {
+            $feature_rel = $self->store_feature_rel($org1_feature, $org2_feature, $orthologous_to_term);
+          }
 
-        my $feature_rel;
-        if ($self->swap_direction()) {
-          $feature_rel = $self->store_feature_rel($org2_feature, $org1_feature, $orthologous_to_term);
-        } else {
-          $feature_rel = $self->store_feature_rel($org1_feature, $org2_feature, $orthologous_to_term);
+          $load_orthologs_count++;
+
+          $self->store_feature_rel_pub($feature_rel, $self->publication());
+        } catch {
+          warn "Failed to load row: $_\n";
         }
-
-        $load_orthologs_count++;
-
-        $self->store_feature_rel_pub($feature_rel, $self->publication());
       };
 
-      try {
-        $chado->txn_do($proc);
-      } catch {
-        warn "Failed to load row: $_\n";
-      }
+      $chado->txn_do($proc);
     }
   }
 

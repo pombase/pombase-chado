@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use PomBase::TestUtil;
 
@@ -15,6 +15,8 @@ my $pub_uniquename = "PMID:19029536";
 my @options = ("--publication=$pub_uniquename",
                "--organism_1_taxonid=4896",
                "--organism_2_taxonid=9606",
+               "--add_org_1_term_name=predominantly single copy (one to one)",
+               "--add_org_1_term_cv=species_dist",
                "--swap-direction");
 
 my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
@@ -42,11 +44,21 @@ while (defined ($rel = $rel_rs->next())) {
   last if $rel->type()->name() eq 'orthologous_to';
 }
 
+my $pombe_feature = $rel->object();
+
+my $one_to_one_term =
+  $chado->resultset('Cv::Cvterm')->find({ name => 'predominantly single copy (one to one)' });
+my $one_to_one_rs =
+  $chado->resultset('Sequence::FeatureCvterm')
+     ->search({ feature_id => $pombe_feature->feature_id(),
+                cvterm_id => $one_to_one_term->cvterm_id() });
+is($one_to_one_rs->count(), 1);
+
 my $rel_pubs_rs = $rel->feature_relationship_pubs();
 is($rel_pubs_rs->count(), 1);
 is($rel_pubs_rs->first()->pub()->uniquename(), $pub_uniquename);
 
 is($rel->subject()->organism()->common_name(), "human");
-is($rel->object()->organism()->common_name(), "pombe");
+is($pombe_feature->organism()->common_name(), "pombe");
 
 close $fh;
