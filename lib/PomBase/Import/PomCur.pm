@@ -437,7 +437,7 @@ method _process_feature
     my $conditions = delete $annotation->{conditions};
 
     if (defined delete $annotation->{term_suggestion}) {
-      die "annotation with term suggestion not loaded";
+      die "annotation with term suggestion not loaded\n";
     }
 
     if (keys %$annotation > 0) {
