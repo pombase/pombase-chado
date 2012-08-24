@@ -45,7 +45,8 @@ method split_sub_qualifiers($cc_qualifier) {
   my @bits = split /;/, $cc_qualifier;
 
   for my $bit (@bits) {
-    if ($bit =~ /\s*([^=]+?)\s*=\s*(.*?)\s*$/) {
+    $bit = $bit->trim();
+    if ($bit =~ /^([^=]+?)\s*=\s*(.*?)$/) {
       my $name = $1;
       my $value = $2;
       if (exists $map{$name}) {
@@ -71,6 +72,8 @@ method split_sub_qualifiers($cc_qualifier) {
       if ($name eq 'db_xref' && $value =~ /\|/) {
         warn "  annotation should be split into two qualifier: $name=$value\n";
       }
+    } else {
+      die qq(qualifier not in the form "key=value": "$bit"\n);
     }
   }
 
