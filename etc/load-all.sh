@@ -77,17 +77,25 @@ echo load manual pombe to human orthologs: conserved_one_to_one.txt 1>&2
 
 ./script/pombase-import.pl load-chado.yaml orthologs --publication=PMID:19029536 --organism_1_taxonid=4896 --organism_2_taxonid=9606 --swap-direction --add_org_1_term_name='predominantly single copy (one to one)' --add_org_1_term_cv='species_dist' $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/orthologs/conserved_one_to_one.txt
 
-echo copying $DB to $DB-l1
-createdb -T $DB $DB-l1
+FINAL_DB=$DB-l1
+
+echo copying $DB to $FINAL_DB
+createdb -T $DB $FINAL_DB
 
 CURATION_TOOL_DATA=current-prod-dump.json
 scp pomcur@pombe-prod:/var/pomcur/backups/$CURATION_TOOL_DATA .
 
-./script/pombase-import.pl load-chado.yaml pomcur $HOST $DB-l1 $USER $PASSWORD < $CURATION_TOOL_DATA
+./script/pombase-import.pl load-chado.yaml pomcur $HOST $FINAL_DB $USER $PASSWORD < $CURATION_TOOL_DATA
 
 echo filtering redundant terms 1>&2
 
-./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $DB-l1 $USER $PASSWORD
+./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $FINAL_DB $USER $PASSWORD
 
 echo running consistency checks
-./script/check-chado.pl ./check-db.yaml $HOST $DB-l1 $USER $PASSWORD
+./script/check-chado.pl ./check-db.yaml $HOST $FINAL_DB $USER $PASSWORD
+
+DUMP_DIR=/var/www/pombase/kmr44/dumps/
+DUMP_FILE=$DUMP_DIR/$FINAL_DB.dump.gz
+
+echo dumping to $DUMP_FILE
+pg_dump $FINAL_DB | gzip -9v > $DUMP_FILE
