@@ -263,6 +263,18 @@ evidence_types:
   'Electrophoretic mobility shift assay data': ~
   'Northern assay evidence': ~
   'Western blot assay': ~
+  FPR:
+    name: fitness profiling
+    definition: "ECO term name is 'competitive growth assay evidence' (ECO:0000336)"
+  'ECO:0000049':
+    name: reporter gene assay evidence
+  'ECO:0000106':
+    name: Northern assay evidence
+  'ECO:0000112':
+    name: Western blot evidence
+  'ECO:0000231':
+    name: quantitative PCR
+    definition: "ECO term name is 'quantitative polymerase chain reaction evidence'"
 
 suppressible_evidence_codes:
 
