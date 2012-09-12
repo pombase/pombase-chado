@@ -55,6 +55,7 @@ has verbose => (is => 'ro');
 has cache => (is => 'ro', init_arg => undef, lazy_build => 1,
               builder => '_build_cache');
 has pre_init_cache => (is => 'rw', default => 0);
+has isa_cvterm => (is => 'ro', init_arg => undef, lazy_build => 1);
 
 my $extension_cv_name = 'PomBase annotation extension terms';
 
@@ -72,6 +73,11 @@ method _build_cache
   } else {
     return {};
   }
+}
+
+method _build_isa_cvterm
+{
+  return $self->get_cvterm('relationship', 'is_a');
 }
 
 method store_extension($feature_cvterm, $extensions)
@@ -107,8 +113,8 @@ method store_extension($feature_cvterm, $extensions)
   if (!defined $new_term) {
     $new_term = $self->find_or_create_cvterm($extension_cv_name, $new_name);
 
-    my $isa_cvterm = $self->get_cvterm('relationship', 'is_a');
-    $self->store_cvterm_rel($new_term, $old_cvterm, $isa_cvterm);
+    $self->store_cvterm_rel($new_term, $old_cvterm, $self->isa_cvterm);
+    $self->store_cvtermprop($new_term, 'pombase_term_origin', __PACKAGE__);
   }
 
   if (!exists $self->cache()->{$new_name}) {
