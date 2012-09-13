@@ -343,6 +343,11 @@ data:
             accession: 0020003
             db:
               name: PomBase
+        - name: extension_relations_status
+          dbxref:
+            accession: 0020004
+            db:
+              name: PomBase
     - name: PomBase feature property types
       cvterms:
         - name: description

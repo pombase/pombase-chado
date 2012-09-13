@@ -58,16 +58,28 @@ has pre_init_cache => (is => 'rw', default => 0);
 has isa_cvterm => (is => 'ro', init_arg => undef, lazy_build => 1);
 
 my $extension_cv_name = 'PomBase annotation extension terms';
+my $extension_rel_status = 'extension_relations_status';
 
 method _build_cache
 {
   if ($self->pre_init_cache()) {
     my $extension_cv =
       $self->chado()->resultset('Cv::Cv')->find({ name => $extension_cv_name });
-    my $rs = $self->chado()->resultset('Cv::Cvterm')->search({ cv_id => $extension_cv->cv_id() });
+    my $rs = $self->chado()->resultset('Cv::Cvterm');
+    $rs = $rs->search(
+      {
+        cv_id => $extension_cv->cv_id(),
+      });
     my %cache = ();
+    my $extension_rel_status_term =
+      $self->get_cvterm('cvterm_property_type', $extension_rel_status);
     while (defined (my $cvterm = $rs->next())) {
-      $cache{$cvterm->name()} = 1;
+      if (grep {
+        $_->type_id() == $extension_rel_status_term->cvterm_id() &&
+        $_->value() eq 'created';
+      } $cvterm->cvtermprops()) {
+        $cache{$cvterm->name()} = 1;
+      }
     }
     return \%cache;
   } else {
@@ -121,7 +133,7 @@ method store_extension($feature_cvterm, $extensions)
     # doesn't store the non-isa relations and the props - recreate them
     $self->cache()->{$new_name} = 1;
 
-    $self->store_cvtermprop($new_term, 'extension_relations_status', 'created');
+    $self->store_cvtermprop($new_term, $extension_rel_status, 'created');
 
     for my $extension (@$extensions) {
       my $rel_name = $extension->{rel_name};

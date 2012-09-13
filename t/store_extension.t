@@ -54,7 +54,7 @@ is ($new_term_isa_rel->count(), 1);
 
 my $new_term_props_rs = $new_cvterm->cvtermprops();
 
-is ($new_term_props_rs->count(), 1);
+is ($new_term_props_rs->count(), 2);
 
 my $new_term_prop = $new_term_props_rs->first();
 
@@ -64,14 +64,17 @@ is ($new_term_prop->type()->name(), 'annotation_extension_relation-dependent_on'
 # delete the property and check that it's re-created
 $new_term_prop->delete();
 
-is ($new_cvterm->cvtermprops()->count(), 0);
+is ($new_cvterm->cvtermprops()->count(), 1);
 
 # new processor with a fresh cache
-$ex_processor = PomBase::Chado::ExtensionProcessor->new(verbose => 0, chado => $chado, config => $config);
+$ex_processor = PomBase::Chado::ExtensionProcessor->new(verbose => 0, chado => $chado, config => $config, pre_init_cache => 1);
 
 sub check_SPAC2F7_03c {
   my $new_cvterm_after_prop_delete = $ex_processor->store_extension($SPAC2F7_03c_spindle_fc, $extensions);
   my $new_cvterm_after_delete_prop_rs = $new_cvterm_after_prop_delete->cvtermprops();
+  while (defined (my $prop = $new_cvterm_after_delete_prop_rs->next())) {
+    warn $prop->type()->name(), ' ', $prop->value(), "\n";
+  }
   is ($new_cvterm_after_delete_prop_rs->count(), 1);
 }
 
