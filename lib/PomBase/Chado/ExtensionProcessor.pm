@@ -114,13 +114,14 @@ method store_extension($feature_cvterm, $extensions)
     $new_term = $self->find_or_create_cvterm($extension_cv_name, $new_name);
 
     $self->store_cvterm_rel($new_term, $old_cvterm, $self->isa_cvterm);
-    $self->store_cvtermprop($new_term, 'pombase_term_origin', __PACKAGE__);
   }
 
   if (!exists $self->cache()->{$new_name}) {
     # we load cvterms from older builds from an OBO file but the file
     # doesn't store the non-isa relations and the props - recreate them
     $self->cache()->{$new_name} = 1;
+
+    $self->store_cvtermprop($new_term, 'extension_relations_status', 'created');
 
     for my $extension (@$extensions) {
       my $rel_name = $extension->{rel_name};
