@@ -72,10 +72,29 @@ func _get_allele_description($allele) {
   }
 }
 
+=head2 get_allele
+
+ Usage   : with 'PomBase::Role::PhenotypeFeatureFinder';
+           my $allele_obj = $self->get_allele($allele_data);
+ Function: Return an allele Feature for the given data
+ Args    : $allele_data - a hash ref with these keys:
+             gene - the gene Feature object for the allele
+             primary_identifier - the Chado primary identifier for this allele
+             name - the allele name eg. cdc11+, cdc11delta, cdc11-31
+             description - the allele description,
+                           eg. "100-101" (for NT deletion)
+                               "K10A" (for AA mutation)
+             allele_type - the allele type from the "PomBase allele types" CV
+
+=cut
 method get_allele($allele_data)
 {
   my $allele;
   my $gene;
+
+  if (!defined $allele_data) {
+    croak "no 'allele_data' key passed to get_allele()";
+  }
 
   if (ref $allele_data->{gene} eq 'HASH') {
     $gene = $self->get_gene($allele_data->{gene});
@@ -179,6 +198,7 @@ method get_allele($allele_data)
     if (defined $new_allele_description) {
       $self->store_featureprop($allele, 'description', $new_allele_description);
     }
+    $self->store_featureprop($allele, allele_type => $allele_type);
 
     return $allele;
   }

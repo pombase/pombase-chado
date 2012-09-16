@@ -18,6 +18,17 @@ cvs:
     - description
     - name: ena_id
       definition: The European Nucleotide Archive ID of the feature.
+  PomBase allele types:
+    - name: amino_acid_mutation
+    - name: nucleotide_mutation
+    - name: gene_deletion
+    - name: partial_amino_acid_deletion
+      description: Deletion of part of a gene.
+    - name: partial_nucleotide_deletion
+    - name: wild_type
+    - name: unknown
+      description: An allele whose type has not been established.
+    - name: other
   PomBase annotation extension terms: []
   PomBase gene products: []
   PomBase family or domain: []
