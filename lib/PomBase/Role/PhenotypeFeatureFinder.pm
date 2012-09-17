@@ -198,7 +198,7 @@ method get_allele($allele_data)
     if (defined $new_allele_description) {
       $self->store_featureprop($allele, 'description', $new_allele_description);
     }
-    $self->store_featureprop($allele, allele_type => $allele_type);
+    $self->store_featureprop($allele, allele_type => $allele_data->{allele_type});
 
     return $allele;
   }
