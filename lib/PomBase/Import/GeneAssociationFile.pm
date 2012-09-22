@@ -276,6 +276,7 @@ method load($fh)
 
       $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by',
                                     $assigned_by);
+      $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                     $long_evidence);
       if (defined $with_or_from && length $with_or_from > 0) {
