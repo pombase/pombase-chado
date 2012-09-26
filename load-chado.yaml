@@ -178,6 +178,11 @@ db_names_for_cvs:
   cellular_component: GO
   sequence: SO
 
+geneontology_qualifier_flags:
+  NOT: 1
+  contributes_to: 1
+  colocalizes_with: 1
+
 evidence_types:
   IMP:
     name: Inferred from Mutant Phenotype

@@ -38,6 +38,7 @@ under the same terms as Perl itself.
 
 use perl5i::2;
 use Moose;
+use feature 'state';
 
 use List::Gen 'iterate';
 
@@ -133,11 +134,20 @@ method _get_feature_details
   my %ret_map = ();
 
   my $gene_rs = $self->chado()->resultset('Sequence::FeatureRelationship')->
-    search({ 'subject.organism_id' => $self->{_organism}->organism_id(),
-             'type_2.name' => 'gene',
-             'type.name' => 'part_of' },
-           { join => [ 'subject', 'type', { object => 'type' } ],
-             prefetch => [ 'subject', 'object', 'type' ] });
+    search(
+      {
+        -and => {
+          'subject.organism_id' => $self->{_organism}->organism_id(),
+          -or => [
+            'type_2.name' => 'gene',
+            'type_2.name' => 'pseudogene',
+          ],
+          'type.name' => 'part_of',
+        },
+      },
+      {
+        join => [ 'subject', 'type', { object => 'type' } ],
+        prefetch => [ 'subject', 'object', 'type' ] });
 
   map {
     my $rel = $_;
@@ -149,6 +159,7 @@ method _get_feature_details
       } else {
         $ret_map{$rel->subject_id()} = {
           gene => $object,
+          type => $object->type()->name(),
           synonyms => $synonyms{$object->feature_id()},
           product => $products{$object->uniquename()} // '',
         };
@@ -173,12 +184,14 @@ func _safe_join($expr, $array)
   }
 }
 
-func _get_qualifier($fc, $fc_props)
+method _get_qualifier($fc, $fc_props)
 {
   my @qual_bits;
 
   if (defined $fc_props->{qualifier}) {
-    @qual_bits = @{$fc_props->{qualifier}};
+    @qual_bits = grep {
+      $self->config()->{geneontology_qualifier_flags}->{$_};
+    } @{$fc_props->{qualifier}};
   } else {
     @qual_bits = ();
   }
@@ -188,6 +201,19 @@ func _get_qualifier($fc, $fc_props)
   }
 
   join('|', @qual_bits);
+}
+
+method _lookup_term($term_id) {
+  state $cache = {};
+
+  if (exists $cache->{$term_id}) {
+    return $cache->{$term_id};
+  } else {
+    my $chado = $self->chado();
+    my $term = $chado->resultset('Cv::Cvterm')->find($term_id);
+    $cache->{$term_id} = $term;
+    return $term;
+  }
 }
 
 method retrieve() {
@@ -219,42 +245,59 @@ method retrieve() {
 
     my %fc_props = ();
 
-    my $fc_props_rs = $feature_cvterm_rs->search_related('feature_cvtermprops')->
-      search({}, { prefetch => [ 'type' ] });;
+    my $fc_props_rs = $feature_cvterm_rs->search_related('feature_cvtermprops');
+    my %types_by_id = ();
 
     while (defined (my $prop = $fc_props_rs->next())) {
-      push @{$fc_props{$prop->feature_cvterm_id()}->{$prop->type()->name()}}, $prop->value();
+      my $type = $self->_lookup_term($prop->type_id());
+      push @{$fc_props{$prop->feature_cvterm_id()}->{$type->name()}}, $prop->value();
     }
 
     my $results =
       $feature_cvterm_rs->search({},
         {
-          prefetch => [ { cvterm => [ { dbxref => 'db' }, 'cv' ] }, 'feature', 'pub' ]
+          prefetch => [ 'feature', 'pub' ]
         },
       );
 
     iterate {
+    ROW: {
       my $row = $results->next();
 
       if (defined $row) {
-        my %row_fc_props = %{$fc_props{$row->feature_cvterm_id()}};
-        my $cvterm = $row->cvterm();
+        my $feature = $row->feature();
+        my $details = $feature_details{$feature->feature_id()};
+
+        if ($details->{type} ne 'gene') {
+          warn "skipping: ", $details->{type}, "\n";
+          next ROW;
+        }
+
+        my $fc_id = $row->feature_cvterm_id();
+        my %row_fc_props = %{$fc_props{$fc_id}};
+        my $cvterm = $self->_lookup_term($row->cvterm_id());
         my $cv_name = $cvterm->cv()->name();
         my $base_cvterm = _get_base_term($cvterm);
         my $base_cv_name = $base_cvterm->cv()->name();
-        my $qualifier = _get_qualifier($row, \%row_fc_props);
+        my $qualifier = $self->_get_qualifier($row, \%row_fc_props);
         my $dbxref = $base_cvterm->dbxref();
         my $id = $dbxref->db()->name() . ':' . $dbxref->accession();
         my $evidence = _safe_join('|', $row_fc_props{evidence});
-        my $evidence_code = $self->{_evidence_to_code}->{$evidence}
-          // die "can't find evidence code for $evidence\n";
+        if (!defined $evidence || length $evidence == 0) {
+          warn "no evidence for $fc_id\n";
+          next ROW;
+        }
+        my $evidence_code = $self->{_evidence_to_code}->{$evidence};
+        if (!defined $evidence_code) {
+          warn q|can't find the evidence code for "$evidence"|;
+          next ROW;
+        }
         my $with_from = _safe_join('|', $row_fc_props{with});
         my $aspect = $cv_abbreviations{$base_cv_name};
         my $pub = $row->pub();
-        my $feature = $row->feature();
-        my $details = $feature_details{$feature->feature_id()};
         my $gene = $details->{gene} // die "no gene for ", $feature->uniquename();
-        my $gene_name = $gene->name() // '';
+        my $gene_uniquename = $feature->uniquename();
+        my $gene_name = $gene->name() // $gene_uniquename;
         my $synonyms_ref = $details->{synonyms} // [];
         my $synonyms = join '|', @{$synonyms_ref};
         my $product = $details->{product} // '';
@@ -262,16 +305,15 @@ method retrieve() {
         my $date = _safe_join('|', $row_fc_props{date});
         my $annotation_extension = $self->_get_extension_text($row);
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
-        return [$db_name, $feature->uniquename(), $gene_name,
+        return [$db_name, $gene_uniquename, $gene_name,
                 $qualifier, $id, $pub->uniquename(),
-                $evidence,
                 $evidence_code, $with_from, $aspect, $product, $synonyms,
-                $base_cvterm->name(), $base_cv_name, 'gene', $taxon,
-                $date, $db_name, $annotation_extension,
+                'gene', $taxon, $date, $db_name, $annotation_extension,
                 $gene_product_form_id];
       } else {
         return undef;
       }
+    }
     };
   };
 }
