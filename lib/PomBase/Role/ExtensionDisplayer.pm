@@ -57,9 +57,25 @@ method make_gaf_extension($feature_cvterm)
   my @parents = ();
 
   while (defined (my $rel = $parent_rels_rs->next())) {
-    if ($rel->type()->name() ne 'isa') {
+    if ($rel->type()->name() ne 'is_a') {
       push @parents, { rel_type_name => $rel->type()->name(),
                        detail => PomBase::Chado::id_of_cvterm($rel->object()) };
+    }
+  }
+
+  my $annotation_ex_prefix = "annotation_extension_relation-";
+
+  my $props_rs =
+    $feature_cvterm->cvterm()->cvtermprops()->
+    search({ 'type.name' => { -like => "$annotation_ex_prefix%" }, },
+           { join => 'type' });
+
+  while (defined (my $prop = $props_rs->next())) {
+    if ($prop->type()->name() =~ /^$annotation_ex_prefix(.*)/) {
+      push @parents, { rel_type_name => $1,
+                       detail => $prop->value() };
+    } else {
+      die "internal error - unexpected name: ", $prop->type()->name();
     }
   }
 

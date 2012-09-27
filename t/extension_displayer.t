@@ -18,6 +18,7 @@ use Moose;
 has chado => (is => 'rw');
 
 with 'PomBase::Role::ExtensionDisplayer';
+with 'PomBase::Role::CvQuery';
 
 
 package main;
@@ -36,13 +37,19 @@ while (defined (my $fc = $fc_rs->next())) {
   }
 }
 
+my $go_term = $test_obj->find_cvterm_by_term_id('GO:0034763');
+
 ok (defined $SPBC2F12_13_spindle_fc);
 
 my $extensions = [
   {
-    'identifier' => 'Pfam:PF00069',
-    'rel_name' => 'dependent_on',
+    identifier => 'Pfam:PF00069',
+    rel_name => 'dependent_on',
   },
+  {
+    term => $go_term,
+    rel_name => 'exists_during',
+  }
 ];
 
 my $ex_processor = PomBase::Chado::ExtensionProcessor->new(verbose => 0, chado => $chado, config => $config);
