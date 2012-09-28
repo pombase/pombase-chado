@@ -166,6 +166,80 @@ sub _extensions_by_type
   return %by_type;
 }
 
+sub is_aa_desc
+{
+  my $description = shift;
+
+  $description =~ s/^\s+//;
+  $description =~ s/\s+$//;
+
+  if ($description =~ /,/) {
+    for my $bit (split /,/, $description) {
+      if (is_aa_desc($bit)) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  return $description =~ /^[a-z]+\d+[a-z]+$/i && $description !~ /^[atgc]+\d+[atgc]+$/i
+}
+
+method _process_allele_qual($name, $description, $curs_key, $feature, $expression, $allele_quals)
+{
+  my $gene_name = $feature->name();
+  my $organism = $feature->organism();
+
+  my $delete_me = 0;
+  if ($name eq 'noname' and
+      grep /^$description$/, qw(overexpression endogenous knockdown)) {
+    if (defined $expression) {
+      die "can't have expression=$expression AND allele=$name($description)\n";
+    } else {
+      $expression = ucfirst $description;
+      if (@$allele_quals > 1) {
+        $delete_me = 1;
+      } else {
+        $description = 'unknown';
+      }
+    }
+  }
+
+  my $allele_type;
+
+  if (grep { $_ eq $description } ('deletion', 'wild type', 'unknown', 'other')) {
+    $allele_type = $description;
+  } else {
+    if (is_aa_desc($description)) {
+      $allele_type = 'amino acid mutation';
+    } else {
+      if (defined $gene_name && $description =~ /^$gene_name/) {
+        $allele_type = 'other';
+      }
+    }
+  }
+
+  if (defined $allele_type) {
+    if ($delete_me) {
+      return ();
+    } else {
+      {
+        name => $name,
+        description => $description,
+        gene => {
+          organism => $organism->genus() . ' ' . $organism->species(),
+          uniquename => $feature->uniquename(),
+        },
+        allele_type => $allele_type,
+      }
+    }
+  } else {
+    warn "$curs_key: allele type is ambiguous for $name($description)\n";
+    return ();
+  }
+
+}
+
 method _store_ontology_annotation
 {
   my %args = @_;
@@ -203,7 +277,6 @@ method _store_ontology_annotation
     my $term_name = $cvterm->name();
 
     my $orig_feature = $feature;
-    my $organism = $feature->organism();
 
     my %by_type = ();
 
@@ -215,42 +288,25 @@ method _store_ontology_annotation
 
     if (defined $allele_quals && @$allele_quals > 0) {
       my @processed_allele_quals = map {
-        my $delete_me = 0;
-        if (/^\s*(.*)\((.*)\)/) {
-          my $name = $1;
-          my $description = $2;
-
-          if ($name eq 'noname' and
-              grep /^$description$/, qw(overexpression endogenous knockdown)) {
-            if (defined $expression) {
-              die "can't have expression=$expression AND allele=$name($description)\n";
-            } else {
-              $expression = ucfirst $description;
-              if (@$allele_quals > 1) {
-                $delete_me = 1;
-              } else {
-                $description = 'unknown';
-              }
-            }
-          }
-
-          if ($delete_me) {
-            ();
-          } else {
-            {
-              name => $name,
-              description => $description,
-              gene => {
-                organism => $organism->genus() . ' ' . $organism->species(),
-                uniquename => $feature->uniquename(),
-              },
-              type => 'new',
-            }
-          }
+        my $allele_display_name = $_;
+        if ($allele_display_name =~ /^\s*(.*)\((.*)\)/) {
+          $self->_process_allele_qual($1, $2, $curs_key,
+                                      $feature, $expression,
+                                      $allele_quals);
         } else {
-          die qq|allele qualifier "$_" isn't in the form "name(description)"\n|;
+          if ($allele_display_name =~ /.*delta$/) {
+            $self->_process_allele_qual($allele_display_name, "deletion",
+                                        $curs_key,
+                                        $feature, $expression,
+                                        $allele_quals);
+          } else {
+            warn qq|allele qualifier "$_" isn't in the form "name(description)"\n|;
+            return ();
+          }
         }
       } @$allele_quals;
+
+      return if @processed_allele_quals == 0;
 
       if (@processed_allele_quals > 1) {
         die "can't process annotation with two allele qualifiers\n";
