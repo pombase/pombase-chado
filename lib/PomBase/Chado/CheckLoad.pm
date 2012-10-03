@@ -84,7 +84,7 @@ method check
   should ($phase_loc_rs->count(), 9);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 13);
+  should ($feature_prop_rs->count(), 15);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
   should ($feature_dbxref_rs->count(), 33);
@@ -122,11 +122,16 @@ method check
   my $product_cv = $chado->resultset('Cv::Cv')
     ->find({ name => 'PomBase gene products' });
 
-  for my $cvterm ($chado->resultset('Cv::Cvterm')->search({
-    cv_id => $product_cv->cv_id()
-  })->all()) {
+#  for my $cvterm ($chado->resultset('Cv::Cvterm')->search({
+#    cv_id => $product_cv->cv_id()
+#  })->all()) {
 #    print $cvterm->name(), "\n";
-  }
+#  }
+
+#  for my $p ($chado->resultset('Cv::Cvtermprop')->search({
+#  })->all()) {
+#    print $p->type()->name(), ' -> ', $p->value(), "\n" if $p->type()->name() =~ /exten/;
+#  }
 
   my $seq_feat_cv = $self->get_cv('sequence_feature');
   assert (!defined $seq_feat_cv);
@@ -134,7 +139,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence', 'coiled_coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 111);
+  should(scalar(@all_feature_cvterm), 110);
 
   my $cvterm_property_type_cv =
     $chado->resultset('Cv::Cv')->find({ name => 'cvterm_property_type' });
@@ -176,7 +181,7 @@ method check
   }
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 224);
+  should(scalar(@all_props), 222);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 74);

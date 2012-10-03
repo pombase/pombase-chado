@@ -72,6 +72,45 @@ func _get_allele_description($allele) {
   }
 }
 
+=head2 is_aa_mutation_desc
+
+ Usage   : if ($self->is_aa_mutation_desc($description)) { ... }
+ Function: Return true if the $description looks like an amino acid
+           mutation, like; "K10A"
+
+=cut
+method is_aa_mutation_desc($description)
+{
+  $description =~ s/^\s+//;
+  $description =~ s/\s+$//;
+
+  if ($description =~ /,/) {
+    for my $bit (split /,/, $description) {
+      if (is_aa_mutation_desc($bit)) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  return $description =~ /^[a-z]+\d+[a-z]+$/i && $description !~ /^[atgc]+\d+[atgc]+$/i
+}
+
+method allele_type_from_desc($description, $gene_name)
+{
+  if (grep { $_ eq $description } ('deletion', 'wild type', 'unknown', 'other')) {
+    return $description;
+  } else {
+    if ($self->is_aa_mutation_desc($description)) {
+      return 'amino acid mutation';
+    } else {
+      if (defined $gene_name && $description =~ /^$gene_name/) {
+        return 'other';
+      }
+    }
+  }
+}
+
 =head2 get_allele
 
  Usage   : with 'PomBase::Role::PhenotypeFeatureFinder';
@@ -87,6 +126,7 @@ func _get_allele_description($allele) {
              allele_type - the allele type from the "PomBase allele types" CV
 
 =cut
+
 method get_allele($allele_data)
 {
   my $allele;

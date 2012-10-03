@@ -166,25 +166,6 @@ sub _extensions_by_type
   return %by_type;
 }
 
-sub is_aa_desc
-{
-  my $description = shift;
-
-  $description =~ s/^\s+//;
-  $description =~ s/\s+$//;
-
-  if ($description =~ /,/) {
-    for my $bit (split /,/, $description) {
-      if (is_aa_desc($bit)) {
-        return 1;
-      }
-    }
-    return 0;
-  }
-
-  return $description =~ /^[a-z]+\d+[a-z]+$/i && $description !~ /^[atgc]+\d+[atgc]+$/i
-}
-
 method _process_allele_qual($name, $description, $curs_key, $feature, $expression, $allele_quals)
 {
   my $gene_name = $feature->name();
@@ -205,19 +186,7 @@ method _process_allele_qual($name, $description, $curs_key, $feature, $expressio
     }
   }
 
-  my $allele_type;
-
-  if (grep { $_ eq $description } ('deletion', 'wild type', 'unknown', 'other')) {
-    $allele_type = $description;
-  } else {
-    if (is_aa_desc($description)) {
-      $allele_type = 'amino acid mutation';
-    } else {
-      if (defined $gene_name && $description =~ /^$gene_name/) {
-        $allele_type = 'other';
-      }
-    }
-  }
+  my $allele_type = $self->allele_type_from_desc($description, $gene_name);
 
   if (defined $allele_type) {
     if ($delete_me) {

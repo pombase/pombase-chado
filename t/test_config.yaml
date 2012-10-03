@@ -355,6 +355,11 @@ data:
             accession: 0030001
             db:
               name: PomBase
+        - name: allele_type
+          dbxref:
+            accession: 0030002
+            db:
+              name: PomBase
     - name: species_dist
       cvterms:
         - name: 'predominantly single copy (one to one)'

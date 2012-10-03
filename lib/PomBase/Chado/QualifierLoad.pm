@@ -399,6 +399,17 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
       }
     }
 
+    my $allele_type = delete $sub_qual_map->{allele_type} // $self->allele_type_from_desc($args{description}, $pombe_feature->name());
+
+    if (!defined $allele_type) {
+      $allele_type = 'unknown';
+      warn "ambiguous or unset allele_type for $args{name}($args{description})\n";
+    }
+    $args{allele_type} = $allele_type;
+
+
+    warn "new allele_type for $args{name}($args{description}): $allele_type\n";
+
     my $allele_feature = $self->get_allele(\%args);
 
     $featurecvterm->feature($allele_feature);
