@@ -17,6 +17,7 @@ cvs:
         EMBL format files.
     - symbol
     - description
+    - allele_type
     - name: ena_id
       definition: The European Nucleotide Archive ID of the feature.
   PomBase allele types:
@@ -280,6 +281,10 @@ evidence_types:
   'Electrophoretic mobility shift assay data': ~
   'Northern assay evidence': ~
   'Western blot assay': ~
+  'Substance quantification evidence': ~
+  'Competitive growth assay evidence': ~
+  'Gel electrophoresis evidence': ~
+  'Plasmid maintenance assay evidence': ~
   FPR:
     name: fitness profiling
     definition: "ECO term name is 'competitive growth assay evidence' (ECO:0000336)"
