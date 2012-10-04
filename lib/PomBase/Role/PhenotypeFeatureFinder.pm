@@ -81,6 +81,8 @@ func _get_allele_description($allele) {
 =cut
 method is_aa_mutation_desc($description)
 {
+  return 0 unless defined $description;
+
   $description =~ s/^\s+//;
   $description =~ s/\s+$//;
 
