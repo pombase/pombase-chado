@@ -121,6 +121,7 @@ method get_and_check_date($sub_qual_map) {
 method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map,
                         $create_cvterm) {
   $embl_term_name =~ s/\s+/ /g;
+  $embl_term_name = $embl_term_name->trim();
 
   my $mapping_conf = $self->config()->{mappings}->{$cv_name};
 
