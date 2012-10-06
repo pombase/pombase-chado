@@ -321,7 +321,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
       @withs = split /\|/, delete $sub_qual_map->{with};
       for (my $i = 0; $i < @withs; $i++) {
         my $with = $withs[$i];
-        if ($with =~ /:/) {
+        if ($with =~ /.:./) {
           $self->add_feature_cvtermprop($featurecvterm, with => $with, $i);
         } else {
           die qq|"with" identifier "$with" is not in the form db:accession\n|;
