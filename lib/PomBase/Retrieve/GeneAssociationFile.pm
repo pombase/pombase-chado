@@ -184,6 +184,18 @@ method _get_qualifier($fc, $fc_props)
   join('|', @qual_bits);
 }
 
+func _fix_with($db_name, $with)
+{
+  if ($with =~ /:/) {
+    if ($with =~ /GeneDB_Spombe/) {
+      die $with;
+    }
+    return $with;
+  } else {
+    $db_name . ':' . $with;
+  }
+}
+
 method _lookup_term($term_id) {
   state $cache = {};
 
@@ -294,11 +306,11 @@ method retrieve() {
           warn q|can't find the evidence code for "$evidence"|;
           goto ROW;
         }
-        my $with_from = _safe_join('|', $row_fc_props{with});
         my $aspect = $cv_abbreviations{$cv_name};
         my $pub = $row->pub();
         my $gene = $details->{gene} // die "no gene for ", $feature->uniquename();
         my $gene_uniquename = $gene->uniquename();
+        my $with_from = _safe_join('|', [map { _fix_with($db_name, $_) } @{$row_fc_props{with}}]);
         my $gene_name = $gene->name() // $gene_uniquename;
         my $synonyms_ref = $details->{synonyms} // [];
         my $synonyms = join '|', @{$synonyms_ref};
