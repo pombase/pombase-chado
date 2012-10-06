@@ -45,6 +45,7 @@ use List::Gen 'iterate';
 use Getopt::Long qw(GetOptionsFromArray);
 
 with 'PomBase::Retriever';
+with 'PomBase::Role::ExtensionDisplayer';
 
 my @go_cv_names = qw(biological_process cellular_component molecular_function);
 my $ext_cv_name = 'PomBase annotation extension terms';
@@ -91,21 +92,6 @@ method BUILD
     unless $self->{_organism};
 }
 
-func _get_base_term($cvterm)
-{
-  if ($cvterm->cv()->name() eq $ext_cv_name) {
-    my @rels = $cvterm->cvterm_relationship_subjects();
-    map {
-      my $rel = $_;
-      if ($rel->type()->name() eq 'is_a') {
-        return $rel->object();
-      };
-    } @rels;
-  }
-
-  return $cvterm;
-}
-
 method _get_feature_details
 {
   my %synonyms = ();
@@ -147,7 +133,7 @@ method _get_feature_details
       },
       {
         join => [ 'subject', 'type', { object => 'type' } ],
-        prefetch => [ 'subject', 'object', 'type' ] });
+        prefetch => [ 'subject', { object => 'type' }, 'type' ] });
 
   map {
     my $rel = $_;
@@ -168,11 +154,6 @@ method _get_feature_details
   } $gene_rs->all();
 
   return %ret_map;
-}
-
-method _get_extension_text($fc)
-{
-  return '';
 }
 
 func _safe_join($expr, $array)
@@ -216,6 +197,14 @@ method _lookup_term($term_id) {
   }
 }
 
+func _fix_date($date) {
+  if ($date =~ /(\d+)-(\d+)-(\d+)/) {
+    return "$1$2$3";
+  } else {
+    return $date;
+  }
+}
+
 method retrieve() {
   my $chado = $self->chado();
 
@@ -256,7 +245,7 @@ method retrieve() {
     my $results =
       $feature_cvterm_rs->search({},
         {
-          prefetch => [ 'feature', 'pub' ]
+          prefetch => [ 'feature', 'pub', { cvterm => [ 'cv', { dbxref => 'db' } ] } ]
         },
       );
 
@@ -265,50 +254,62 @@ method retrieve() {
       my $row = $results->next();
 
       if (defined $row) {
-        my $feature = $row->feature();
-        my $details = $feature_details{$feature->feature_id()};
-
-        if ($details->{type} ne 'gene') {
-          warn "skipping: ", $details->{type}, "\n";
-          next ROW;
-        }
+        my ($extensions, $base_cvterm) = $self->make_gaf_extension($row);
 
         my $fc_id = $row->feature_cvterm_id();
         my %row_fc_props = %{$fc_props{$fc_id}};
-        my $cvterm = $self->_lookup_term($row->cvterm_id());
+        my $cvterm = $base_cvterm // $row->cvterm();
         my $cv_name = $cvterm->cv()->name();
-        my $base_cvterm = _get_base_term($cvterm);
-        my $base_cv_name = $base_cvterm->cv()->name();
+
+        if (!grep { $_ eq $cv_name } @go_cv_names) {
+          warn "skipping $cv_name\n";
+          goto ROW;
+        }
+
+        my $feature = $row->feature();
+        my $details = $feature_details{$feature->feature_id()};
+
+        if (!defined $details) {
+          warn "can't find details for: ", $feature->uniquename(), "\n";
+          goto ROW;
+        }
+
+        if ($details->{type} ne 'gene') {
+          warn "skipping: ", $details->{type}, "\n";
+          warn $row->feature()->uniquename(), ' ', $row->cvterm()->name(), "\n";
+
+          goto ROW;
+        }
+
         my $qualifier = $self->_get_qualifier($row, \%row_fc_props);
-        my $dbxref = $base_cvterm->dbxref();
+        my $dbxref = $cvterm->dbxref();
         my $id = $dbxref->db()->name() . ':' . $dbxref->accession();
         my $evidence = _safe_join('|', $row_fc_props{evidence});
         if (!defined $evidence || length $evidence == 0) {
           warn "no evidence for $fc_id\n";
-          next ROW;
+          goto ROW;
         }
         my $evidence_code = $self->{_evidence_to_code}->{$evidence};
         if (!defined $evidence_code) {
           warn q|can't find the evidence code for "$evidence"|;
-          next ROW;
+          goto ROW;
         }
         my $with_from = _safe_join('|', $row_fc_props{with});
-        my $aspect = $cv_abbreviations{$base_cv_name};
+        my $aspect = $cv_abbreviations{$cv_name};
         my $pub = $row->pub();
         my $gene = $details->{gene} // die "no gene for ", $feature->uniquename();
-        my $gene_uniquename = $feature->uniquename();
+        my $gene_uniquename = $gene->uniquename();
         my $gene_name = $gene->name() // $gene_uniquename;
         my $synonyms_ref = $details->{synonyms} // [];
         my $synonyms = join '|', @{$synonyms_ref};
         my $product = $details->{product} // '';
         my $taxon = 'taxon:' . $self->{_organism_taxonid};
-        my $date = _safe_join('|', $row_fc_props{date});
-        my $annotation_extension = $self->_get_extension_text($row);
+        my $date = _safe_join('|', [map { _fix_date($_) } @{$row_fc_props{date}}]);
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
         return [$db_name, $gene_uniquename, $gene_name,
                 $qualifier, $id, $pub->uniquename(),
                 $evidence_code, $with_from, $aspect, $product, $synonyms,
-                'gene', $taxon, $date, $db_name, $annotation_extension,
+                'gene', $taxon, $date, $db_name, $extensions // '',
                 $gene_product_form_id];
       } else {
         return undef;

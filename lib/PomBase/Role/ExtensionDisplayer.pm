@@ -43,24 +43,46 @@ use PomBase::Chado;
 
 requires 'chado';
 
+=head2 make_gaf_extension
+
+ Usage   : my ($extension_text, $parent_term) = $self->make_gaf_extension($feature_cvterm);
+ Function: If the FeatureCvterm has a Cvterm with an extension, return
+           the "column 16" extension text for the term and the parent
+           (GO) term, otherwise return an empty list.
+
+=cut
 method make_gaf_extension($feature_cvterm)
 {
   my $extension_term = $feature_cvterm->cvterm();
+
+  if ($extension_term->cv()->name() ne 'PomBase annotation extension terms') {
+    return ();
+  }
 
   my $parent_rels_rs =
     $self->chado()->resultset("Cv::CvtermRelationship")->
     search({ 'subject_id' => $extension_term->cvterm_id() },
            {
-             prefetch => [{ object => { dbxref => 'db' } }, 'type'],
+             prefetch => { object => { dbxref => 'db' }, type => 'cv' },
            });
 
   my @parents = ();
 
+  my $isa_parent_term = undef;
+
   while (defined (my $rel = $parent_rels_rs->next())) {
-    if ($rel->type()->name() ne 'is_a') {
+    if ($rel->type()->cv()->name() eq 'go/extensions/gorel') {
       push @parents, { rel_type_name => $rel->type()->name(),
                        detail => PomBase::Chado::id_of_cvterm($rel->object()) };
+    } else {
+      if ($rel->type()->name() eq 'is_a') {
+        $isa_parent_term = $rel->object();
+      }
     }
+  }
+
+  if (!defined $isa_parent_term) {
+    croak "can't find parent term for: ", $extension_term->name();
   }
 
   my $annotation_ex_prefix = "annotation_extension_relation-";
@@ -84,7 +106,9 @@ method make_gaf_extension($feature_cvterm)
              ||
            $a->{detail} cmp $b->{detail} } @parents;
 
-  return join ",", map { $_->{rel_type_name} . "(" . $_->{detail} . ")" } @parents
+  my $extension_text = join ",", map { $_->{rel_type_name} . "(" . $_->{detail} . ")" } @parents;
+
+  return ($extension_text, $isa_parent_term);
 }
 
 1;
