@@ -95,9 +95,13 @@ echo filtering redundant terms 1>&2
 echo running consistency checks
 ./script/check-chado.pl ./check-db.yaml $HOST $FINAL_DB $USER $PASSWORD
 
+DUMP_DIR=/var/www/pombase/kmr44/dumps/
+
+./script/pombase-export.pl ./load-chado.yaml gaf --organism-taxon-id=4896 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.gaf
+/var/pomcur/sources/go/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check 2>&1
+
 psql $FINAL_DB -c 'grant select on all tables in schema public to public;'
 
-DUMP_DIR=/var/www/pombase/kmr44/dumps/
 DUMP_FILE=$DUMP_DIR/$FINAL_DB.dump.gz
 
 echo dumping to $DUMP_FILE
