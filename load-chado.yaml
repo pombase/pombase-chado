@@ -280,6 +280,7 @@ evidence_types:
   'Co-immunoprecipitation experiment': ~
   'Electrophoretic mobility shift assay data': ~
   'Northern assay evidence': ~
+  'Particle size and count assay': ~
   'Western blot assay': ~
   'Substance quantification evidence': ~
   'Competitive growth assay evidence': ~
