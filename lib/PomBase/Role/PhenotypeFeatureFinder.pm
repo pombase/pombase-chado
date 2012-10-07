@@ -205,6 +205,7 @@ method get_allele($allele_data)
               } else {
                 $self->store_featureprop($existing_allele, 'description', $new_allele_description);
               }
+              return $existing_allele;
             }
 
             die 'description for new allele "' . $new_allele_name . '(' .
