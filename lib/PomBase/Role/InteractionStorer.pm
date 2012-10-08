@@ -93,7 +93,7 @@ method store_interaction()
 
   $self->store_feature_relationshipprop($rel, evidence => $evidence_type);
   $self->store_feature_relationshipprop($rel, source_database => $source_db);
-  $self->store_feature_relationshipprop($rel, date => $source_db);
+  $self->store_feature_relationshipprop($rel, date => $creation_date);
   if (defined $curator) {
     $self->store_feature_relationshipprop($rel, curator => $curator);
   }
