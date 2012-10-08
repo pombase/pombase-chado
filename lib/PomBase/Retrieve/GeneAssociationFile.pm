@@ -217,16 +217,53 @@ func _fix_date($date) {
   }
 }
 
+my %cv_abbreviations = (biological_process => 'P',
+                        cellular_component => 'C',
+                        molecular_function => 'F',
+                      );
+
+my %top_level_terms = (P => 'GO:0008150',
+                       C => 'GO:0005575',
+                       F => 'GO:0003674',
+                     );
+
+func _make_nd_rows($feature_details, $gene_aspect_counts) {
+  my @rows = ();
+
+  for my $feature_id (keys %$feature_details) {
+    my $feature_details = $feature_details->{$feature_id};
+    my $gene_uniquename = $feature_details->{gene}->uniquename();
+    my $gene_name = $feature_details->{gene}->name();
+
+    for my $aspect_name (keys %cv_abbreviations) {
+      my $aspect_abbrev = $cv_abbreviations{$aspect_name};
+      if (!exists $gene_aspect_counts->{$gene_uniquename}{$aspect_abbrev}) {
+        push @rows, {
+          feature_details => $feature_details,
+          aspect => $aspect_abbrev,
+        }
+      }
+    }
+  }
+
+  return \@rows;
+}
+
+func _current_date {
+  my($day, $month, $year)=(localtime)[3,4,5];
+  return sprintf "%04d%02d%02d", ($year+1900), ($month+1), ($day);
+}
+
 method retrieve() {
   my $chado = $self->chado();
 
   my $db_name = $self->config()->{db_name_for_cv};
+  my $taxon = 'taxon:' . $self->{_organism_taxonid};
+  my $date_now = _current_date();
 
   my %feature_details = $self->_get_feature_details();
-  my %cv_abbreviations = (biological_process => 'P',
-                          cellular_component => 'C',
-                          molecular_function => 'F',
-                        );
+
+  my %gene_aspect_count = ();
 
   my $it = do {
     my $cv_rs =
@@ -260,6 +297,8 @@ method retrieve() {
           prefetch => [ 'feature', 'pub', { cvterm => [ 'cv', { dbxref => 'db' } ] } ]
         },
       );
+
+    my $nd_rows = undef;
 
     iterate {
     ROW: {
@@ -315,16 +354,40 @@ method retrieve() {
         my $synonyms_ref = $details->{synonyms} // [];
         my $synonyms = join '|', @{$synonyms_ref};
         my $product = $details->{product} // '';
-        my $taxon = 'taxon:' . $self->{_organism_taxonid};
         my $date = _safe_join('|', [map { _fix_date($_) } @{$row_fc_props{date}}]);
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
+
+        $gene_aspect_count{$gene_uniquename}{$aspect}++;
+
         return [$db_name, $gene_uniquename, $gene_name,
                 $qualifier, $id, $pub->uniquename(),
                 $evidence_code, $with_from, $aspect, $product, $synonyms,
                 'gene', $taxon, $date, $db_name, $extensions // '',
                 $gene_product_form_id];
       } else {
-        return undef;
+        if (!defined $nd_rows) {
+          $nd_rows = _make_nd_rows(\%feature_details, \%gene_aspect_count);
+        }
+
+        my $row_data = pop @$nd_rows;
+
+        if (defined $row_data) {
+          my $feature_details = $row_data->{feature_details};
+          my $gene_uniquename = $feature_details->{gene}->uniquename();
+          my $gene_name = $feature_details->{gene}->name();
+          my $gene_product = $feature_details->{product};
+          my $synonyms_ref = $feature_details->{synonyms} // [];
+          my $synonyms = join '|', @{$synonyms_ref};
+          my $aspect_abbrev = $row_data->{aspect};
+          my $aspect_id = $top_level_terms{$aspect_abbrev};
+          return [$db_name, $gene_uniquename,
+                  $gene_name // $gene_uniquename,
+                  '', $aspect_id, "GO_REF:0000015",
+                  'ND', '', $aspect_abbrev, $gene_product, $synonyms,
+                  'gene', $taxon, $date_now, $db_name, '', '']
+        } else {
+          return undef;
+        }
       }
     }
     };
