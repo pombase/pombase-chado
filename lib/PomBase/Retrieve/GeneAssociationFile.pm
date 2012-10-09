@@ -46,11 +46,13 @@ use Getopt::Long qw(GetOptionsFromArray);
 
 with 'PomBase::Retriever';
 with 'PomBase::Role::ExtensionDisplayer';
+with 'PomBase::Role::OrganismFinder';
 
 my @go_cv_names = qw(biological_process cellular_component molecular_function);
 my $ext_cv_name = 'PomBase annotation extension terms';
 
 has options => (is => 'ro', isa => 'ArrayRef');
+has verbose => (is => 'rw', default => 0);
 
 method BUILD
 {
@@ -77,16 +79,8 @@ method BUILD
   }
 
   $self->{_evidence_to_code} = \%evidence_to_code;
-
   $self->{_organism_taxonid} = $organism_taxonid;
-
-  my $taxonid_cvterm_query = $self->chado()->resultset('Cv::Cvterm')->
-     search({ name => 'taxon_id' })->get_column('cvterm_id')->as_query();
-
-  $self->{_organism} = $self->chado()->resultset('Organism::Organismprop')->
-    search({ type_id => { -in => $taxonid_cvterm_query },
-             value => $organism_taxonid })->
-    search_related('organism')->first();
+  $self->{_organism} = $self->find_organism_by_taxonid($organism_taxonid);
 
   die "can't find organism for taxon $organism_taxonid\n"
     unless $self->{_organism};
