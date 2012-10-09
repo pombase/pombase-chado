@@ -42,8 +42,6 @@ use feature 'state';
 
 use List::Gen 'iterate';
 
-use Getopt::Long qw(GetOptionsFromArray);
-
 with 'PomBase::Retriever';
 with 'PomBase::Role::ExtensionDisplayer';
 with 'PomBase::Role::OrganismFinder';
@@ -51,47 +49,12 @@ with 'PomBase::Role::OrganismFinder';
 my @go_cv_names = qw(biological_process cellular_component molecular_function);
 my $ext_cv_name = 'PomBase annotation extension terms';
 
-has options => (is => 'ro', isa => 'ArrayRef');
-has verbose => (is => 'rw', default => 0);
-
-method BUILD
-{
-  my $chado = $self->chado();
-
-  my $organism_taxonid = undef;
-
-  my @opt_config = ("organism-taxon-id=s" => \$organism_taxonid);
-  my @options_copy = @{$self->options()};
-
-  if (!GetOptionsFromArray(\@options_copy, @opt_config)) {
-    croak "option parsing failed";
-  }
-
-  if (!defined $organism_taxonid) {
-    die "no --organism-taxon-id argument\n";
-  }
-
-  my %evidence_to_code = ();
-
-  while (my ($code, $details) = each %{$self->config()->{evidence_types}}) {
-    my $ev_name = $details->{name} // $code;
-    $evidence_to_code{$ev_name} = $code;
-  }
-
-  $self->{_evidence_to_code} = \%evidence_to_code;
-  $self->{_organism_taxonid} = $organism_taxonid;
-  $self->{_organism} = $self->find_organism_by_taxonid($organism_taxonid);
-
-  die "can't find organism for taxon $organism_taxonid\n"
-    unless $self->{_organism};
-}
-
 method _get_feature_details
 {
   my %synonyms = ();
 
   my $syn_rs = $self->chado()->resultset('Sequence::FeatureSynonym')->
-    search({ 'feature.organism_id' => $self->{_organism}->organism_id() },
+    search({ 'feature.organism_id' => $self->organism()->organism_id() },
            { join => 'feature', prefetch => [ 'synonym' ] });
 
   map {
@@ -117,7 +80,7 @@ method _get_feature_details
     search(
       {
         -and => {
-          'subject.organism_id' => $self->{_organism}->organism_id(),
+          'subject.organism_id' => $self->organism()->organism_id(),
           -or => [
             'type_2.name' => 'gene',
             'type_2.name' => 'pseudogene',
@@ -252,7 +215,7 @@ method retrieve() {
   my $chado = $self->chado();
 
   my $db_name = $self->config()->{db_name_for_cv};
-  my $taxon = 'taxon:' . $self->{_organism_taxonid};
+  my $taxon = 'taxon:' . $self->organism_taxonid();
   my $date_now = _current_date();
 
   my %feature_details = $self->_get_feature_details();
@@ -330,7 +293,7 @@ method retrieve() {
           warn "no evidence for $fc_id\n";
           goto ROW;
         }
-        my $evidence_code = $self->{_evidence_to_code}->{$evidence};
+        my $evidence_code = $self->evidence_to_code()->{$evidence};
         if (!defined $evidence_code) {
           warn q|can't find the evidence code for "$evidence"|;
           goto ROW;

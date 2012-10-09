@@ -38,7 +38,47 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
+use Getopt::Long qw(GetOptionsFromArray);
+
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
+
+has options => (is => 'ro', isa => 'ArrayRef');
+has verbose => (is => 'rw', default => 0);
+has organism_taxonid => (is => 'rw');
+has organism => (is => 'rw');
+has evidence_to_code => (is => 'rw');
+
+method BUILD
+{
+  my $chado = $self->chado();
+
+  my $organism_taxonid = undef;
+
+  my @opt_config = ("organism-taxon-id=s" => \$organism_taxonid);
+  my @options_copy = @{$self->options()};
+
+  if (!GetOptionsFromArray(\@options_copy, @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  if (!defined $organism_taxonid) {
+    die "no --organism-taxon-id argument\n";
+  }
+
+  my %evidence_to_code = ();
+
+  while (my ($code, $details) = each %{$self->config()->{evidence_types}}) {
+    my $ev_name = $details->{name} // $code;
+    $evidence_to_code{$ev_name} = $code;
+  }
+
+  $self->evidence_to_code(\%evidence_to_code);
+  $self->organism_taxonid($organism_taxonid);
+  $self->organism($self->find_organism_by_taxonid($organism_taxonid));
+
+  die "can't find organism for taxon $organism_taxonid\n"
+    unless $self->organism();
+}
 
 1;
