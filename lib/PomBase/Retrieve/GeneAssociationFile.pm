@@ -307,7 +307,6 @@ method retrieve() {
         my $cv_name = $cvterm->cv()->name();
 
         if (!grep { $_ eq $cv_name } @go_cv_names) {
-          warn "skipping $cv_name\n";
           goto ROW;
         }
 
@@ -320,9 +319,6 @@ method retrieve() {
         }
 
         if ($details->{type} ne 'gene') {
-          warn "skipping: ", $details->{type}, "\n";
-          warn $row->feature()->uniquename(), ' ', $row->cvterm()->name(), "\n";
-
           goto ROW;
         }
 
