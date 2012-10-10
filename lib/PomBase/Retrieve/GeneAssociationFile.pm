@@ -82,19 +82,20 @@ method _get_feature_details
         -and => {
           'subject.organism_id' => $self->organism()->organism_id(),
           -or => [
-            'type_2.name' => 'gene',
-            'type_2.name' => 'pseudogene',
+            'type_3.name' => 'gene',
+            'type_3.name' => 'pseudogene',
           ],
-          'type.name' => 'part_of',
+          'type_2.name' => 'part_of',
         },
       },
       {
-        join => [ 'subject', 'type', { object => 'type' } ],
-        prefetch => [ 'subject', { object => 'type' }, 'type' ] });
+        join => [ { subject => 'type' }, 'type', { object => 'type' } ],
+        prefetch => [ { subject => 'type' }, { object => 'type' }, 'type' ] });
 
   map {
     my $rel = $_;
     my $object = $rel->object();
+    my $subject = $rel->subject();
     my $type = $rel->type();
     if ($type->name() eq 'part_of') {
       if (defined $ret_map{$rel->subject_id()}->{gene}) {
@@ -103,6 +104,7 @@ method _get_feature_details
         $ret_map{$rel->subject_id()} = {
           gene => $object,
           type => $object->type()->name(),
+          transcript_type => $subject->type()->name(),
           synonyms => $synonyms{$object->feature_id()},
           product => $products{$object->uniquename()} // '',
         };
@@ -183,6 +185,10 @@ my %top_level_terms = (P => 'GO:0008150',
                        C => 'GO:0005575',
                        F => 'GO:0003674',
                      );
+
+my @ncrna_so_types = qw(ncRNA snRNA snoRNA rRNA tRNA);
+my %so_type_map = (mRNA => "protein_coding_gene",
+                   map { ($_, $_ . '_gene') } @ncrna_so_types);
 
 func _make_nd_rows($feature_details, $gene_aspect_counts) {
   my @rows = ();
@@ -309,13 +315,14 @@ method retrieve() {
         my $product = $details->{product} // '';
         my $date = _safe_join('|', [map { _fix_date($_) } @{$row_fc_props{date}}]);
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
+        my $so_type = $so_type_map{$details->{transcript_type}};
 
         $gene_aspect_count{$gene_uniquename}{$aspect}++;
 
         return [$db_name, $gene_uniquename, $gene_name,
                 $qualifier, $id, $pub->uniquename(),
                 $evidence_code, $with_from, $aspect, $product, $synonyms,
-                'gene', $taxon, $date, $db_name, $extensions // '',
+                $so_type, $taxon, $date, $db_name, $extensions // '',
                 $gene_product_form_id];
       } else {
         if (!defined $nd_rows) {
@@ -333,11 +340,12 @@ method retrieve() {
           my $synonyms = join '|', @{$synonyms_ref};
           my $aspect_abbrev = $row_data->{aspect};
           my $aspect_id = $top_level_terms{$aspect_abbrev};
+          my $so_type = $so_type_map{$feature_details->{transcript_type}};
           return [$db_name, $gene_uniquename,
                   $gene_name // $gene_uniquename,
                   '', $aspect_id, "GO_REF:0000015",
                   'ND', '', $aspect_abbrev, $gene_product, $synonyms,
-                  'gene', $taxon, $date_now, $db_name, '', '']
+                  $so_type, $taxon, $date_now, $db_name, '', '']
         } else {
           return undef;
         }
