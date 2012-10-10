@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 17;
 
 use Test::Deep;
 use Data::Dumper;
@@ -18,9 +18,9 @@ my $retriever = PomBase::Retrieve::GeneAssociationFile->new(chado => $chado,
                                                             options => [ '--organism-taxon-id' => 4896 ]);
 
 my $expected_term_0005816_base =
-  "PomBase\tSPBC2F12.13.1\t\t\tGO:0005816\t" .
-  "PMID:11739790\tInferred from Electronic Annotation\tIEA\t\t" .
-  "C\t\t\tspindle pole body\tcellular_component\tgene\t" .
+  "PomBase\tSPBC2F12.13\tSPBC2F12.13\t\tGO:0005816\t" .
+  "PMID:11739790\tIEA\t\t" .
+  "C\t\t\tprotein_coding_gene\t" .
   "taxon:4896\t20091023\tPomBase\t";
 
 sub _check_res
@@ -34,7 +34,7 @@ sub _check_res
 
   while (my $data = $results->next()) {
     if ($data->[4] eq 'GO:0005816') {
-      if ($data->[1] eq 'SPBC2F12.13.1') {
+      if ($data->[1] eq 'SPBC2F12.13') {
         die if defined $result_data_0005816;
         $result_data_0005816 = $data;
       }
@@ -51,15 +51,17 @@ sub _check_res
     }
   }
 
-  is ($result_data_0005816->[12], 'spindle pole body');
-  is ($result_data_0051329->[12], 'interphase of mitotic cell cycle');
+  is ($result_data_0005816->[4], 'GO:0005816');
+  is ($result_data_0051329->[4], 'GO:0051329');
+  is ($result_data_0005816->[12], 'taxon:4896');
+  is ($result_data_0051329->[12], 'taxon:4896');
 
   {
     my $formatted_results = $retriever->format_result($result_data_0005816);
     is($formatted_results, $expected_term_0005816);
   }
   is($retriever->format_result($result_data_0051329),
-     "PomBase\tSPBC2F12.13.1\t\tcontributes_to|NOT\tGO:0051329\tPMID:11739790\tInferred from Direct Assay\tIDA\t\tP\t\t\tinterphase of mitotic cell cycle\tbiological_process\tgene\ttaxon:4896\t20091020\tPomBase\t\t\n");
+     "PomBase\tSPBC2F12.13\tSPBC2F12.13\tcontributes_to|NOT\tGO:0051329\tPMID:11739790\tIDA\t\tP\t\t\tprotein_coding_gene\ttaxon:4896\t20091020\tPomBase\t\t\n");
 
   is($retriever->header(), '');
 }
@@ -93,11 +95,7 @@ sub _check_res
 
   ok (defined $ex_cvterm);
 
-  my $parent_cvterm = PomBase::Retrieve::GeneAssociationFile::_get_base_term($ex_cvterm);
-
-  is($parent_cvterm->name(), 'spindle pole body');
-
-  my $expected_term_0005816 = $expected_term_0005816_base . "\t\n";
+  my $expected_term_0005816 = $expected_term_0005816_base . "has_substrate(GO:0051329)\t\n";
 
   _check_res($expected_term_0005816);
 }
