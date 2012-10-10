@@ -329,10 +329,16 @@ method retrieve() {
           $nd_rows = _make_nd_rows(\%feature_details, \%gene_aspect_count);
         }
 
+      ND_ROW: {
         my $row_data = pop @$nd_rows;
 
         if (defined $row_data) {
           my $feature_details = $row_data->{feature_details};
+
+          if ($feature_details->{type} ne 'gene') {
+            goto ND_ROW;
+          }
+
           my $gene_uniquename = $feature_details->{gene}->uniquename();
           my $gene_name = $feature_details->{gene}->name();
           my $gene_product = $feature_details->{product};
@@ -349,6 +355,7 @@ method retrieve() {
         } else {
           return undef;
         }
+      }
       }
     }
     };
