@@ -63,7 +63,7 @@ $retrieve_module->new(chado => \$chado, config => \$config,
   my $results = $retriever->retrieve();
 
   while (my $data = $results->next()) {
-    print $retriever->format_result($data);
+    print $retriever->format_result($data), "\n";
   }
 } else {
   die "unknown type to retrieve: $retrieve_type\n";

@@ -38,8 +38,9 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
+
+requires 'chado';
 
 method find_organism_by_common_name($common_name)
 {

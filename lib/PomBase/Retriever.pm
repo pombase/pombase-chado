@@ -40,8 +40,7 @@ use Moose::Role;
 
 use Getopt::Long qw(GetOptionsFromArray);
 
-with 'PomBase::Role::ConfigUser';
-with 'PomBase::Role::ChadoUser';
+requires qw(config chado find_organism_by_taxonid);
 
 has options => (is => 'ro', isa => 'ArrayRef');
 has verbose => (is => 'rw', default => 0);

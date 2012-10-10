@@ -40,11 +40,43 @@ use Moose;
 
 use List::Gen 'iterate';
 
+use Getopt::Long qw(GetOptionsFromArray :config pass_through);
+
+with 'PomBase::Role::ConfigUser';
+with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Retriever';
 with 'PomBase::Role::CvQuery';
 
+has other_organism_taxonid => (is => 'rw');
+
+sub BUILDARGS
+{
+  my $class = shift;
+  my %args = @_;
+
+  my $other_organism_taxonid = undef;
+
+  my @opt_config = ("other-organism-taxon-id=s" => \$other_organism_taxonid,
+                  );
+
+  if (!GetOptionsFromArray($args{options}, @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  if (!defined $other_organism_taxonid) {
+    die "no --other-organism-taxon-id argument\n";
+  }
+
+  $args{other_organism_taxonid} = $other_organism_taxonid;
+
+  return \%args;
+}
+
 method retrieve() {
   my $chado = $self->chado();
+
+  my $other_organism = $self->find_organism_by_taxonid($self->other_organism_taxonid());
 
   my $dbh = $self->chado()->storage()->dbh();
 
@@ -64,7 +96,7 @@ FROM feature_relationship me
 JOIN feature subject ON subject.feature_id = me.subject_id
 JOIN feature object ON object.feature_id = me.object_id
 WHERE me.type_id = (select cvterm_id from cvterm where name = 'orthologous_to')
-  AND subject.organism_id = (select organism_id from organism where common_name = 'Scerevisiae')
+  AND subject.organism_id = ?
   AND object.feature_id in (select * from protein_coding_genes)
 UNION
 SELECT uniquename as o_un, 'NONE' as s_name
@@ -73,8 +105,7 @@ SELECT uniquename as o_un, 'NONE' as s_name
         WHERE r.subject_id = subject_f.feature_id
           AND subject_f.organism_id = (select organism_id from organism where
         common_name = 'Scerevisiae'))
-  AND f.organism_id = (select organism_id from organism where
-        common_name = 'pombe')
+  AND f.organism_id = ?
   AND f.type_id = (select cvterm_id from cvterm where name = 'gene')
   AND f.feature_id in (select * from protein_coding_genes)
  ORDER BY o_un, s_name;";
@@ -90,7 +121,8 @@ GROUP BY o_un
     $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
     $sth = $dbh->prepare($ortholog_temp);
-    $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+    $sth->execute($other_organism->organism_id(), $self->organism()->organism_id())
+      or die "Couldn't execute: " . $sth->errstr;
 
     $sth = $dbh->prepare($query);
     $sth->execute() or die "Couldn't execute: " . $sth->errstr;

@@ -42,9 +42,11 @@ use feature 'state';
 
 use List::Gen 'iterate';
 
+with 'PomBase::Role::ConfigUser';
+with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Retriever';
 with 'PomBase::Role::ExtensionDisplayer';
-with 'PomBase::Role::OrganismFinder';
 
 my @go_cv_names = qw(biological_process cellular_component molecular_function);
 my $ext_cv_name = 'PomBase annotation extension terms';
@@ -375,5 +377,5 @@ method header
 
 method format_result($res)
 {
-  return (join "\t", @$res) . "\n";
+  return (join "\t", @$res);
 }
