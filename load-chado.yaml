@@ -282,6 +282,7 @@ evidence_types:
   'Northern assay evidence': ~
   'Particle size and count assay': ~
   'Western blot assay': ~
+  'Substance quantification': ~
   'Substance quantification evidence': ~
   'Competitive growth assay evidence': ~
   'Gel electrophoresis evidence': ~
