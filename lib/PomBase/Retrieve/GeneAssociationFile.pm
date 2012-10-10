@@ -198,6 +198,12 @@ func _make_nd_rows($feature_details, $gene_aspect_counts) {
     my $gene_uniquename = $feature_details->{gene}->uniquename();
     my $gene_name = $feature_details->{gene}->name();
 
+    if (!exists $gene_aspect_counts->{$gene_uniquename} &&
+        $feature_details->{transcript_type} eq 'ncRNA') {
+      # if there are no annotation for an ncRNA, ignore it
+      next;
+    }
+
     for my $aspect_name (keys %cv_abbreviations) {
       my $aspect_abbrev = $cv_abbreviations{$aspect_name};
       if (!exists $gene_aspect_counts->{$gene_uniquename}{$aspect_abbrev}) {
