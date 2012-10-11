@@ -43,6 +43,7 @@ my $config = LoadFile($config_file);
 my %retrieve_modules = (
   phenotypes => 'PomBase::Retrieve::Phenotypes',
   orthologs => 'PomBase::Retrieve::Orthologs',
+  interactions => 'PomBase::Retrieve::Interactions',
   ontology => 'PomBase::Retrieve::Ontology',
   gaf => 'PomBase::Retrieve::GeneAssociationFile',
 );
