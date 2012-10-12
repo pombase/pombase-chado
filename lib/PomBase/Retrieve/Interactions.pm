@@ -127,17 +127,24 @@ method retrieve() {
                        {
                          prefetch => { subject => [ 'type', 'organism' ],
                                        object => [ 'type', 'organism' ] },
-                         rows => 10,
                        });
 
   my %props = $self->_read_rel_props($rel_rs);
   my %pubs = $self->_read_pubs($rel_rs);
 
+  my $db_name = $self->config()->{db_name_for_cv};
+
   my $it = do {
     iterate {
+    ROW: {
         my $row = $rel_rs->next();
 
         if (defined $row) {
+          my $source_database = $props{$row->feature_relationship_id()}{source_database};
+          if ($source_database ne $db_name) {
+            goto ROW;
+          }
+
           my $gene_a_uniquename = $row->subject()->uniquename();
           my $org_a_taxonid = $self->_organism_taxonid($row->subject()->organism());
           my $gene_b_uniquename = $row->object()->uniquename();
@@ -153,6 +160,7 @@ method retrieve() {
           return undef;
         }
       }
+    }
   };
 }
 
