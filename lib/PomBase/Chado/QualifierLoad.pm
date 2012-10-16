@@ -412,6 +412,10 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
     $featurecvterm->feature($allele_feature);
     $featurecvterm->update();
+  } else {
+    if ($cv_name eq 'phenotype') {
+      die "no allele for phenotype ", $cvterm->name(), "\n";
+    }
   }
 
   if (defined $sub_qual_map->{column_17}) {
