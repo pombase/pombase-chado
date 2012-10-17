@@ -337,11 +337,18 @@ method _store_ontology_annotation
     }
 
     if (exists $by_type{expression}) {
-      if (defined $expression && $expression ne $by_type{expression}) {
-        die "two different expression levels given: $expression and $by_type{expression}\n";
-      } else {
-        $expression = delete $by_type{expression};
+      my @expressions = @{delete $by_type{expression}};
+
+      if (@expressions > 1) {
+        die "more than one expression given: @expressions\n";
       }
+
+      my $ext_expression = $expressions[0];
+
+      if (defined $expression && $expression ne $ext_expression) {
+        die "two different expression levels given: $expression and $ext_expression\n";
+      }
+      $expression = ucfirst $ext_expression;
     }
 
     if (defined $expression) {
