@@ -287,7 +287,8 @@ evidence_types:
   'Competitive growth assay evidence': ~
   'Gel electrophoresis evidence': ~
   'Plasmid maintenance assay evidence': ~
-  FPR:
+  'Sodium dodecyl sulfate polyacrylamide gel electrophoresis': ~
+  'FPR':
     name: fitness profiling
     definition: "ECO term name is 'competitive growth assay evidence' (ECO:0000336)"
   'ECO:0000049':
