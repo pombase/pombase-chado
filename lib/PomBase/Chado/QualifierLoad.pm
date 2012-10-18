@@ -379,8 +379,12 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
                                   residue => delete $sub_qual_map->{residue});
   }
 
-  if (defined $sub_qual_map->{allele}) {
+  if (defined $sub_qual_map->{allele} || $cv_name eq 'fission_yeast_phenotype') {
     my $allele = $sub_qual_map->{allele};
+
+    if (!defined $allele) {
+      die "no allele qualifier for phenotype", $cvterm->name(), "\n";
+    }
 
     my %args = (gene => $pombe_feature);
 
@@ -412,10 +416,6 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
     $featurecvterm->feature($allele_feature);
     $featurecvterm->update();
-  } else {
-    if ($cv_name eq 'fission_yeast_phenotype') {
-      die "no allele for phenotype ", $cvterm->name(), "\n";
-    }
   }
 
   if (defined $sub_qual_map->{column_17}) {
