@@ -140,14 +140,15 @@ method store_extension($feature_cvterm, $extensions)
       my $term = $extension->{term};
       my $nested_extension = $extension->{nested_extension};
 
+      my $rel = $self->find_cvterm_by_name($go_relationship_cv_name, $rel_name);
+      if (!defined $rel) {
+        $rel = $self->find_cvterm_by_name($phenotype_relationship_cv_name, $rel_name);
+      }
+      if (!defined $rel) {
+        $rel = $self->find_cvterm_by_name($psi_mod_relationship_cv_name, $rel_name);
+      }
+
       if (defined $term) {
-        my $rel = $self->find_cvterm_by_name($go_relationship_cv_name, $rel_name);
-        if (!defined $rel) {
-          $rel = $self->find_cvterm_by_name($phenotype_relationship_cv_name, $rel_name);
-        }
-        if (!defined $rel) {
-          $rel = $self->find_cvterm_by_name($psi_mod_relationship_cv_name, $rel_name);
-        }
         my $old_cv_name = $old_cvterm->cv()->name();
         my $extension_restriction_conf = $self->config()->{extension_restrictions};
         my $cv_restrictions_conf = $extension_restriction_conf->{$old_cv_name};
@@ -198,7 +199,7 @@ method store_extension($feature_cvterm, $extensions)
           $rel_name = 'localization_target';
         }
 
-        my $ex_type = 'annotation_extension_relation-' . $rel_name;
+        my $ex_type = 'annotation_extension_relation-' . $rel->name();
 
         warn qq{storing extension as cvtermprop: $ex_type -> $identifier\n} if $self->verbose();
 
