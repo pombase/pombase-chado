@@ -189,8 +189,8 @@ my %top_level_terms = (P => 'GO:0008150',
                      );
 
 my @ncrna_so_types = qw(ncRNA snRNA snoRNA rRNA tRNA);
-my %so_type_map = (mRNA => "protein_coding_gene",
-                   map { ($_, $_ . '_gene') } @ncrna_so_types);
+my %so_type_map = (mRNA => "protein",
+                   map { ($_, $_) } @ncrna_so_types);
 
 func _make_nd_rows($feature_details, $gene_aspect_counts) {
   my @rows = ();
