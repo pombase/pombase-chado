@@ -152,7 +152,10 @@ method load($fh)
     my $org1_identifier = $columns_ref->{"org1_identifier"};
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
 
-    last unless defined $org1_identifier and defined $org2_identifiers;
+    if (!defined $org1_identifier || !defined $org2_identifiers) {
+      warn "not enough columns at line $. of input\n";
+      next;
+    }
 
     my @org2_identifiers = split (',', $org2_identifiers);
 
