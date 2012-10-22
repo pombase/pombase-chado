@@ -24,7 +24,7 @@ my $builder = Module::Build->new(
       'Method::Signatures'    => 0,
       'Module::Find'          => 0,
       'Tie::Hash::Indexed'    => 0,
-      'Webservice::InterMine' => 0,
+      'Bio::EnsEMBL::Registry' => 0,
       'YAML'                  => 0,
       'YAML::Any'             => 0,
     },
