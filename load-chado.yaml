@@ -317,13 +317,13 @@ db_name_for_cv: PomBase
 
 ensembl_dbs:
   'Homo sapiens':
-    host: ensembldb.ensembl.org
+    host: useastdb.ensembl.org
     port: 5306
     user: anonymous
     group: core
     dbname: homo_sapiens_core_69_37
   'Saccharomyces cerevisiae':
-    host: ensembldb.ensembl.org
+    host: useastdb.ensembl.org
     port: 5306
     user: anonymous
     group: core
