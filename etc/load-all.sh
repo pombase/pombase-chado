@@ -97,12 +97,15 @@ echo running consistency checks
 
 DUMP_DIR=/var/www/pombase/kmr44/dumps/
 
-./script/pombase-export.pl ./load-chado.yaml gaf --organism-taxon-id=4896 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.gaf
-/var/pomcur/sources/go/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check 2>&1
+mkdir $DUMP_DIR/$FINAL_DB
+
+./script/pombase-export.pl ./load-chado.yaml gaf --organism-taxon-id=4896 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB/$FINAL_DB.gaf
+./script/pombase-export.pl ./load-chado.yaml orthologs --organism-taxon-id=4896 --other-organism-taxon-id=9606 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB/$FINAL_DB.human-orthologs.txt
+/var/pomcur/sources/go/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check 2>&1
 
 psql $FINAL_DB -c 'grant select on all tables in schema public to public;'
 
-DUMP_FILE=$DUMP_DIR/$FINAL_DB.dump.gz
+DUMP_FILE=$DUMP_DIR/$FINAL_DB/$FINAL_DB.dump.gz
 
 echo dumping to $DUMP_FILE
 pg_dump $FINAL_DB | gzip -9v > $DUMP_FILE
