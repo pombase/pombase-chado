@@ -38,6 +38,8 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
+use PomBase::Chado;
+
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::CvQuery';
