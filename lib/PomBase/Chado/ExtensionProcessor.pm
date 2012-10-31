@@ -181,7 +181,7 @@ method store_extension($feature_cvterm, $extensions)
         }
 
         if ($self->get_cvterm_rel($new_term, $term, $rel)->count() > 0) {
-          my $id = PomCur::Chado::id_of_cvterm($term);
+          my $id = PomBase::Chado::id_of_cvterm($term);
           my $feature_uniquename = $feature_cvterm->feature()->uniquename();
           warn "in $feature_uniquename, duplicated annotation extension for ",
             $rel->name(), " (", $id, ")\n";
