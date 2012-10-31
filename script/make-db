@@ -57,6 +57,9 @@ make load_schema
 make prepdb
 make ontologies
 
+echo loading GO
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/go-svn/ontology/gene_ontology_edit.obo | go-apply-xslt oboxml_to_chadoxml - > go_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD go_obo_text.xml || exit 1
+
 echo PSI-MOD.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mod_obo_text.xml || exit 1
 
