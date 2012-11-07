@@ -43,8 +43,11 @@ use List::Gen 'iterate';
 
 use Getopt::Long qw(GetOptionsFromArray);
 
-with 'PomBase::Retriever';
+with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::OrganismFinder';
+with 'PomBase::Retriever';
 
 has options => (is => 'ro', isa => 'ArrayRef');
 
