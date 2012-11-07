@@ -47,9 +47,10 @@ rm --verbose -rf tmp
 
 (cd $SOURCES_DIR/pombe-embl/; svn update || exit 1)
 
-echo update GO
+echo update GO from CVS
 (cd $SOURCES_DIR/go; cvs up)
-(cd $SOURCES_DIR/go-svn; svn update)
+echo update GO from SVN
+(cd $SOURCES_DIR/go-svn; svn --ignore-externals update)
 
 perl Makefile.PL
 make
