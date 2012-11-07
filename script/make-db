@@ -65,8 +65,6 @@ echo PSI-MOD.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mod_obo_text.xml || exit 1
 
 echo mini iao.obo
-# needed for fypo-simple.obo
-echo mini cl.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/iao.obo | go-apply-xslt oboxml_to_chadoxml > iao.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD iao.xml || exit 1
 
 echo fypo-simple.obo
