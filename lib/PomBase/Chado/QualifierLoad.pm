@@ -451,7 +451,8 @@ method maybe_move_igi($term, $qualifiers, $sub_qual_map) {
     'GO:0034504' => 1,
     'GO:0034502' => 1,
     'GO:0034504' => 1,
-    'GO:0006606' => 1);
+    'GO:0006606' => 1,
+    'GO:0034503' => 1);
 
   return unless $terms{$termid};
 
