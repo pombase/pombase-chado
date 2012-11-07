@@ -101,10 +101,10 @@ method is_aa_mutation_desc($description)
 method allele_type_from_desc($description, $gene_name)
 {
   if (grep { $_ eq $description } ('deletion', 'wild type', 'unknown', 'other')) {
-    return $description;
+    return ($description =~ s/\s+/_/r);
   } else {
     if ($self->is_aa_mutation_desc($description)) {
-      return 'amino acid mutation';
+      return 'amino_acid_mutation';
     } else {
       if (defined $gene_name && $description =~ /^$gene_name/) {
         return 'other';
