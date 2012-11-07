@@ -79,11 +79,8 @@ go2fmt.pl -p obo_text -w xml $SOURCES_DIR/go-svn/ontology/extensions/go_annotati
 echo pro_small.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pro_small.obo | go-apply-xslt oboxml_to_chadoxml - > pro_small_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pro_small_obo_text.xml || exit 1
 
-echo load pombase terms
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombase/pombase_terms-v23.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
-
 echo mini fypo_extension.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/fypo_extension.obo | go-apply-xslt oboxml_to_chadoxml > chebi.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD chebi.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/fypo_extension.obo | go-apply-xslt oboxml_to_chadoxml > fypo-ex.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD fypo-ex.xml || exit 1
 
 echo mini chebi.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/chebi.obo | go-apply-xslt oboxml_to_chadoxml > chebi.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD chebi.xml || exit 1
@@ -99,6 +96,9 @@ go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/pombe_mini_
 
 echo PSI-MOD_extension_relations.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml > PSI-MOD_extension_relations.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD PSI-MOD_extension_relations.xml || exit 1
+
+echo load pombase terms
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombase/pombase_terms-v28.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
 
 echo populate cvtermpath
 
