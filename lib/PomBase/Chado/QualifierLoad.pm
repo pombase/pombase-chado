@@ -263,11 +263,57 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     }
   }
 
+  my @withs = ();
+
+  if ($self->is_go_cv_name($cv_name) || $cv_name eq 'fission_yeast_phenotype') {
+    if (defined $sub_qual_map->{with}) {
+      @withs = split /\|/, delete $sub_qual_map->{with};
+    }
+  }
+
   my $db_xref = delete $sub_qual_map->{db_xref};
 
   if ($self->is_go_cv_name($cv_name) || $cv_name eq 'fission_yeast_phenotype') {
     if (!defined $db_xref) {
       die "no db_xref for $embl_term_name\n";
+    }
+  }
+
+  my $evidence_code = delete $sub_qual_map->{evidence};
+  my $evidence = undef;
+
+  if (defined $evidence_code) {
+    if (grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
+                                  'cellular_component')) {
+      if ($evidence_code eq 'ISS') {
+        if (grep { /^SGD:/ } @withs) {
+          warn "    changing ISS to ISO for @withs\n" if $self->verbose();
+          $evidence_code = 'ISO';
+          if ($db_xref eq 'GO_REF:0000001') {
+            $db_xref = 'GO_REF:0000024';
+          }
+        } else {
+          if (grep { /^(Pfam|InterPro):/ } @withs) {
+            warn "    changing ISS to ISM for @withs\n" if $self->verbose();
+            $evidence_code = 'ISM';
+          }
+        }
+      } else {
+
+      }
+    } else {
+      warn "found evidence for $embl_term_name in $cv_name\n";
+    }
+    $evidence = $self->config()->{evidence_types}->{$evidence_code}->{name};
+  } else {
+    if (grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
+                                 'cellular_component')) {
+      warn "no evidence for $cv_name annotation: $embl_term_name in ", $uniquename, "\n";
+    }
+
+    if ($cv_name eq 'fission_yeast_phenotype' and $db_xref eq 'PMID:20473289') {
+      $evidence_code = 'Microscopy';
+      $evidence = 'Microscopy';
     }
   }
 
@@ -314,58 +360,17 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     }
   }
 
-  my @withs = ();
-
-  if ($self->is_go_cv_name($cv_name) || $cv_name eq 'fission_yeast_phenotype') {
-    if (defined $sub_qual_map->{with}) {
-      @withs = split /\|/, delete $sub_qual_map->{with};
-      for (my $i = 0; $i < @withs; $i++) {
-        my $with = $withs[$i];
-        if ($with =~ /.:./) {
-          $self->add_feature_cvtermprop($featurecvterm, with => $with, $i);
-        } else {
-          die qq|"with" identifier "$with" is not in the form db:accession\n|;
-        }
-      }
+  for (my $i = 0; $i < @withs; $i++) {
+    my $with = $withs[$i];
+    if ($with =~ /.:./) {
+      $self->add_feature_cvtermprop($featurecvterm, with => $with, $i);
+    } else {
+      die qq|"with" identifier "$with" is not in the form db:accession\n|;
     }
   }
 
   $self->add_feature_cvtermprop($featurecvterm, qualifier => [@qualifiers]);
 
-  my $evidence_code = delete $sub_qual_map->{evidence};
-  my $evidence = undef;
-
-  if (defined $evidence_code) {
-    if (grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
-                                  'cellular_component')) {
-      if ($evidence_code eq 'ISS') {
-        if (grep { /^SGD:/ } @withs) {
-            warn "    changing ISS to ISO for @withs\n" if $self->verbose();
-          $evidence_code = 'ISO'
-        } else {
-          if (grep { /^(Pfam|InterPro):/ } @withs) {
-            warn "    changing ISS to ISM for @withs\n" if $self->verbose();
-            $evidence_code = 'ISM';
-          }
-        }
-      } else {
-
-      }
-    } else {
-      warn "found evidence for $embl_term_name in $cv_name\n";
-    }
-    $evidence = $self->config()->{evidence_types}->{$evidence_code}->{name};
-  } else {
-    if (grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
-                                 'cellular_component')) {
-      warn "no evidence for $cv_name annotation: $embl_term_name in ", $uniquename, "\n";
-    }
-
-    if ($cv_name eq 'fission_yeast_phenotype' and $pub->uniquename() eq 'PMID:20473289') {
-      $evidence_code = 'Microscopy';
-      $evidence = 'Microscopy';
-    }
-  }
   if (defined $evidence_code) {
     if (!defined $evidence) {
       warn "no evidence description for $evidence_code\n";
