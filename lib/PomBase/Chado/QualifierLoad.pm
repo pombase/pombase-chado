@@ -280,7 +280,6 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   }
 
   my $evidence_code = delete $sub_qual_map->{evidence};
-  my $evidence = undef;
 
   if (defined $evidence_code) {
     if (grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
@@ -304,7 +303,6 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     } else {
       warn "found evidence for $embl_term_name in $cv_name\n";
     }
-    $evidence = $self->config()->{evidence_types}->{$evidence_code}->{name};
   } else {
     if (grep { $_ eq $cv_name } ('biological_process', 'molecular_function',
                                  'cellular_component')) {
@@ -313,7 +311,6 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
     if ($cv_name eq 'fission_yeast_phenotype' and $db_xref eq 'PMID:20473289') {
       $evidence_code = 'Microscopy';
-      $evidence = 'Microscopy';
     }
   }
 
@@ -349,7 +346,12 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   if ($self->is_go_cv_name($cv_name)) {
     $self->add_feature_cvtermprop($featurecvterm, assigned_by => $self->config()->{db_name_for_cv});
 
-    $self->maybe_move_igi($cvterm, \@qualifiers, $sub_qual_map);
+    my $new_evidence_code =
+      $self->maybe_move_igi($cvterm, $evidence_code, \@qualifiers, \@withs, $sub_qual_map);
+
+    die "no evidence code" unless defined $evidence_code;
+
+    $evidence_code = $new_evidence_code;
 
     if (defined $sub_qual_map->{from}) {
       my @froms = split /\|/, delete $sub_qual_map->{from};
@@ -372,6 +374,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   $self->add_feature_cvtermprop($featurecvterm, qualifier => [@qualifiers]);
 
   if (defined $evidence_code) {
+    my $evidence = $self->config()->{evidence_types}->{$evidence_code}->{name};
     if (!defined $evidence) {
       warn "no evidence description for $evidence_code\n";
     }
@@ -446,7 +449,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   return 1;
 }
 
-method maybe_move_igi($term, $qualifiers, $sub_qual_map) {
+method maybe_move_igi($term, $evidence_code, $qualifiers, $withs, $sub_qual_map) {
   my $dbxref = $term->dbxref();
   my $termid = $dbxref->db()->name() . ':' . $dbxref->accession();
 
@@ -459,25 +462,34 @@ method maybe_move_igi($term, $qualifiers, $sub_qual_map) {
     'GO:0006606' => 1,
     'GO:0034503' => 1);
 
-  return unless $terms{$termid};
+  return $evidence_code unless $terms{$termid};
 
-  if ($sub_qual_map->{evidence} && $sub_qual_map->{evidence} eq 'IGI' &&
+use Data::Dumper;
+$Data::Dumper::Maxdepth = 5;
+warn Dumper([$sub_qual_map, $qualifiers, $evidence_code]), "\n";
+
+
+  if ($evidence_code && $evidence_code eq 'IGI' &&
       defined $qualifiers && @{$qualifiers} > 0 &&
       grep { $_ eq 'localization_dependency'; } @$qualifiers) {
-    if (exists $sub_qual_map->{with}) {
-      my $with = delete $sub_qual_map->{with};
+
+    if (@$withs) {
+      my $with = $withs->[0];
 
       if (exists $sub_qual_map->{annotation_extension}) {
         warn "annotation_extension already exists when converting IGI\n";
       } else {
         $sub_qual_map->{annotation_extension} = "localizes($with)";
-        $sub_qual_map->{evidence} = 'IMP';
         @$qualifiers = grep { $_ ne 'localization_dependency'; } @$qualifiers;
+
+        return 'IMP';
       }
     } else {
       warn "no 'with' qualifier on localization_dependency IGI\n"
     }
   }
+
+  return $evidence_code;
 }
 
 method maybe_move_predicted($qualifiers, $sub_qual_map) {

@@ -153,7 +153,7 @@ method check
   my ($localizes_term) = grep { $_->cvterm()->name() =~ /cellular protein localization \[localizes\] SPAC167.03c/ } @all_feature_cvterm;
   assert(defined $localizes_term);
 
-  should($localizes_term->feature_cvtermprops()->count(), 4);
+  should($localizes_term->feature_cvtermprops()->count(), 5);
 
   my $feature_cvterm_rs =
     $transcript->feature_cvterms()->search({
@@ -165,10 +165,9 @@ method check
   {
     my @actual_props = map { ( $_->type()->name(), $_->value() ) } $feature_cvterm->feature_cvtermprops();
 
-    my @expected_props = ( 'qualifier', 'predicted', 'qualifier',
-                           'region', 'evidence', 'Inferred from Direct Assay',
+    my @expected_props = ( 'qualifier', 'region',
+                           'evidence', 'Inferred from Direct Assay',
                            'date', '19700101');
-
     assert(Compare(\@expected_props, \@actual_props));
   }
 
@@ -181,7 +180,7 @@ method check
   }
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 222);
+  should(scalar(@all_props), 210);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
   should ($feat_rs->count(), 74);
