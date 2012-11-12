@@ -374,10 +374,11 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
   $self->add_feature_cvtermprop($featurecvterm, qualifier => [@qualifiers]);
 
   if (defined $evidence_code) {
-    my $evidence = $self->config()->{evidence_types}->{$evidence_code}->{name};
-    if (!defined $evidence) {
-      warn "no evidence description for $evidence_code\n";
+    if (!exists $self->config()->{evidence_types}->{$evidence_code}) {
+      die "no such evidence code: $evidence_code\n";
     }
+    my $evidence =
+      $self->config()->{evidence_types}->{$evidence_code}->{name} // $evidence_code;
 
     $self->add_feature_cvtermprop($featurecvterm, evidence => $evidence);
   }
