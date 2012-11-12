@@ -464,11 +464,6 @@ method maybe_move_igi($term, $evidence_code, $qualifiers, $withs, $sub_qual_map)
 
   return $evidence_code unless $terms{$termid};
 
-use Data::Dumper;
-$Data::Dumper::Maxdepth = 5;
-warn Dumper([$sub_qual_map, $qualifiers, $evidence_code]), "\n";
-
-
   if ($evidence_code && $evidence_code eq 'IGI' &&
       defined $qualifiers && @{$qualifiers} > 0 &&
       grep { $_ eq 'localization_dependency'; } @$qualifiers) {
