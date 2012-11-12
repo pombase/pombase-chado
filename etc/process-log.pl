@@ -16,6 +16,7 @@ open my $duplicated_sub_qual_problems, '>', 'duplicated_sub_qual_problems.txt' o
 open my $target_problems, '>', 'target_problems.txt' or die;
 open my $evidence_problems, '>', 'evidence_problems.txt' or die;
 open my $db_xref_problems, '>', 'db_xref_problems.txt' or die;
+open my $identifier_problems, '>', 'identifier_problems.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
 my $prev_line = '';
@@ -88,6 +89,11 @@ while (defined (my $line = <>)) {
                               if ($line =~ /^no db_xref for/) {
                                 print $all_warnings $line;
                                 print $db_xref_problems "$gene: $line";
+                              } else {
+                                if ($line =~ /^can't find feature for: /) {
+                                  print $all_warnings $line;
+                                  print $identifier_problems "$gene: $line";
+                                }
                               }
                             }
                           }
