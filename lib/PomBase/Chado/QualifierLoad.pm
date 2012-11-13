@@ -392,7 +392,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
     my $allele = $sub_qual_map->{allele};
 
     if (!defined $allele) {
-      die "no allele qualifier for phenotype", $cvterm->name(), " from $db_xref\n";
+      die "no allele qualifier for phenotype ", $cvterm->name(), " from $db_xref\n";
     }
 
     my %args = (gene => $pombe_feature);
