@@ -92,7 +92,7 @@ while (defined (my $line = <>)) {
                               } else {
                                 if ($line =~ /(can't find feature for: .*)/) {
                                   print $all_warnings "$1\n";
-                                  if (length $gene > 0) {
+                                  if (defined $gene && length $gene > 0) {
                                     print $identifier_problems "$gene: $1\n";
                                   } else {
                                     print $identifier_problems "$line";
