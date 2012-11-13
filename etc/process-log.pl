@@ -90,9 +90,9 @@ while (defined (my $line = <>)) {
                                 print $all_warnings $line;
                                 print $db_xref_problems "$gene: $line";
                               } else {
-                                if ($line =~ /^can't find feature for: /) {
-                                  print $all_warnings $line;
-                                  print $identifier_problems "$gene: $line";
+                                if ($line =~ /(can't find feature for: .*)/) {
+                                  print $all_warnings "$1\n";
+                                  print $identifier_problems "$gene: $1\n";
                                 }
                               }
                             }
