@@ -82,7 +82,7 @@ while (defined (my $line = <>)) {
                             print $all_warnings $line;
                             print $target_problems $line;
                           } else {
-                            if ($line =~ /no evidence for: /) {
+                            if ($line =~ /no (?:such )?evidence for: /) {
                               print $all_warnings $line;
                               print $evidence_problems $line;
                             } else {
