@@ -82,9 +82,9 @@ while (defined (my $line = <>)) {
                             print $all_warnings $line;
                             print $target_problems $line;
                           } else {
-                            if ($line =~ /no evidence for: /) {
+                            if ($line =~ /no evidence for: |no such evidence code: /) {
                               print $all_warnings $line;
-                              print $evidence_problems $line;
+                              print $evidence_problems "$gene: $line";
                             } else {
                               if ($line =~ /^no db_xref for/) {
                                 print $all_warnings $line;
