@@ -470,7 +470,12 @@ method maybe_move_igi($term, $evidence_code, $qualifiers, $withs, $sub_qual_map)
       grep { $_ eq 'localization_dependency'; } @$qualifiers) {
 
     if (@$withs) {
+      if (@$withs > 1) {
+        die "can't handle more than one with qualifier\n";
+      }
       my $with = $withs->[0];
+
+      @$withs = ();
 
       if (exists $sub_qual_map->{annotation_extension}) {
         warn "annotation_extension already exists when converting IGI\n";
