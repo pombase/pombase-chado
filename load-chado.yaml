@@ -163,9 +163,6 @@ allowed_unknown_term_names_files:
 allowed_term_mismatches_files:
   - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/current_load_config/cumulative_ID_ok_mismatches.txt
   - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/current_load_config/cumulative_name_ok_mismatches.txt
-  - "/home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/old warnings/warnings-2011-06-21/6-21_mismatch_name_ok.txt"
-  - "/home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/old warnings/warnings-2011-07-13/edited-mismatches.txt"
-  - "/home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/old warnings/warnings-2011-07-14.2/edited-mismatches.txt"
 
 organism_taxon_map:
   284812: 4896
