@@ -43,7 +43,7 @@ then
   echo "no pombe BioGRID file found - exiting" 1>&2
   exit 1
 fi
-) 2>&1 | tee -a $log_file.biogrid
+) 2>&1 | tee -a $log_file.biogrid-output
 
 cd $HOME/git/pombase-run
 cat $SOURCES/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt | ./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD 2>&1 | tee -a $LOG_DIR/$log_file.biogrid
@@ -63,7 +63,7 @@ echo $SOURCES/sources/gene_association.GeneDB_Spombe.inf.gaf
 echo $SOURCES/gene_association.goa_uniprot.pombe
 ./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < $SOURCES/gene_association.goa_uniprot.pombe
 
-) 2>&1 | tee $LOG_DIR/$log_file.gaf
+) 2>&1 | tee $LOG_DIR/$log_file.gaf-load-output
 
 echo load Compara orthologs 1>&2
 
@@ -102,6 +102,14 @@ mkdir $DUMP_DIR/$FINAL_DB
 ./script/pombase-export.pl ./load-chado.yaml gaf --organism-taxon-id=4896 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB/$FINAL_DB.gaf
 ./script/pombase-export.pl ./load-chado.yaml orthologs --organism-taxon-id=4896 --other-organism-taxon-id=9606 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB/$FINAL_DB.human-orthologs.txt
 /var/pomcur/sources/go/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check 2>&1
+
+cp $LOG_DIR/$log_file.gaf-load-output $DUMP_DIR/$FINAL_DB/
+cp $LOG_DIR/$log_file.biogrid-load-output $DUMP_DIR/$FINAL_DB/
+cp $LOG_DIR/$log_file.compara_orths $DUMP_DIR/$FINAL_DB/$log_file.compara-orth-load-output
+cp $LOG_DIR/$log_file.manual_multi_orths $DUMP_DIR/$FINAL_DB/$log_file.manual-multi-orths-output
+cp $LOG_DIR/$log_file.manual_1-1_orths $DUMP_DIR/$FINAL_DB/$log_file.manual-1-1-orths-output
+cp $LOG_DIR/$log_file.curation_tool_data $DUMP_DIR/$FINAL_DB/$log_file.curation-tool-data-load-output
+cp $LOG_DIR/*.txt $DUMP_DIR/$FINAL_DB/
 
 psql $FINAL_DB -c 'grant select on all tables in schema public to public;'
 
