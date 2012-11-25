@@ -105,11 +105,14 @@ mkdir $DUMP_DIR/$FINAL_DB
 
 cp $LOG_DIR/$log_file.gaf-load-output $DUMP_DIR/$FINAL_DB/
 cp $LOG_DIR/$log_file.biogrid-load-output $DUMP_DIR/$FINAL_DB/
+cp $LOG_DIR/$log_file.gaf-check $DUMP_DIR/$FINAL_DB/$log_file.gaf-check
 cp $LOG_DIR/$log_file.compara_orths $DUMP_DIR/$FINAL_DB/$log_file.compara-orth-load-output
 cp $LOG_DIR/$log_file.manual_multi_orths $DUMP_DIR/$FINAL_DB/$log_file.manual-multi-orths-output
 cp $LOG_DIR/$log_file.manual_1-1_orths $DUMP_DIR/$FINAL_DB/$log_file.manual-1-1-orths-output
 cp $LOG_DIR/$log_file.curation_tool_data $DUMP_DIR/$FINAL_DB/$log_file.curation-tool-data-load-output
 cp $LOG_DIR/*.txt $DUMP_DIR/$FINAL_DB/
+mkdir $DUMP_DIR/$FINAL_DB/pombe-embl
+cp -r $SOURCES/pombe-embl/* $DUMP_DIR/$FINAL_DB/pombe-embl/
 
 psql $FINAL_DB -c 'grant select on all tables in schema public to public;'
 
