@@ -43,7 +43,7 @@ then
   echo "no pombe BioGRID file found - exiting" 1>&2
   exit 1
 fi
-) 2>&1 | tee -a $log_file.biogrid-output
+) 2>&1 | tee -a $log_file.biogrid-load-output
 
 cd $HOME/git/pombase-run
 cat $SOURCES/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt | ./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD 2>&1 | tee -a $LOG_DIR/$log_file.biogrid
