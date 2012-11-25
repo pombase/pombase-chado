@@ -97,26 +97,26 @@ echo running consistency checks
 
 DUMP_DIR=/var/www/pombase/kmr44/dumps/
 
-mkdir $DUMP_DIR/$FINAL_DB
+mkdir $DUMP_DIR
 
-./script/pombase-export.pl ./load-chado.yaml gaf --organism-taxon-id=4896 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB/$FINAL_DB.gaf
-./script/pombase-export.pl ./load-chado.yaml orthologs --organism-taxon-id=4896 --other-organism-taxon-id=9606 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB/$FINAL_DB.human-orthologs.txt
-/var/pomcur/sources/go/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check 2>&1
+./script/pombase-export.pl ./load-chado.yaml gaf --organism-taxon-id=4896 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.gaf
+./script/pombase-export.pl ./load-chado.yaml orthologs --organism-taxon-id=4896 --other-organism-taxon-id=9606 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.human-orthologs.txt
+/var/pomcur/sources/go/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check 2>&1
 
-cp $LOG_DIR/$log_file.gaf-load-output $DUMP_DIR/$FINAL_DB/
-cp $LOG_DIR/$log_file.biogrid-load-output $DUMP_DIR/$FINAL_DB/
-cp $LOG_DIR/$log_file.gaf-check $DUMP_DIR/$FINAL_DB/$log_file.gaf-check
-cp $LOG_DIR/$log_file.compara_orths $DUMP_DIR/$FINAL_DB/$log_file.compara-orth-load-output
-cp $LOG_DIR/$log_file.manual_multi_orths $DUMP_DIR/$FINAL_DB/$log_file.manual-multi-orths-output
-cp $LOG_DIR/$log_file.manual_1-1_orths $DUMP_DIR/$FINAL_DB/$log_file.manual-1-1-orths-output
-cp $LOG_DIR/$log_file.curation_tool_data $DUMP_DIR/$FINAL_DB/$log_file.curation-tool-data-load-output
-cp $LOG_DIR/*.txt $DUMP_DIR/$FINAL_DB/
-mkdir $DUMP_DIR/$FINAL_DB/pombe-embl
-cp -r $SOURCES/pombe-embl/* $DUMP_DIR/$FINAL_DB/pombe-embl/
+cp $LOG_DIR/$log_file.gaf-load-output $DUMP_DIR/
+cp $LOG_DIR/$log_file.biogrid-load-output $DUMP_DIR/
+cp $LOG_DIR/$log_file.gaf-check $DUMP_DIR/$log_file.gaf-check
+cp $LOG_DIR/$log_file.compara_orths $DUMP_DIR/$log_file.compara-orth-load-output
+cp $LOG_DIR/$log_file.manual_multi_orths $DUMP_DIR/$log_file.manual-multi-orths-output
+cp $LOG_DIR/$log_file.manual_1-1_orths $DUMP_DIR/$log_file.manual-1-1-orths-output
+cp $LOG_DIR/$log_file.curation_tool_data $DUMP_DIR/$log_file.curation-tool-data-load-output
+cp $LOG_DIR/*.txt $DUMP_DIR/
+mkdir $DUMP_DIR/pombe-embl
+cp -r $SOURCES/pombe-embl/* $DUMP_DIR/pombe-embl/
 
 psql $FINAL_DB -c 'grant select on all tables in schema public to public;'
 
-DUMP_FILE=$DUMP_DIR/$FINAL_DB/$FINAL_DB.dump.gz
+DUMP_FILE=$DUMP_DIR/$FINAL_DB.dump.gz
 
 echo dumping to $DUMP_FILE
 pg_dump $FINAL_DB | gzip -9v > $DUMP_FILE
