@@ -103,7 +103,7 @@ mkdir $DUMP_DIR/warnings
 
 ./script/pombase-export.pl ./load-chado.yaml gaf --organism-taxon-id=4896 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.gaf
 ./script/pombase-export.pl ./load-chado.yaml orthologs --organism-taxon-id=4896 --other-organism-taxon-id=9606 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.human-orthologs.txt
-/var/pomcur/sources/go/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check 2>&1
+/var/pomcur/sources/go-svn/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check 2>&1
 
 cp $LOG_DIR/$log_file.gaf-load-output $DUMP_DIR/logs/
 cp $LOG_DIR/$log_file.biogrid-load-output $DUMP_DIR/logs/
