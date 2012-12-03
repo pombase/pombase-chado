@@ -177,7 +177,7 @@ method load($fh)
     }
 
     if ($qualifier =~ /\|/) {
-      warn "annotation with multiple qualifiers ($qualifier)\n"
+      warn "annotation with multiple qualifiers ($qualifier)\n";
       next;
     }
 
