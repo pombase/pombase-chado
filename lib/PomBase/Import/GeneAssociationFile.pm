@@ -54,6 +54,7 @@ with 'PomBase::Role::FeatureCvtermCreator';
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has assigned_by_filter => (is => 'rw', init_arg => undef);
+has taxon_filter => (is => 'rw', init_arg => undef);
 has remove_existing => (is => 'rw', init_arg => undef);
 has with_filter_values => (is => 'rw', isa => 'HashRef',
                              init_arg => undef);
@@ -86,12 +87,14 @@ method _load_first_column($filename)
 method BUILD
 {
   my $assigned_by_filter = '';
+  my $taxon_filter = '';
   my $remove_existing = 0;
   my $with_filter_filename = undef;
   my $term_id_filter_filename = undef;
 
   my @opt_config = ('assigned-by-filter=s' => \$assigned_by_filter,
                     'remove-existing' => \$remove_existing,
+                    'taxon-filter=s' => \$taxon_filter,
                     'with-filter-filename=s' =>
                       \$with_filter_filename,
                     'term-id-filter-filename=s' =>
@@ -108,7 +111,12 @@ method BUILD
       "be loaded\n";
   }
 
+  if (length $taxon_filter == 0) {
+    warn "no taxon filter - annotation will be loaded for all taxa\n";
+  }
+
   $self->assigned_by_filter([split /\s*,\s*/, $assigned_by_filter]);
+  $self->taxon_filter([split /\s*,\s*/, $taxon_filter]);
   $self->remove_existing($remove_existing);
 
   my %with_filter_values =
@@ -203,6 +211,12 @@ method load($fh)
     my $new_taxonid = $config->{organism_taxon_map}->{$taxonid};
     if (defined $new_taxonid) {
       $taxonid = $new_taxonid;
+    }
+
+    my @taxon_filter = @{$self->taxon_filter()};
+
+    if (@taxon_filter > 0 && !grep { $_ == $taxonid; } @taxon_filter) {
+      next;
     }
 
     my $date = $columns_ref->{"Date"};
