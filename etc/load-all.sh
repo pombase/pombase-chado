@@ -13,6 +13,8 @@ LOG_DIR=`pwd`
 
 SOURCES=/var/pomcur/sources
 
+GOA_GAF_URL=ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/gene_association.goa_uniprot.gz
+
 cd $SOURCES/pombe-embl/
 svn update || exit 1
 
@@ -61,7 +63,18 @@ echo $SOURCES/sources/gene_association.pombase.inf.gaf
 ./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=PomBase $HOST $DB $USER $PASSWORD < $SOURCES/go-svn/scratch/gaf-inference/gene_association.pombase.inf.gaf
 
 echo $SOURCES/gene_association.goa_uniprot.pombe
-./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD < $SOURCES/gene_association.goa_uniprot.pombe
+CURRENT_GOA_GAF="$SOURCES/gene_association.goa_uniprot.gz"
+DOWNLOADED_GOA_GAF=$CURRENT_GOA_GAF.downloaded
+GET $GOA_GAF_URL > $DOWNLOADED_GOA_GAF
+if [ -s $DOWNLOADED_GOA_GAF ]
+then
+  mv $DOWNLOADED_GOA_GAF $CURRENT_GOA_GAF
+else
+  echo "failed to download $GOA_GAF_URL - exiting"
+  exit 1
+fi
+
+gzip -d < $CURRENT_GOA_GAF | ./script/pombase-import.pl ./load-chado.yaml gaf --taxon-filter=4896 --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD
 
 ) 2>&1 | tee $LOG_DIR/$log_file.gaf-load-output
 
