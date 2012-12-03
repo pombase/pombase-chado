@@ -214,7 +214,13 @@ method load($fh)
     my $db_object_synonym = $columns_ref->{"DB_object_synonym"};
     (my $taxonid = $columns_ref->{"Taxon"}) =~ s/taxon://i;
 
+    if (!defined $taxonid) {
+      warn "Taxon missing - skipping\n";
+      next;
+    }
+
     if (!$taxonid->is_integer()) {
+      warn "Taxon is not a number: $taxonid - skipping\n";
       next;
     }
 
