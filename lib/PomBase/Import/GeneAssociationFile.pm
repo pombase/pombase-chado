@@ -176,8 +176,10 @@ method load($fh)
       warn "The qualifier column has no value\n";
     }
 
-    die "annotation with multiple qualifiers ($qualifier)\n"
-      if $qualifier =~ /\|/;
+    if ($qualifier =~ /\|/) {
+      warn "annotation with multiple qualifiers ($qualifier)\n"
+      next;
+    }
 
     my $is_not = 0;
 
