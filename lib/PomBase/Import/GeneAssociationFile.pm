@@ -212,6 +212,10 @@ method load($fh)
     my $db_object_synonym = $columns_ref->{"DB_object_synonym"};
     (my $taxonid = $columns_ref->{"Taxon"}) =~ s/taxon://i;
 
+    if (!$taxonid->is_integer()) {
+      next;
+    }
+
     my $new_taxonid = $config->{organism_taxon_map}->{$taxonid};
     if (defined $new_taxonid) {
       $taxonid = $new_taxonid;
