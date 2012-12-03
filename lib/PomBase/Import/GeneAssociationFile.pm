@@ -172,6 +172,10 @@ method load($fh)
     my $db_object_symbol = $columns_ref->{"DB_object_symbol"};
     my $qualifier = $columns_ref->{"Qualifier"};
 
+    if (!defined $qualifier) {
+      warn "The qualifier column has no value\n";
+    }
+
     die "annotation with multiple qualifiers ($qualifier)\n"
       if $qualifier =~ /\|/;
 
