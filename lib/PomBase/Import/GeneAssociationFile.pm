@@ -174,6 +174,7 @@ method load($fh)
 
     if (!defined $qualifier) {
       warn "The qualifier column has no value\n";
+      next;
     }
 
     if ($qualifier =~ /\|/) {
