@@ -42,7 +42,7 @@ wget http://thebiogrid.org/downloads/archives/Latest%20Release/BIOGRID-ORGANISM-
 unzip -q BIOGRID-ORGANISM-LATEST.tab2.zip
 if [ ! -e BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt ]
 then
-  echo "no pombe BioGRID file found - exiting" 1>&2
+  echo "no pombe BioGRID file found - exiting"
   exit 1
 fi
 ) 2>&1 | tee -a $log_file.biogrid-load-output
@@ -50,7 +50,7 @@ fi
 cd $HOME/git/pombase-run
 cat $SOURCES/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt | ./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD 2>&1 | tee -a $LOG_DIR/$log_file.biogrid
 
-echo starting import of GOA GAF data 1>&2
+echo starting import of GOA GAF data
 
 (
 for gaf_file in go_comp.txt go_proc.txt go_func.txt From_curation_tool GO_ORFeome_localizations2.txt
@@ -78,16 +78,16 @@ gzip -d < $CURRENT_GOA_GAF | ./script/pombase-import.pl ./load-chado.yaml gaf --
 
 ) 2>&1 | tee $LOG_DIR/$log_file.gaf-load-output
 
-echo load Compara orthologs 1>&2
+echo load Compara orthologs
 
 ./script/pombase-import.pl load-chado.yaml orthologs --publication=PMID:19029536 --organism_1_taxonid=4896 --organism_2_taxonid=9606 --swap-direction $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/orthologs/compara_orths.tsv 2>&1 | tee $LOG_DIR/$log_file.compara_orths
 
 
-echo load manual pombe to human orthologs: conserved_multi.txt 1>&2
+echo load manual pombe to human orthologs: conserved_multi.txt
 
 ./script/pombase-import.pl load-chado.yaml orthologs --publication=PMID:19029536 --organism_1_taxonid=4896 --organism_2_taxonid=9606 --swap-direction $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/orthologs/conserved_multi.txt 2>&1 | tee $LOG_DIR/$log_file.manual_multi_orths
 
-echo load manual pombe to human orthologs: conserved_one_to_one.txt 1>&2
+echo load manual pombe to human orthologs: conserved_one_to_one.txt
 
 ./script/pombase-import.pl load-chado.yaml orthologs --publication=PMID:19029536 --organism_1_taxonid=4896 --organism_2_taxonid=9606 --swap-direction --add_org_1_term_name='predominantly single copy (one to one)' --add_org_1_term_cv='species_dist' $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/orthologs/conserved_one_to_one.txt 2>&1 | tee $LOG_DIR/$log_file.manual_1-1_orths
 
@@ -101,7 +101,7 @@ scp pomcur@pombe-prod:/var/pomcur/backups/$CURATION_TOOL_DATA .
 
 ./script/pombase-import.pl load-chado.yaml pomcur $HOST $FINAL_DB $USER $PASSWORD < $CURATION_TOOL_DATA 2>&1 | tee $LOG_DIR/$log_file.curation_tool_data
 
-echo filtering redundant terms 1>&2
+echo filtering redundant terms
 
 ./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $FINAL_DB $USER $PASSWORD
 
@@ -116,7 +116,7 @@ mkdir $DUMP_DIR/warnings
 
 ./script/pombase-export.pl ./load-chado.yaml gaf --organism-taxon-id=4896 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.gaf
 ./script/pombase-export.pl ./load-chado.yaml orthologs --organism-taxon-id=4896 --other-organism-taxon-id=9606 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.human-orthologs.txt
-/var/pomcur/sources/go-svn/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check 2>&1
+/var/pomcur/sources/go-svn/software/utilities/filter-gene-association.pl -e < $DUMP_DIR/$FINAL_DB.gaf > $LOG_DIR/$log_file.gaf-check
 
 cp $LOG_DIR/$log_file.gaf-load-output $DUMP_DIR/logs/
 cp $LOG_DIR/$log_file.biogrid-load-output $DUMP_DIR/logs/
