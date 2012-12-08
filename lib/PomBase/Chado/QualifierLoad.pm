@@ -373,6 +373,10 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
   $self->add_feature_cvtermprop($featurecvterm, qualifier => [@qualifiers]);
 
+  if (defined $db_xref && $db_xref eq 'PMID:20519959') {
+    $self->add_pubmed_20519959_conditions($featurecvterm);
+  }
+
   if (defined $evidence_code) {
     if (!exists $self->config()->{evidence_types}->{$evidence_code}) {
       die "no such evidence code: $evidence_code\n";
@@ -515,6 +519,12 @@ method move_condition_qual($feature_cvterm, $sub_qual_map) {
     $self->add_feature_cvtermprop($feature_cvterm, condition => $1);
     delete $sub_qual_map->{annotation_extension};
   }
+}
+
+method add_pubmed_20519959_conditions($feature_cvterm) {
+  map {
+    $self->add_feature_cvtermprop($feature_cvterm, condition => $_);
+  } qw(PCO:0000012 PCO:0000005 PCO:0000090);
 }
 
 method add_feature_relationship_pub($relationship, $pub) {
