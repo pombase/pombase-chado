@@ -522,9 +522,11 @@ method move_condition_qual($feature_cvterm, $sub_qual_map) {
 }
 
 method add_pubmed_20519959_conditions($feature_cvterm) {
-  map {
-    $self->add_feature_cvtermprop($feature_cvterm, condition => $_);
-  } qw(PCO:0000012 PCO:0000005 PCO:0000090);
+  my @conditions = qw(PCO:0000012 PCO:0000005 PCO:0000090);
+
+  for (my $i = 0; $i < @conditions; $i++) {
+    $self->add_feature_cvtermprop($feature_cvterm, condition => $_, $i);
+  }
 }
 
 method add_feature_relationship_pub($relationship, $pub) {
