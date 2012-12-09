@@ -72,7 +72,7 @@ method check
   warn "checking results ...\n";
 
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-  should ($rel_rs->count(), 57);
+  should ($rel_rs->count(), 60);
 
   my $relprop_rs = $chado->resultset('Sequence::FeatureRelationshipprop');
   should ($relprop_rs->count(), 9);
@@ -84,7 +84,7 @@ method check
   should ($phase_loc_rs->count(), 9);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 15);
+  should ($feature_prop_rs->count(), 21);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
   should ($feature_dbxref_rs->count(), 33);
@@ -180,10 +180,10 @@ method check
   }
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 212);
+  should(scalar(@all_props), 219);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
-  should ($feat_rs->count(), 74);
+  should ($feat_rs->count(), 77);
 
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
 #    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
