@@ -522,10 +522,12 @@ method move_condition_qual($feature_cvterm, $sub_qual_map) {
 }
 
 method add_pubmed_20519959_conditions($feature_cvterm) {
+  my $cvterm_name = $feature_cvterm->cvterm()->name();
+  return unless $cvterm_name eq 'inviable' || $cvterm_name eq 'viable';
   my @conditions = qw(PCO:0000012 PCO:0000005 PCO:0000090);
 
   for (my $i = 0; $i < @conditions; $i++) {
-    $self->add_feature_cvtermprop($feature_cvterm, condition => $_, $i);
+    $self->add_feature_cvtermprop($feature_cvterm, condition => $conditions[$i], $i);
   }
 }
 
