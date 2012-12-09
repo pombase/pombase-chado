@@ -526,7 +526,17 @@ method add_pubmed_20519959_conditions($feature_cvterm) {
   return unless $cvterm_name eq 'inviable' || $cvterm_name eq 'viable';
   my @conditions = qw(PCO:0000012 PCO:0000005 PCO:0000090);
 
-  for (my $i = 0; $i < @conditions; $i++) {
+  my @props = $feature_cvterm->feature_cvtermprops();
+  my $max_rank = 0;
+  for my $prop (@props) {
+    if ($prop->type()->name() eq 'condition') {
+      if ($prop->rank() > $max_rank) {
+        $max_rank = $prop->rank();
+      }
+    }
+  }
+
+  for (my $i = $max_rank + 1; $i < @conditions; $i++) {
     $self->add_feature_cvtermprop($feature_cvterm, condition => $conditions[$i], $i);
   }
 }
