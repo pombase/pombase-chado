@@ -65,7 +65,7 @@ echo $SOURCES/sources/gene_association.pombase.inf.gaf
 echo $SOURCES/gene_association.goa_uniprot.pombe
 CURRENT_GOA_GAF="$SOURCES/gene_association.goa_uniprot.gz"
 DOWNLOADED_GOA_GAF=$CURRENT_GOA_GAF.downloaded
-GET $GOA_GAF_URL > $DOWNLOADED_GOA_GAF
+GET -i $CURRENT_GOA_GAF $GOA_GAF_URL > $DOWNLOADED_GOA_GAF
 if [ -s $DOWNLOADED_GOA_GAF ]
 then
   mv $DOWNLOADED_GOA_GAF $CURRENT_GOA_GAF
