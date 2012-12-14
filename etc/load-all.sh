@@ -78,6 +78,9 @@ gzip -d < $CURRENT_GOA_GAF | ./script/pombase-import.pl ./load-chado.yaml gaf --
 
 ) 2>&1 | tee $LOG_DIR/$log_file.gaf-load-output
 
+echo annotation count after GAF loading:
+psql $DB -c 'select count(*) from feature_cvterm'
+
 echo load Compara orthologs
 
 ./script/pombase-import.pl load-chado.yaml orthologs --publication=PMID:19029536 --organism_1_taxonid=4896 --organism_2_taxonid=9606 --swap-direction $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/orthologs/compara_orths.tsv 2>&1 | tee $LOG_DIR/$log_file.compara_orths
@@ -101,9 +104,14 @@ scp pomcur@pombe-prod:/var/pomcur/backups/$CURATION_TOOL_DATA .
 
 ./script/pombase-import.pl load-chado.yaml pomcur $HOST $FINAL_DB $USER $PASSWORD < $CURATION_TOOL_DATA 2>&1 | tee $LOG_DIR/$log_file.curation_tool_data
 
-echo filtering redundant terms
+echo annotation count after loading curation tool data:
+psql $DB -c 'select count(*) from feature_cvterm'
 
+echo filtering redundant terms
 ./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $FINAL_DB $USER $PASSWORD
+
+echo annotation count after filtering redundant terms:
+psql $DB -c 'select count(*) from feature_cvterm'
 
 echo running consistency checks
 ./script/check-chado.pl ./check-db.yaml $HOST $FINAL_DB $USER $PASSWORD
