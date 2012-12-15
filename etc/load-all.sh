@@ -50,6 +50,13 @@ fi
 cd $HOME/git/pombase-run
 cat $SOURCES/biogrid/BIOGRID-ORGANISM-Schizosaccharomyces_pombe-*.tab2.txt | ./script/pombase-import.pl ./load-chado.yaml biogrid $HOST $DB $USER $PASSWORD 2>&1 | tee -a $LOG_DIR/$log_file.biogrid
 
+evidence_summary () {
+  psql $DB -c "select count(feature_cvtermprop_id), value from feature_cvtermprop where type_id in (select cvterm_id from cvterm where name = 'evidence') group by value order by count(feature_cvtermprop_id)"
+}
+
+echo annotation evidence counts before loading
+evidence_summary
+
 echo starting import of GOA GAF data
 
 {
@@ -57,10 +64,16 @@ for gaf_file in go_comp.txt go_proc.txt go_func.txt From_curation_tool GO_ORFeom
 do
   echo reading $gaf_file
   ./script/pombase-import.pl ./load-chado.yaml gaf --assigned-by-filter=PomBase $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/external-go-data/$gaf_file
+
+  echo counts:
+  evidence_summary
 done
 
 echo $SOURCES/sources/gene_association.pombase.inf.gaf
 ./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=PomBase $HOST $DB $USER $PASSWORD < $SOURCES/go-svn/scratch/gaf-inference/gene_association.pombase.inf.gaf
+
+echo counts after inf:
+evidence_summary
 
 echo $SOURCES/gene_association.goa_uniprot.pombe
 CURRENT_GOA_GAF="$SOURCES/gene_association.goa_uniprot.gz"
@@ -76,10 +89,6 @@ fi
 gzip -d < $CURRENT_GOA_GAF | ./script/pombase-import.pl ./load-chado.yaml gaf --taxon-filter=4896 --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB $HOST $DB $USER $PASSWORD
 
 } 2>&1 | tee $LOG_DIR/$log_file.gaf-load-output
-
-evidence_summary () {
-  psql $DB -c "select count(feature_cvtermprop_id), value from feature_cvtermprop where type_id in (select cvterm_id from cvterm where name = 'evidence') group by value order by count(feature_cvtermprop_id)"
-}
 
 echo annotation count after GAF loading:
 evidence_summary
