@@ -78,6 +78,9 @@ FT                   for ethanolamine; cv=phenotype; db_xref=PMID:198286980;
 FT                   allele=deletion;
 FT                   with=GeneDB_Spombe:SPAC25B8.03|GeneDB_Spombe:SPBC16E9.18;
 FT                   date=20090727"
+FT                   /controlled_curation="term=phenotype, viable;
+FT                   db_xref=PMID:20473289; cv=phenotype;
+FT                   date=20100406; allele=noname(overexpression)"
 FT                   /controlled_curation="term=orthologous to S. cerevisiae
 FT                   ylr138W; date=19700101"
 FT                   /controlled_curation="term=phenotype, viable;

@@ -72,7 +72,7 @@ method check
   warn "checking results ...\n";
 
   my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-  should ($rel_rs->count(), 60);
+  should ($rel_rs->count(), 61);
 
   my $relprop_rs = $chado->resultset('Sequence::FeatureRelationshipprop');
   should ($relprop_rs->count(), 9);
@@ -84,7 +84,7 @@ method check
   should ($phase_loc_rs->count(), 9);
 
   my $feature_prop_rs = $chado->resultset('Sequence::Featureprop');
-  should ($feature_prop_rs->count(), 21);
+  should ($feature_prop_rs->count(), 23);
 
   my $feature_dbxref_rs = $chado->resultset('Sequence::FeatureDbxref');
   should ($feature_dbxref_rs->count(), 33);
@@ -139,7 +139,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence', 'coiled_coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 110);
+  should(scalar(@all_feature_cvterm), 111);
 
   my $cvterm_property_type_cv =
     $chado->resultset('Cv::Cv')->find({ name => 'cvterm_property_type' });
@@ -180,10 +180,10 @@ method check
   }
 
   my @all_props = $chado->resultset('Sequence::FeatureCvtermprop')->all();
-  should(scalar(@all_props), 219);
+  should(scalar(@all_props), 221);
 
   my $feat_rs = $chado->resultset('Sequence::Feature');
-  should ($feat_rs->count(), 77);
+  should ($feat_rs->count(), 78);
 
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
 #    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
