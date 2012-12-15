@@ -107,10 +107,10 @@ scp pomcur@pombe-prod:/var/pomcur/backups/$CURATION_TOOL_DATA .
 echo annotation count after loading curation tool data:
 psql $DB -c 'select count(*) from feature_cvterm'
 
-echo filtering redundant terms
+echo filtering redundant annotations
 ./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $FINAL_DB $USER $PASSWORD
 
-echo annotation count after filtering redundant terms:
+echo annotation count after filtering redundant annotations:
 psql $DB -c 'select count(*) from feature_cvterm'
 
 echo running consistency checks
