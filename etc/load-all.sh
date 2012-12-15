@@ -78,8 +78,12 @@ gzip -d < $CURRENT_GOA_GAF | ./script/pombase-import.pl ./load-chado.yaml gaf --
 
 ) 2>&1 | tee $LOG_DIR/$log_file.gaf-load-output
 
+evidence_summary () {
+  psql $DB -c "select count(feature_cvtermprop_id), value from feature_cvtermprop where type_id in (select cvterm_id from cvterm where name = 'evidence') group by value order by count(feature_cvtermprop_id)"
+}
+
 echo annotation count after GAF loading:
-psql $DB -c 'select count(*) from feature_cvterm'
+evidence_summary
 
 echo load Compara orthologs
 
@@ -105,13 +109,13 @@ scp pomcur@pombe-prod:/var/pomcur/backups/$CURATION_TOOL_DATA .
 ./script/pombase-import.pl load-chado.yaml pomcur $HOST $FINAL_DB $USER $PASSWORD < $CURATION_TOOL_DATA 2>&1 | tee $LOG_DIR/$log_file.curation_tool_data
 
 echo annotation count after loading curation tool data:
-psql $DB -c 'select count(*) from feature_cvterm'
+evidence_summary
 
 echo filtering redundant annotations
 ./script/pombase-process.pl ./load-chado.yaml go-filter $HOST $FINAL_DB $USER $PASSWORD
 
 echo annotation count after filtering redundant annotations:
-psql $DB -c 'select count(*) from feature_cvterm'
+evidence_summary
 
 echo running consistency checks
 ./script/check-chado.pl ./check-db.yaml $HOST $FINAL_DB $USER $PASSWORD
