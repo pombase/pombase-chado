@@ -180,8 +180,9 @@ method _process_allele_qual($name, $description, $curs_key, $feature, $expressio
       $expression = ucfirst $description;
       if (@$allele_quals > 1) {
         $delete_me = 1;
+        warn "DELETING allele for ", ($name // 'noname'), "(", ($description // 'unknown'), "\n";
       } else {
-        $description = 'unknown';
+        $description = 'wild type';
       }
     }
   }
