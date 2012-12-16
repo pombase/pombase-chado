@@ -190,6 +190,7 @@ method load($fh)
     my @taxon_filter = @{$self->taxon_filter()};
 
     if (@taxon_filter > 0 && !grep { $_ == $taxonid; } @taxon_filter) {
+      warn "skipping, wrong taxon: $taxonid at line $.\n" if $self->verbose();
       next;
     }
 
