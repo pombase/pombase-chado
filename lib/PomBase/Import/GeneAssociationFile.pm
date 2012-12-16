@@ -190,7 +190,6 @@ method load($fh)
     my @taxon_filter = @{$self->taxon_filter()};
 
     if (@taxon_filter > 0 && !grep { $_ == $taxonid; } @taxon_filter) {
-      die "$taxonid <> @taxon_filter";
       next;
     }
 
