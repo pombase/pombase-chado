@@ -168,12 +168,14 @@ method load($fh)
   my %term_id_filter = %{$self->term_id_filter_values()};
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
-    (my $taxonid = $columns_ref->{"Taxon"}) =~ s/taxon://i;
+    my $taxonid = $columns_ref->{"Taxon"};
 
     if (!defined $taxonid) {
       warn "Taxon missing - skipping\n";
       next;
     }
+
+    $taxonid =~ s/taxon://ig;
 
     if (!$taxonid->is_integer()) {
       warn "Taxon is not a number: $taxonid - skipping\n";
