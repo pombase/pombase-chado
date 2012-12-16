@@ -168,6 +168,30 @@ method load($fh)
   my %term_id_filter = %{$self->term_id_filter_values()};
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
+    (my $taxonid = $columns_ref->{"Taxon"}) =~ s/taxon://i;
+
+    if (!defined $taxonid) {
+      warn "Taxon missing - skipping\n";
+      next;
+    }
+
+    if (!$taxonid->is_integer()) {
+      warn "Taxon is not a number: $taxonid - skipping\n";
+      next;
+    }
+
+    my $new_taxonid = $config->{organism_taxon_map}->{$taxonid};
+    if (defined $new_taxonid) {
+      $taxonid = $new_taxonid;
+    }
+
+    my @taxon_filter = @{$self->taxon_filter()};
+
+    if (@taxon_filter > 0 && !grep { $_ == $taxonid; } @taxon_filter) {
+      die "$taxonid <> @taxon_filter";
+      next;
+    }
+
     my $db_object_id = $columns_ref->{"DB_object_id"};
     my $db_object_symbol = $columns_ref->{"DB_object_symbol"};
     my $qualifier = $columns_ref->{"Qualifier"};
@@ -213,28 +237,6 @@ method load($fh)
     }
 
     my $db_object_synonym = $columns_ref->{"DB_object_synonym"};
-    (my $taxonid = $columns_ref->{"Taxon"}) =~ s/taxon://i;
-
-    if (!defined $taxonid) {
-      warn "Taxon missing - skipping\n";
-      next;
-    }
-
-    if (!$taxonid->is_integer()) {
-      warn "Taxon is not a number: $taxonid - skipping\n";
-      next;
-    }
-
-    my $new_taxonid = $config->{organism_taxon_map}->{$taxonid};
-    if (defined $new_taxonid) {
-      $taxonid = $new_taxonid;
-    }
-
-    my @taxon_filter = @{$self->taxon_filter()};
-
-    if (@taxon_filter > 0 && !grep { $_ == $taxonid; } @taxon_filter) {
-      next;
-    }
 
     my $date = $columns_ref->{"Date"};
     my $assigned_by = $columns_ref->{"Assigned_by"};
