@@ -171,12 +171,18 @@ method find_cvterm_by_name($cv, $term_name, %options) {
 
 }
 
-method find_cvterm_by_term_id($term_id)
+method find_cvterm_by_term_id($term_id, $options)
 {
   state $cache = {};
 
-  if (exists $cache->{$term_id}) {
-    return $cache->{$term_id};
+  $options //= {};
+
+  my $include_obsolete = $options->{include_obsolete} // 0;
+
+  my $key = $term_id . "_include_obsolete:$include_obsolete";
+
+  if (exists $cache->{$key}) {
+    return $cache->{$key};
   }
 
   if ($term_id =~ /(.*):(.*)/) {
@@ -194,15 +200,21 @@ method find_cvterm_by_term_id($term_id)
       ->search({ db_id => $db->db_id(),
                  accession => $dbxref_accession });
 
+    my %search_flags = ();
+    if (!$include_obsolete) {
+      $search_flags{is_obsolete} = 0;
+    }
+
     my @cvterms = $dbxref_rs
-      ->search_related('cvterm')
+      ->search_related('cvterm', \%search_flags)
       ->all();
 
     if (!@cvterms) {
       # try alt_id instead
       push @cvterms, $dbxref_rs->search_related('cvterm_dbxrefs')
                                ->search({ is_for_definition => 0 })
-                               ->search_related('cvterm')->all();
+                               ->search_related('cvterm', \%search_flags)
+                               ->all();
     }
 
     if (@cvterms > 1) {
