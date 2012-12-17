@@ -116,7 +116,8 @@ method find_cvterm_by_name($cv, $term_name, %options) {
   }
 
   my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
-  my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id() },
+  my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id(),
+                                  is_obsolete => 0 },
                                 { %search_options });
 
   if (defined $cvterm) {
