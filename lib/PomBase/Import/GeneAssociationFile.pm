@@ -160,7 +160,7 @@ method load($fh)
     }
   }
 
-  my $csv = Text::CSV->new({ sep_char => "\t" });
+  my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
   $csv->column_names(qw(DB DB_object_id DB_object_symbol Qualifier GO_id DB_reference Evidence_code With_or_from Aspect DB_object_name DB_object_synonym DB_object_type Taxon Date Assigned_by Annotation_extension Gene_product_form_id ));
 
