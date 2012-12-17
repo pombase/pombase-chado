@@ -327,6 +327,10 @@ method load($fh)
     }
   }
 
+  if (!$csv->eof()){
+    $csv->error_diag();
+  }
+
   return \%deleted_counts;
 }
 
