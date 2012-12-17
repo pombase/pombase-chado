@@ -98,7 +98,7 @@ echo PSI-MOD_extension_relations.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml > PSI-MOD_extension_relations.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD PSI-MOD_extension_relations.xml || exit 1
 
 echo load pombase terms
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombase/pombase_terms-v28.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombase/pombase_terms-v30.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
 
 echo populate cvtermpath
 
