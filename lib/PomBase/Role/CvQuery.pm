@@ -142,7 +142,9 @@ method find_cvterm_by_name($cv, $term_name, %options) {
 
       if (defined $exact_synonym) {
         warn "      found as synonym: $term_name\n" if $self->verbose();
-        return $cvterm_rs->find($exact_synonym->cvterm_id());
+        $cvterm = $cvterm_rs->find($exact_synonym->cvterm_id());
+        $cache->{$cv->name()}->{$term_name} = $cvterm;
+        return $cvterm;
       } else {
         # try non-exact synonyms
         $search_rs = $synonym_rs->search({ synonym => $term_name,
@@ -160,7 +162,9 @@ method find_cvterm_by_name($cv, $term_name, %options) {
           if (defined $synonym) {
             warn "      found as synonym (type: ", $synonym->type()->name(),
               "): $term_name\n" if $self->verbose();
-            return $cvterm_rs->find($synonym->cvterm_id());
+            $cvterm = $cvterm_rs->find($synonym->cvterm_id());
+            $cache->{$cv->name()}->{$term_name} = $cvterm;
+            return $cvterm;
           } else {
             return undef;
           }
