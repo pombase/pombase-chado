@@ -113,6 +113,41 @@ method allele_type_from_desc($description, $gene_name)
   }
 }
 
+method fix_expression_allele($name, $description_ref, $expression_ref)
+{
+  if ($name eq 'noname' and
+      grep /^$$description_ref$/, qw(overexpression endogenous knockdown)) {
+    if (defined $$expression_ref) {
+      die "can't have expression=$$expression_ref AND allele=$name($description_ref)\n";
+    } else {
+      $$expression_ref = ucfirst $$description_ref;
+      $$description_ref = 'wild type';
+    }
+  }
+}
+
+method make_allele_data($name, $description, $gene_feature) {
+  my $gene_name = $gene_feature->name();
+  my $organism = $gene_feature->organism();
+
+  my $allele_type = $self->allele_type_from_desc($description, $gene_name);
+
+  if (defined $allele_type) {
+    return {
+      name => $name,
+      description => $description,
+      gene => {
+        organism => $organism->genus() . ' ' . $organism->species(),
+        uniquename => $gene_feature->uniquename(),
+      },
+      allele_type => $allele_type,
+    }
+  } else {
+    warn "allele type is ambiguous for $name($description)\n";
+    return ();
+  }
+}
+
 =head2 get_allele
 
  Usage   : with 'PomBase::Role::PhenotypeFeatureFinder';

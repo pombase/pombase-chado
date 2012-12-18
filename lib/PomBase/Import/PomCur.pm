@@ -166,49 +166,6 @@ sub _extensions_by_type
   return %by_type;
 }
 
-method _process_allele_qual($name, $description, $curs_key, $feature, $expression, $allele_quals)
-{
-  my $gene_name = $feature->name();
-  my $organism = $feature->organism();
-
-  my $delete_me = 0;
-  if ($name eq 'noname' and
-      grep /^$description$/, qw(overexpression endogenous knockdown)) {
-    if (defined $expression) {
-      die "can't have expression=$expression AND allele=$name($description)\n";
-    } else {
-      $expression = ucfirst $description;
-      if (@$allele_quals > 1) {
-        $delete_me = 1;
-        warn "DELETING allele for ", ($name // 'noname'), "(", ($description // 'unknown'), "\n";
-      } else {
-        $description = 'wild type';
-      }
-    }
-  }
-
-  my $allele_type = $self->allele_type_from_desc($description, $gene_name);
-
-  if (defined $allele_type) {
-    if ($delete_me) {
-      return ();
-    } else {
-      {
-        name => $name,
-        description => $description,
-        gene => {
-          organism => $organism->genus() . ' ' . $organism->species(),
-          uniquename => $feature->uniquename(),
-        },
-        allele_type => $allele_type,
-      }
-    }
-  } else {
-    warn "$curs_key: allele type is ambiguous for $name($description)\n";
-    return ();
-  }
-
-}
 
 method _store_ontology_annotation
 {
@@ -257,18 +214,19 @@ method _store_ontology_annotation
     my $allele_quals = delete $by_type{allele};
 
     if (defined $allele_quals && @$allele_quals > 0) {
+      if (@$allele_quals > 1) {
+        die "more than one allele specified\n";
+      }
       my @processed_allele_quals = map {
         my $allele_display_name = $_;
         if ($allele_display_name =~ /^\s*(.*)\((.*)\)/) {
-          $self->_process_allele_qual($1, $2, $curs_key,
-                                      $feature, $expression,
-                                      $allele_quals);
+          my $name = $1;
+          my $description = $2;
+          $self->fix_expression_allele($name, \$description, \$expression);
+          $self->make_allele_data($name, $description, $feature);
         } else {
           if ($allele_display_name =~ /.*delta$/) {
-            $self->_process_allele_qual($allele_display_name, "deletion",
-                                        $curs_key,
-                                        $feature, $expression,
-                                        $allele_quals);
+            $self->make_allele_data($allele_display_name, "deletion", $feature);
           } else {
             warn qq|allele qualifier "$_" isn't in the form "name(description)"\n|;
             return ();
