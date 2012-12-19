@@ -276,7 +276,13 @@ method get_allele($allele_data)
     if (defined $new_allele_description) {
       $self->store_featureprop($allele, 'description', $new_allele_description);
     }
-    $self->store_featureprop($allele, allele_type => $allele_data->{allele_type});
+
+    my $allele_type = $allele_data->{allele_type};
+    if (defined $allele_type && length $allele_type > 0) {
+      $self->store_featureprop($allele, allele_type => $allele_type);
+    } else {
+      die "no allele_type for: $new_uniquename\n";
+    }
 
     return $allele;
   }
