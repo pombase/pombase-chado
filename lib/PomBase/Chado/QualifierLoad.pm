@@ -419,7 +419,7 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
     my $allele_type = delete $sub_qual_map->{allele_type} // $self->allele_type_from_desc($args{description}, $pombe_feature->name());
 
-    if (!defined $allele_type) {
+    if (!defined $allele_type || length $allele_type == 0) {
       $allele_type = 'unknown';
       warn "ambiguous or unset allele_type for $args{name}($args{description})\n";
     }
