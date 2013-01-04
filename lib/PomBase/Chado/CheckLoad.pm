@@ -187,6 +187,9 @@ method check
 
   for my $feat (sort { $a->uniquename() cmp $b->uniquename() } $feat_rs->all()) {
 #    print $feat->uniquename(), " ", $feat->type()->name(), "\n";
+#    for my $prop (sort map { $_->type()->name() . ' -> ' . $_->value() } $feat->featureprops()) {
+#      print "  $prop\n";
+#    }
   }
 
   assert(!defined $chado->resultset('Cv::Cv')->find({ name => 'pt_mod' }));
