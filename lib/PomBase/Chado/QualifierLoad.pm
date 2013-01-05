@@ -516,7 +516,23 @@ method maybe_move_predicted($qualifiers, $sub_qual_map) {
 method move_condition_qual($feature_cvterm, $sub_qual_map) {
   my $ex = $sub_qual_map->{annotation_extension};
   if (defined $ex && $ex =~ /^condition\((.*)\)$/) {
-    $self->add_feature_cvtermprop($feature_cvterm, condition => $1);
+    my $termid = $1;
+
+    if ($termid !~ /PECO:/) {
+      die "condition '$termid' isn't a PECO term ID\n";
+    }
+
+    my $cvterm = $self->find_cvterm_by_term_id($termid);
+
+    if (!defined $cvterm) {
+      die "can't load condition, $termid not found in database\n";
+    }
+
+    if ($cvterm->is_obsolete()) {
+      die "condition '$termid' is obsolete\n";
+    }
+
+    $self->add_feature_cvtermprop($feature_cvterm, condition => $2);
     delete $sub_qual_map->{annotation_extension};
   }
 }

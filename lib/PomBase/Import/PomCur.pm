@@ -316,6 +316,21 @@ method _store_ontology_annotation
     if (defined $conditions) {
       for (my $i = 0; $i < @$conditions; $i++) {
         my $termid = $conditions->[$i];
+
+        if ($termid !~ /PECO:/) {
+          die "condition '$termid' isn't a PECO term ID\n";
+        }
+
+        my $cvterm = $self->find_cvterm_by_term_id($termid);
+
+        if (!defined $cvterm) {
+          die "can't load condition, $termid not found in database\n";
+        }
+
+        if ($cvterm->is_obsolete()) {
+          die "condition '$termid' is obsolete\n";
+        }
+
         $self->add_feature_cvtermprop($feature_cvterm, condition => $termid, $i);
       }
     }

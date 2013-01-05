@@ -45,7 +45,7 @@ while (defined (my $line = <>)) {
             print $all_warnings "$line";
             print $unknown_cv_names "$gene: $line";
           } else {
-            if ($line =~ /no allele qualifier for phenotype|no evidence.*for |no term for:|qualifier not recognised|unknown term name.*and unknown GO ID|annotation extension qualifier .* not understood|failed to add annotation extension|in annotation extension for|unbalanced parenthesis in product|^qualifier \(.*\) has |not in the form/) {
+            if ($line =~ /no allele qualifier for phenotype|no evidence.*for |no term for:|qualifier not recognised|unknown term name.*and unknown GO ID|annotation extension qualifier .* not understood|failed to add annotation extension|in annotation extension for|unbalanced parenthesis in product|^qualifier \(.*\) has |not in the form|isn't a PECO term ID/) {
               print $all_warnings "$line";
               print $qual_problems "$gene: $line";
             } else {
