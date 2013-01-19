@@ -3,6 +3,14 @@
 # A script to make a Chado db from scratch using GMOD tools.  Must be
 # run in the gmod-schema/chado directory.
 
+FAST=''
+
+if [ $1 = '-f' ]
+then
+  shift
+  FAST=fast
+fi
+
 if [ ! $# = 4 ]
 then
   echo "$0: needs 4 arguments: db_name_suffix host username password" 1>&2
@@ -52,11 +60,14 @@ echo update GO from CVS
 echo update GO from SVN
 (cd $SOURCES_DIR/go-svn; svn --ignore-externals update)
 
-perl Makefile.PL
-make
-make load_schema
-make prepdb
-make ontologies
+if [ $FAST = '' ]
+then
+  perl Makefile.PL
+  make
+  make load_schema
+  make prepdb
+  make ontologies
+fi
 
 echo loading GO
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/go-svn/ontology/gene_ontology_edit.obo | go-apply-xslt oboxml_to_chadoxml - > go_obo_text.xml && stag-storenode.pl -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD go_obo_text.xml || exit 1
