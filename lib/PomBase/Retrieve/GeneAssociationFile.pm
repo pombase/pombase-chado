@@ -56,7 +56,8 @@ method _get_feature_details
   my %synonyms = ();
 
   my $syn_rs = $self->chado()->resultset('Sequence::FeatureSynonym')->
-    search({ 'feature.organism_id' => $self->organism()->organism_id() },
+    search({ 'feature.organism_id' => $self->organism()->organism_id(),
+             is_current => 1, },
            { join => 'feature', prefetch => [ 'synonym' ] });
 
   map {
