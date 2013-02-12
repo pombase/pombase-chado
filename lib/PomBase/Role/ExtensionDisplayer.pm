@@ -42,6 +42,7 @@ use Moose::Role;
 use PomBase::Chado;
 
 requires 'chado';
+requires 'config';
 
 =head2 make_gaf_extension
 
@@ -92,10 +93,17 @@ method make_gaf_extension($feature_cvterm)
     search({ 'type.name' => { -like => "$annotation_ex_prefix%" }, },
            { join => 'type' });
 
+  my $db_name = $self->config()->{db_name_for_cv};
+
   while (defined (my $prop = $props_rs->next())) {
     if ($prop->type()->name() =~ /^$annotation_ex_prefix(.*)/) {
+      my $identifier = $prop->value();
+      if ($identifier !~ /:/) {
+        # hopefully it's a gene name, or at least some sort of PomBase ID
+        $identifier = "$db_name:$identifier";
+      }
       push @parents, { rel_type_name => $1,
-                       detail => $prop->value() };
+                       detail => $identifier, };
     } else {
       die "internal error - unexpected name: ", $prop->type()->name();
     }
