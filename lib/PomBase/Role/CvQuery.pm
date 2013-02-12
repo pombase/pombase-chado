@@ -99,7 +99,7 @@ method find_cvterm_by_name($cv, $term_name, %options) {
     $cv = $self->get_cv($cv_name);
 
     if (!defined $cv) {
-      carp "no cv found with name '$cv_name'\n";
+      croak "no cv found with name '$cv_name'\n";
     }
   }
 
