@@ -60,7 +60,7 @@ echo update GO from CVS
 echo update GO from SVN
 (cd $SOURCES_DIR/go-svn; svn --ignore-externals update)
 
-if [ $FAST = '' ]
+if [ x$FAST = x'' ]
 then
   perl Makefile.PL
   make
