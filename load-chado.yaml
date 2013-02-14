@@ -159,10 +159,10 @@ dbs:
 taxonid: 4896
 
 allowed_unknown_term_names_files:
-  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/current_load_config/cumulative_unknown_term_name_ok.txt
+  - /home/kmr44/Dropbox/pombase/Chado/current_load_config/cumulative_unknown_term_name_ok.txt
 allowed_term_mismatches_files:
-  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/current_load_config/cumulative_ID_ok_mismatches.txt
-  - /home/kmr44/Dropbox/pombase/Chado/chado_load_warnings/current_load_config/cumulative_name_ok_mismatches.txt
+  - /home/kmr44/Dropbox/pombase/Chado/current_load_config/cumulative_ID_ok_mismatches.txt
+  - /home/kmr44/Dropbox/pombase/Chado/current_load_config/cumulative_name_ok_mismatches.txt
 
 organism_taxon_map:
   284812: 4896
