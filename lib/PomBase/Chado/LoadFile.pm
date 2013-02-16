@@ -96,8 +96,12 @@ method process_file($file)
   my %no_systematic_id_counts = ();
 
   for my $bioperl_feature ($seq_obj->get_SeqFeatures) {
-    my $chado_object =
-      $feature_loader->process($bioperl_feature, $chromosome);
+    try {
+      my $chado_object =
+        $feature_loader->process($bioperl_feature, $chromosome);
+    } catch {
+      warn "  failed to process feature: $_\n";
+    }
   }
 
   $feature_loader->finalise($chromosome);
