@@ -122,6 +122,8 @@ date; echo starting cellular_component
 ./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c cellular_component
 date; echo starting biological_process
 ./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c biological_process
+date; echo starting fission_yeast_phenotype
+./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c fission_yeast_phenotype
 date; echo finished
 
 
