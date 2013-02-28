@@ -300,6 +300,8 @@ evidence_types:
     name: competitive growth assay evidence
   'ECO:0000108':
     name: reverse transcription polymerase chain reaction transcription evidence
+  'ECO:0000110':
+    name: RNA protection assay evidence
   'ECO:0000231':
     name: quantitative PCR
     definition: "ECO term name is 'quantitative polymerase chain reaction evidence'"
