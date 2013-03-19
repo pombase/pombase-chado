@@ -278,6 +278,11 @@ method get_allele($allele_data)
     }
 
     my $allele_type = $allele_data->{allele_type};
+
+    if (!defined $allele_type) {
+      $allele_type = $self->allele_type_from_desc($new_allele_description,
+                                                  $gene->name());
+    }
     if (defined $allele_type && length $allele_type > 0) {
       $self->store_featureprop($allele, allele_type => $allele_type);
     } else {
