@@ -331,7 +331,10 @@ method _store_ontology_annotation
           die "condition '$termid' is obsolete\n";
         }
 
-        $self->add_feature_cvtermprop($feature_cvterm, condition => $termid, $i);
+        my $dbxref = $cvterm->dbxref();
+        my $real_termid = $dbxref->accession() . ':' . $dbxref->db()->name();
+
+        $self->add_feature_cvtermprop($feature_cvterm, condition => $real_termid, $i);
       }
     }
 
