@@ -88,11 +88,12 @@ method is_aa_mutation_desc($description)
 
   if ($description =~ /,/) {
     for my $bit (split /,/, $description) {
-      if (is_aa_mutation_desc($bit)) {
-        return 1;
+      if (!$self->is_aa_mutation_desc($bit)) {
+        return 0;
       }
     }
-    return 0;
+
+    return 1;
   }
 
   return $description =~ /^[a-z]+\d+[a-z]+$/i && $description !~ /^[atgc]+\d+[atgc]+$/i
@@ -111,6 +112,8 @@ method allele_type_from_desc($description, $gene_name)
       }
     }
   }
+
+  return undef;
 }
 
 method fix_expression_allele($name, $description_ref, $expression_ref)
@@ -279,10 +282,6 @@ method get_allele($allele_data)
 
     my $allele_type = $allele_data->{allele_type};
 
-    if (!defined $allele_type) {
-      $allele_type = $self->allele_type_from_desc($new_allele_description,
-                                                  $gene->name());
-    }
     if (defined $allele_type && length $allele_type > 0) {
       $self->store_featureprop($allele, allele_type => $allele_type);
     } else {
