@@ -72,35 +72,53 @@ func _get_allele_description($allele) {
   }
 }
 
+func _could_be_aa_mutation_desc($description)
+{
+  return $description =~ /^[a-z]+\d+[a-z]+$/i;
+}
+
+func _is_na_mutation_desc($description)
+{
+  return $description =~ /^[atgc]+\d+[atgc]+$/i;
+}
+
 =head2 is_aa_mutation_desc
 
  Usage   : if ($self->is_aa_mutation_desc($description)) { ... }
  Function: Return true if the $description looks like an amino acid
-           mutation, like; "K10A"
+           mutation, like; "K10A" and doesn't look like a nucleotide
+           mutation description like "A10T"
 
 =cut
 method is_aa_mutation_desc($description)
 {
   return 0 unless defined $description;
 
-  $description =~ s/^\s+//;
-  $description =~ s/\s+$//;
+  $description = $description->trim();
+
+  my $seen_aa_desc = 0;
 
   if ($description =~ /,/) {
     for my $bit (split /,/, $description) {
-      if (!$self->is_aa_mutation_desc($bit)) {
+      $bit = $bit->trim();
+      if (_could_be_aa_mutation_desc($bit)) {
+        if (!_is_na_mutation_desc($bit)) {
+          $seen_aa_desc = 1;
+        }
+      } else {
         return 0;
       }
     }
 
-    return 1;
+    return $seen_aa_desc;
   }
 
-  return $description =~ /^[a-z]+\d+[a-z]+$/i && $description !~ /^[atgc]+\d+[atgc]+$/i
+  return _could_be_aa_mutation_desc($description) && !_is_na_mutation_desc($description);
 }
 
 method allele_type_from_desc($description, $gene_name)
 {
+  $description = $description->trim();
   if (grep { $_ eq $description } ('deletion', 'wild_type', 'wild type', 'unknown', 'other', 'unrecorded')) {
     return ($description =~ s/\s+/_/r);
   } else {
@@ -146,7 +164,7 @@ method make_allele_data($name, $description, $gene_feature) {
       allele_type => $allele_type,
     }
   } else {
-    warn "allele type is ambiguous for $name($description)\n";
+    die "allele type is ambiguous for $name($description)\n";
     return ();
   }
 }
