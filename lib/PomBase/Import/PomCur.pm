@@ -133,13 +133,13 @@ sub _unreplace_commas
   return $string;
 }
 
+my $whitespace_re = "\\s\N{ZERO WIDTH SPACE}";
+
 sub _extensions_by_type
 {
   my $extension_text = shift;
 
   my %by_type = ();
-
-  my $whitespace_re = "\\s\N{ZERO WIDTH SPACE}";
 
   (my $extension_copy = $extension_text) =~ s/(\([^\)]+\))/_replace_commas($1)/eg;
 
@@ -149,7 +149,7 @@ sub _extensions_by_type
   for my $bit (@bits) {
     $bit = $bit->trim($whitespace_re);
     $bit = _unreplace_commas($bit);
-    if ($bit =~/(.*)=(.*)/) {
+    if ($bit =~/(.*?)=(.*)/) {
       my $key = $1->trim($whitespace_re);
       my $value = $2->trim($whitespace_re);
 
@@ -219,16 +219,18 @@ method _store_ontology_annotation
       }
       my @processed_allele_quals = map {
         my $allele_display_name = $_;
-        if ($allele_display_name =~ /^\s*(.*)\((.*)\)/) {
+        if ($allele_display_name =~ /^\s*(.+?)\((.*)\)/) {
           my $name = $1;
+          $name = $name->trim($whitespace_re);
           my $description = $2;
+          $description = $description->trim($whitespace_re);
           $self->fix_expression_allele($name, \$description, \$expression);
           $self->make_allele_data($name, $description, $feature);
         } else {
           if ($allele_display_name =~ /.*delta$/) {
             $self->make_allele_data($allele_display_name, "deletion", $feature);
           } else {
-            warn qq|allele qualifier "$_" isn't in the form "name(description)"\n|;
+            die qq|allele qualifier "$_" isn't in the form "name(description)"\n|;
             return ();
           }
         }
@@ -251,7 +253,8 @@ method _store_ontology_annotation
       }
 
       if ($feature->type()->name() ne 'allele') {
-        die qq(phenotype annotation for "$term_name ($termid)" must have allele information\n);
+        die qq|phenotype annotation for "$term_name ($termid)" must have allele information | .
+          "has " . $feature->type()->name() . " instead\n";
       }
     }
 
