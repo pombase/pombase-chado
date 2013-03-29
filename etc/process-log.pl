@@ -17,6 +17,7 @@ open my $target_problems, '>', 'target_problems.txt' or die;
 open my $evidence_problems, '>', 'evidence_problems.txt' or die;
 open my $db_xref_problems, '>', 'db_xref_problems.txt' or die;
 open my $identifier_problems, '>', 'identifier_problems.txt' or die;
+open my $missing_products, '>', 'missing_products.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
 my $prev_line = '';
@@ -96,6 +97,11 @@ while (defined (my $line = <>)) {
                                     print $identifier_problems "$gene: $1\n";
                                   } else {
                                     print $identifier_problems "$line";
+                                  }
+                                } else {
+                                  if ($line =~ /no product for/) {
+                                    print $all_warnings $line;
+                                    print $missing_products "$gene: $line";
                                   }
                                 }
                               }
