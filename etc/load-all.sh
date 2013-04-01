@@ -93,6 +93,16 @@ gzip -d < $CURRENT_GOA_GAF | kgrep '\ttaxon:(4896|284812)\t' | ./script/pombase-
 echo annotation count after GAF loading:
 evidence_summary
 
+
+echo load quantitative gene expression data
+
+for file in /var/pomcur/sources/quantitative_gene_expression/*
+do
+  echo loading: $i
+  ./script/pombase-import.pl load-chado.yaml quantitative --organism_taxonid=9606 $HOST $DB $USER $PASSWORD < $file 2>&1 | tee $LOG_DIR/$log_file.quantitative
+done
+
+
 echo load Compara orthologs
 
 ./script/pombase-import.pl load-chado.yaml orthologs --publication=PMID:19029536 --organism_1_taxonid=4896 --organism_2_taxonid=9606 --swap-direction $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/orthologs/compara_orths.tsv 2>&1 | tee $LOG_DIR/$log_file.compara_orths
