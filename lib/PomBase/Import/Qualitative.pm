@@ -97,8 +97,24 @@ method load($fh)
     my $type = $columns_ref->{"Type"};
     my $during = $columns_ref->{"During"};
     my $average_copies_per_cell = $columns_ref->{"Average copies per cell"};
+    if ($average_copies_per_cell eq 'NA') {
+      $average_copies_per_cell = undef;
+    }
     my $range = $columns_ref->{"Range"};
+    if ($range eq 'NA') {
+      $range = undef;
+    }
     my $qual_gene_ex_cell_distribution = $columns_ref->{"Evidence"};
+    if (lc $qual_gene_ex_cell_distribution eq 'population' or
+        lc $qual_gene_ex_cell_distribution eq 'population wide') {
+      $qual_gene_ex_cell_distribution = 'population_wide';
+    } else {
+      if (lc $qual_gene_ex_cell_distribution eq 'single cell') {
+        $qual_gene_ex_cell_distribution = 'single cell';
+      } else {
+        die qq(text in "Evidence" column not recognised: $qual_gene_ex_cell_distribution\n);
+      }
+    }
     my $conditions = $columns_ref->{"Condition"};
     my $source = $columns_ref->{"Source"};
 
