@@ -98,6 +98,16 @@ cvs:
   misc: []
   disease_associated: []
   EC numbers: []
+  qualitative_gene_expression_properties:
+    - name: qual_during
+    - name: qual_avg_copies_per_cell
+    - name: qual_copies_per_cell_range
+    - name: qual_cell_distribution
+      definition: >
+        Possible values are "population wide" or "single cell".
+    - name: qual_condition
+      definition: >
+        An experimental condition from the PECO ontology. 
 
 # define the allowed extension relation for each annotation type
 extension_restrictions:
