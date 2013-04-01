@@ -317,6 +317,9 @@ evidence_types:
   'ECO:0000231':
     name: quantitative PCR
     definition: "ECO term name is 'quantitative polymerase chain reaction evidence'"
+  'ECO:0000006':
+    name: experimental evidence
+
 
 suppressible_evidence_codes:
 
