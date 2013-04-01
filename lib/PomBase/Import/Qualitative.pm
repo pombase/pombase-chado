@@ -58,7 +58,7 @@ has organism => (is => 'rw', init_arg => undef);
 
 method BUILD
 {
-  my $organism_taxonid = '';
+  my $organism_taxonid = undef;
 
   my @opt_config = ('organism_taxonid=s' => \$organism_taxonid);
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
