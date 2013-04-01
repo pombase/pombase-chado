@@ -118,7 +118,7 @@ method load($fh)
     try {
       $feature = $self->find_chado_feature($systematic_id, 1, 0, $organism);
     } catch {
-      warn "can't find a feature for $systematic_id: $_";
+      warn "skipping annotation: $_";
     };
     next unless defined $feature;
 
