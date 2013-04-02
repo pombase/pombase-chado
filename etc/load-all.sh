@@ -99,7 +99,7 @@ echo load quantitative gene expression data
 for file in /var/pomcur/sources/quantitative_gene_expression/*
 do
   echo loading: $i
-  ./script/pombase-import.pl load-chado.yaml qualitative --organism_taxonid=9606 $HOST $DB $USER $PASSWORD < $file 2>&1 | tee $LOG_DIR/$log_file.qualitative
+  ./script/pombase-import.pl load-chado.yaml quantitative --organism_taxonid=9606 $HOST $DB $USER $PASSWORD < $file 2>&1 | tee $LOG_DIR/$log_file.qualitative
 done
 
 

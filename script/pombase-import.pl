@@ -88,7 +88,7 @@ my %import_modules = (
   gaf => 'PomBase::Import::GeneAssociationFile',
   pomcur => 'PomBase::Import::PomCur',
   orthologs => 'PomBase::Import::Orthologs',
-  qualitative => 'PomBase::Import::Qualitative',
+  quantitative => 'PomBase::Import::Quantitative',
 );
 
 my $import_module = $import_modules{$import_type};

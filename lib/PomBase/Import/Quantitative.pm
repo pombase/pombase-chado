@@ -1,8 +1,8 @@
-package PomBase::Import::Qualitative;
+package PomBase::Import::Quantitative;
 
 =head1 NAME
 
-PomBase::Import::Qualitative - Import qualitative gene expression data
+PomBase::Import::Quantitative - Import quantitative gene expression data
 
 =head1 SYNOPSIS
 
@@ -18,7 +18,7 @@ Please report any bugs or feature requests to C<kmr44@cam.ac.uk>.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc PomBase::Import::Qualitative
+    perldoc PomBase::Import::Quantitative
 
 =over 4
 
