@@ -422,6 +422,12 @@ method _process_feature
 
   my $config = $self->config();
 
+  state $evidence_long_names = {
+    map {
+      (lc $_, 1);
+    } @{keys %{$config->{evidence_types}}}
+  };
+
   if (!defined $evidence_code or length $evidence_code == 0) {
     die "no evidence code\n";
   } else {
@@ -433,7 +439,11 @@ method _process_feature
         $long_evidence = $evidence_code;
       }
     } else {
-      die "unknown evidence code: $evidence_code\n";
+      if ($evidence_long_names->{lc $evidence_code}) {
+        $long_evidence = lc $evidence_code;
+      } else {
+        die "unknown evidence code: $evidence_code\n";
+      }
     }
   }
 
