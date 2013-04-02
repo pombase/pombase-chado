@@ -129,6 +129,8 @@ func _fix_annotation_extension_rels($chado, $config)
       'annotation_extension_relation-' . $_->name();
     } ($chado->resultset('Cv::Cv')->search({ 'me.name' => 'go/extensions/gorel' })
             ->search_related('cvterms')->all(),
+       $chado->resultset('Cv::Cv')->search({ 'me.name' => 'PSI-MOD_extension_relations' })
+            ->search_related('cvterms')->all(),
        $chado->resultset('Cv::Cv')->search({ 'me.name' => 'fypo_extension_relations' })
             ->search_related('cvterms')->all());
 
