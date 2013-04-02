@@ -120,6 +120,18 @@ method get_and_check_date($sub_qual_map) {
 # about mismatches
 method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map,
                         $create_cvterm) {
+  my $extension = $sub_qual_map->{annotation_extension};
+  if (defined $extension && $extension =~ /\|/) {
+    # split into multiple annotations
+    for my $bit (split /\|/, $extension) {
+      my $qual_copy = { %$sub_qual_map };
+      $qual_copy->{annotation_extension} = $bit;
+      $self->add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $qual_copy, 0);
+    }
+
+    return;
+  }
+
   $embl_term_name =~ s/\s+/ /g;
   $embl_term_name = $embl_term_name->trim();
 
@@ -888,17 +900,7 @@ method process_one_go_qual($chado_object, $bioperl_feature, $qualifier) {
     my $term = delete $qual_map{term};
 
     try {
-      my $extension = $qual_map{annotation_extension};
-      if ($extension && $extension =~ /\|/) {
-          # split into multiple annotations
-        for my $bit (split /\|/, $extension) {
-          my $qual_copy = { %qual_map };
-          $qual_copy->{annotation_extension} = $bit;
-          $self->add_term_to_gene($chado_object, $cv_name, $term, $qual_copy, 0);
-        }
-      } else {
-        $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 0);
-      }
+      $self->add_term_to_gene($chado_object, $cv_name, $term, \%qual_map, 0);
     } catch {
       my $systematic_id = $chado_object->uniquename();
       warn "$_: failed to load qualifier '$qualifier' from $systematic_id:\n";

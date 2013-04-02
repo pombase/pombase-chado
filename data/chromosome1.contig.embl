@@ -304,6 +304,7 @@ FT                   coiled-coil; qualifier=region; cv=sequence_feature;
 FT                   date=20060605"
 FT                   /controlled_curation="term=gene expression, alternative
 FT                   transcripts; db_xref=PMID:11376151; cv=gene_ex;
+FT                   annotation_extension=has_downstream_target(GeneDB_Spombe:SPAC977.10)|has_downstream_target(GeneDB_Spombe:SPBC409.20c);
 FT                   date=20060605"
 FT                   /controlled_curation="term=species distribution, sequence
 FT                   orphan; date=19700101"
