@@ -123,7 +123,7 @@ method load($fh)
       $quant_gene_ex_cell_distribution = 'population_wide';
     } else {
       if (lc $quant_gene_ex_cell_distribution eq 'single cell') {
-        $quant_gene_ex_cell_distribution = 'single cell';
+        $quant_gene_ex_cell_distribution = 'single_cell';
       } else {
         die qq(text in "Evidence" column not recognised: $quant_gene_ex_cell_distribution\n);
       }
