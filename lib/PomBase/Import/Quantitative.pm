@@ -117,15 +117,15 @@ method load($fh)
     if ($range eq 'NA') {
       $range = undef;
     }
-    my $qual_gene_ex_cell_distribution = $columns_ref->{"Evidence"};
-    if (lc $qual_gene_ex_cell_distribution eq 'population' or
-        lc $qual_gene_ex_cell_distribution eq 'population wide') {
-      $qual_gene_ex_cell_distribution = 'population_wide';
+    my $quant_gene_ex_cell_distribution = $columns_ref->{"Evidence"};
+    if (lc $quant_gene_ex_cell_distribution eq 'population' or
+        lc $quant_gene_ex_cell_distribution eq 'population wide') {
+      $quant_gene_ex_cell_distribution = 'population_wide';
     } else {
-      if (lc $qual_gene_ex_cell_distribution eq 'single cell') {
-        $qual_gene_ex_cell_distribution = 'single cell';
+      if (lc $quant_gene_ex_cell_distribution eq 'single cell') {
+        $quant_gene_ex_cell_distribution = 'single cell';
       } else {
-        die qq(text in "Evidence" column not recognised: $qual_gene_ex_cell_distribution\n);
+        die qq(text in "Evidence" column not recognised: $quant_gene_ex_cell_distribution\n);
       }
     }
     my $conditions = $columns_ref->{"Condition"};
@@ -159,17 +159,17 @@ method load($fh)
       $self->create_feature_cvterm($feature, $term, $pub, 0);
 
     if (defined $average_copies_per_cell) {
-      $self->add_feature_cvtermprop($feature_cvterm, 'qual_gene_ex_avg_copies_per_cell',
+      $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_avg_copies_per_cell',
                                     $average_copies_per_cell);
     }
     if (defined $range) {
-      $self->add_feature_cvtermprop($feature_cvterm, 'qual_gene_ex_copies_per_cell',
+      $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_copies_per_cell',
                                     $range);
     }
     $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                   $long_evidence);
-    $self->add_feature_cvtermprop($feature_cvterm, 'qual_gene_ex_cell_distribution',
-                                  $qual_gene_ex_cell_distribution);
+    $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_cell_distribution',
+                                  $quant_gene_ex_cell_distribution);
 
     my @conditions = split /\s*,\s*/, $conditions;
     for (my $i = 0; $i < @conditions; $i++) {
