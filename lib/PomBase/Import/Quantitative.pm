@@ -108,7 +108,7 @@ method load($fh)
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $systematic_id = $columns_ref->{"Systematic ID"};
     my $type = $columns_ref->{"Type"};
-    my $during = $columns_ref->{"During"};
+    my $during = $columns_ref->{"During"}->trim();
     my $average_copies_per_cell = $columns_ref->{"Average copies per cell"};
     if ($average_copies_per_cell eq 'NA') {
       $average_copies_per_cell = undef;
