@@ -41,6 +41,8 @@ use Moose;
 use Text::CSV;
 use Getopt::Long qw(GetOptionsFromArray);
 
+use PomBase::Chado::ExtensionProcessor;
+
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::FeatureFinder';
@@ -55,6 +57,17 @@ has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 has organism_taxonid => (is => 'rw', init_arg => undef);
 has organism => (is => 'rw', init_arg => undef);
+has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
+                            builder => '_build_extension_processor');
+
+method _build_extension_processor
+{
+  my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
+                                                          config => $self->config(),
+                                                          pre_init_cache => 1,
+                                                          verbose => $self->verbose());
+  return $processor;
+}
 
 method BUILD
 {
@@ -118,6 +131,8 @@ method load($fh)
     my $conditions = $columns_ref->{"Condition"};
     my $source = $columns_ref->{"Source"};
 
+    my $annotation_extension = "during($during)";
+
     my $term;
 
     if ($type eq 'RNA') {
@@ -143,8 +158,6 @@ method load($fh)
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $term, $pub, 0);
 
-    $self->add_feature_cvtermprop($feature_cvterm, 'qual_gene_ex_during',
-                                  $during);
     if (defined $average_copies_per_cell) {
       $self->add_feature_cvtermprop($feature_cvterm, 'qual_gene_ex_avg_copies_per_cell',
                                     $average_copies_per_cell);
@@ -163,5 +176,7 @@ method load($fh)
       my $condition = $conditions[$i];
       $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
     }
+
+    $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
   }
 }
