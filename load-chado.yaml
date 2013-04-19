@@ -329,10 +329,10 @@ ensembl_dbs:
     port: 5306
     user: anonymous
     group: core
-    dbname: homo_sapiens_core_69_37
+    dbname: homo_sapiens_core_71_37
   'Saccharomyces cerevisiae':
     host: useastdb.ensembl.org
     port: 5306
     user: anonymous
     group: core
-    dbname: saccharomyces_cerevisiae_core_69_4
+    dbname: saccharomyces_cerevisiae_core_71_4
