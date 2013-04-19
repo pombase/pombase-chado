@@ -138,7 +138,7 @@ evidence_summary
 echo running consistency checks
 ./script/check-chado.pl ./check-db.yaml $HOST $FINAL_DB $USER $PASSWORD
 
-DUMP_DIR=/var/www/pombase/kmr44/dumps/$FINAL_DB
+DUMP_DIR=/var/www/pombase/dumps/$FINAL_DB
 
 mkdir $DUMP_DIR
 mkdir $DUMP_DIR/logs
