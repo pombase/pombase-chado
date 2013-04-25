@@ -85,7 +85,7 @@ method _store_interaction_annotation
   my $publication = $args{publication};
   my $long_evidence = $args{long_evidence};
   my $gene_uniquename = $args{gene_uniquename};
-  my $curator = $args{submitter_email};
+  my $curator = $args{curator};
   my $feature_a = $args{feature};
   my $curs_key = $args{curs_key};
 
@@ -181,7 +181,7 @@ method _store_ontology_annotation
   my $conditions = $args{conditions};
   my $with_gene = $args{with_gene};
   my $extension_text = $args{extension_text};
-  my $curator = $args{submitter_email};
+  my $curator = $args{curator};
   my $approved_timestamp = $args{approved_timestamp};
   my $approver_email = $args{approver_email};
   my $curs_key = $args{curs_key};
@@ -279,7 +279,9 @@ method _store_ontology_annotation
     $self->add_feature_cvtermprop($feature_cvterm,
                                   evidence => $long_evidence);
     $self->add_feature_cvtermprop($feature_cvterm,
-                                  curator => $curator);
+                                  curator_name => $curator->{name});
+    $self->add_feature_cvtermprop($feature_cvterm,
+                                  curator_email => $curator->{email});
     $self->add_feature_cvtermprop($feature_cvterm,
                                   curs_key => $curs_key);
     if (defined $approved_timestamp) {
@@ -410,13 +412,14 @@ method _process_feature
   my $creation_date = delete $annotation->{creation_date};
   my $publication_uniquename = delete $annotation->{publication};
   my $evidence_code = delete $annotation->{evidence_code};
+  my $curator = delete $annotation->{curator};
 
   my $publication = $self->find_or_create_pub($publication_uniquename);
 
   my %useful_session_data =
     map {
       ($_, $session_metadata->{$_});
-    } qw(submitter_email approver_email approved_timestamp);
+    } qw(approver_email approved_timestamp);
 
   my $long_evidence;
 
@@ -479,6 +482,7 @@ method _process_feature
                                       with_gene => $with_gene,
                                       extension_text => $extension_text,
                                       curs_key => $curs_key,
+                                      curator => $curator,
                                       %useful_session_data);
   } else {
     if ($annotation_type eq 'genetic_interaction' or
@@ -491,6 +495,7 @@ method _process_feature
                                              long_evidence => $long_evidence,
                                              feature => $feature,
                                              curs_key => $curs_key,
+                                             curator => $curator,
                                              %useful_session_data);
       } else {
         die "no interacting_genes data found in interaction annotation\n";

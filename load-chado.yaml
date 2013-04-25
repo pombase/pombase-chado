@@ -80,9 +80,10 @@ cvs:
     - name: source database
     - name: homology type
     - name: ortholog qualifier
-    - name: curator
     - name: approved_timestamp
     - name: approver_email
+    - name: curator_name
+    - name: curator_email
     - name: curs_key
   cat_act: []
   genome_org: []
