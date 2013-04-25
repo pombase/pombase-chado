@@ -51,6 +51,10 @@ method store_feature_relationshipprop($feature_relationship, $type_name, $value)
     die "can't find cvterm for $type_name - ", longmess();
   }
 
+  if (ref $value) {
+    croak "can't store a reference as a value";
+  }
+
   return $self->chado()->resultset('Sequence::FeatureRelationshipprop')
     ->create({ feature_relationship_id =>
                  $feature_relationship->feature_relationship_id(),
