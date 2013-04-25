@@ -155,7 +155,7 @@ cp $LOG_DIR/$log_file.compara_orths $DUMP_DIR/logs/$log_file.compara-orth-load-o
 cp $LOG_DIR/$log_file.manual_multi_orths $DUMP_DIR/logs/$log_file.manual-multi-orths-output
 cp $LOG_DIR/$log_file.manual_1-1_orths $DUMP_DIR/logs/$log_file.manual-1-1-orths-output
 cp $LOG_DIR/$log_file.curation_tool_data $DUMP_DIR/logs/$log_file.curation-tool-data-load-output
-cp $LOG_DIR/$log_file.quantitative $DUMP_DIR/logs/$log_file.curation-tool-data-load-output
+cp $LOG_DIR/$log_file.quantitative $DUMP_DIR/logs/$log_file.quantitative
 
 cp $LOG_DIR/*.txt $DUMP_DIR/warnings/
 
