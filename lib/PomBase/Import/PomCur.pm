@@ -428,7 +428,7 @@ method _process_feature
   state $evidence_long_names = {
     map {
       (lc $_, 1);
-    } @{keys %{$config->{evidence_types}}}
+    } keys %{$config->{evidence_types}}
   };
 
   if (!defined $evidence_code or length $evidence_code == 0) {
