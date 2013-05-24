@@ -545,7 +545,7 @@ method move_condition_qual($feature_cvterm, $sub_qual_map) {
     }
 
     my $dbxref = $cvterm->dbxref();
-    my $real_termid = $dbxref->accession() . ':' . $dbxref->db()->name();
+    my $real_termid = $dbxref->db()->name() . ':' . $dbxref->accession();
 
     $self->add_feature_cvtermprop($feature_cvterm, condition => $real_termid);
     delete $sub_qual_map->{annotation_extension};
