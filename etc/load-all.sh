@@ -142,7 +142,6 @@ DUMP_DIR=/var/www/pombase/dumps/$FINAL_DB
 
 mkdir $DUMP_DIR
 mkdir $DUMP_DIR/logs
-mkdir $DUMP_DIR/warnings
 
 ./script/pombase-export.pl ./load-chado.yaml gaf --organism-taxon-id=4896 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.gaf
 ./script/pombase-export.pl ./load-chado.yaml orthologs --organism-taxon-id=4896 --other-organism-taxon-id=9606 $HOST $FINAL_DB $USER $PASSWORD > $DUMP_DIR/$FINAL_DB.human-orthologs.txt
@@ -157,7 +156,7 @@ cp $LOG_DIR/$log_file.manual_1-1_orths $DUMP_DIR/logs/$log_file.manual-1-1-orths
 cp $LOG_DIR/$log_file.curation_tool_data $DUMP_DIR/logs/$log_file.curation-tool-data-load-output
 cp $LOG_DIR/$log_file.quantitative $DUMP_DIR/logs/$log_file.quantitative
 
-cp $LOG_DIR/*.txt $DUMP_DIR/warnings/
+cp $LOG_DIR/*.txt $DUMP_DIR/logs/
 
 mkdir $DUMP_DIR/pombe-embl
 cp -r $SOURCES/pombe-embl/* $DUMP_DIR/pombe-embl/
