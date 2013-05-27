@@ -198,7 +198,7 @@ method find_cvterm_by_term_id($term_id, $options)
     my $db = $chado->resultset('General::Db')->find({ name => $db_name });
 
     if (!defined $db) {
-      croak "no Db found with name '$db_name'\n";
+      die "no Db found with name '$db_name'\n";
     }
 
     my $dbxref_rs = $chado->resultset('General::Dbxref')
