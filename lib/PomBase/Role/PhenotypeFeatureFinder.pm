@@ -125,8 +125,12 @@ method allele_type_from_desc($description, $gene_name)
     if ($self->is_aa_mutation_desc($description)) {
       return 'amino_acid_mutation';
     } else {
-      if (defined $gene_name && $description =~ /^$gene_name/) {
-        return 'other';
+      if ($description =~ /^[A-Z]\d+->(amber|ochre|opal|stop)$/i) {
+        return 'nonsense_mutation';
+      } else {
+        if (defined $gene_name && $description =~ /^$gene_name/) {
+          return 'other';
+        }
       }
     }
   }
