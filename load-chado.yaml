@@ -27,6 +27,7 @@ cvs:
     - name: partial_amino_acid_deletion
       description: Deletion of part of a gene.
     - name: partial_nucleotide_deletion
+    - name: nonsense_mutation
     - name: wild_type
     - name: unknown
       description: An allele whose type has not been established.
