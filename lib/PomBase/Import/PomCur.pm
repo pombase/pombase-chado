@@ -283,6 +283,8 @@ method _store_ontology_annotation
     $self->add_feature_cvtermprop($feature_cvterm,
                                   curator_email => $curator->{email});
     $self->add_feature_cvtermprop($feature_cvterm,
+                                  community_curated => $curator->{community_curated});
+    $self->add_feature_cvtermprop($feature_cvterm,
                                   curs_key => $curs_key);
     if (defined $approved_timestamp) {
       $self->add_feature_cvtermprop($feature_cvterm,
