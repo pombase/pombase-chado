@@ -555,7 +555,7 @@ method move_condition_qual($feature_cvterm, $sub_qual_map) {
 method add_pubmed_20519959_conditions($feature_cvterm) {
   my $cvterm_name = $feature_cvterm->cvterm()->name();
   return unless $cvterm_name eq 'inviable' || $cvterm_name eq 'viable';
-  my @conditions = qw(PCO:0000012 PCO:0000005 PCO:0000090);
+  my @conditions = qw(PECO:0000012 PECO:0000005 PECO:0000090);
 
   my @props = $feature_cvterm->feature_cvtermprops();
   my $max_rank = 0;

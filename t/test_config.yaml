@@ -377,6 +377,18 @@ data:
             accession: 0040001
             db:
               name: PomBase
+    - name: phenotype_condition
+      cvterms:
+        - name: standard glucose rich medium
+          dbxref:
+            accession: 0000012
+            db:
+              name: PECO
+        - name: glucose rich medium
+          dbxref:
+            accession: 0000137
+            db:
+              name: PECO
   cvterm_relationships:
     - subject:
         name: microtubule motor activity
