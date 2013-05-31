@@ -26,7 +26,7 @@ $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 14);
+is($annotations->count(), 12);
 
 my $test_term_count = 0;
 
@@ -41,12 +41,14 @@ while (defined (my $fc = $annotations->next())) {
     cmp_deeply(\%prop_hash,
                {
                  'date' => '2010-01-02',
-                 'curator' => 'Ken.Sawin@ed.ac.uk',
+                 'curator_email' => 'some.testperson@pombase.org',
+                 'curator_name' => 'Some Testperson',
+                 'community_curated' => 'false',
                  'residue' => 'T586(T586,X123)',
                  'evidence' => 'Inferred from Physical Interaction',
                  'assigned_by' => 'PomBase',
                  'with' => 'SPCC576.16c',
-                 'condition' => 'PCO:0000012',
+                 'condition' => 'PECO:0000012',
                  'curs_key' => 'aaaa0007',
                });
   }
@@ -57,7 +59,9 @@ while (defined (my $fc = $annotations->next())) {
                {
                  'date' => '2010-01-02',
                  'evidence' => 'Inferred from Direct Assay',
-                 'curator' => 'Ken.Sawin@ed.ac.uk',
+                 'curator_email' => 'some.testperson@pombase.org',
+                 'curator_name' => 'Some Testperson',
+                 'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
                  'curs_key' => 'aaaa0007',
                });
@@ -70,7 +74,9 @@ while (defined (my $fc = $annotations->next())) {
                {
                  'date' => '2010-01-02',
                  'evidence' => 'Inferred from Physical Interaction',
-                 'curator' => 'Ken.Sawin@ed.ac.uk',
+                 'curator_email' => 'some.testperson@pombase.org',
+                 'curator_name' => 'Some Testperson',
+                 'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
                  'with' => 'SPCC576.16c',
                  'curs_key' => 'aaaa0007',

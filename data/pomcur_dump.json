@@ -5,6 +5,11 @@
          "annotations" : [
             {
                "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : false,
+                  "email" : "other.tester@pombase.org",
+                  "name" : "Other Tester"
+               },
                "evidence_code" : "IMP",
                "genes" : {
                   "Schizosaccharomyces pombe SPCC576.16c" : {
@@ -21,11 +26,8 @@
          "metadata" : {
             "curation_pub_id" : "PMID:18426916",
             "curs_key" : "aaaa0006",
-            "first_contact_email" : "henar@usal.es",
-            "first_contact_name" : "Henar Valdivieso",
-            "submitter_email" : "henar@usal.es",
-            "submitter_name" : "Henar Valdivieso",
-            "term_suggestion_count" : "0"
+            "term_suggestion_count" : "0",
+            "unknown_conditions_count" : "0"
          },
          "organisms" : {
             "4896" : {
@@ -36,13 +38,19 @@
             "PMID:18426916" : {}
          },
          "session_genes_count" : "1",
-         "session_term_suggestions_count" : "0"
+         "session_term_suggestions_count" : "0",
+         "session_unknown_conditions_count" : "0"
       },
       "aaaa0007" : {
          "annotation_status" : "CURATION_IN_PROGRESS",
          "annotations" : [
             {
                "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : false,
+                  "email" : "some.testperson@pombase.org",
+                  "name" : "Some Testperson"
+               },
                "evidence_code" : "IMP",
                "genes" : {
                   "Schizosaccharomyces pombe SPAC27D7.13c" : {
@@ -62,6 +70,11 @@
             {
                "annotation_extension" : "annotation_extension=exists_during(GO:0051329),annotation_extension=has_substrate(GeneDB_Spombe:SPBC1105.11c),annotation_extension=requires_feature(Pfam:PF00564),residue=T31,residue=T586(T586,X123),qualifier=NOT,condition=PCO:0000012,allele=SPAC9.02cdelta(deletion)|annotation_extension=exists_during(GO:0051329),has_substrate(GeneDB_Spombe:SPBC1105.11c)",
                "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : false,
+                  "email" : "some.testperson@pombase.org",
+                  "name" : "Some Testperson"
+               },
                "evidence_code" : "IPI",
                "genes" : {
                   "Schizosaccharomyces pombe SPBC14F5.07" : {
@@ -77,6 +90,11 @@
             },
             {
                "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : false,
+                  "email" : "some.testperson@pombase.org",
+                  "name" : "Some Testperson"
+               },
                "evidence_code" : "IDA",
                "genes" : {
                   "Schizosaccharomyces pombe SPBC14F5.07" : {
@@ -91,6 +109,11 @@
             },
             {
                "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : false,
+                  "email" : "some.testperson@pombase.org",
+                  "name" : "Some Testperson"
+               },
                "evidence_code" : "Synthetic Haploinsufficiency",
                "genes" : {
                   "Schizosaccharomyces pombe SPCC63.05" : {
@@ -113,20 +136,25 @@
             {
                "alleles" : [
                   {
+                     "allele_type" : "deletion",
                      "description" : "deletion",
                      "gene" : {
                         "organism" : "Schizosaccharomyces pombe",
                         "uniquename" : "SPAC27D7.13c"
                      },
                      "name" : "ssm4delta",
-                     "primary_identifier" : "SPAC27D7.13c:allele-1",
-                     "type" : "existing"
+                     "primary_identifier" : "SPAC27D7.13c:allele-1"
                   }
                ],
                "conditions" : [
                   "PCO:0000004"
                ],
                "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : false,
+                  "email" : "some.testperson@pombase.org",
+                  "name" : "Some Testperson"
+               },
                "evidence_code" : "Epitope-tagged protein immunolocalization experiment data",
                "expression" : "Overexpression",
                "publication" : "PMID:19756689",
@@ -137,16 +165,21 @@
             {
                "alleles" : [
                   {
+                     "allele_type" : "partial_nucleotide_deletion",
                      "description" : "del_100-200",
                      "gene" : {
                         "organism" : "Schizosaccharomyces pombe",
                         "uniquename" : "SPAC27D7.13c"
                      },
-                     "name" : "ssm4-D4",
-                     "type" : "new"
+                     "name" : "ssm4-D4"
                   }
                ],
                "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : false,
+                  "email" : "some.testperson@pombase.org",
+                  "name" : "Some Testperson"
+               },
                "evidence_code" : "Co-immunoprecipitation experiment",
                "publication" : "PMID:19756689",
                "status" : "new",
@@ -155,6 +188,11 @@
             },
             {
                "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : true,
+                  "email" : "a.n.other.testperson@pombase.org",
+                  "name" : "Another Testperson"
+               },
                "evidence_code" : "ISS",
                "genes" : {
                   "Schizosaccharomyces pombe SPCC63.05" : {
@@ -171,11 +209,8 @@
          "metadata" : {
             "curation_pub_id" : "PMID:19756689",
             "curs_key" : "aaaa0007",
-            "first_contact_email" : "Ken.Sawin@ed.ac.uk",
-            "first_contact_name" : "Ken Sawin",
-            "submitter_email" : "Ken.Sawin@ed.ac.uk",
-            "submitter_name" : "Ken Sawin",
-            "term_suggestion_count" : "1"
+            "term_suggestion_count" : "1",
+            "unknown_conditions_count" : "1"
          },
          "organisms" : {
             "4896" : {
@@ -186,339 +221,8 @@
             "PMID:19756689" : {}
          },
          "session_genes_count" : "4",
-         "session_term_suggestions_count" : "1"
-      }
-   },
-   "labs" : {
-      "Espenshade Lab" : {
-         "head" : "Peter Espenshade"
-      },
-      "Hardwick Lab" : {
-         "head" : "Kevin Hardwick"
-      },
-      "Hoffman Lab" : {
-         "head" : "Charles Hoffman"
-      },
-      "Macneill Lab" : {
-         "head" : "Stuart Macneill"
-      },
-      "Rhind Lab" : {
-         "head" : "Nick Rhind"
-      },
-      "Rokeach Lab" : {
-         "head" : "Luis Rokeach"
-      },
-      "Sawin Lab" : {
-         "head" : "Ken Sawin"
-      },
-      "User Lab" : {
-         "head" : "Test User"
-      },
-      "Valdivieso Lab" : {
-         "head" : "Henar Valdivieso"
-      },
-      "Wahls Lab" : {
-         "head" : "Wayne Wahls"
-      },
-      "Winston Lab" : {
-         "head" : "Fred Winston"
-      },
-      "Yamano Lab" : {
-         "head" : "Hiro Yamano"
-      },
-      "å²©å´ã²ãã Lab" : {
-         "head" : "å²©å´ã²ãã"
-      }
-   },
-   "people" : {
-      "John.Burg@jhmi.edu" : {
-         "lab" : "Espenshade Lab",
-         "name" : "John Burg",
-         "password" : "John.Burg@jhmi.edu",
-         "role" : "user"
-      },
-      "Ken.Sawin@ed.ac.uk" : {
-         "lab" : "Sawin Lab",
-         "name" : "Ken Sawin",
-         "password" : "Ken.Sawin@ed.ac.uk",
-         "role" : "user"
-      },
-      "Luis.Rokeach@umontreal.ca" : {
-         "lab" : "Rokeach Lab",
-         "name" : "Luis Rokeach",
-         "password" : "Luis.Rokeach@umontreal.ca",
-         "role" : "user"
-      },
-      "Mary.Porter-Goff@umassmed.edu" : {
-         "lab" : "Rhind Lab",
-         "name" : "Mary Porter-Goff",
-         "password" : "Mary.Porter-Goff@umassmed.edu",
-         "role" : "user"
-      },
-      "Nicholas.Willis@umassmed.edu" : {
-         "lab" : "Rhind Lab",
-         "name" : "Nicholas Willis",
-         "password" : "Nicholas.Willis@umassmed.edu",
-         "role" : "user"
-      },
-      "Pascale.Beauregard@umontreal.ca" : {
-         "lab" : "Rokeach Lab",
-         "name" : "Pascale Beauregard",
-         "password" : "Pascale.Beauregard@umontreal.ca",
-         "role" : "user"
-      },
-      "a.nilsson@warwick.ac.uk" : {
-         "lab" : null,
-         "name" : "Antonia Nilsson",
-         "password" : "a.nilsson@warwick.ac.uk",
-         "role" : "admin"
-      },
-      "dom@genetics.med.harvard.edu" : {
-         "lab" : "Winston Lab",
-         "name" : "Dom Helmlinger",
-         "password" : "dom@genetics.med.harvard.edu",
-         "role" : "user"
-      },
-      "fred.winston@genetics.med.harvard.edu" : {
-         "lab" : "Winston Lab",
-         "name" : "Fred Winston",
-         "password" : "fred.winston@genetics.med.harvard.edu",
-         "role" : "user"
-      },
-      "h.yamano@mcri.ac.uk" : {
-         "lab" : "Yamano Lab",
-         "name" : "Hiro Yamano",
-         "password" : "h.yamano@mcri.ac.uk",
-         "role" : "user"
-      },
-      "henar@usal.es" : {
-         "lab" : "Valdivieso Lab",
-         "name" : "Henar Valdivieso",
-         "password" : "henar@usal.es",
-         "role" : "user"
-      },
-      "hoffmacs@bc.edu" : {
-         "lab" : "Hoffman Lab",
-         "name" : "Charles Hoffman",
-         "password" : "hoffmacs@bc.edu",
-         "role" : "user"
-      },
-      "iwasaki@tsurumi.yokohama-cu.ac.jp" : {
-         "lab" : "å²©å´ã²ãã Lab",
-         "name" : "å²©å´ã²ãã",
-         "password" : "iwasaki@tsurumi.yokohama-cu.ac.jp",
-         "role" : "user"
-      },
-      "kevin.hardwick@ed.ac.uk" : {
-         "lab" : "Hardwick Lab",
-         "name" : "Kevin Hardwick",
-         "password" : "kevin.hardwick@ed.ac.uk",
-         "role" : "user"
-      },
-      "mah79@cam.ac.uk" : {
-         "lab" : null,
-         "name" : "Midori Harris",
-         "password" : "mah79@cam.ac.uk",
-         "role" : "admin"
-      },
-      "nick.rhind@umassmed.edu" : {
-         "lab" : "Rhind Lab",
-         "name" : "Nick Rhind",
-         "password" : "nick.rhind@umassmed.edu",
-         "role" : "user"
-      },
-      "peter.espenshade@jhmi.edu" : {
-         "lab" : "Espenshade Lab",
-         "name" : "Peter Espenshade",
-         "password" : "peter.espenshade@jhmi.edu",
-         "role" : "user"
-      },
-      "stuart.macneill@st-andrews.ac.uk" : {
-         "lab" : "Macneill Lab",
-         "name" : "Stuart Macneill",
-         "password" : "stuart.macneill@st-andrews.ac.uk",
-         "role" : "user"
-      },
-      "test.user@pombase.org" : {
-         "lab" : "User Lab",
-         "name" : "Test User",
-         "password" : "test.user@pombase.org",
-         "role" : "user"
-      },
-      "val@sanger.ac.uk" : {
-         "lab" : null,
-         "name" : "Val Wood",
-         "password" : "val@sanger.ac.uk",
-         "role" : "admin"
-      },
-      "wahlswaynep@uams.edu" : {
-         "lab" : "Wahls Lab",
-         "name" : "Wayne Wahls",
-         "password" : "wahlswaynep@uams.edu",
-         "role" : "user"
-      }
-   },
-   "publications" : {
-      "PMID:10467002" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:16641370" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:17304215" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:18426916" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "Curatable",
-         "type" : "unknown"
-      },
-      "PMID:18430926" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:18556659" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19037101" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19041767" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19056896" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19160458" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19211838" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19351719" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "Sequence feature or region",
-         "type" : "unknown"
-      },
-      "PMID:19436749" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19627505" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19664060" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19686603" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:19756689" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "Curatable",
-         "type" : "unknown"
-      },
-      "PMID:20622008" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:20870879" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:20976105" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:21801748" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:7518718" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
-      },
-      "PMID:7958849" : {
-         "assigned_curator" : null,
-         "curation_statuses" : [],
-         "properties" : [],
-         "triage_status" : "New",
-         "type" : "unknown"
+         "session_term_suggestions_count" : "1",
+         "session_unknown_conditions_count" : "1"
       }
    }
 }

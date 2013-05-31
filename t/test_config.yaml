@@ -275,14 +275,24 @@ data:
             accession: 011000003
             db:
               name: PomBase
-        - name: curator
-          dbxref:
-            accession: 011000004
-            db:
-              name: PomBase
         - name: curs_key
           dbxref:
             accession: 011000005
+            db:
+              name: PomBase
+        - name: curator_name
+          dbxref:
+            accession: 011000006
+            db:
+              name: PomBase
+        - name: curator_email
+          dbxref:
+            accession: 011000007
+            db:
+              name: PomBase
+        - name: community_curated
+          dbxref:
+            accession: 011000008
             db:
               name: PomBase
     - name: PomBase organism property types
