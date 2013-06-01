@@ -42,6 +42,15 @@ requires 'get_cvterm';
 requires 'find_chado_feature';
 requires 'find_organism_by_full_name';
 
+=head2 get_gene
+
+ Usage   : my $gene = $self->get_gene($gene_data);
+ Function: Helper method for get_allele() to find genes
+ Args    : $gene_data - a hash ref with keys:
+                uniquename - the gene uniquename
+                organism   - the full organism name like "Genus species"
+
+=cut
 method get_gene($gene_data)
 {
   if (!defined $gene_data) {
@@ -179,7 +188,8 @@ method make_allele_data($name, $description, $gene_feature) {
            my $allele_obj = $self->get_allele($allele_data);
  Function: Return an allele Feature for the given data
  Args    : $allele_data - a hash ref with these keys:
-             gene - the gene Feature object for the allele
+             gene - a hash ref to pass to get_gene():
+                    { uniquename => "...", organism => "Genus species" }
              primary_identifier - the Chado primary identifier for this allele
              name - the allele name eg. cdc11+, cdc11delta, cdc11-31
              description - the allele description,
