@@ -77,7 +77,7 @@ method load($fh)
 
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
-  $csv->column_names(qw(gene_systemtic_id fypo_id allele_description geneotype strain_background gene_name allele_name allele_synonym allele_type evidence condition penetrance expressivity extension reference taxon date));
+  $csv->column_names(qw(gene_systemtic_id fypo_id allele_description geneotype strain_background gene_name allele_name allele_synonym allele_type evidence conditions penetrance expressivity extension reference taxon date));
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $gene_systemtic_id = $columns_ref->{"gene_systemtic_id"};
@@ -95,7 +95,7 @@ method load($fh)
     my $allele_synonym = $columns_ref->{"allele_synonym"};
     my $allele_type = $columns_ref->{"allele_type"};
     my $evidence = $columns_ref->{"evidence"};
-    my $condition = $columns_ref->{"condition"};
+    my $conditions = $columns_ref->{"conditions"};
     my $penetrance = $columns_ref->{"penetrance"};
     my $expressivity = $columns_ref->{"expressivity"};
     my $extension = $columns_ref->{"extension"};
@@ -178,6 +178,12 @@ method load($fh)
       }
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                    $long_evidence);
+
+      my @conditions = split /\s*\|\s*/, $conditions;
+      for (my $i = 0; $i < @conditions; $i++) {
+        my $condition = $conditions[$i];
+        $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
+      }
 
       if (defined $extension && length $extension > 0) {
         my ($out, $err) = capture {
