@@ -153,9 +153,19 @@ method load($fh)
         return;
       }
 
+      my $gene_uniquename = $gene->uniquename();
+      my $existing_gene_name = $gene->name() // '';
+
+      if (length $gene_name > 0 && $gene_name ne $existing_gene_name) {
+        warn qq|gene name from phenotype annotation file ("$gene_name") doesn't | .
+          qq|match the existing name ("$existing_gene_name") for $gene_uniquename | .
+          qq|- skipping|;
+        return;
+      }
+
       my $allele_data = {
         gene => {
-          uniquename => $gene->uniquename(),
+          uniquename => $gene_uniquename,
           organism => $organism->genus() . ' ' . $organism->species(),
         },
         name => $allele_name,

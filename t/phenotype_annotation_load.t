@@ -20,10 +20,20 @@ my $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 6);
 
 open my $fh, '<', "data/phenotype_annotation.tsv" or die;
-my $res = $importer->load($fh);
+my $res;
+
+my ($out, $err) = capture {
+  $res = $importer->load($fh);
+};
+if (length $out > 0) {
+  fail $out;
+}
+if (length $err > 0) {
+  like($err, qr/gene name from phenotype annotation file \("gene1"\) doesn't match the existing name \(""\) for SPAC2F7.03c/);
+}
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 13);
+is($annotations->count(), 12);
 
 while (defined (my $an = $annotations->next())) {
   if ($an->feature()->uniquename() eq 'SPAC2F7.03c:allele-2') {
