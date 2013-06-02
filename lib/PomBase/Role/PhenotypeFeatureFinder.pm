@@ -160,6 +160,25 @@ method fix_expression_allele($name, $description_ref, $expression_ref)
   }
 }
 
+my $whitespace_re = "\\s\N{ZERO WIDTH SPACE}";
+
+method make_allele_data_from_display_name($gene_feature, $display_name, $expression_ref) {
+  if ($display_name =~ /^\s*(.+?)\((.*)\)/) {
+    my $name = $1;
+    $name = $name->trim($whitespace_re);
+    my $description = $2;
+    $description = $description->trim($whitespace_re);
+    $self->fix_expression_allele($name, \$description, $expression_ref);
+    return $self->make_allele_data($name, $description, $gene_feature);
+  } else {
+    if ($display_name =~ /.*delta$/) {
+      return $self->make_allele_data($display_name, "deletion", $gene_feature);
+    } else {
+      die qq|allele qualifier "$_" isn't in the form "name(description)"\n|;
+    }
+  }
+}
+
 method make_allele_data($name, $description, $gene_feature) {
   my $gene_name = $gene_feature->name();
   my $organism = $gene_feature->organism();

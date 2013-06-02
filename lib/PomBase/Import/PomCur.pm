@@ -218,22 +218,7 @@ method _store_ontology_annotation
         die "more than one allele specified\n";
       }
       my @processed_allele_quals = map {
-        my $allele_display_name = $_;
-        if ($allele_display_name =~ /^\s*(.+?)\((.*)\)/) {
-          my $name = $1;
-          $name = $name->trim($whitespace_re);
-          my $description = $2;
-          $description = $description->trim($whitespace_re);
-          $self->fix_expression_allele($name, \$description, \$expression);
-          $self->make_allele_data($name, $description, $feature);
-        } else {
-          if ($allele_display_name =~ /.*delta$/) {
-            $self->make_allele_data($allele_display_name, "deletion", $feature);
-          } else {
-            die qq|allele qualifier "$_" isn't in the form "name(description)"\n|;
-            return ();
-          }
-        }
+        $self->make_allele_data_from_display_name($feature, $_, \$expression);
       } @$allele_quals;
 
       return if @processed_allele_quals == 0;
