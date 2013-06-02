@@ -185,12 +185,33 @@ method BUILD
   my $test_config = LoadFile($TEST_CONFIG_FILE);
   $self->test_config($test_config);
 
+  my $allele_type_cv_name = "PomBase allele types";
+
   my $config = LoadFile('load-chado.yaml');
+  $self->config($config);
+
+  push @{$test_config->{data}->{cv}},
+    {
+      name => $allele_type_cv_name,
+      cvterms => [
+        map {
+          {
+            name => $_->{name},
+            dbxref => {
+              accession => $_->{name},
+              db => {
+                name => $allele_type_cv_name,
+              },
+            },
+          };
+        } @{$self->config()->{cvs}->{$allele_type_cv_name}}
+      ],
+    };
+
   my $chado = $self->_make_test_db();
   my $id_counter = PomBase::Chado::IdCounter->new(config => $config,
                                                   chado => $chado);
   $config->{id_counter} = $id_counter;
-  $self->config($config);
 
   $self->chado($chado);
   $self->_load_cv_db($chado);

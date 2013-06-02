@@ -75,7 +75,7 @@ data:
               name: SO
         - name: region
           dbxref:
-            accession: 0000001
+            accession: 0000123
             db:
               name: SO
         - name: long_terminal_repeat
@@ -299,19 +299,19 @@ data:
       cvterms:
         - name: taxon_id
           dbxref:
-            accession: 0000002
+            accession: 10000002
             db:
               name: PomBase
     - name: PomBase publication types
       cvterms:
         - name: paper
           dbxref:
-            accession: 0000003
+            accession: 20000003
             db:
               name: PomBase
         - name: null
           dbxref:
-            accession: 0000004
+            accession: 20000004
             db:
               name: PomBase
     - name: go/extensions/gorel
@@ -389,6 +389,23 @@ data:
             accession: 0000137
             db:
               name: PECO
+    - name: fypo_extensions
+      cvterms:
+        - name: high
+          dbxref:
+            accession: 0000001
+            db:
+              name: FYPO_EXT
+        - name: medium
+          dbxref:
+            accession: 0000002
+            db:
+              name: FYPO_EXT
+        - name: low
+          dbxref:
+            accession: 0000003
+            db:
+              name: FYPO_EXT
   cvterm_relationships:
     - subject:
         name: microtubule motor activity

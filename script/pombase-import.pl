@@ -89,6 +89,7 @@ my %import_modules = (
   pomcur => 'PomBase::Import::PomCur',
   orthologs => 'PomBase::Import::Orthologs',
   quantitative => 'PomBase::Import::Quantitative',
+  phenotype_annotation => 'PomBase::Import::PhenotypeAnnotation',
 );
 
 my $import_module = $import_modules{$import_type};

@@ -41,6 +41,26 @@ use Moose::Role;
 requires 'get_cvterm';
 requires 'find_chado_feature';
 requires 'find_organism_by_full_name';
+requires 'store_feature_rel';
+
+has allele_types => (is => 'rw', init_arg => undef, lazy_build => 1);
+
+method _build_allele_types
+{
+  my %allele_types = ();
+
+  my $allele_types_rs =
+    $self->chado()->resultset('Cv::Cvterm')
+         ->search({ 'cv.name' => 'PomBase allele types' },
+                  { join => 'cv' });
+
+  while (defined (my $allele_type_cvterm = $allele_types_rs->next())) {
+    $allele_types{$allele_type_cvterm->name()} = 1;
+  }
+
+  return { %allele_types };
+}
+
 
 =head2 get_gene
 
@@ -334,6 +354,10 @@ method get_allele($allele_data)
     my $allele_type = $allele_data->{allele_type};
 
     if (defined $allele_type && length $allele_type > 0) {
+      if (!exists $self->allele_types()->{$allele_type}) {
+        warn "no such allele type: $allele_type\n";
+        die;
+      }
       $self->store_featureprop($allele, allele_type => $allele_type);
     } else {
       die "no allele_type for: $new_uniquename\n";
