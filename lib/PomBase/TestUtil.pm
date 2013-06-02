@@ -185,28 +185,30 @@ method BUILD
   my $test_config = LoadFile($TEST_CONFIG_FILE);
   $self->test_config($test_config);
 
-  my $allele_type_cv_name = "PomBase allele types";
+  my @cvs_to_copy = ("PomBase allele types", "PSI-MOD_extension_relations");
 
   my $config = LoadFile('load-chado.yaml');
   $self->config($config);
 
-  push @{$test_config->{data}->{cv}},
-    {
-      name => $allele_type_cv_name,
-      cvterms => [
-        map {
-          {
-            name => $_->{name},
-            dbxref => {
-              accession => $_->{name},
-              db => {
-                name => $allele_type_cv_name,
+  for my $cv_to_copy (@cvs_to_copy) {
+    push @{$test_config->{data}->{cv}},
+      {
+        name => $cv_to_copy,
+        cvterms => [
+          map {
+            {
+              name => $_->{name},
+              dbxref => {
+                accession => $_->{name},
+                db => {
+                  name => "DUMMY-$cv_to_copy",
+                },
               },
-            },
-          };
-        } @{$self->config()->{cvs}->{$allele_type_cv_name}}
-      ],
-    };
+            };
+          } @{$self->config()->{cvs}->{$cv_to_copy}}
+        ],
+      };
+  }
 
   my $chado = $self->_make_test_db();
   my $id_counter = PomBase::Chado::IdCounter->new(config => $config,

@@ -41,6 +41,8 @@ use Moose;
 
 use Text::CSV;
 
+use PomBase::Chado::ExtensionProcessor;
+
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::CvQuery';
@@ -56,6 +58,17 @@ with 'PomBase::Role::PhenotypeFeatureFinder';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
+
+has extension_processor => (is => 'ro', init_arg => undef, lazy_build => 1);
+
+method _build_extension_processor
+{
+  my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
+                                                          config => $self->config(),
+                                                          pre_init_cache => 1,
+                                                          verbose => $self->verbose());
+  return $processor;
+}
 
 method load($fh)
 {
@@ -123,11 +136,6 @@ method load($fh)
       next;
     }
 
-    if (defined $extension && length $extension > 0) {
-      warn "unimplemented: can't load annotation with extension: $extension\n";
-      next;
-    }
-
     my $gene = $self->find_chado_feature("$gene_systemtic_id", 1, 1, $organism);
 
     if (!defined $gene) {
@@ -169,7 +177,19 @@ method load($fh)
                                       $expressivity);
       }
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
-                                    $long_evidence);
+                                   $long_evidence);
+
+      if (defined $extension && length $extension > 0) {
+        my ($out, $err) = capture {
+          $self->extension_processor()->process_one_annotation($feature_cvterm, $extension);
+        };
+        if (length $out > 0) {
+          die $out;
+        }
+        if (length $err > 0) {
+          die $err;
+        }
+      }
     };
 
     try {
