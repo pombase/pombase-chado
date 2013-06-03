@@ -23,7 +23,7 @@ cvs:
   PomBase allele types:
     - name: amino_acid_mutation
     - name: nucleotide_mutation
-    - name: gene_deletion
+    - name: deletion
     - name: partial_amino_acid_deletion
       description: Deletion of part of a gene.
     - name: partial_nucleotide_deletion
