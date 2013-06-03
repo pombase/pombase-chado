@@ -29,6 +29,8 @@ cvs:
     - name: partial_nucleotide_deletion
     - name: nonsense_mutation
     - name: wild_type
+    - name: unrecorded
+      description: An allele whose type is not apparent from the paper.
     - name: unknown
       description: An allele whose type has not been established.
     - name: other
