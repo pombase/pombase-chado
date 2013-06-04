@@ -285,6 +285,7 @@ evidence_types:
   'Western blot assay': ~
   'Substance quantification': ~
   'Substance quantification evidence': ~
+  'Transcript expression level evidence': ~
   'Competitive growth assay evidence': ~
   'Gel electrophoresis evidence': ~
   'Plasmid maintenance assay evidence': ~
