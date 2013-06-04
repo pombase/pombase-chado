@@ -218,7 +218,16 @@ method _store_ontology_annotation
         die "more than one allele specified\n";
       }
       my @processed_allele_quals = map {
-        $self->make_allele_data_from_display_name($feature, $_, \$expression);
+        my $res = $self->make_allele_data_from_display_name($feature, $_, \$expression);
+
+        my $allele_type = delete $by_type{allele_type};
+
+        if ($allele_type) {
+          # use allele type from the extension text
+          $res->{allele_type} = $allele_type->[0];
+        }
+
+        $res;
       } @$allele_quals;
 
       return if @processed_allele_quals == 0;

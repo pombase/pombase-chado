@@ -205,20 +205,20 @@ method make_allele_data($name, $description, $gene_feature) {
 
   my $allele_type = $self->allele_type_from_desc($description, $gene_name);
 
-  if (defined $allele_type) {
-    return {
-      name => $name,
-      description => $description,
-      gene => {
-        organism => $organism->genus() . ' ' . $organism->species(),
-        uniquename => $gene_feature->uniquename(),
-      },
-      allele_type => $allele_type,
-    }
-  } else {
-    die "allele type is ambiguous for $name($description)\n";
-    return ();
+  my %ret = (
+    name => $name,
+    description => $description,
+    gene => {
+      organism => $organism->genus() . ' ' . $organism->species(),
+      uniquename => $gene_feature->uniquename(),
+    },
+  );
+
+  if ($allele_type) {
+    $ret{allele_type} = $allele_type;
   }
+
+  return \%ret;
 }
 
 =head2 get_allele
