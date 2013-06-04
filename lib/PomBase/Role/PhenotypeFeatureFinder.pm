@@ -355,8 +355,7 @@ method get_allele($allele_data)
 
     if (defined $allele_type && length $allele_type > 0) {
       if (!exists $self->allele_types()->{$allele_type}) {
-        warn "no such allele type: $allele_type\n";
-        die;
+        die "no such allele type: $allele_type\n";
       }
       $self->store_featureprop($allele, allele_type => $allele_type);
     } else {
