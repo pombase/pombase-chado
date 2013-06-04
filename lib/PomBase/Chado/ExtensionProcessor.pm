@@ -150,6 +150,10 @@ method store_extension($feature_cvterm, $extensions)
         $rel = $self->find_cvterm_by_name($psi_mod_relationship_cv_name, $rel_name);
       }
 
+      if (!defined $rel) {
+        die "can't find relation cvterm for: $rel_name\n";
+      }
+
       if (defined $term) {
         my $old_cv_name = $old_cvterm->cv()->name();
         my $extension_restriction_conf = $self->config()->{extension_restrictions};
@@ -174,10 +178,6 @@ method store_extension($feature_cvterm, $extensions)
           if (grep { $_ eq $rel_name } @$all_not_allowed_rels) {
             die "$rel_name() not allowed in extension\n";
           }
-        }
-
-        if (!defined $rel) {
-          die "can't find relation cvterm for: $rel_name\n";
         }
 
         if ($self->get_cvterm_rel($new_term, $term, $rel)->count() > 0) {
