@@ -461,6 +461,8 @@ method _process_feature
       die "annotation with term suggestion not loaded\n";
     }
 
+    delete $annotation->{submitter_comment};
+
     if (keys %$annotation > 0) {
       my @keys = keys %$annotation;
 
