@@ -335,7 +335,7 @@ method process_one_annotation($featurecvterm, $extension_text)
       my $detail = $2;
 
       map {
-        my $identifier = $_;
+        my $identifier = $_->trim();
 
         my $nested_extension_bit = undef;
         if ($identifier =~ /(.+?)(\^.*)/) {
