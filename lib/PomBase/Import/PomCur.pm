@@ -509,6 +509,11 @@ method _process_annotation($annotation, $session_metadata, $curs_key)
 {
   my $status = delete $annotation->{status};
 
+  if ($status eq 'deleted') {
+    # this Annotation was created in a session, then deleted
+    return;
+  }
+
   if ($status ne 'new') {
     die "unhandled status type: $status\n";
   }
