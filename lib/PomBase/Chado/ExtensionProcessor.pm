@@ -346,8 +346,12 @@ method process_one_annotation($featurecvterm, $extension_text)
 
         my $term_id = undef;
         my $term = undef;
-        if ($identifier =~ /^\w+:\d+$/) {
-          $term_id = $identifier;
+        if ($identifier =~ /^(\w+):(\d+)$/) {
+          if ($1 eq 'PBO') {
+            $term_id = "PomBase:$2";
+          } else {
+            $term_id = $identifier;
+          }
           $term = $self->find_cvterm_by_term_id($term_id);
           if (!defined $term) {
             die "can't find term with ID: $term_id\n";
