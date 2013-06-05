@@ -428,7 +428,7 @@ method _process_feature
   };
 
   if (!defined $evidence_code or length $evidence_code == 0) {
-    die "no evidence code\n";
+    die "no evidence code for $annotation_type\n";
   } else {
     if (exists $config->{evidence_types}->{$evidence_code}) {
       my $ev_data = $config->{evidence_types}->{$evidence_code};
