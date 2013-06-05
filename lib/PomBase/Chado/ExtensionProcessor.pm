@@ -210,12 +210,26 @@ method store_extension($feature_cvterm, $extensions)
     }
   }
 
-  warn 'storing feature_cvterm from ' .
-    $feature_cvterm->feature()->uniquename() . ' to ' .
-    $new_term->name() . "\n" if $self->verbose();
   $feature_cvterm->cvterm($new_term);
 
-  $feature_cvterm->update();
+  my $update_failed = undef;
+
+  try {
+    $feature_cvterm->update();
+  } catch {
+    $update_failed = $_;
+  };
+
+  my $warn_message =
+   'storing feature_cvterm from ' .
+   $feature_cvterm->feature()->uniquename() . ' to ' .
+   $new_term->name() . "\n";
+
+  warn $warn_message if $self->verbose();
+
+  if (defined $update_failed) {
+    die $warn_message . "failed to store feature_cvterm: $update_failed\n";
+  }
 
   return $new_term;
 }
