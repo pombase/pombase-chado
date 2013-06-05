@@ -187,8 +187,7 @@ method _store_ontology_annotation
   my $curs_key = $args{curs_key};
 
   if (defined $extension_text && $extension_text =~ /\|/) {
-    warn "not loading annotation with '|' in extension\n";
-    return;
+    die qq(not loading annotation with '|' in extension: "$extension_text"\n);
   }
 
   my $chado = $self->chado();
