@@ -382,6 +382,10 @@ method _split_vert_bar($annotation)
   my $extension_text = $annotation->{annotation_extension};
 
   if (defined $extension_text) {
+    if ($extension_text =~ /\|\s*$/) {
+      die qq(trailing "|" in annotation_extension: "$extension_text"\n);
+    }
+
     my @ex_bits = split /\|/, $extension_text;
 
     if (@ex_bits > 1) {
@@ -562,26 +566,16 @@ method load($fh)
 
     my $error_prefix = "error in $curs_key: ";
 
-    @annotations = map { $self->_split_vert_bar($_); } @annotations;
+    try {
+      @annotations = map { $self->_split_vert_bar($_); } @annotations;
 
-    for my $annotation (@annotations) {
-      try {
-#        my ($out, $err) = capture {
-          $self->_process_annotation($annotation, $session_data{metadata}, $curs_key);
-#        };
-#        if (length $out > 0) {
-#          $out =~ s/^/$error_prefix/mg;
-#          warn $out;
-#        }
-#        if (length $err > 0) {
-#          $err =~ s/^/$error_prefix/mg;
-#          warn $err;
-#        }
-      } catch {
-        (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
-        chomp $message;
-        warn $error_prefix . "$message\n";
+      for my $annotation (@annotations) {
+        $self->_process_annotation($annotation, $session_data{metadata}, $curs_key);
       }
+    } catch {
+      (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
+      chomp $message;
+      warn $error_prefix . "$message\n";
     }
   }
 }
