@@ -220,6 +220,8 @@ FT                   /gene="SPAC977.11"
 FT                   /controlled_curation="term=protein sequence feature,
 FT                   destruction box; cv=sequence_feature; qualifier=predicted;
 FT                   date=19700101"
+FT                   /controlled_curation="term=gene expression, RNA level;
+FT                   db_xref=PMID:11376151;"
 FT   3'UTR           5271..5369
 FT                   /note="mRNA from AU013226"
 FT                   /systematic_id="SPAC977.11"

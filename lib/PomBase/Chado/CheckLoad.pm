@@ -139,7 +139,7 @@ method check
   my $coiled_coil_cvterm = $self->get_cvterm('sequence', 'coiled_coil');
 
   my @all_feature_cvterm = $chado->resultset('Sequence::FeatureCvterm')->all();
-  should(scalar(@all_feature_cvterm), 104);
+  should(scalar(@all_feature_cvterm), 105);
 
   my $cvterm_property_type_cv =
     $chado->resultset('Cv::Cv')->find({ name => 'cvterm_property_type' });
