@@ -159,6 +159,7 @@ cp $LOG_DIR/$log_file.manual_multi_orths $DUMP_DIR/logs/$log_file.manual-multi-o
 cp $LOG_DIR/$log_file.manual_1-1_orths $DUMP_DIR/logs/$log_file.manual-1-1-orths-output
 cp $LOG_DIR/$log_file.curation_tool_data $DUMP_DIR/logs/$log_file.curation-tool-data-load-output
 cp $LOG_DIR/$log_file.quantitative $DUMP_DIR/logs/$log_file.quantitative
+cp $LOG_DIR/$log_file.phenotypes_from_PMID_23697806 $DUMP_DIR/logs/
 
 cp $LOG_DIR/*.txt $DUMP_DIR/logs/
 
