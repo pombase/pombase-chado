@@ -103,6 +103,11 @@ method load($fh)
     my $date = $columns_ref->{"date"};
     my $taxonid = $columns_ref->{"taxon"};
 
+    if (!defined $evidence || length $evidence == 0) {
+      warn "no value in the evidence column - skipping\n";
+      next;
+    }
+
     if (!defined $taxonid) {
       warn "Taxon missing - skipping\n";
       next;
