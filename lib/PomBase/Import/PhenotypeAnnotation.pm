@@ -127,7 +127,7 @@ method load($fh)
       next;
     }
 
-    my $long_evidence = $self->config()->{evidence_types}->{$evidence}->{name};
+    my $long_evidence = $self->config()->{evidence_types}->{$evidence}->{name} // $evidence;
 
     if (length $penetrance > 0 &&
         !defined $self->find_cvterm_by_term_id($penetrance)) {
