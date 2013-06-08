@@ -332,7 +332,7 @@ method _store_ontology_annotation
         }
 
         my $dbxref = $cvterm->dbxref();
-        my $real_termid = $dbxref->accession() . ':' . $dbxref->db()->name();
+        my $real_termid = $dbxref->db()->name() . ':' . $dbxref->accession();
 
         $self->add_feature_cvtermprop($feature_cvterm, condition => $real_termid, $i);
       }
