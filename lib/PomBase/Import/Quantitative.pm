@@ -158,10 +158,14 @@ method load($fh)
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $term, $pub, 0);
 
-    $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_avg_copies_per_cell',
-                                  $average_copies_per_cell);
-    $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_copies_per_cell',
-                                  $range);
+    if (defined $average_copies_per_cell) {
+      $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_avg_copies_per_cell',
+                                    $average_copies_per_cell);
+    }
+    if (defined $range) {
+      $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_copies_per_cell',
+                                    $range);
+    }
     $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                   $long_evidence);
     $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_cell_distribution',
