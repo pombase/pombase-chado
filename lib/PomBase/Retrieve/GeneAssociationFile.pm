@@ -326,13 +326,14 @@ method retrieve() {
         my $date = _safe_join('|', [map { _fix_date($_) } @{$row_fc_props{date}}]);
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
         my $so_type = $so_type_map{$details->{transcript_type}};
+        my $assigned_by = _safe_join('|', $row_fc_props{assigned_by});
 
         $gene_aspect_count{$gene_uniquename}{$aspect}++;
 
         return [$db_name, $gene_uniquename, $gene_name,
                 $qualifier, $id, $pub->uniquename(),
                 $evidence_code, $with_from, $aspect, $product, $synonyms,
-                $so_type, $taxon, $date, $db_name, $extensions // '',
+                $so_type, $taxon, $date, $assigned_by, $extensions // '',
                 $gene_product_form_id];
       } else {
         if (!defined $nd_rows) {
