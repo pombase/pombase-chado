@@ -75,6 +75,8 @@ method load($fh)
   my $chado = $self->chado();
   my $config = $self->config();
 
+  my $processor = $self->extension_processor();
+
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
   $csv->column_names(qw(gene_systemtic_id fypo_id allele_description geneotype strain_background gene_name allele_name allele_synonym allele_type evidence conditions penetrance expressivity extension reference taxon date));
@@ -184,13 +186,20 @@ method load($fh)
         $self->create_feature_cvterm($allele_feature, $cvterm, $pub, 0);
 
       $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
+
+      my @extension_bits = ();
+
+      if (length $extension > 0) {
+        push @extension_bits, $extension;
+      }
+
       if (length $penetrance > 0) {
-        $self->add_feature_cvtermprop($feature_cvterm, 'penetrance', $penetrance);
+        push @extension_bits, "has_penetrance($penetrance)";
       }
       if (length $expressivity > 0) {
-        $self->add_feature_cvtermprop($feature_cvterm, 'expressivity',
-                                      $expressivity);
+        push @extension_bits, "has_expressivity($expressivity)";
       }
+
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                    $long_evidence);
 
@@ -200,9 +209,10 @@ method load($fh)
         $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
       }
 
-      if (defined $extension && length $extension > 0) {
+      if (@extension_bits > 0) {
+        my $extension_text = join ",", @extension_bits;
         my ($out, $err) = capture {
-          $self->extension_processor()->process_one_annotation($feature_cvterm, $extension);
+          $processor->process_one_annotation($feature_cvterm, $extension_text);
         };
         if (length $out > 0) {
           die $out;
