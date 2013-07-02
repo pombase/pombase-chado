@@ -183,7 +183,7 @@ if (scalar @params < 2) {
     my $ids_only_url = $cgi->url(-query => 1) . ';ids_only=1';
     print "<a href='$ids_only_url'>View only the IDs</a></p>\n";
   }
-  my $db = "/var/pomcur/sources/Schizosaccharomyces_pombe.ASM294v1.18.pep.all.fa";
+  my $db = "/var/pomcur/sources/pompep";
 
   # Check search
   if ($syn !~ /^[A-Za-z0-9\.\+\?\{\}\,\[\]\*\^\$]+$/) {
@@ -257,13 +257,13 @@ sub display_form {
 
 
 sub display_results {
-  my ($acc, $num_lines, $display) = @_;
+  my ($acc, $name, $num_lines, $display) = @_;
 
   my $bgcolour = "BGCOLOR=\"FAFAD2\"";
   $bgcolour    = "BGCOLOR=\"#FFFFFF\"" if $num_lines % 2 == 1;
 
   my $index = $num_lines+1;
-  print qq(<TR $bgcolour><TD COLSPAN="2">$index\) <A HREF="http://www.pombase.org/spombe/result/$acc">$acc</A></TD></TR>\n);
+  print qq(<TR $bgcolour><TD COLSPAN="2">$index\) <A HREF="http://www.pombase.org/spombe/result/$acc">$acc</A> <b>$name</b></TD></TR>\n);
 
   print qq(<TR $bgcolour>);
   print qq(<TD><br>$display<br></TD></TR>\n);
@@ -383,15 +383,14 @@ sub check_record {
   my $display = matches($body_no_linebreak, $search_re);
 
   if ( defined $display ) {
-    (my $acc = $header) =~ s/\.1:pep.*//;
-    $acc       =~s/\>//;
+    my ($acc, $name) = $header =~ /^>(\S+)\s+\|([^|]*)\|/;
 
     if ($ids_only) {
       print "<p>$acc";
     } else {
       #print "<tr><td>".$display."</td></tr>\n";
       my $sequence  = "";
-      display_results($acc, $num_lines, $display);
+      display_results($acc, $name, $num_lines, $display);
     }
     $numResults++;
     return 1;
