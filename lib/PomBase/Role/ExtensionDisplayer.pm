@@ -98,11 +98,12 @@ method make_gaf_extension($feature_cvterm)
   while (defined (my $prop = $props_rs->next())) {
     if ($prop->type()->name() =~ /^$annotation_ex_prefix(.*)/) {
       my $identifier = $prop->value();
+      my $rel_name = $1;
       if ($identifier !~ /:/) {
         # hopefully it's a gene name, or at least some sort of PomBase ID
         $identifier = "$db_name:$identifier";
       }
-      push @parents, { rel_type_name => $1,
+      push @parents, { rel_type_name => $rel_name,
                        detail => $identifier, };
     } else {
       die "internal error - unexpected name: ", $prop->type()->name();
