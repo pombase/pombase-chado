@@ -111,6 +111,9 @@ go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/pato.obo | 
 echo mini PR.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/pombe_mini_PR.obo | go-apply-xslt oboxml_to_chadoxml > mini-pr.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mini-pr.xml || exit 1
 
+echo mini-ontologies/gene_ex_extension_relations.obo
+go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/gene_ex_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml > mini-gene_ex_extension_relations.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mini-gene_ex_extension_relations.xml || exit 1
+
 echo PSI-MOD_extension_relations.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml > PSI-MOD_extension_relations.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD PSI-MOD_extension_relations.xml || exit 1
 
