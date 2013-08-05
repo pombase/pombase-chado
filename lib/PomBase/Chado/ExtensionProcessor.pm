@@ -103,6 +103,12 @@ method store_extension($feature_cvterm, $extensions)
   my $go_relationship_cv_name = 'go/extensions/gorel';
   my $phenotype_relationship_cv_name = 'fypo_extension_relations';
   my $psi_mod_relationship_cv_name = 'PSI-MOD_extension_relations';
+  my $gene_ex_extension_relations_cv_name = 'gene_ex_extension_relations';
+
+  my @rel_cv_names =
+    ($go_relationship_cv_name, $phenotype_relationship_cv_name,
+     $psi_mod_relationship_cv_name,
+     $gene_ex_extension_relations_cv_name);
 
   for my $extension (@$extensions) {
     my $rel_name = $extension->{rel_name};
@@ -142,12 +148,10 @@ method store_extension($feature_cvterm, $extensions)
       my $term = $extension->{term};
       my $nested_extension = $extension->{nested_extension};
 
-      my $rel = $self->find_cvterm_by_name($go_relationship_cv_name, $rel_name);
-      if (!defined $rel) {
-        $rel = $self->find_cvterm_by_name($phenotype_relationship_cv_name, $rel_name);
-      }
-      if (!defined $rel) {
-        $rel = $self->find_cvterm_by_name($psi_mod_relationship_cv_name, $rel_name);
+      my $rel = undef;
+
+      for my $rel_cv_name (@rel_cv_names) {
+        $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name);
       }
 
       if (!defined $rel) {
