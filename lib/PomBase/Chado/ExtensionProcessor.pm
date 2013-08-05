@@ -152,6 +152,7 @@ method store_extension($feature_cvterm, $extensions)
 
       for my $rel_cv_name (@rel_cv_names) {
         $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name);
+        last if defined $rel;
       }
 
       if (!defined $rel) {
