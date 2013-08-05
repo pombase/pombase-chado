@@ -221,7 +221,7 @@ FT                   /controlled_curation="term=protein sequence feature,
 FT                   destruction box; cv=sequence_feature; qualifier=predicted;
 FT                   date=19700101"
 FT                   /controlled_curation="term=gene expression, RNA level;
-FT                   db_xref=PMID:11376151;"
+FT                   db_xref=PMID:11376151; qualifier=increased"
 FT   3'UTR           5271..5369
 FT                   /note="mRNA from AU013226"
 FT                   /systematic_id="SPAC977.11"
@@ -304,8 +304,8 @@ FT                   cv=sequence_feature; date=20060605"
 FT                   /controlled_curation="term=protein sequence feature,
 FT                   coiled-coil; qualifier=region; cv=sequence_feature;
 FT                   date=20060605"
-FT                   /controlled_curation="term=gene expression, alternative
-FT                   transcripts; db_xref=PMID:11376151; cv=gene_ex;
+FT                   /controlled_curation="term=gene expression, translation;
+FT                   db_xref=PMID:11376151; cv=gene_ex;
 FT                   annotation_extension=has_downstream_target(GeneDB_Spombe:SPAC977.10)|has_downstream_target(GeneDB_Spombe:SPBC409.20c);
 FT                   date=20060605"
 FT                   /controlled_curation="term=species distribution, sequence
@@ -320,8 +320,8 @@ FT                   /controlled_curation="term=name description, Meiotic
 FT                   Expression Upregulated; cv=name_description;
 FT                   db_xref=PMID:11376151; date=19700101"
 FT                   /controlled_curation="term=XP-G family; date=19700101"
-FT                   /controlled_curation="term=gene expression, expressed
-FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
+FT                   /controlled_curation="term=gene expression, RNA degradation;
+FT                   cv=gene_ex; db_xref=PMID:11376151;
 FT                   date=20100103"
 FT                   /shared_id="SPAC1556.06"
 FT                   /controlled_curation="term=DNA binding specificity, binds
@@ -350,8 +350,8 @@ FT                   transcripts; cv=gene_ex; db_xref=PMID:11376151;
 FT                   date=20060605"
 FT                   /controlled_curation="term=species distribution, sequence
 FT                   orphan; date=19700101"
-FT                   /controlled_curation="term=gene expression, expressed
-FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
+FT                   /controlled_curation="term=gene expression, protein level;
+FT                   cv=gene_ex; db_xref=PMID:11376151;
 FT                   date=20100103"
 FT                   /controlled_curation="term=species distribution, sequence
 FT                   orphan, uncharacterised; date=20081110"
@@ -362,8 +362,8 @@ FT                   apparent orthologs; date=20090303"
 FT                   /controlled_curation="term=name description, Meiotic
 FT                   Expression Upregulated; cv=name_description;
 FT                   db_xref=PMID:11376151; date=19700101"
-FT                   /controlled_curation="term=gene expression, expressed
-FT                   during meiosis; cv=gene_ex; db_xref=PMID:11376151;
+FT                   /controlled_curation="term=gene expression, transcription;
+FT                   cv=gene_ex; db_xref=PMID:11376151;
 FT                   date=20100103"
 FT   intron          4588..4660
 FT                   /note="intron confirmed by mRNA"

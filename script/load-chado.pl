@@ -26,6 +26,7 @@ my $quiet = 0;
 my $dry_run = 0;
 my $test = 0;
 my @obsolete_term_mapping_files = ();
+my $gene_ex_qualifiers;
 my @mappings = ();
 
 sub usage {
@@ -37,6 +38,7 @@ if (!GetOptions("verbose|v" => \$verbose,
                 "quiet|q" => \$quiet,
                 "test|t" => \$test,
                 "obsolete-term-map=s" => \@obsolete_term_mapping_files,
+                "gene-ex-qualifiers=s" => \$gene_ex_qualifiers,
                 "mapping|m=s" => \@mappings)) {
   usage();
 }
@@ -123,6 +125,28 @@ $config->{obsolete_term_mapping} = {
 };
 
 $config->{target_quals} = {};
+
+func read_gene_ex_qualifiers($gene_ex_qualifiers) {
+  open my $fh, '<', $gene_ex_qualifiers
+    or die "can't opn $gene_ex_qualifiers: $!";
+
+  my @ret_val = ();
+
+  while (defined (my $line = <$fh>)) {
+    next if $line =~ /^!/;
+
+    chomp $line;
+
+    push @ret_val, $line;
+  }
+
+  close $fh;
+
+  return \@ret_val;
+}
+
+$config->{gene_ex_qualifiers} =
+  read_gene_ex_qualifiers($gene_ex_qualifiers);
 
 for my $allowed_unknown_term_names_file (@{$config->{allowed_unknown_term_names_files}}) {
   open my $unknown_names, '<', $allowed_unknown_term_names_file or die;
