@@ -215,25 +215,37 @@ method store_extension($feature_cvterm, $extensions)
     }
   }
 
-  $feature_cvterm->cvterm($new_term);
+  # make sure we don't create a duplicate annotation
+  my $existing_fc_rs =
+    $self->chado()->resultset('Sequence::FeatureCvterm')
+      ->search({ cvterm_id => $new_term->cvterm_id(),
+                 feature_id => $feature_cvterm->feature_id(),
+                 pub_id => $feature_cvterm->pub(),
+                 rank => $feature_cvterm->rank() });
 
   my $update_failed = undef;
 
-  try {
-    $feature_cvterm->update();
-  } catch {
-    $update_failed = $_;
-  };
+  if ($existing_fc_rs->count() > 0) {
+    $update_failed = "that annotation has already been stored in Chado";
+  } else {
+    $feature_cvterm->cvterm($new_term);
+
+    try {
+      $feature_cvterm->update();
+    } catch {
+      $update_failed = $_;
+    };
+  }
 
   my $warn_message =
    'storing feature_cvterm from ' .
    $feature_cvterm->feature()->uniquename() . ' to ' .
-   $new_term->name() . "\n";
+   $new_term->name();
 
-  warn $warn_message if $self->verbose();
+  warn "$warn_message\n" if $self->verbose();
 
   if (defined $update_failed) {
-    die $warn_message . "failed to store feature_cvterm: $update_failed\n";
+    die $warn_message . " - failed to store feature_cvterm: $update_failed\n";
   }
 
   return $new_term;
