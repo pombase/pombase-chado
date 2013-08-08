@@ -220,7 +220,7 @@ method store_extension($feature_cvterm, $extensions)
     $self->chado()->resultset('Sequence::FeatureCvterm')
       ->search({ cvterm_id => $new_term->cvterm_id(),
                  feature_id => $feature_cvterm->feature_id(),
-                 pub_id => $feature_cvterm->pub(),
+                 pub_id => $feature_cvterm->pub()->pub_id(),
                  rank => $feature_cvterm->rank() });
 
   my $update_failed = undef;
