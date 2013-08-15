@@ -206,6 +206,13 @@ method save_transcript($feature, $uniquename, $gene_uniquename)
     return;
   }
 
+  if (!defined $so_type) {
+    use Data::Dumper;
+    $Data::Dumper::Maxdepth = 10;
+    die "can't save transcript for $uniquename",
+      Dumper([$feat_type, $feature, $gene_uniquename, $feature_loader_conf{$feat_type}]);
+  }
+
 #  warn "SAVE_TRANSCRIPT: $uniquename\n";
 
   my $data = $self->prepare_transcript_data($uniquename, $gene_uniquename);
