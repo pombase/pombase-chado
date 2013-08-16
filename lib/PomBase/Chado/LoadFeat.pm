@@ -632,6 +632,7 @@ method finalise($chromosome)
       use Data::Dumper;
       $Data::Dumper::Maxdepth = 5;
       warn 'no SO type:', Dumper([$feature_data]), "\n";
+      next;
     }
 
     my $transcript_bioperl_feature = $feature_data->{bioperl_feature};
