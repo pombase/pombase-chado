@@ -105,52 +105,52 @@ method load($fh)
     my $date = $columns_ref->{"date"};
     my $taxonid = $columns_ref->{"taxon"};
 
-    if (!defined $evidence || length $evidence == 0) {
-      warn "no value in the evidence column - skipping\n";
-      next;
-    }
-
-    if (!defined $taxonid) {
-      warn "Taxon missing - skipping\n";
-      next;
-    }
-
-    $taxonid =~ s/taxon://ig;
-
-    if (!$taxonid->is_integer()) {
-      warn "Taxon is not a number: $taxonid - skipping\n";
-      next;
-    }
-
-    my $organism = $self->find_organism_by_taxonid($taxonid);
-
-    if (!defined $organism) {
-      warn "ignoring annotation for organism $taxonid\n";
-      next;
-    }
-
-    my $long_evidence = $self->config()->{evidence_types}->{$evidence}->{name} // $evidence;
-
-    if (length $penetrance > 0 &&
-        !defined $self->find_cvterm_by_term_id($penetrance)) {
-      warn "can't load annotation, $penetrance not found\n";
-      next;
-    }
-
-    if (length $expressivity > 0 &&
-        !defined $self->find_cvterm_by_term_id($expressivity)) {
-      warn "can't load annotation, $expressivity not found\n";
-      next;
-    }
-
-    my $gene = $self->find_chado_feature("$gene_systemtic_id", 1, 1, $organism);
-
-    if (!defined $gene) {
-      warn "gene ($gene_systemtic_id) not found - skipping row\n";
-      next;
-    }
-
     my $proc = sub {
+      if (!defined $evidence || length $evidence == 0) {
+        warn "no value in the evidence column - skipping\n";
+        return;
+      }
+
+      if (!defined $taxonid) {
+        warn "Taxon missing - skipping\n";
+        return;
+      }
+
+      $taxonid =~ s/taxon://ig;
+
+      if (!$taxonid->is_integer()) {
+        warn "Taxon is not a number: $taxonid - skipping\n";
+        return;
+      }
+
+      my $organism = $self->find_organism_by_taxonid($taxonid);
+
+      if (!defined $organism) {
+        warn "ignoring annotation for organism $taxonid\n";
+        return;
+      }
+
+      my $long_evidence = $self->config()->{evidence_types}->{$evidence}->{name} // $evidence;
+
+      if (length $penetrance > 0 &&
+          !defined $self->find_cvterm_by_term_id($penetrance)) {
+        warn "can't load annotation, $penetrance not found\n";
+        return;
+      }
+
+      if (length $expressivity > 0 &&
+          !defined $self->find_cvterm_by_term_id($expressivity)) {
+        warn "can't load annotation, $expressivity not found\n";
+        return;
+      }
+
+      my $gene = $self->find_chado_feature("$gene_systemtic_id", 1, 1, $organism);
+
+      if (!defined $gene) {
+        warn "gene ($gene_systemtic_id) not found - skipping row\n";
+        return;
+      }
+
       my $pub = $self->find_or_create_pub($reference);
 
       my $cvterm = undef;
