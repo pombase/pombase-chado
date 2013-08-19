@@ -38,7 +38,7 @@ under the same terms as Perl itself.
 
 use perl5i::2;
 use Moose;
-
+use Try::Tiny;
 use Text::CSV;
 
 use PomBase::Chado::ExtensionProcessor;
@@ -153,7 +153,13 @@ method load($fh)
     my $proc = sub {
       my $pub = $self->find_or_create_pub($reference);
 
-      my $cvterm = $self->find_cvterm_by_term_id($fypo_id);
+      my $cvterm = undef;
+
+      try {
+        $cvterm = $self->find_cvterm_by_term_id($fypo_id);
+      } catch {
+        warn "find_cvterm_by_term_id failed: $_";
+      };
 
       if (!defined $cvterm) {
         warn "can't load annotation, $fypo_id not found in database\n";
