@@ -171,7 +171,7 @@ psql $FINAL_DB -c "select count(id), name from (select p.cvterm_id::text || '_cv
  '_cvterm_rel' as id, t.name as name from cvterm_relationship r, cvterm t where
  t.cvterm_id = type_id and r.subject_id in (select cvterm_id from cvterm, cv
  where cvterm.cv_id = cv.cv_id and cv.name = 'PomBase annotation extension terms')) 
- as sub group by name order by name;" > $DUMP_DIR/logs/$log_file.count_by_cv
+ as sub group by name order by name;" > $DUMP_DIR/logs/$log_file.annotation_counts_by_cv
 
 
 cp $LOG_DIR/*.txt $DUMP_DIR/logs/
