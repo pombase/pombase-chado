@@ -173,6 +173,7 @@ psql $FINAL_DB -c "select count(id), name from (select p.cvterm_id::text || '_cv
  where cvterm.cv_id = cv.cv_id and cv.name = 'PomBase annotation extension terms')) 
  as sub group by name order by name;" > $DUMP_DIR/logs/$log_file.extension_relation_counts
 
+(
 psql $FINAL_DB -c "select count(distinct fc_id), cv_name from (select distinct
 fc.feature_cvterm_id as fc_id, cv.name as cv_name from cvterm t,
 feature_cvterm fc, cv where fc.cvterm_id = t.cvterm_id and cv.cv_id = t.cv_id
@@ -181,9 +182,20 @@ fc.feature_cvterm_id as fc_id, parent_cv.name as cv_name from cvterm t,
 feature_cvterm fc, cv term_cv, cvterm_relationship rel, cvterm parent_term, cv
 parent_cv, cvterm rel_type where fc.cvterm_id = t.cvterm_id and term_cv.cv_id
 = t.cv_id and t.cvterm_id = subject_id and parent_term.cvterm_id = object_id
-and parent_term.cv_id = parent_cv.cv_id and term_cv.name = 'PomBase annotation
-extension terms' and rel.type_id = rel_type.cvterm_id and rel_type.name =
-'is_a') as sub group by cv_name order by count;" > $DUMP_DIR/logs/$log_file.annotation_counts_by_cv
+and parent_term.cv_id = parent_cv.cv_id and term_cv.name = 'PomBase annotation extension terms' and rel.type_id = rel_type.cvterm_id and rel_type.name =
+'is_a') as sub group by cv_name order by count;"
+echo
+echo total:
+psql $FINAL_DB -c "select count(distinct fc_id) from (select distinct
+fc.feature_cvterm_id as fc_id, cv.name as cv_name from cvterm t,
+feature_cvterm fc, cv where fc.cvterm_id = t.cvterm_id and cv.cv_id = t.cv_id
+and cv.name <> 'PomBase annotation extension terms' UNION select distinct
+fc.feature_cvterm_id as fc_id, parent_cv.name as cv_name from cvterm t,
+feature_cvterm fc, cv term_cv, cvterm_relationship rel, cvterm parent_term, cv
+parent_cv, cvterm rel_type where fc.cvterm_id = t.cvterm_id and term_cv.cv_id
+= t.cv_id and t.cvterm_id = subject_id and parent_term.cvterm_id = object_id
+and parent_term.cv_id = parent_cv.cv_id and term_cv.name = 'PomBase annotation extension terms' and rel.type_id = rel_type.cvterm_id and rel_type.name =
+'is_a') as sub;" ) > $DUMP_DIR/logs/$log_file.annotation_counts_by_cv
 
 
 cp $LOG_DIR/*.txt $DUMP_DIR/logs/
