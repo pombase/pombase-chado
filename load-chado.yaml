@@ -122,6 +122,10 @@ extension_restrictions:
     not_allowed:
       - during
 
+extension_relation_transform:
+  cellular_component:
+    happens_during: exists_during
+
 cv_definitions:
   biological_process: Gene Ontology biological process terms
   cat_act: Catalytic activity attributes (Kd, rate, etc.)

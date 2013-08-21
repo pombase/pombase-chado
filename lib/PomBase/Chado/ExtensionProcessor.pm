@@ -97,6 +97,7 @@ method _build_isa_cvterm
 method store_extension($feature_cvterm, $extensions)
 {
   my $old_cvterm = $feature_cvterm->cvterm();
+  my $old_cv_name = $old_cvterm->cv()->name();
 
   my $new_name = $old_cvterm->name();
 
@@ -109,6 +110,18 @@ method store_extension($feature_cvterm, $extensions)
     ($go_relationship_cv_name, $phenotype_relationship_cv_name,
      $psi_mod_relationship_cv_name,
      $gene_ex_extension_relations_cv_name);
+
+  my $relation_transforms =
+    $self->config()->{extension_relation_transform}->{$old_cv_name};
+
+  map {
+    if (defined $relation_transforms) {
+      my $new_rel_name = $relation_transforms->{$_->{rel_name}};
+      if (defined $new_rel_name) {
+        $_->{rel_name} = $new_rel_name;
+      }
+    }
+  } @$extensions;
 
   for my $extension (@$extensions) {
     my $rel_name = $extension->{rel_name};
@@ -160,7 +173,6 @@ method store_extension($feature_cvterm, $extensions)
       }
 
       if (defined $term) {
-        my $old_cv_name = $old_cvterm->cv()->name();
         my $extension_restriction_conf = $self->config()->{extension_restrictions};
         my $cv_restrictions_conf = $extension_restriction_conf->{$old_cv_name};
 
