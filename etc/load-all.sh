@@ -71,7 +71,7 @@ do
 done
 
 echo $SOURCES/sources/gene_association.pombase.inf.gaf
-./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=PomBase $HOST $DB $USER $PASSWORD < $SOURCES/go-svn/scratch/gaf-inference/gene_association.pombase.inf.gaf
+./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=PomBase,GOC $HOST $DB $USER $PASSWORD < $SOURCES/go-svn/scratch/gaf-inference/gene_association.pombase.inf.gaf
 
 echo counts after inf:
 evidence_summary
