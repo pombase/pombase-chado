@@ -2,6 +2,8 @@
 
 # run script/make-db first
 
+date
+
 set -o pipefail
 
 HOST=$1
@@ -209,3 +211,5 @@ DUMP_FILE=$DUMP_DIR/$FINAL_DB.dump.gz
 
 echo dumping to $DUMP_FILE
 pg_dump $FINAL_DB | gzip -9v > $DUMP_FILE
+
+date
