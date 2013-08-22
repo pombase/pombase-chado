@@ -209,7 +209,7 @@ method load($fh)
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                    $long_evidence);
 
-      my @conditions = split /\s*\|\s*/, $conditions;
+      my @conditions = split /\s*,\s*/, $conditions;
       for (my $i = 0; $i < @conditions; $i++) {
         my $condition = $conditions[$i];
         $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
