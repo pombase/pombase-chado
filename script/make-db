@@ -55,6 +55,7 @@ rm --verbose -rf tmp
 
 (cd $SOURCES_DIR/pombe-embl/; svn update || exit 1)
 
+
 echo update GO from CVS
 (cd $SOURCES_DIR/go; cvs up)
 echo update GO from SVN
@@ -69,60 +70,14 @@ then
   make ontologies
 fi
 
-echo loading GO
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/go-svn/ontology/gene_ontology_edit.obo | go-apply-xslt oboxml_to_chadoxml - > go_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD go_obo_text.xml || exit 1
-
-echo PSI-MOD.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/PSI-MOD.obo | go-apply-xslt oboxml_to_chadoxml - > mod_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mod_obo_text.xml || exit 1
-
-echo mini iao.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/iao.obo | go-apply-xslt oboxml_to_chadoxml > iao.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD iao.xml || exit 1
-
-echo quiescence.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/quiescence.obo | go-apply-xslt oboxml_to_chadoxml > quiescence.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD quiescence.xml || exit 1
-
 (cd $SOURCES_DIR/phenotype_ontology_for_chado/; up)
 
-echo fypo-simple.obo
-FYPO_SIMPLE=$SOURCES_DIR/phenotype_ontology_for_chado/releases/latest/fypo-simple.obo
-grep -v '^property_value: ' $FYPO_SIMPLE > /tmp/fixed_fypo.obo && go2fmt.pl -p obo_text -w xml /tmp/fixed_fypo.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_obo_text.xml || exit 1
-
-echo fypo_extension_relations.obo
-FYPO_EX_REL=$SOURCES_DIR/phenotype_ontology_for_chado/supplemental_files/fypo_extension_relations.obo
-grep -v '^property_value: ' $FYPO_EX_REL > /tmp/fixes_fypo_ex_rel.obo && go2fmt.pl -p obo_text -w xml /tmp/fixes_fypo_ex_rel.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_ex_rel_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_ex_rel_obo_text.xml || exit 1
-
-echo go_annotation_extension_relations.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/go-svn/ontology/extensions/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD anex_rel_obo_text.xml || exit 1
-
-echo peco.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/phenotype_ontology_for_chado/peco.obo | go-apply-xslt oboxml_to_chadoxml - > peco_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD peco_obo_text.xml || exit 1
-
-echo pro_small.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pro_small.obo | go-apply-xslt oboxml_to_chadoxml - > pro_small_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pro_small_obo_text.xml || exit 1
-
-echo mini fypo_extension.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/fypo_extension.obo | go-apply-xslt oboxml_to_chadoxml > fypo-ex.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD fypo-ex.xml || exit 1
-
-echo mini chebi.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/chebi.obo | go-apply-xslt oboxml_to_chadoxml > chebi.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD chebi.xml || exit 1
-
-echo mini cl.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/cl.obo | go-apply-xslt oboxml_to_chadoxml > cl.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD cl.xml || exit 1
-
-echo mini pato.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/pato.obo | go-apply-xslt oboxml_to_chadoxml > pato.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pato.xml || exit 1
-
-echo mini PR.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/pombe_mini_PR.obo | go-apply-xslt oboxml_to_chadoxml > mini-pr.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mini-pr.xml || exit 1
-
-echo mini-ontologies/gene_ex_extension_relations.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/gene_ex_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml > mini-gene_ex_extension_relations.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD mini-gene_ex_extension_relations.xml || exit 1
-
-echo PSI-MOD_extension_relations.obo
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml > PSI-MOD_extension_relations.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD PSI-MOD_extension_relations.xml || exit 1
-
-echo load pombase terms
-go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombase/pombase_terms-v37.obo | go-apply-xslt oboxml_to_chadoxml > pombase_terms.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD pombase_terms.xml || exit 1
+for obo_file in go-svn/ontology/gene_ontology_edit.obo PSI-MOD.obo pombe-embl/mini-ontologies/iao.obo pombe-embl/mini-ontologies/quiescence.obo phenotype_ontology_for_chado/releases/latest/fypo-simple.obo phenotype_ontology_for_chado/supplemental_files/fypo_extension_relations.obo go-svn/ontology/extensions/go_annotation_extension_relations.obo phenotype_ontology_for_chado/peco.obo pro_small.obo pombe-embl/mini-ontologies/fypo_extension.obo pombe-embl/mini-ontologies/chebi.obo pombe-embl/mini-ontologies/cl.obo pombe-embl/mini-ontologies/pato.obo pombe-embl/mini-ontologies/pombe_mini_PR.obo pombe-embl/mini-ontologies/gene_ex_extension_relations.obo pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo pombase/pombase_terms-v37.obo 
+do
+  PROP_FILTERED_OBO=/tmp/prop_filtered.obo
+  grep -v '^property_value: ' $SOURCES_DIR/$obo_file > $PROP_FILTERED_OBO
+  go2fmt.pl -p obo_text -w xml $PROP_FILTERED_OBO | go-apply-xslt oboxml_to_chadoxml - > /tmp/prop_filtered.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD /tmp/prop_filtered.xml || exit 1
+done
 
 echo populate cvtermpath
 
