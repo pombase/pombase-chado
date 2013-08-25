@@ -72,8 +72,9 @@ fi
 
 (cd $SOURCES_DIR/phenotype_ontology_for_chado/; up)
 
-for obo_file in go-svn/ontology/gene_ontology_edit.obo PSI-MOD.obo pombe-embl/mini-ontologies/iao.obo pombe-embl/mini-ontologies/quiescence.obo phenotype_ontology_for_chado/releases/latest/fypo-simple.obo phenotype_ontology_for_chado/supplemental_files/fypo_extension_relations.obo go-svn/ontology/extensions/go_annotation_extension_relations.obo phenotype_ontology_for_chado/peco.obo pro_small.obo pombe-embl/mini-ontologies/fypo_extension.obo pombe-embl/mini-ontologies/chebi.obo pombe-embl/mini-ontologies/cl.obo pombe-embl/mini-ontologies/pato.obo pombe-embl/mini-ontologies/pombe_mini_PR.obo pombe-embl/mini-ontologies/gene_ex_extension_relations.obo pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo pombase/pombase_terms-v37.obo 
+for obo_file in go-svn/ontology/gene_ontology_edit.obo PSI-MOD.obo pombe-embl/mini-ontologies/iao.obo pombe-embl/mini-ontologies/quiescence.obo phenotype_ontology_for_chado/releases/latest/fypo-simple.obo phenotype_ontology_for_chado/supplemental_files/fypo_extension_relations.obo go-svn/ontology/extensions/go_annotation_extension_relations.obo phenotype_ontology_for_chado/peco.obo pro_small.obo pombe-embl/mini-ontologies/fypo_extension.obo pombe-embl/mini-ontologies/chebi.obo pombe-embl/mini-ontologies/cl.obo pombe-embl/mini-ontologies/pato.obo pombe-embl/mini-ontologies/pombe_mini_PR.obo pombe-embl/mini-ontologies/gene_ex_extension_relations.obo pombe-embl/mini-ontologies/PSI-MOD_extension_relations.obo pombase/pombase_terms-v37.obo
 do
+  echo loading: $obo_file
   PROP_FILTERED_OBO=/tmp/prop_filtered.obo
   grep -v '^property_value: ' $SOURCES_DIR/$obo_file > $PROP_FILTERED_OBO
   go2fmt.pl -p obo_text -w xml $PROP_FILTERED_OBO | go-apply-xslt oboxml_to_chadoxml - > /tmp/prop_filtered.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD /tmp/prop_filtered.xml || exit 1
