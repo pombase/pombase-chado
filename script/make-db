@@ -81,12 +81,15 @@ go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/iao.obo | g
 echo quiescence.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/pombe-embl/mini-ontologies/quiescence.obo | go-apply-xslt oboxml_to_chadoxml > quiescence.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD quiescence.xml || exit 1
 
+(cd $SOURCES_DIR/phenotype_ontology_for_chado/; up)
+
 echo fypo-simple.obo
 FYPO_SIMPLE=$SOURCES_DIR/phenotype_ontology_for_chado/releases/latest/fypo-simple.obo
-(cd $SOURCES_DIR/phenotype_ontology_for_chado/; up) && grep -v '^property_value: ' $FYPO_SIMPLE > /tmp/fixed_fypo.obo && go2fmt.pl -p obo_text -w xml /tmp/fixed_fypo.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_obo_text.xml || exit 1
+grep -v '^property_value: ' $FYPO_SIMPLE > /tmp/fixed_fypo.obo && go2fmt.pl -p obo_text -w xml /tmp/fixed_fypo.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_obo_text.xml || exit 1
 
 echo fypo_extension_relations.obo
-(cd $SOURCES_DIR/phenotype_ontology_for_chado/; up) && go2fmt.pl -p obo_text -w xml $SOURCES_DIR/phenotype_ontology_for_chado/supplemental_files/fypo_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_ex_rel_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_ex_rel_obo_text.xml || exit 1
+FYPO_EX_REL=$SOURCES_DIR/phenotype_ontology_for_chado/supplemental_files/fypo_extension_relations.obo
+grep -v '^property_value: ' $FYPO_EX_REL > /tmp/fixes_fypo_ex_rel.obo && go2fmt.pl -p obo_text -w xml /tmp/fixes_fypo_ex_rel.obo | go-apply-xslt oboxml_to_chadoxml - > phenotype_ex_rel_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD phenotype_ex_rel_obo_text.xml || exit 1
 
 echo go_annotation_extension_relations.obo
 go2fmt.pl -p obo_text -w xml $SOURCES_DIR/go-svn/ontology/extensions/go_annotation_extension_relations.obo | go-apply-xslt oboxml_to_chadoxml - > anex_rel_obo_text.xml && stag-storenode.pl -cache 1 -d "dbi:Pg:dbname=$DB;host=$HOST" --user $USER --password $PASSWORD anex_rel_obo_text.xml || exit 1
