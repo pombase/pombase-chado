@@ -18,12 +18,11 @@ open my $evidence_problems, '>', 'evidence_problems.txt' or die;
 open my $db_xref_problems, '>', 'db_xref_problems.txt' or die;
 open my $identifier_problems, '>', 'identifier_problems.txt' or die;
 open my $missing_products, '>', 'missing_products.txt' or die;
+open my $feature_warnings, '>', 'feature_warnings.txt' or die;
 open my $all_warnings, '>', 'all_warnings.txt' or die;
 
 my $prev_line = '';
 my $gene = '';
-
-'no SO type for';
 
 while (defined (my $line = <>)) {
   if ($line =~ /ID in EMBL file/) {
@@ -117,7 +116,11 @@ while (defined (my $line = <>)) {
     }
     next;
   }
-
+  if ($line =~ /no SO type for/) {
+    print $all_warnings $line;
+    print $feature_warnings "$gene: $line";
+    next;
+  }
   if ($line =~ /no product for/) {
     print $all_warnings $line;
     print $missing_products "$gene: $line";
