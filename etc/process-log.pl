@@ -23,101 +23,104 @@ open my $all_warnings, '>', 'all_warnings.txt' or die;
 my $prev_line = '';
 my $gene = '';
 
+'no SO type for';
+
 while (defined (my $line = <>)) {
   if ($line =~ /ID in EMBL file/) {
     print $all_warnings "$line";
     print $name_mismatches "$gene: $line";
-  } else {
-    if ($line =~ /found cvterm by ID/) {
-      print $all_warnings "$line";
-      print $unknown_term_names "$gene: $line";
+    next;
+  }
+  if ($line =~ /found cvterm by ID/) {
+    print $all_warnings "$line";
+    print $unknown_term_names "$gene: $line";
+    next;
+  }
+  if ($line =~ /ortholog.*not found|failed to create paralog/) {
+    print $all_warnings "$line";
+    print $ortholog_problems "$gene: $line";
+    next;
+  }
+  if ($line =~ /didn't process: /) {
+    print $all_warnings "$line";
+    chomp $prev_line;
+    chomp $line;
+    print $qual_problems "$gene: $line  - error: $prev_line\n";
+    next;
+  }
+  if ($line =~ /CV name not recognised/) {
+    print $all_warnings "$line";
+    print $unknown_cv_names "$gene: $line";
+    next;
+  }
+  if ($line =~ /no allele qualifier for phenotype|no evidence.*for |no term for:|qualifier not recognised|unknown term name.*and unknown GO ID|annotation extension qualifier .* not understood|failed to add annotation extension|in annotation extension for|unbalanced parenthesis in product|^qualifier \(.*\) has |not in the form|isn't a PECO term ID/) {
+    print $all_warnings "$line";
+    print $qual_problems "$gene: $line";
+    next;
+  }
+  if ($line =~ /can't find new term for .* in mapping/) {
+    print $all_warnings "$line";
+    print $mapping_problems "$gene: $line";
+    next;
+  }
+  if ($line =~ /^processing (.*)/) {
+    if ($1 eq 'mRNA SPBC460.05.1') {
+      $gene = '';
     } else {
-      if ($line =~ /ortholog.*not found|failed to create paralog/) {
-        print $all_warnings "$line";
-        print $ortholog_problems "$gene: $line";
-      } else {
-        if ($line =~ /didn't process: /) {
-          print $all_warnings "$line";
-          chomp $prev_line;
-          chomp $line;
-          print $qual_problems "$gene: $line  - error: $prev_line\n";
-        } else {
-          if ($line =~ /CV name not recognised/) {
-            print $all_warnings "$line";
-            print $unknown_cv_names "$gene: $line";
-          } else {
-            if ($line =~ /no allele qualifier for phenotype|no evidence.*for |no term for:|qualifier not recognised|unknown term name.*and unknown GO ID|annotation extension qualifier .* not understood|failed to add annotation extension|in annotation extension for|unbalanced parenthesis in product|^qualifier \(.*\) has |not in the form|isn't a PECO term ID/) {
-              print $all_warnings "$line";
-              print $qual_problems "$gene: $line";
-            } else {
-              if ($line =~ /can't find new term for .* in mapping/) {
-                print $all_warnings "$line";
-                print $mapping_problems "$gene: $line";
-              } else {
-                if ($line =~ /^processing (.*)/) {
-                  if ($1 eq 'mRNA SPBC460.05.1') {
-                    $gene = '';
-                  } else {
-                    $gene = $1;
-                  }
-                } else {
-                  if ($line =~ /duplicated sub-qualifier '(.*)'/) {
-                    $line =~ s/^\s+//;
-                    $line =~ s/\s*from:\s*//;
-                    print $all_warnings "$line\n";
-                    print $duplicated_sub_qual_problems "$gene: $line\n";
-                  } else {
-                    if ($line =~ /cv_name .* doesn't match start of term .*/) {
-                      print $all_warnings "$line";
-                      print $cv_name_mismatches "$gene: $line";
-                    } else {
-                      if ($line =~ m! has /colour=13 but isn't a pseudogene!) {
-                        print $all_warnings $line;
-                        print $pseudogene_mismatches "$gene: $line";
-                      } else {
-                        if ($line =~ /more than one cvtermsynonym found for (.*) at .*/) {
-                          print $all_warnings $line;
-                          print $synonym_match_problems qq($gene: "$1" matches more than one term\n);
-                        } else {
-                          if ($line =~ /problem with .*target|problem (with target annotation of|on gene)|no "target .*" in /) {
-                            print $all_warnings $line;
-                            print $target_problems $line;
-                          } else {
-                            if ($line =~ /no evidence for: |no such evidence code: /) {
-                              print $all_warnings $line;
-                              print $evidence_problems "$gene: $line";
-                            } else {
-                              if ($line =~ /^no db_xref for/) {
-                                print $all_warnings $line;
-                                print $db_xref_problems "$gene: $line";
-                              } else {
-                                if ($line =~ /(can't find feature for: .*)/) {
-                                  print $all_warnings "$1\n";
-                                  if (defined $gene && length $gene > 0) {
-                                    print $identifier_problems "$gene: $1\n";
-                                  } else {
-                                    print $identifier_problems "$line";
-                                  }
-                                } else {
-                                  if ($line =~ /no product for/) {
-                                    print $all_warnings $line;
-                                    print $missing_products "$gene: $line";
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      $gene = $1;
     }
+    next;
+  }
+  if ($line =~ /duplicated sub-qualifier '(.*)'/) {
+    $line =~ s/^\s+//;
+    $line =~ s/\s*from:\s*//;
+    print $all_warnings "$line\n";
+    print $duplicated_sub_qual_problems "$gene: $line\n";
+    next;
+  }
+  if ($line =~ /cv_name .* doesn't match start of term .*/) {
+    print $all_warnings "$line";
+    print $cv_name_mismatches "$gene: $line";
+    next;
+  }
+  if ($line =~ m! has /colour=13 but isn't a pseudogene!) {
+    print $all_warnings $line;
+    print $pseudogene_mismatches "$gene: $line";
+    next;
+  }
+  if ($line =~ /more than one cvtermsynonym found for (.*) at .*/) {
+    print $all_warnings $line;
+    print $synonym_match_problems qq($gene: "$1" matches more than one term\n);
+    next;
+  }
+  if ($line =~ /problem with .*target|problem (with target annotation of|on gene)|no "target .*" in /) {
+    print $all_warnings $line;
+    print $target_problems $line;
+    next;
+  }
+  if ($line =~ /no evidence for: |no such evidence code: /) {
+    print $all_warnings $line;
+    print $evidence_problems "$gene: $line";
+    next;
+  }
+  if ($line =~ /^no db_xref for/) {
+    print $all_warnings $line;
+    print $db_xref_problems "$gene: $line";
+    next;
+  }
+  if ($line =~ /(can't find feature for: .*)/) {
+    print $all_warnings "$1\n";
+    if (defined $gene && length $gene > 0) {
+      print $identifier_problems "$gene: $1\n";
+    } else {
+      print $identifier_problems "$line";
+    }
+    next;
+  }
+
+  if ($line =~ /no product for/) {
+    print $all_warnings $line;
+    print $missing_products "$gene: $line";
   }
 
   $prev_line = $line;
