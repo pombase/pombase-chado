@@ -92,6 +92,8 @@ date; echo starting fission_yeast_phenotype
 ./bin/gmod_make_cvtermpath.pl -H $HOST -D $DB -d 'Pg' -u $USER -p $PASSWORD -c fission_yeast_phenotype
 date; echo finished
 
+# prevent duplicate feature uniquenames
+psql $DB -c 'CREATE UNIQUE INDEX pombase_feature_uniquename_unique_idx ON feature(uniquename);'
 
 echo make copies
 
