@@ -402,6 +402,14 @@ method process_one_annotation($featurecvterm, $extension_text)
         } else {
           if ($identifier =~ /^(PomBase|GeneDB_?Spombe):([\w\d\.\-]+)/i) {
             $identifier = $2;
+            my $organism = $self->find_organism_by_common_name('pombe');
+            try {
+              my $ref_feature =
+                $self->find_chado_feature($identifier, 1, 1, $organism);
+              $identifier = $ref_feature->uniquename();
+            } catch {
+              warn "can't find feature using identifier: $identifier\n";
+            };
           } else {
             if ($identifier =~ /^(Pfam:PF\d+)$/) {
               $identifier = $1;
