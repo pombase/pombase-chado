@@ -81,6 +81,9 @@ method load($fh)
 
     my $phenotype = $columns_ref->{"Phenotypes"};
     my $qualifications = $columns_ref->{"Qualifications"};
+
+    my @qualifications = split(/\|/, $qualifications);
+
     my $tags = $columns_ref->{"Tags"};
 
     my $source_db = $columns_ref->{"Source Database"};
@@ -154,6 +157,7 @@ method load($fh)
       evidence_type => $experimental_system,
       source_db => $source_db,
       pub => $pub,
+      notes => \@qualifications,
     );
   }
 

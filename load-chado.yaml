@@ -88,6 +88,7 @@ cvs:
     - name: curator_name
     - name: curator_email
     - name: curs_key
+    - name: interaction_note
   cat_act: []
   genome_org: []
   m_f_g: []
