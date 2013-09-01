@@ -157,7 +157,7 @@ method load($fh)
       evidence_type => $experimental_system,
       source_db => $source_db,
       pub => $pub,
-      notes => \@qualifications,
+      note => $qualifications,
     );
   }
 

@@ -74,8 +74,7 @@ method store_interaction()
   my $approver_email = $args{approver_email};
   my $approved_timestamp = $args{approved_timestamp};
   my $curs_key = $args{curs_key};
-  my $notes = $args{notes} // [];
-  my @notes = @$notes;
+  my $note = $args{note};
 
   my $rel_type;
 
@@ -109,10 +108,8 @@ method store_interaction()
   if (defined $curs_key) {
     $self->store_feature_relationshipprop($rel, curs_key => $curs_key);
   }
-  if (@notes) {
-    for my $note (@notes) {
-      $self->store_feature_relationshipprop($rel, interaction_note => $note);
-    }
+  if (defined $note) {
+    $self->store_feature_relationshipprop($rel, interaction_note => $note);
   }
   $self->store_feature_rel_pub($rel, $pub);
 }
