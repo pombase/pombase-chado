@@ -297,9 +297,10 @@ method add_term_to_gene($pombe_feature, $cv_name, $embl_term_name, $sub_qual_map
 
   my $db_xref = delete $sub_qual_map->{db_xref};
 
-  if ($self->is_go_cv_name($cv_name) || $cv_name eq 'fission_yeast_phenotype') {
+  if ($self->is_go_cv_name($cv_name) ||
+      grep { $_ eq $cv_name } (qw(fission_yeast_phenotype PSI-MOD))) {
     if (!defined $db_xref) {
-      die "no db_xref for $embl_term_name\n";
+      die "no db_xref for $embl_term_name ($cv_name)\n";
     }
   }
 
