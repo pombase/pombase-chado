@@ -42,6 +42,41 @@ use Moose::Role;
 requires 'chado';
 requires 'get_cvterm';
 
+has ranks => (is => 'ro', lazy_build => 1);
+
+sub _make_key
+{
+  my $feature_relationship_id = shift;
+  my $type_id = shift;
+
+  return "$feature_relationship_id-$type_id";
+}
+
+# preinitialise the hash of ranks of the existing feature_relationshipprop
+method _build_ranks() {
+  my $chado = $self->chado();
+
+  my $rs = $chado->resultset('Sequence::FeatureRelationshipprop');
+
+  my $ranks = {};
+
+  while (defined (my $prop = $rs->next())) {
+    my $key = _make_key($prop->feature_relationship_id(), $prop->type_id());
+    my $rank = $prop->rank();
+    if (exists $ranks->{$key}) {
+      if ($rank > $ranks->{$key}) {
+        $ranks->{$key} = $rank;
+      } else {
+        next;
+      }
+    } else {
+      $ranks->{$key} = $rank;
+    }
+  }
+
+  return $ranks;
+}
+
 method store_feature_relationshipprop($feature_relationship, $type_name, $value)
 {
   my $type_cvterm = $self->get_cvterm('feature_relationshipprop_type', $type_name);
@@ -55,10 +90,22 @@ method store_feature_relationshipprop($feature_relationship, $type_name, $value)
     croak "can't store a reference as a value";
   }
 
+  my $key = _make_key($feature_relationship->feature_relationship_id(),
+                      $type_cvterm->cvterm_id());
+
+  my $rank = 0;
+
+  if (exists $self->ranks()->{$key}) {
+    $rank = ++$self->ranks()->{$key};
+  } else {
+    $self->ranks()->{$key} = 0;
+  }
+
   return $self->chado()->resultset('Sequence::FeatureRelationshipprop')
     ->create({ feature_relationship_id =>
                  $feature_relationship->feature_relationship_id(),
                type_id => $type_cvterm->cvterm_id(),
                value => $value,
+               rank => $rank,
              });
 }

@@ -82,7 +82,11 @@ method load($fh)
     my $phenotype = $columns_ref->{"Phenotypes"};
     my $qualifications = $columns_ref->{"Qualifications"};
 
-    my @qualifications = split(/\|/, $qualifications);
+    my @qualifications = ();
+
+    if ($qualifications ne '-') {
+      @qualifications = split(/\|/, $qualifications);
+    }
 
     my $tags = $columns_ref->{"Tags"};
 
@@ -157,7 +161,7 @@ method load($fh)
       evidence_type => $experimental_system,
       source_db => $source_db,
       pub => $pub,
-      note => $qualifications,
+      notes => \@qualifications,
     );
   }
 
