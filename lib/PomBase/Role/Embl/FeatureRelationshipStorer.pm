@@ -99,8 +99,6 @@ method store_feature_rel($subject, $object, $rel_type)
       $object->uniquename(), "\n";
   }
 
-  state $ranks = {};
-
   my $key =
     $subject->feature_id() . '-' . $object->feature_id() . '-' .
     $rel_cvterm->cvterm_id();
