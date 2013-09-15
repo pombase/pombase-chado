@@ -166,6 +166,25 @@ sub _extensions_by_type
   return %by_type;
 }
 
+method _get_real_termid
+{
+  my $termid = shift;
+
+  my $cvterm = $self->find_cvterm_by_term_id($termid);
+
+  if (!defined $cvterm) {
+    die "can't load condition, $termid not found in database\n";
+  }
+
+  if ($cvterm->is_obsolete()) {
+    die "condition '$termid' is obsolete\n";
+  }
+
+  my $dbxref = $cvterm->dbxref();
+  my $real_termid = $dbxref->db()->name() . ':' . $dbxref->accession();
+
+  return $real_termid;
+}
 
 method _store_ontology_annotation
 {
@@ -321,18 +340,7 @@ method _store_ontology_annotation
           die "condition '$termid' isn't a PECO term ID\n";
         }
 
-        my $cvterm = $self->find_cvterm_by_term_id($termid);
-
-        if (!defined $cvterm) {
-          die "can't load condition, $termid not found in database\n";
-        }
-
-        if ($cvterm->is_obsolete()) {
-          die "condition '$termid' is obsolete\n";
-        }
-
-        my $dbxref = $cvterm->dbxref();
-        my $real_termid = $dbxref->db()->name() . ':' . $dbxref->accession();
+        my $real_termid = $self->_get_real_termid($termid);
 
         $self->add_feature_cvtermprop($feature_cvterm, condition => $real_termid, $i);
       }
@@ -359,6 +367,11 @@ method _store_ontology_annotation
         if (defined (my $prop_vals = delete $by_type{$prop_name})) {
           for (my $i = 0; $i < @$prop_vals; $i++) {
             my $prop_val = $prop_vals->[$i];
+
+            if ($prop_name eq 'condition') {
+              $prop_val = $self->_get_real_termid($prop_val);
+            }
+
             $self->add_feature_cvtermprop($feature_cvterm,
                                           $prop_name, $prop_val, $i);
 
