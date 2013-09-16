@@ -77,6 +77,20 @@ method _get_feature_details
     $products{$uniquename} = $_->cvterm()->name();
   } $products_rs->all();
 
+  my %statuses = ();
+
+  my $statuses_rs = $self->chado()->resultset('Sequence::FeatureCvterm')->
+    search({ 'cv.name' => 'PomBase gene characterisation status' },
+           { join => { cvterm => 'cv' },
+             prefetch => [ 'cvterm', 'feature' ] });
+
+  map {
+    my $uniquename = $_->feature()->uniquename();
+    $uniquename =~ s/\.\d+:pep$//;
+    $statuses{$uniquename} = $_->cvterm()->name();
+  } $statuses_rs->all();
+
+
   my %ret_map = ();
 
   my $gene_rs = $self->chado()->resultset('Sequence::FeatureRelationship')->
@@ -110,6 +124,7 @@ method _get_feature_details
           transcript_type => $subject->type()->name(),
           synonyms => $synonyms{$object->feature_id()},
           product => $products{$object->uniquename()} // '',
+          status => $statuses{$object->uniquename()} // '',
         };
       }
     }
@@ -323,6 +338,12 @@ method retrieve() {
         my $synonyms_ref = $details->{synonyms} // [];
         my $synonyms = join '|', @{$synonyms_ref};
         my $product = $details->{product} // '';
+        my $status = $details->{status} // '';
+
+        if ($product eq 'dubious' or $status eq 'dubious') {
+          goto ROW;
+        }
+
         my $date = _safe_join('|', [map { _fix_date($_) } @{$row_fc_props{date}}]);
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
         my $so_type = $so_type_map{$details->{transcript_type}};
@@ -358,6 +379,13 @@ method retrieve() {
           my $aspect_abbrev = $row_data->{aspect};
           my $aspect_id = $top_level_terms{$aspect_abbrev};
           my $so_type = $so_type_map{$feature_details->{transcript_type}};
+
+          my $gene_status = $feature_details->{status} // '';
+
+          if ($gene_product eq 'dubious' or $gene_status eq 'dubious') {
+            goto ND_ROW;
+          }
+
           return [$db_name, $gene_uniquename,
                   $gene_name // $gene_uniquename,
                   '', $aspect_id, "GO_REF:0000015",
@@ -380,5 +408,9 @@ method header
 
 method format_result($res)
 {
+  my $line = (join "\t", @$res);
+
+  die "dubious $line!" if $line =~ /dubious/;
+
   return (join "\t", @$res);
 }
