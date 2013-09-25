@@ -51,6 +51,10 @@ with 'PomBase::Retriever';
 
 has options => (is => 'ro', isa => 'ArrayRef');
 
+# if true return stanzas for parent terms of those terms that pass the
+# constraint_type filter, even if the parent doesn't pass the filter
+has retrieve_parent_terms => (is => 'rw', default => 0);
+
 method BUILD
 {
   my $chado = $self->chado();
@@ -102,6 +106,8 @@ method retrieve() {
   my $name_constraint =  $self->{_name_constraint};
   my $constraint_value =  $self->{_constraint_value};
 
+  my $retrieve_parent_terms = $self->retrieve_parent_terms();
+
   my $query = "
 SELECT t.name, cv.name, db.name, x.accession, obj.name, objdb.name, objdbxref.accession
   FROM cv, dbxref x, db, cvterm t
@@ -126,12 +132,14 @@ SELECT t.name, cv.name, db.name, x.accession, obj.name, objdb.name, objdbxref.ac
 
       if (defined $sth) {
         @data = $sth->fetchrow_array();
-        my $parentname = $data[4];
-        if (defined $parentname) {
-          my $termid = $data[5] . ':' . $data[6];
-          if (!exists $self->{_parents}->{$termid}) {
-            my $cvterm = $self->find_cvterm_by_term_id($termid);
-            $self->{_parents}->{$termid} = $cvterm;
+        if ($retrieve_parent_terms) {
+          my $parentname = $data[4];
+          if (defined $parentname) {
+            my $termid = $data[5] . ':' . $data[6];
+            if (!exists $self->{_parents}->{$termid}) {
+              my $cvterm = $self->find_cvterm_by_term_id($termid);
+              $self->{_parents}->{$termid} = $cvterm;
+            }
           }
         }
       }
@@ -140,10 +148,13 @@ SELECT t.name, cv.name, db.name, x.accession, obj.name, objdb.name, objdbxref.ac
         return [@data];
       } else {
         $sth = undef;
-        if (keys %{$self->{_parents}} > 0) {
+        if ($retrieve_parent_terms && keys %{$self->{_parents}} > 0) {
           my ($termid, $cvterm) = each %{$self->{_parents}};
           return undef unless defined $termid;
           delete $self->{_parents}->{$termid};
+          if (!defined $cvterm) {
+            die "no cvterm for $termid\n";
+          }
           my $dbxref = $cvterm->dbxref();
           return [$cvterm->name(), $cvterm->cv()->name(),
                   $dbxref->db()->name(), $dbxref->accession()];
