@@ -41,6 +41,8 @@ use Moose;
 
 use Text::CSV;
 
+use Getopt::Long qw(GetOptionsFromArray);
+
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::FeatureFinder';
@@ -55,6 +57,34 @@ with 'PomBase::Role::InteractionStorer';
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 
+has organism_taxonid_filter => (is => 'rw', init_arg => undef);
+has evidence_code_filter => (is => 'rw', init_arg => undef, isa => 'ArrayRef');
+has interaction_note_filter => (is => 'rw', init_arg => undef);
+
+method BUILD
+{
+  my $organism_taxonid_filter = undef;
+  my $evidence_code_filter = undef;
+  my $interaction_note_filter = undef;
+
+  my @opt_config = ('organism-taxonid-filter=s' => \$organism_taxonid_filter,
+                    'evidence-code-filter=s' => \$evidence_code_filter,
+                    'interaction-note-filter=s' => \$interaction_note_filter);
+
+  my @options_copy = @{$self->options()};
+
+  if (!GetOptionsFromArray(\@options_copy, @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  $self->organism_taxonid_filter($organism_taxonid_filter);
+  $self->interaction_note_filter($interaction_note_filter);
+
+  if (defined $evidence_code_filter) {
+    $self->evidence_code_filter([split(/,/, $evidence_code_filter)]);
+  }
+}
+
 method load($fh)
 {
   my $chado = $self->chado();
@@ -62,6 +92,10 @@ method load($fh)
   my $csv = Text::CSV->new({ sep_char => "\t" });
 
   $csv->column_names ($csv->getline($fh));
+
+  my $organism_taxonid_filter = $self->organism_taxonid_filter();
+  my @evidence_code_filter = @{$self->evidence_code_filter() // []};
+  my $interaction_note_filter = $self->interaction_note_filter();
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $biogrid_id = $columns_ref->{"#BioGRID Interaction ID"};;
@@ -86,16 +120,35 @@ method load($fh)
 
     if ($qualifications ne '-') {
       @qualifications = split(/\|/, $qualifications);
+
+      if (defined $interaction_note_filter &&
+          grep { $_ eq $interaction_note_filter } @qualifications) {
+        warn "ignoring interaction of $uniquename_a " .
+          "<-> $uniquename_b because of interaction note/qualification " .
+          qq("$interaction_note_filter"\n);
+        next;
+      }
     }
 
     my $tags = $columns_ref->{"Tags"};
 
     my $source_db = $columns_ref->{"Source Database"};
 
-    if ($taxon_a ne $self->config()->{taxonid} &&
-        $taxon_b ne $self->config()->{taxonid}) {
-      warn "ignoring interaction of $uniquename_a with $uniquename_b " .
-        "because neither gene is a pombe gene\n";
+    if (@evidence_code_filter) {
+      if (grep { $_ eq $experimental_system } @evidence_code_filter) {
+        warn "ignoring interaction of $uniquename_a " .
+          "<-> $uniquename_b because of evidence/experimental system " .
+          qq("$experimental_system"\n);
+        next;
+      }
+    }
+
+    if (defined $organism_taxonid_filter &&
+        ($taxon_a ne $organism_taxonid_filter ||
+         $taxon_b ne $organism_taxonid_filter)) {
+      warn "ignoring interaction of $uniquename_a(taxon $taxon_a) " .
+        "with $uniquename_b(taxon $taxon_b) " .
+        "because one of the interactors is not from taxon $organism_taxonid_filter\n";
       next;
     }
 
