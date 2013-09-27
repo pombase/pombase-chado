@@ -56,6 +56,7 @@ has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has assigned_by_filter => (is => 'rw', init_arg => undef);
 has taxon_filter => (is => 'rw', init_arg => undef);
 has remove_existing => (is => 'rw', init_arg => undef);
+has use_first_with_id => (is => 'rw', init_arg => undef);
 has with_filter_values => (is => 'rw', isa => 'HashRef',
                              init_arg => undef);
 has term_id_filter_values => (is => 'rw', isa => 'HashRef',
@@ -92,24 +93,24 @@ method BUILD
   my $with_filter_filename = undef;
   my $term_id_filter_filename = undef;
 
+  # if true only the first ID from a with field will be stored
+  my $use_first_with_id = 0;
+
   my @opt_config = ('assigned-by-filter=s' => \$assigned_by_filter,
                     'remove-existing' => \$remove_existing,
                     'taxon-filter=s' => \$taxon_filter,
                     'with-filter-filename=s' =>
                       \$with_filter_filename,
                     'term-id-filter-filename=s' =>
-                      \$term_id_filter_filename);
+                      \$term_id_filter_filename,
+                    'use-only-first-with-id' => \$use_first_with_id);
+
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
     croak "option parsing failed";
   }
 
   $assigned_by_filter =~ s/^\s+//;
   $assigned_by_filter =~ s/\s+$//;
-
-  if (length $assigned_by_filter == 0) {
-    die "no assigned-by-filter option given - no annotation will " .
-      "be loaded\n";
-  }
 
   if (length $taxon_filter == 0) {
     warn "no taxon filter - annotation will be loaded for all taxa\n";
@@ -126,6 +127,8 @@ method BUILD
   my %term_id_filter_values =
     $self->_load_first_column($term_id_filter_filename);
   $self->term_id_filter_values({%term_id_filter_values});
+
+  $self->use_first_with_id($use_first_with_id);
 }
 
 method load($fh)
@@ -167,12 +170,17 @@ method load($fh)
   my %with_filter = %{$self->with_filter_values()};
   my %term_id_filter = %{$self->term_id_filter_values()};
 
+  my $use_first_with_id = $self->use_first_with_id();
+
+ LINE:
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $taxonid = $columns_ref->{"Taxon"};
 
     if (!defined $taxonid) {
       warn "Taxon missing - skipping\n";
       next;
+    } else {
+      warn "TAXON: $taxonid\n";
     }
 
     $taxonid =~ s/taxon://ig;
@@ -229,13 +237,22 @@ method load($fh)
     my $long_evidence =
       $self->config()->{evidence_types}->{$evidence_code}->{name};
 
-    my $with_or_from = $columns_ref->{"With_or_from"};
+    my $with_or_from_column = $columns_ref->{"With_or_from"};
+    my @withs_and_froms = ();
 
-    if ($with_filter{$with_or_from}) {
-      if ($self->verbose()) {
-        warn "ignoring line because of with filter: $with_or_from\n";
+    if (length $with_or_from_column > 0) {
+      @withs_and_froms = split (/\|/, $with_or_from_column);
+    }
+
+    for (my $i = 0; $i < @withs_and_froms; $i++) {
+      my $with_or_from = $withs_and_froms[$i];
+
+      if ($with_filter{$with_or_from}) {
+        if ($self->verbose()) {
+          warn "ignoring line because of with filter: $with_or_from\n";
+        }
+        next LINE;
       }
-      next;
     }
 
     my $db_object_synonym = $columns_ref->{"DB_object_synonym"};
@@ -243,7 +260,7 @@ method load($fh)
     my $date = $columns_ref->{"Date"};
     my $assigned_by = $columns_ref->{"Assigned_by"};
 
-    if (!$assigned_by_filter{$assigned_by}) {
+    if (@assigned_by_filter && !$assigned_by_filter{$assigned_by}) {
       if ($self->verbose()) {
         warn "ignoring line because of assigned_by filter: $assigned_by\n";
       }
@@ -314,9 +331,16 @@ method load($fh)
       $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                     $long_evidence);
-      if (defined $with_or_from && length $with_or_from > 0) {
+
+      for (my $i = 0; $i < @withs_and_froms; $i++) {
+        my $with_or_from = $withs_and_froms[$i];
+
+        if ($use_first_with_id && $i > 0) {
+          next;
+        }
+
         $self->add_feature_cvtermprop($feature_cvterm, 'with',
-                                      $with_or_from);
+                                      $with_or_from, $i);
       }
     };
 
