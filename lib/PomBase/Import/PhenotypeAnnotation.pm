@@ -79,7 +79,7 @@ method load($fh)
 
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
-  $csv->column_names(qw(gene_systemtic_id fypo_id allele_description geneotype strain_background gene_name allele_name allele_synonym allele_type evidence conditions penetrance expressivity extension reference taxon date));
+  $csv->column_names(qw(gene_systemtic_id fypo_id allele_description expression parental_strain strain_background genotype_description gene_name allele_name allele_synonym allele_type evidence conditions penetrance expressivity extension reference taxon date));
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $gene_systemtic_id = $columns_ref->{"gene_systemtic_id"};
@@ -90,7 +90,7 @@ method load($fh)
 
     my $fypo_id = $columns_ref->{"fypo_id"};
     my $allele_description = $columns_ref->{"allele_description"};
-    my $geneotype = $columns_ref->{"geneotype"};
+    my $genotype_description = $columns_ref->{"genotype_description"};
     my $strain_background = $columns_ref->{"strain_background"};
     my $gene_name = $columns_ref->{"gene_name"};
     my $allele_name = $columns_ref->{"allele_name"};
