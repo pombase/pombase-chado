@@ -78,10 +78,14 @@ method BUILD
   }
 
   $self->organism_taxonid_filter($organism_taxonid_filter);
-  $self->interaction_note_filter($interaction_note_filter);
 
   if (defined $evidence_code_filter) {
     $self->evidence_code_filter([split(/,/, $evidence_code_filter)]);
+  }
+  if (defined $interaction_note_filter) {
+    my %note_hash = ();
+    map { $note_hash{$_} = 1; } split(/\|/, $interaction_note_filter);
+    $self->interaction_note_filter(\%note_hash);
   }
 }
 
@@ -97,6 +101,7 @@ method load($fh)
   my @evidence_code_filter = @{$self->evidence_code_filter() // []};
   my $interaction_note_filter = $self->interaction_note_filter();
 
+  ROW:
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $biogrid_id = $columns_ref->{"#BioGRID Interaction ID"};;
 
@@ -121,12 +126,15 @@ method load($fh)
     if ($qualifications ne '-') {
       @qualifications = split(/\|/, $qualifications);
 
-      if (defined $interaction_note_filter &&
-          grep { $_ eq $interaction_note_filter } @qualifications) {
-        warn "ignoring interaction of $uniquename_a " .
-          "<-> $uniquename_b because of interaction note/qualification " .
-          qq("$interaction_note_filter"\n);
-        next;
+      if (defined $interaction_note_filter) {
+        for my $qualification (@qualifications) {
+          if ($interaction_note_filter->{$qualification}) {
+            warn "ignoring interaction of $uniquename_a " .
+              "<-> $uniquename_b because of interaction note/qualification " .
+              qq("$qualification"\n);
+            next ROW;
+          }
+        }
       }
     }
 
