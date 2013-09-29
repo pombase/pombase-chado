@@ -179,8 +179,6 @@ method load($fh)
     if (!defined $taxonid) {
       warn "Taxon missing - skipping\n";
       next;
-    } else {
-      warn "TAXON: $taxonid\n";
     }
 
     $taxonid =~ s/taxon://ig;
