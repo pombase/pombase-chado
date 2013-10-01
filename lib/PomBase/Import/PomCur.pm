@@ -43,6 +43,7 @@ use Scalar::Util;
 
 use JSON;
 use Clone qw(clone);
+use Getopt::Long qw(GetOptionsFromArray);
 
 use PomBase::Chado::ExtensionProcessor;
 
@@ -63,8 +64,15 @@ with 'PomBase::Role::InteractionStorer';
 with 'PomBase::Role::PhenotypeFeatureFinder';
 
 has verbose => (is => 'ro');
+has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
+
+# used for checking gene identifiers in "with" parameters
+has organism => (is => 'rw', init_arg => undef);
+
+# used to prefix identifiers in "with" fields before storing as proprieties
+has db_prefix => (is => 'rw', init_arg => undef);
 
 method _build_extension_processor
 {
@@ -73,6 +81,40 @@ method _build_extension_processor
                                                           pre_init_cache => 1,
                                                           verbose => $self->verbose());
   return $processor;
+}
+
+sub BUILD
+{
+  my $self = shift;
+
+  my $organism_taxonid = undef;
+  my $db_prefix = undef;
+
+  my @opt_config = ("organism-taxonid=s" => \$organism_taxonid,
+                    "db-prefix=s" => \$db_prefix,
+                  );
+
+  if (!GetOptionsFromArray($self->options(), @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  if (!defined $organism_taxonid || length $organism_taxonid == 0) {
+    die "no --organism passed to the PomCur loader\n";
+  }
+
+  my $organism = $self->find_organism_by_taxonid($organism_taxonid);
+
+  if (!defined $organism) {
+    die "can't find organism with taxon ID: $organism_taxonid\n";
+  }
+
+  $self->organism($organism);
+
+  if (!defined $db_prefix) {
+    die "no --db-prefix passed to the PomCur loader\n";
+  }
+
+  $self->db_prefix($db_prefix);
 }
 
 method _store_interaction_annotation
@@ -229,6 +271,8 @@ method _store_ontology_annotation
       %by_type = _extensions_by_type($extension_text);
     }
 
+    my $allele_type = undef;
+
     my $allele_quals = delete $by_type{allele};
 
     if (defined $allele_quals && @$allele_quals > 0) {
@@ -238,11 +282,12 @@ method _store_ontology_annotation
       my @processed_allele_quals = map {
         my $res = $self->make_allele_data_from_display_name($feature, $_, \$expression);
 
-        my $allele_type = delete $by_type{allele_type};
+        my $allele_type_list = delete $by_type{allele_type};
 
-        if ($allele_type) {
+        if ($allele_type_list) {
           # use allele type from the extension text
-          $res->{allele_type} = $allele_type->[0];
+          $allele_type = $allele_type_list->[0];
+          $res->{allele_type} = $allele_type;
         }
 
         $res;
@@ -307,8 +352,18 @@ method _store_ontology_annotation
                                     approver_email => $approver_email);
     }
     if (defined $with_gene) {
+      try {
+        my $ref_feature =
+          $self->find_chado_feature($with_gene, 1, 1, $self->organism());
+        $with_gene = $ref_feature->uniquename();
+      } catch {
+        warn "can't find feature using identifier: $with_gene\n";
+      };
+
+      my $db_prefix = $self->db_prefix();
+
       $self->add_feature_cvtermprop($feature_cvterm, 'with',
-                                    $with_gene);
+                                    "$db_prefix:$with_gene");
     }
     if (defined $creation_date) {
       $self->add_feature_cvtermprop($feature_cvterm, date => $creation_date);
@@ -330,7 +385,9 @@ method _store_ontology_annotation
     }
 
     if (defined $expression) {
-      $self->add_feature_cvtermprop($feature_cvterm, expression => $expression);
+      if ($allele_type ne 'deletion') {
+        $self->add_feature_cvtermprop($feature_cvterm, expression => $expression);
+      }
     }
     if (defined $conditions) {
       for (my $i = 0; $i < @$conditions; $i++) {

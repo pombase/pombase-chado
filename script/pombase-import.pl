@@ -42,6 +42,13 @@ and one optional argument:
                          the object of the feature_relationship,
                          rather than the subject
 
+The pomcur type has one mandatory argument:
+  --organism-taxonid  - the NCBI taxon ID of the organism to load, which
+                        must be stored in an organismprop in Chado with
+                        the property type "taxon_id"
+  --db-prefix         - the prefix to use when a gene identifier is stored
+                        in a Chado property (eg. the "with" field of an IPI)
+
 usage:
   $0 <args> < input_file
 );
