@@ -385,7 +385,7 @@ method _store_ontology_annotation
     }
 
     if (defined $expression) {
-      if ($allele_type ne 'deletion') {
+      if (!defined $allele_type || $allele_type ne 'deletion') {
         $self->add_feature_cvtermprop($feature_cvterm, expression => $expression);
       }
     }
