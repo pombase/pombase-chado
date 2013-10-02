@@ -338,8 +338,8 @@ db_name_for_cv: PomBase
 
 ensembl_dbs:
   'Homo sapiens':
-    host: useastdb.ensembl.org
-    port: 5306
+    host: ensembldb.ensembl.org
+    port: 3306
     user: anonymous
     group: core
     dbname: homo_sapiens_core_71_37
