@@ -75,7 +75,10 @@ AND
   prop.value in ('Inferred from Electronic Annotation',
    'Inferred from Expression Pattern','Non-traceable Author Statement',
    'inferred from Reviewed Computational Analysis',
-   'Traceable Author Statement')
+   'Traceable Author Statement', 'Inferred from Sequence Orthology',
+   'Inferred from Sequence or Structural Similarity',
+   'Inferred from Sequence Model', 'Inferred by Curator'
+)
 EOQ
 
   $sth = $dbh->prepare($poor_ev_query);
