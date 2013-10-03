@@ -101,13 +101,15 @@ method store_extension($feature_cvterm, $extensions)
 
   my $new_name = $old_cvterm->name();
 
+  my $relationship_cv_name = 'relationship';
   my $go_relationship_cv_name = 'go/extensions/gorel';
   my $phenotype_relationship_cv_name = 'fypo_extension_relations';
   my $psi_mod_relationship_cv_name = 'PSI-MOD_extension_relations';
   my $gene_ex_extension_relations_cv_name = 'gene_ex_extension_relations';
 
   my @rel_cv_names =
-    ($go_relationship_cv_name, $phenotype_relationship_cv_name,
+    ($relationship_cv_name,
+     $go_relationship_cv_name, $phenotype_relationship_cv_name,
      $psi_mod_relationship_cv_name,
      $gene_ex_extension_relations_cv_name);
 
