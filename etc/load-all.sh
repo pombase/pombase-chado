@@ -112,8 +112,11 @@ echo phenotype data from PMID:23697806
 ./script/pombase-import.pl load-chado.yaml phenotype_annotation $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/phenotype_mapping/phaf_format_phenotypes.tsv 2>&1 | tee $LOG_DIR/$log_file.phenotypes_from_PMID_23697806
 ./script/pombase-import.pl load-chado.yaml phenotype_annotation $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/phenotype_mapping/HU_data_from_PMID_23697806 2>&1 | tee -a $LOG_DIR/$log_file.phenotypes_from_PMID_23697806
 
-echo phenotype data from PMID:23950735
-./script/pombase-import.pl load-chado.yaml phenotype_annotation $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/external_data/phaf_files/chado_load/PMID_23950735_phaf.csv 2>&1 | tee -a $LOG_DIR/$log_file.phenotypes_from_PMID_23950735
+for id in 18684775 19264558 21850271 22806344 23861937 23950735
+do
+  ec1ho phenotype data from PMID:$i
+  ./script/pombase-import.pl load-chado.yaml phenotype_annotation $HOST $DB $USER $PASSWORD < $SOURCES/pombe-embl/external_data/phaf_files/chado_load/PMID_${id}_phaf.csv 2>&1 | tee -a $LOG_DIR/$log_file.phenotypes_from_PMID_$id.txt
+done
 
 echo load Compara orthologs
 
