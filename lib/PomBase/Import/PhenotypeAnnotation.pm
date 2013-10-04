@@ -40,6 +40,7 @@ use perl5i::2;
 use Moose;
 use Try::Tiny;
 use Text::CSV;
+use IO::Handle;
 
 use PomBase::Chado::ExtensionProcessor;
 
@@ -107,7 +108,7 @@ method load($fh)
 
     my $proc = sub {
       if (!defined $evidence || length $evidence == 0) {
-        warn "no value in the evidence column - skipping\n";
+        warn "no value in the evidence column at line ", $fh->input_line_number(), " - skipping\n";
         return;
       }
 
@@ -119,14 +120,14 @@ method load($fh)
       $taxonid =~ s/taxon://ig;
 
       if (!$taxonid->is_integer()) {
-        warn "Taxon is not a number: $taxonid - skipping\n";
+        warn "Taxon is not a number: $taxonid at line ", $fh->input_line_number(), " - skipping\n";
         return;
       }
 
       my $organism = $self->find_organism_by_taxonid($taxonid);
 
       if (!defined $organism) {
-        warn "ignoring annotation for organism $taxonid\n";
+        warn "ignoring annotation for organism $taxonid at line ", $fh->input_line_number(), "\n";
         return;
       }
 
@@ -134,20 +135,20 @@ method load($fh)
 
       if (length $penetrance > 0 &&
           !defined $self->find_cvterm_by_term_id($penetrance)) {
-        warn "can't load annotation, $penetrance not found\n";
+         warn "can't load annotation, $penetrance not found at line ", $fh->input_line_number(), "\n";
         return;
       }
 
       if (length $expressivity > 0 &&
           !defined $self->find_cvterm_by_term_id($expressivity)) {
-        warn "can't load annotation, $expressivity not found\n";
+        warn "can't load annotation, $expressivity not found at line ", $fh->input_line_number(), "\n";
         return;
       }
 
       my $gene = $self->find_chado_feature("$gene_systemtic_id", 1, 1, $organism);
 
       if (!defined $gene) {
-        warn "gene ($gene_systemtic_id) not found - skipping row\n";
+        warn "gene ($gene_systemtic_id) not found - skipping line ", $fh->input_line_number(), "\n";
         return;
       }
 
@@ -162,7 +163,7 @@ method load($fh)
       };
 
       if (!defined $cvterm) {
-        warn "can't load annotation, $fypo_id not found in database\n";
+        warn "can't load annotation, $fypo_id not found in database at line ", $fh->input_line_number(), "\n";
         return;
       }
 
@@ -172,7 +173,8 @@ method load($fh)
       if (length $gene_name > 0 && $gene_name ne $existing_gene_name &&
           $gene_name ne $gene_uniquename) {
         warn qq|gene name from phenotype annotation file ("$gene_name") doesn't | .
-          qq|match the existing name ("$existing_gene_name") for $gene_uniquename \n|;
+          qq|match the existing name ("$existing_gene_name") for $gene_uniquename | .
+          "at line ", $fh->input_line_number(), "\n";
       }
 
       my $allele_data = {
@@ -231,7 +233,7 @@ method load($fh)
     try {
       $chado->txn_do($proc);
     } catch {
-      warn "Failed to load row: $_\n";
+      warn "Failed to load line ", $fh->input_line_number(), ": $_\n";
     }
   }
 
