@@ -49,11 +49,16 @@ method store_cvtermprop($cvterm, $type_name, $value)
     die "can't find cvterm for $type_name\n";
   }
 
-  $self->chado->resultset('Cv::Cvtermprop')->create({
-    cvterm_id => $cvterm->cvterm_id(),
-    type_id => $type_cvterm->cvterm_id(),
-    value => $value,
-  });
+  try {
+    $self->chado->resultset('Cv::Cvtermprop')->create({
+      cvterm_id => $cvterm->cvterm_id(),
+      type_id => $type_cvterm->cvterm_id(),
+      value => $value,
+    });
+  } catch {
+    warn "Failed to create cvtermprop for cvterm: ", $cvterm->name(),
+      " type: ", $type_cvterm->name(), " value: $value\n";
+  };
 }
 
 1;
