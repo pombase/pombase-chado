@@ -296,7 +296,7 @@ method get_allele($allele_data)
 
         if ($existing_allele->name() eq $new_allele_name) {
           if (defined $existing_description && defined $new_allele_description &&
-              $existing_description eq $new_allele_description ||
+              lc $existing_description eq lc $new_allele_description ||
               !defined $existing_description && !defined $new_allele_description) {
             # descriptions match - same allele
             return $existing_allele;
