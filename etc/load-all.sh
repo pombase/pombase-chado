@@ -64,7 +64,7 @@ evidence_summary
 
 echo starting import of GOA GAF data
 
-{
+(
 for gaf_file in go_comp.txt go_proc.txt go_func.txt From_curation_tool GO_ORFeome_localizations2.txt
 do
   echo reading $gaf_file
@@ -75,7 +75,14 @@ do
 done
 
 echo $SOURCES/sources/gene_association.pombase.inf.gaf
-./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=PomBase,GOC $HOST $DB $USER $PASSWORD < $SOURCES/go-svn/scratch/gaf-inference/gene_association.pombase.inf.gaf
+GET 'http://build.berkeleybop.org/view/GAF/job/gaf-check-pombase/lastSuccessfulBuild/artifact/gene_association.pombase.inf.gaf' > $SOURCES/gene_association.pombase.inf.gaf
+if [ -s $SOURCES/gene_association.pombase.inf.gaf ]
+then
+  ./script/pombase-import.pl ./load-chado.yaml gaf --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=PomBase,GOC $HOST $DB $USER $PASSWORD < $SOURCES/gene_association.pombase.inf.gaf
+else
+  echo "Coudn't download gene_association.pombase.inf.gaf - exiting" 1>&2
+  exit 1
+fi
 
 echo counts after inf:
 evidence_summary
@@ -93,7 +100,7 @@ fi
 
 gzip -d < $CURRENT_GOA_GAF | kgrep '\ttaxon:(4896|284812)\t' | ./script/pombase-import.pl ./load-chado.yaml gaf --use-only-first-with-id --taxon-filter=4896 --term-id-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_GO_IDs --with-filter-filename=$SOURCES/pombe-embl/goa-load-fixes/filtered_mappings --assigned-by-filter=InterPro,UniProtKB,UniProt $HOST $DB $USER $PASSWORD
 
-} 2>&1 | tee $LOG_DIR/$log_file.gaf-load-output
+) 2>&1 | tee $LOG_DIR/$log_file.gaf-load-output
 
 echo annotation count after GAF loading:
 evidence_summary
