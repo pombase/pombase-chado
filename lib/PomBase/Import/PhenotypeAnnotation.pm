@@ -80,12 +80,17 @@ method load($fh)
 
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
-  $csv->column_names(qw(gene_systemtic_id fypo_id allele_description expression parental_strain strain_background genotype_description gene_name allele_name allele_synonym allele_type evidence conditions penetrance expressivity extension reference taxon date));
+  $csv->column_names(qw(gene_systemtic_id fypo_id allele_description expression
+                        parental_strain strain_background genotype_description
+                        gene_name allele_name allele_synonym allele_type
+                        evidence conditions penetrance expressivity extension
+                        reference taxon date));
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
-    my $gene_systemtic_id = $columns_ref->{"gene_systemtic_id"};
+    my $gene_systemtic_id = $columns_ref->{"gene_systemtic_id"}->trim();
 
-    if ($gene_systemtic_id =~ /^#/) {
+    if ($gene_systemtic_id =~ /^#/ ||
+        $gene_systemtic_id eq 'Gene systematic ID') {
       next;
     }
 
