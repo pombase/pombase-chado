@@ -74,7 +74,7 @@ do
   evidence_summary
 done
 
-echo $SOURCES/sources/gene_association.pombase.inf.gaf
+echo $SOURCES/gene_association.pombase.inf.gaf
 GET 'http://build.berkeleybop.org/view/GAF/job/gaf-check-pombase/lastSuccessfulBuild/artifact/gene_association.pombase.inf.gaf' > $SOURCES/gene_association.pombase.inf.gaf
 if [ -s $SOURCES/gene_association.pombase.inf.gaf ]
 then
