@@ -173,8 +173,18 @@ method load($fh)
   my $use_first_with_id = $self->use_first_with_id();
 
  LINE:
-  while (my $columns_ref = $csv->getline_hr($fh)) {
-    my $taxonid = $columns_ref->{"Taxon"};
+  while (defined (my $line = $fh->getline())) {
+    next if $line =~ /^\s*!/;
+
+    if (!$csv->parse($line)) {
+      die "Parse error at line $.: ", $csv->error_input(), "\n";
+    }
+
+    my %columns = ();
+
+    @columns{ $csv->column_names() } = $csv->fields();
+
+    my $taxonid = $columns{"Taxon"};
 
     if (!defined $taxonid) {
       warn "Taxon missing - skipping\n";
@@ -200,9 +210,9 @@ method load($fh)
       next;
     }
 
-    my $db_object_id = $columns_ref->{"DB_object_id"};
-    my $db_object_symbol = $columns_ref->{"DB_object_symbol"};
-    my $qualifier = $columns_ref->{"Qualifier"};
+    my $db_object_id = $columns{"DB_object_id"};
+    my $db_object_symbol = $columns{"DB_object_symbol"};
+    my $qualifier = $columns{"Qualifier"};
 
     if (!defined $qualifier) {
       warn "The qualifier column has no value\n";
@@ -220,7 +230,7 @@ method load($fh)
       $is_not = 1;
     }
 
-    my $go_id = $columns_ref->{"GO_id"};
+    my $go_id = $columns{"GO_id"};
 
     if ($term_id_filter{$go_id}) {
       if ($self->verbose()) {
@@ -229,13 +239,13 @@ method load($fh)
       next;
     }
 
-    my $db_reference = $columns_ref->{"DB_reference"};
+    my $db_reference = $columns{"DB_reference"};
 
-    my $evidence_code = $columns_ref->{"Evidence_code"};
+    my $evidence_code = $columns{"Evidence_code"};
     my $long_evidence =
       $self->config()->{evidence_types}->{$evidence_code}->{name};
 
-    my $with_or_from_column = $columns_ref->{"With_or_from"};
+    my $with_or_from_column = $columns{"With_or_from"};
     my @withs_and_froms = ();
 
     if (length $with_or_from_column > 0) {
@@ -253,10 +263,10 @@ method load($fh)
       }
     }
 
-    my $db_object_synonym = $columns_ref->{"DB_object_synonym"};
+    my $db_object_synonym = $columns{"DB_object_synonym"};
 
-    my $date = $columns_ref->{"Date"};
-    my $assigned_by = $columns_ref->{"Assigned_by"};
+    my $date = $columns{"Date"};
+    my $assigned_by = $columns{"Assigned_by"};
 
     if (@assigned_by_filter && !$assigned_by_filter{$assigned_by}) {
       if ($self->verbose()) {
