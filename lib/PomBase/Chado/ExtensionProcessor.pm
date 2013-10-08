@@ -125,22 +125,33 @@ method store_extension($feature_cvterm, $extensions)
     }
   } @$extensions;
 
+  my %extensions_so_far = ();
+
   for my $extension (@$extensions) {
     my $rel_name = $extension->{rel_name};
 
     my $nested_extension = $extension->{nested_extension};
 
-    $new_name .=  ' [' . $rel_name . '] ';
+    my $this_extension =  '[' . $rel_name . '] ';
 
     if ($extension->{term}) {
-      $new_name .= $extension->{term}->name();
+      $this_extension .= $extension->{term}->name();
     } else {
-      $new_name .= $extension->{identifier};
+      $this_extension .= $extension->{identifier};
     }
 
     if (defined $nested_extension) {
-      $new_name .= " ($nested_extension)";
+      $this_extension .= " ($nested_extension)";
     }
+
+    $new_name .= " $this_extension";
+
+    if (exists $extensions_so_far{$this_extension}) {
+      die qq(duplicated extension: "$this_extension"\n);
+    } else {
+      $extensions_so_far{$this_extension} = 1;
+    }
+
   }
 
   my $new_term = $self->get_cvterm($extension_cv_name, $new_name);
