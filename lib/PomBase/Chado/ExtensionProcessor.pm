@@ -222,7 +222,7 @@ method store_extension($feature_cvterm, $extensions)
 
         my $ex_type = 'annotation_extension_relation-' . $rel->name();
 
-        warn qq{storing extension as cvtermprop: $ex_type -> $identifier\n} if $self->verbose();
+        warn qq{storing extension as cvtermprop for $new_name: $ex_type -> $identifier\n} if $self->verbose();
 
         $self->store_cvtermprop($new_term, $ex_type, $identifier);
       }
