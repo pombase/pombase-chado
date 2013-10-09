@@ -189,6 +189,7 @@ psql $FINAL_DB -c "select count(id), name from (select p.cvterm_id::text || '_cv
  as sub group by name order by name;" > $DUMP_DIR/logs/$log_file.extension_relation_counts
 
 (
+echo counts of all annotation by type:
 psql $FINAL_DB -c "select count(distinct fc_id), cv_name from (select distinct
 fc.feature_cvterm_id as fc_id, cv.name as cv_name from cvterm t,
 feature_cvterm fc, cv where fc.cvterm_id = t.cvterm_id and cv.cv_id = t.cv_id
@@ -210,7 +211,29 @@ feature_cvterm fc, cv term_cv, cvterm_relationship rel, cvterm parent_term, cv
 parent_cv, cvterm rel_type where fc.cvterm_id = t.cvterm_id and term_cv.cv_id
 = t.cv_id and t.cvterm_id = subject_id and parent_term.cvterm_id = object_id
 and parent_term.cv_id = parent_cv.cv_id and term_cv.name = 'PomBase annotation extension terms' and rel.type_id = rel_type.cvterm_id and rel_type.name =
-'is_a') as sub;" ) > $DUMP_DIR/logs/$log_file.annotation_counts_by_cv
+'is_a') as sub;"
+
+echo
+echo counts of annotation from Canto, by type:
+psql $FINAL_DB -c "select count(distinct fc_id), cv_name from (select
+ distinct fc.feature_cvterm_id as fc_id, cv.name as cv_name from
+ cvterm t, feature_cvterm fc, cv where fc.cvterm_id = t.cvterm_id and
+ cv.cv_id = t.cv_id and cv.name <> 'PomBase annotation extension
+ terms' and fc.feature_cvterm_id in (select feature_cvterm_id from
+ feature_cvtermprop where type_id in (select cvterm_id from cvterm
+ where name = 'curs_key')) UNION select distinct fc.feature_cvterm_id
+ as fc_id, parent_cv.name as cv_name from cvterm t, feature_cvterm fc,
+ cv term_cv, cvterm_relationship rel, cvterm parent_term, cv
+ parent_cv, cvterm rel_type where fc.cvterm_id = t.cvterm_id and
+ term_cv.cv_id = t.cv_id and t.cvterm_id = subject_id and
+ parent_term.cvterm_id = object_id and parent_term.cv_id =
+ parent_cv.cv_id and term_cv.name = 'PomBase annotation extension
+ terms' and rel.type_id = rel_type.cvterm_id and rel_type.name =
+ 'is_a' and fc.feature_cvterm_id in (select feature_cvterm_id from
+ feature_cvtermprop where type_id in (select cvterm_id from cvterm
+ where name = 'curs_key'))) as sub group by cv_name order by count;"
+
+ ) > $DUMP_DIR/logs/$log_file.annotation_counts_by_cv
 
 
 cp $LOG_DIR/*.txt $DUMP_DIR/logs/
