@@ -825,14 +825,11 @@ method process_one_cc($chado_object, $bioperl_feature, $qualifier,
   }
 
   if (!defined $cv_name) {
-    map {
-      my $long_name = $_;
-
-      if ($term =~ s/^$long_name, *//) {
-        my $short_cv_name = $self->objs()->{cv_long_names}->{$long_name};
-        $cv_name = $short_cv_name;
-      }
-    } keys %{$self->objs()->{cv_long_names}};
+    if ($term =~ /^(.*), /) {
+      my $maybe_cv_name = $1;
+      $cv_name = $self->objs()->{cv_long_names}->{$maybe_cv_name};
+      $term =~ s/^$maybe_cv_name, //;
+    }
   }
 
   my $chado_object_type = $chado_object->type()->name();
