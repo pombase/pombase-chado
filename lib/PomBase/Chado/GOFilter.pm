@@ -72,12 +72,12 @@ AND
 AND
   prop.type_id = prop_type.cvterm_id
 AND
-  prop.value in ('Inferred from Electronic Annotation',
-   'Inferred from Expression Pattern','Non-traceable Author Statement',
-   'inferred from Reviewed Computational Analysis',
-   'Traceable Author Statement', 'Inferred from Sequence Orthology',
-   'Inferred from Sequence or Structural Similarity',
-   'Inferred from Sequence Model', 'Inferred by Curator'
+  lower(prop.value) in ('inferred from electronic annotation',
+   'inferred from expression pattern','non-traceable author statement',
+   'inferred from reviewed computational analysis',
+   'traceable author statement', 'inferred from sequence orthology',
+   'inferred from sequence or structural similarity',
+   'inferred from sequence model', 'inferred by curator'
 )
 EOQ
 
