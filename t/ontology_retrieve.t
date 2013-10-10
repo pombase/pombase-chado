@@ -104,8 +104,34 @@ while (defined (my $data = $results2->next())) {
   }
 }
 
-is($parent_data[0], 'spindle pole body');
-is($parent_data[1], 'cellular_component');
-is($parent_data[2], 'GO');
-is($parent_data[3], '0005816');
+
+
+is(@parent_data, 0);
+
+my @options3 = ('--constraint-type', 'db_name',
+                '--constraint-value', 'PomBase',
+                '--retrieve-parent-terms', 'true');
+my $retriever3 = PomBase::Retrieve::Ontology->new(chado => $chado,
+                                                  config => $config,
+                                                  options => [@options3]);
+
+my $results3 = $retriever3->retrieve();
+
+my @parent_data3 = ();
+
+while (defined (my $data = $results3->next())) {
+  if ($data->[0] eq 'spindle pole body [has_substrate] interphase of mitotic cell cycle') {
+    is($data->[4], 'spindle pole body'); # parent
+    is($data->[5], 'GO');
+    is($data->[6], '0005816');
+  }
+  if ($data->[0] eq 'spindle pole body') {
+    @parent_data3 = @$data;
+  }
+}
+
+is($parent_data3[0], 'spindle pole body');
+is($parent_data3[1], 'cellular_component');
+is($parent_data3[2], 'GO');
+is($parent_data3[3], '0005816');
 

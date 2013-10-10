@@ -1,5 +1,0 @@
-PomBase Chado documentation
-
-* Build PomBase from scratch
-** Create and empty Chado DB
-   Run: =scripts/make-db=

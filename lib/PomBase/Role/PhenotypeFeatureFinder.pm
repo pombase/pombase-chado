@@ -2,7 +2,8 @@ package PomBase::Role::PhenotypeFeatureFinder;
 
 =head1 NAME
 
-PomBase::Role::PhenotypeFeatureFinder - Code for finding and creating allele
+PomBase::Role::PhenotypeFeatureFinder - Legacy code for finding and
+                                        creating alleles
 
 =head1 SYNOPSIS
 

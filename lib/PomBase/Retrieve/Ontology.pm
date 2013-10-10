@@ -53,7 +53,7 @@ has options => (is => 'ro', isa => 'ArrayRef');
 
 # if true return stanzas for parent terms of those terms that pass the
 # constraint_type filter, even if the parent doesn't pass the filter
-has retrieve_parent_terms => (is => 'rw', default => 0);
+has retrieve_parent_terms => (is => 'rw', default => 0, init_arg => undef);
 
 method BUILD
 {
@@ -63,9 +63,11 @@ method BUILD
 
   my $constraint_type = undef;
   my $constraint_value = undef;
+  my $retrieve_parent_terms = 0;
 
   my @opt_config = ('constraint-type=s' => \$constraint_type,
-                    'constraint-value=s' => \$constraint_value);
+                    'constraint-value=s' => \$constraint_value,
+                    'retrieve-parent-terms' => \$retrieve_parent_terms);
 
   my @options_copy = @{$self->options()};
 
@@ -76,6 +78,16 @@ method BUILD
   if (!defined $constraint_value) {
     die "no --constraint-value argument\n";
   }
+
+  if (lc $retrieve_parent_terms eq 'yes' ||
+      lc $retrieve_parent_terms eq 'true' ||
+      $retrieve_parent_terms) {
+    $retrieve_parent_terms = 1;
+  } else {
+    $retrieve_parent_terms = 0;
+  }
+
+  $self->retrieve_parent_terms($retrieve_parent_terms);
 
   my $name_constraint;
 

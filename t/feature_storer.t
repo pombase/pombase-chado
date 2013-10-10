@@ -33,8 +33,8 @@ my $gene_uniquename = 'test-gene';
 my $new_uniquename = $test->get_new_uniquename("$gene_uniquename.");
 is($new_uniquename, 'test-gene.1');
 
-my $feat1 = $test->store_feature("$gene_uniquename.1", 'test-name', [], 'gene');
-my $feat2 = $test->store_feature("$gene_uniquename.3", 'test-name', [], 'gene');
+my $feat1 = $test->store_feature("$gene_uniquename.1", 'test-name', [], 'gene', $organism);
+my $feat2 = $test->store_feature("$gene_uniquename.3", 'test-name', [], 'gene', $organism);
 
 $new_uniquename = $test->get_new_uniquename("$gene_uniquename.");
 is($new_uniquename, 'test-gene.4');

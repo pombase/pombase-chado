@@ -48,7 +48,6 @@ with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
-with 'PomBase::Role::ChadoObj';
 with 'PomBase::Role::CvtermRelationshipStorer';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::FeatureFinder';

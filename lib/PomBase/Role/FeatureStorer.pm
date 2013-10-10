@@ -42,13 +42,14 @@ use Carp::Assert;
 
 with 'PomBase::Role::Embl::StoreLocation';
 with 'PomBase::Role::CvQuery';
-with 'PomBase::Role::ChadoObj';
 
 method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
 {
   my $so_cvterm = $self->get_cvterm('sequence', $so_type);
 
-  die "not enough arguments for store_feature()" unless defined $organism;
+  use Carp qw(cluck);
+
+  cluck "not enough arguments for store_feature()" unless defined $organism;
 
   warn "  storing $uniquename/", ($name ? $name : 'no_name'),
     " ($so_type)\n" if $self->verbose();

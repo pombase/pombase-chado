@@ -40,7 +40,6 @@ use Moose;
 
 my %new_cvterm_ids = ();
 
-with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::DbQuery';
 

@@ -211,8 +211,7 @@ method BUILD
   }
 
   my $chado = $self->_make_test_db();
-  my $id_counter = PomBase::Chado::IdCounter->new(config => $config,
-                                                  chado => $chado);
+  my $id_counter = PomBase::Chado::IdCounter->new(chado => $chado);
   $config->{id_counter} = $id_counter;
 
   $self->chado($chado);

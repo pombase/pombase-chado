@@ -56,9 +56,6 @@ method store_location($feature, $chromosome, $strand, $start, $end, $phase)
     residue_info => undef,
   );
 
-#  warn "STORING LOCATION: ", $feature->uniquename(), " ", $feature->feature_id(),
-#    " ", $feature->type()->name(), " ", $feature->type_id(), " $start $end\n";
-
   $self->chado()->resultset('Sequence::Featureloc')->create({ %create_args });
 }
 

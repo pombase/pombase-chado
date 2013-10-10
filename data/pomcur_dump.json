@@ -1,7 +1,7 @@
 {
    "curation_sessions" : {
       "aaaa0006" : {
-         "annotation_status" : "CURATION_IN_PROGRESS",
+         "annotation_status" : "APPROVED",
          "annotations" : [
             {
                "creation_date" : "2010-01-02",
@@ -42,33 +42,10 @@
          "session_unknown_conditions_count" : "0"
       },
       "aaaa0007" : {
-         "annotation_status" : "CURATION_IN_PROGRESS",
+         "annotation_status" : "APPROVED",
          "annotations" : [
             {
-               "creation_date" : "2010-01-02",
-               "curator" : {
-                  "community_curated" : false,
-                  "email" : "some.testperson@pombase.org",
-                  "name" : "Some Testperson"
-               },
-               "evidence_code" : "IMP",
-               "genes" : {
-                  "Schizosaccharomyces pombe SPAC27D7.13c" : {
-                     "organism" : "Schizosaccharomyces pombe",
-                     "uniquename" : "SPAC27D7.13c"
-                  }
-               },
-               "publication" : "PMID:19756689",
-               "status" : "new",
-               "term" : "GO:0055085",
-               "term_suggestion" : {
-                  "definition" : "The process in which miscellaneous stuff is transported from one side of a membrane to the other.",
-                  "name" : "miscellaneous transmembrane transport"
-               },
-               "type" : "biological_process"
-            },
-            {
-               "annotation_extension" : "annotation_extension=exists_during(GO:0051329),annotation_extension=has_substrate(GeneDB_Spombe:SPBC1105.11c),annotation_extension=requires_feature(Pfam:PF00564),residue=T31,residue=T586(T586,X123),qualifier=NOT,condition=PECO:0000012,allele=SPAC9.02cdelta(deletion)|annotation_extension=exists_during(GO:0051329),has_substrate(GeneDB_Spombe:SPBC1105.11c)",
+               "annotation_extension" : "annotation_extension=exists_during(GO:0051329),annotation_extension=has_substrate(GeneDB_Spombe:SPAC2F7.03c),annotation_extension=requires_feature(Pfam:PF00564),residue=T31,residue=T586(T586,X123),qualifier=NOT,condition=PECO:0000012,allele=SPAC9.02cdelta(deletion)|annotation_extension=exists_during(GO:0051329),has_substrate(GeneDB_Spombe:SPBC2F12.13)",
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
@@ -147,8 +124,7 @@
                   }
                ],
                "conditions" : [
-                  "PECO:0000137",
-                  "rich medium"
+                  "PECO:0000137"
                ],
                "creation_date" : "2010-01-02",
                "curator" : {
@@ -205,6 +181,25 @@
                "status" : "new",
                "term" : "MOD:01157",
                "type" : "post_translational_modification"
+            },
+            {
+               "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : false,
+                  "email" : "some.testperson@pombase.org",
+                  "name" : "Some Testperson"
+               },
+               "evidence_code" : "IMP",
+               "genes" : {
+                  "Schizosaccharomyces pombe SPAC27D7.13c" : {
+                     "organism" : "Schizosaccharomyces pombe",
+                     "uniquename" : "SPAC27D7.13c"
+                  }
+               },
+               "publication" : "PMID:19756689",
+               "status" : "new",
+               "term" : "GO:0055085",
+               "type" : "biological_process"
             }
          ],
          "metadata" : {

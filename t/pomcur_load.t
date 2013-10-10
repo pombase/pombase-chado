@@ -19,14 +19,15 @@ is($feature_rs->count(), 19);
 
 
 my $importer =
-  PomBase::Import::PomCur->new(chado => $chado, config => $config);
+  PomBase::Import::PomCur->new(chado => $chado, config => $config,
+                               options => [qw(--organism-taxonid=4896 --db-prefix=PomBase)]);
 
 open my $fh, '<', "data/pomcur_dump.json" or die;
 $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 12);
+is($annotations->count(), 14);
 
 my $test_term_count = 0;
 
@@ -36,7 +37,7 @@ while (defined (my $fc = $annotations->next())) {
 
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1:allele-1' &&
       $fc->cvterm->name() eq
-      'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564') {
+      'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPAC2F7.03c [requires_feature] Pfam:PF00564') {
     $test_term_count++;
     cmp_deeply(\%prop_hash,
                {
@@ -47,7 +48,7 @@ while (defined (my $fc = $annotations->next())) {
                  'residue' => 'T586(T586,X123)',
                  'evidence' => 'Inferred from Physical Interaction',
                  'assigned_by' => 'PomBase',
-                 'with' => 'SPCC576.16c',
+                 'with' => 'PomBase:SPCC576.16c',
                  'condition' => 'PECO:0000012',
                  'curs_key' => 'aaaa0007',
                });
@@ -68,7 +69,7 @@ while (defined (my $fc = $annotations->next())) {
   }
 
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
-      $fc->cvterm()->name() eq 'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c') {
+      $fc->cvterm()->name() eq 'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC2F12.13') {
     $test_term_count++;
     cmp_deeply(\%prop_hash,
                {
@@ -78,7 +79,7 @@ while (defined (my $fc = $annotations->next())) {
                  'curator_name' => 'Some Testperson',
                  'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
-                 'with' => 'SPCC576.16c',
+                 'with' => 'PomBase:SPCC576.16c',
                  'curs_key' => 'aaaa0007',
                });
   }
