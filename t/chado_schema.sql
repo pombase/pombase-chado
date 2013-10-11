@@ -1,3 +1,5 @@
+-- This is a simplified Chado SQLite schema for testing.
+
 PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
 CREATE TABLE cv (
