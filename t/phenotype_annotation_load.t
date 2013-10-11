@@ -1,5 +1,5 @@
 use perl5i::2;
-use Test::More tests => 3;
+use Test::More tests => 7;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -16,8 +16,8 @@ my $importer =
                                             config => $config,
                                             options => [@options]);
 
-my $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 6);
+my $feature_cvterm_rs = $chado->resultset('Sequence::FeatureCvterm');
+is($feature_cvterm_rs->count(), 6);
 
 open my $fh, '<', "data/phenotype_annotation.tsv" or die;
 my $res;
@@ -32,36 +32,59 @@ if (length $err > 0) {
   like($err, qr/gene name from phenotype annotation file \("gene1"\) doesn't match the existing name \(""\) for SPAC2F7.03c/);
 }
 
-$annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 12);
+$feature_cvterm_rs = $chado->resultset('Sequence::FeatureCvterm');
+is($feature_cvterm_rs->count(), 13);
 
-while (defined (my $an = $annotations->next())) {
-  if ($an->feature()->uniquename() eq 'SPAC2F7.03c:allele-2') {
+my $found_SPAC2F7_03c_allele_2 = 0;
+
+while (defined (my $fc = $feature_cvterm_rs->next())) {
+  my $feature = $fc->feature();
+
+  if ($feature->uniquename() eq 'SPAC2F7.03c:allele-2') {
+    my $cvterm = $fc->cvterm();
+
+    $found_SPAC2F7_03c_allele_2 = 1;
+
+    is ($cvterm->name(), "T-shaped cells [has_expressivity] low [has_penetrance] high");
+
     my %prop_hash = ();
-    my @all_props = $an->feature_cvtermprops()->all();
+    my @all_props = $fc->feature_cvtermprops()->all();
     grep {
       push @{$prop_hash{$_->type()->name()}}, $_->value();
     } @all_props;
 
     cmp_deeply(\%prop_hash, {
-            'penetrance' => [
-              'FYPO_EXT:0000001'
-            ],
-            'expressivity' => [
-              'FYPO_EXT:0000003',
-            ],
             'date' => [
               '20130101'
             ],
             'evidence' => [
-              'reporter gene assay evidence'
+              'ECO:0000049'
             ],
             'condition' => [
               'PECO:0000005',
               'PECO:0000081'
             ],
     });
+
+    my $featureprop_rs = $feature->featureprops();
+
+    my %featureprops = ();
+    my @all_featureprops = $featureprop_rs->all();
+    grep {
+      push @{$featureprops{$_->type()->name()}}, $_->value();
+    } @all_featureprops;
+
+    cmp_deeply(\%featureprops, {
+      'allele_type' => [
+        'amino_acid_mutation'
+      ],
+      'description' => [
+        'A10T'
+      ],
+    });
   }
 }
+
+ok($found_SPAC2F7_03c_allele_2);
 
 close $fh;
