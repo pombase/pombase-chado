@@ -40,10 +40,22 @@ use Moose;
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 
+=head2 process
+
+ Usage   : my $filter = PomBase::Chado::GOFilter->new(config => $config,
+                                                      chado => $chado);
+           $filter->process();
+ Function: Remove redundant GO annotation by removing feature_cvterms where
+           there is a more specific annotation or an annotation with a better
+           evidence code.
+ Args    : $chado - a schema object of the Chado database
+ Return  : nothing, dies on error
+
+=cut
+
 method process()
 {
   my $chado = $self->chado();
-  my $config = $self->config();
 
   my $dbh = $chado->storage()->dbh();
 
