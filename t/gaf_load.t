@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -9,15 +9,26 @@ my $test_util = PomBase::TestUtil->new();
 my $chado = $test_util->chado();
 my $config = $test_util->config();
 
+$config->{systematic_id_re} = 'SP.[CP]\w+\d+\w+\d+c?.\d';
+$config->{organism_taxon_map} = {
+  284812 => 4896,
+};
+
 use PomBase::Import::GeneAssociationFile;
 
 my @options = ("--assigned-by-filter=UniProtKB,InterPro,IntAct,Reactome",
                "--remove-existing");
 
-my $importer =
-  PomBase::Import::GeneAssociationFile->new(chado => $chado,
-                                            config => $config,
-                                            options => [@options]);
+my $importer;
+
+my ($out, $err) = capture {
+  $importer =
+    PomBase::Import::GeneAssociationFile->new(chado => $chado,
+                                              config => $config,
+                                              options => [@options]);
+};
+
+is ($err, "no taxon filter - annotation will be loaded for all taxa\n");
 
 open my $fh, '<', "data/gene_association.goa.small" or die;
 my $deleted_counts = $importer->load($fh);
