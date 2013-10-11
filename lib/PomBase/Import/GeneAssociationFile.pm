@@ -282,6 +282,11 @@ method load($fh)
     map { s/\s+$//; s/^\s+//; } @synonyms;
 
     my $uniquename_re = $config->{systematic_id_re};
+
+    if (!defined $uniquename_re) {
+      die "systematic_id_re configuration variable not set\n";
+    }
+
     my $uniquename = undef;
 
     my $organism = $self->find_organism_by_taxonid($taxonid);
