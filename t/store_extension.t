@@ -84,6 +84,7 @@ check_SPAC2F7_03c();
 # extended term if we use it again
 
 $SPAC2F7_03c_spindle_fc->cvterm($spindle_cvterm);
+$SPAC2F7_03c_spindle_fc->update();
 
 check_SPAC2F7_03c();
 
