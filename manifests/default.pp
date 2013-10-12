@@ -44,6 +44,10 @@ class pombase {
   package { "bzip2":
     ensure => present,
   }
+
+  package { "libbio-perl-perl"
+    ensure => present,
+  }
 }
 
 include pombase
