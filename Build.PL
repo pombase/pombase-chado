@@ -10,7 +10,6 @@ my $builder = Module::Build->new(
     requires            => {
       perl                     => '5.12.0',
       'Bio::Chado::Schema'     => 0,
-      'Bio::EnsEMBL::Registry' => 0,
       'Bio::SeqIO'             => 0,
       'Carp::Assert'           => 0,
       'DBIx::Class'            => 0,
