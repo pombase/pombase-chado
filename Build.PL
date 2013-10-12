@@ -28,7 +28,7 @@ my $builder = Module::Build->new(
       'Tie::Hash::Indexed'     => 0,
       'YAML'                   => 0,
       'YAML::Any'              => 0,
-      'clone'                  => 0,
+      'Clone'                  => 0,
       'perl5i::2'              => 0,
     },
     build_requires => {
