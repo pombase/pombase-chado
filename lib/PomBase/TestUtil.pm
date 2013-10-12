@@ -187,7 +187,7 @@ method BUILD
 
   my @cvs_to_copy = ("PomBase allele types", "PSI-MOD_extension_relations");
 
-  my $config = LoadFile('load-chado.yaml');
+  my $config = LoadFile('load-pombase-chado.yaml');
   $self->config($config);
 
   for my $cv_to_copy (@cvs_to_copy) {
