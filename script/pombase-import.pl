@@ -18,7 +18,7 @@ if (!GetOptions("dry-run|d" => \$dry_run,
 my %input_types = (
   biogrid => 'PomBase::Import::BioGRID',
   gaf => 'PomBase::Import::GeneAssociationFile',
-  pomcur => 'PomBase::Import::PomCur',
+  canto => 'PomBase::Import::Canto',
   orthologs => 'PomBase::Import::Orthologs',
   quantitative => 'PomBase::Import::Quantitative',
   phenotype_annotation => 'PomBase::Import::PhenotypeAnnotation',
@@ -37,7 +37,7 @@ Six arguments are always required:
   import_type   - possibilities:
                     - "biogrid": interaction data in BioGRID BioTAB 2.0 format
                     - "gaf": GO gene association file format
-                    - "pomcur": curation data in curation tool YAML format
+                    - "canto": curation data in Canto YAML format
                     - "orthologs": a file of orthologs
   host          - the database server machine name
   database_name - the Chado database name
@@ -51,7 +51,7 @@ Options specific to an input type should come straight after the input_type
 argument.
 
 eg.
-  $0 config.yaml pomcur --organism-taxon=4896 --db-prefix=PomBase dbname user pass < in_file.json
+  $0 config.yaml canto --organism-taxon=4896 --db-prefix=PomBase dbname user pass < in_file.json
 
 The orthologs file should be tab delimited with two columns.  The
 first column should contain an identifier.  The second column should
@@ -66,7 +66,7 @@ and one optional argument:
                          the object of the feature_relationship,
                          rather than the subject
 
-The pomcur type has one mandatory argument:
+The canto type has two mandatory arguments:
   --organism-taxonid  - the NCBI taxon ID of the organism to load, which
                         must be stored in an organismprop in Chado with
                         the property type "taxon_id"

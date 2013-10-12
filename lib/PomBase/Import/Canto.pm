@@ -1,9 +1,9 @@
-package PomBase::Import::PomCur;
+package PomBase::Import::Canto;
 
 =head1 NAME
 
-PomBase::Import::PomCur - Load annotation from the community curation
-                          tool as JSON format dumps
+PomBase::Import::Canto - Load annotation from the community curation
+                         tool as JSON format dumps
 
 =head1 SYNOPSIS
 
@@ -19,7 +19,7 @@ Please report any bugs or feature requests to C<kmr44@cam.ac.uk>.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc PomBase::Import::PomCur
+    perldoc PomBase::Import::Canto
 
 =over 4
 
@@ -99,7 +99,7 @@ sub BUILD
   }
 
   if (!defined $organism_taxonid || length $organism_taxonid == 0) {
-    die "no --organism passed to the PomCur loader\n";
+    die "no --organism passed to the Canto loader\n";
   }
 
   my $organism = $self->find_organism_by_taxonid($organism_taxonid);
@@ -111,7 +111,7 @@ sub BUILD
   $self->organism($organism);
 
   if (!defined $db_prefix) {
-    die "no --db-prefix passed to the PomCur loader\n";
+    die "no --db-prefix passed to the Canto loader\n";
   }
 
   $self->db_prefix($db_prefix);
@@ -626,8 +626,8 @@ method load($fh)
     $json_text = <$fh>;
   }
 
-  my $pomcur_data = decode_json($json_text);
-  my %curation_sessions = %{$pomcur_data->{curation_sessions}};
+  my $canto_data = decode_json($json_text);
+  my %curation_sessions = %{$canto_data->{curation_sessions}};
 
   for my $curs_key (keys %curation_sessions) {
     my %session_data = %{$curation_sessions{$curs_key}};

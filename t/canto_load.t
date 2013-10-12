@@ -9,7 +9,7 @@ my $test_util = PomBase::TestUtil->new();
 my $chado = $test_util->chado();
 my $config = $test_util->config();
 
-use PomBase::Import::PomCur;
+use PomBase::Import::Canto;
 
 my $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 6);
@@ -19,10 +19,10 @@ is($feature_rs->count(), 19);
 
 
 my $importer =
-  PomBase::Import::PomCur->new(chado => $chado, config => $config,
-                               options => [qw(--organism-taxonid=4896 --db-prefix=PomBase)]);
+  PomBase::Import::Canto->new(chado => $chado, config => $config,
+                              options => [qw(--organism-taxonid=4896 --db-prefix=PomBase)]);
 
-open my $fh, '<', "data/pomcur_dump.json" or die;
+open my $fh, '<', "data/canto_dump.json" or die;
 $importer->load($fh);
 close $fh;
 
