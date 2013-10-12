@@ -15,9 +15,24 @@ if (!GetOptions("dry-run|d" => \$dry_run,
   usage();
 }
 
+my %input_types = (
+  biogrid => 'PomBase::Import::BioGRID',
+  gaf => 'PomBase::Import::GeneAssociationFile',
+  pomcur => 'PomBase::Import::PomCur',
+  orthologs => 'PomBase::Import::Orthologs',
+  quantitative => 'PomBase::Import::Quantitative',
+  phenotype_annotation => 'PomBase::Import::PhenotypeAnnotation',
+);
+
 sub usage
 {
-  die qq($0: needs six arguments:
+  my $input_type_names = join "\n", map { "  $_" } keys %input_types;
+
+  die qq(
+usage:
+  $0 <args> < input_file
+
+Six arguments are always required:
   config_file   - the YAML format configuration file name
   import_type   - possibilities:
                     - "biogrid": interaction data in BioGRID BioTAB 2.0 format
@@ -28,6 +43,15 @@ sub usage
   database_name - the Chado database name
   username      - the database user name
   password      - the database password
+
+Possible values for input_type are:
+$input_type_names
+
+Options specific to an input type should come straight after the input_type
+argument.
+
+eg.
+  $0 config.yaml pomcur --organism-taxon=4896 --db-prefix=PomBase dbname user pass < in_file.json
 
 The orthologs file should be tab delimited with two columns.  The
 first column should contain an identifier.  The second column should
@@ -48,9 +72,6 @@ The pomcur type has one mandatory argument:
                         the property type "taxon_id"
   --db-prefix         - the prefix to use when a gene identifier is stored
                         in a Chado property (eg. the "with" field of an IPI)
-
-usage:
-  $0 <args> < input_file
 );
 
 }
@@ -90,16 +111,7 @@ my $id_counter = PomBase::Chado::IdCounter->new(config => $config,
                                                 chado => $chado);
 $config->{id_counter} = $id_counter;
 
-my %import_modules = (
-  biogrid => 'PomBase::Import::BioGRID',
-  gaf => 'PomBase::Import::GeneAssociationFile',
-  pomcur => 'PomBase::Import::PomCur',
-  orthologs => 'PomBase::Import::Orthologs',
-  quantitative => 'PomBase::Import::Quantitative',
-  phenotype_annotation => 'PomBase::Import::PhenotypeAnnotation',
-);
-
-my $import_module = $import_modules{$import_type};
+my $import_module = $input_types{$import_type};
 my $importer;
 
 if (defined $import_module) {
