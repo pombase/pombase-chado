@@ -72,9 +72,6 @@ $ex_processor = PomBase::Chado::ExtensionProcessor->new(verbose => 0, chado => $
 sub check_SPAC2F7_03c {
   my $new_cvterm_after_prop_delete = $ex_processor->store_extension($SPAC2F7_03c_spindle_fc, $extensions);
   my $new_cvterm_after_delete_prop_rs = $new_cvterm_after_prop_delete->cvtermprops();
-  while (defined (my $prop = $new_cvterm_after_delete_prop_rs->next())) {
-    warn $prop->type()->name(), ' ', $prop->value(), "\n";
-  }
   is ($new_cvterm_after_delete_prop_rs->count(), 1);
 }
 
