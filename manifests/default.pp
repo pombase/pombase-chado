@@ -45,7 +45,7 @@ class pombase {
     ensure => present,
   }
 
-  package { "libbio-perl-perl"
+  package { "libbio-perl-perl":
     ensure => present,
   }
 }
