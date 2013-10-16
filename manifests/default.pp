@@ -48,6 +48,10 @@ class pombase {
   package { "libbio-perl-perl":
     ensure => present,
   }
+
+  package { "liblocal-lib-perl":
+    ensure => present,
+  }
 }
 
 include pombase
