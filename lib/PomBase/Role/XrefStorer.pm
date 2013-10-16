@@ -38,7 +38,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-with 'PomBase::Role::ChadoUser';
+requires 'chado';
 
 method find_or_create_dbxref($db, $accession) {
   my $dbxref_rs = $self->chado()->resultset('General::Dbxref');

@@ -43,6 +43,8 @@ use Carp::Assert;
 with 'PomBase::Role::Embl::StoreLocation';
 with 'PomBase::Role::CvQuery';
 
+requires 'find_or_create_pub';
+
 method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
 {
   my $so_cvterm = $self->get_cvterm('sequence', $so_type);
@@ -92,7 +94,7 @@ method store_feature_synonym($feature, $synonym_name, $type, $is_current)
 
   my $synonym = $self->find_or_create_synonym($synonym_name, $type);
 
-  my $pub = $self->objs()->{null_pub};
+  my $pub = $self->find_or_create_pub('null');
 
   warn "   creating synonym for ", $feature->uniquename(), " - $synonym_name, type: $type\n"
     if $self->verbose();
