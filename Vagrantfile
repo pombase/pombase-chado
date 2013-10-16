@@ -4,7 +4,7 @@ $pombase_script = <<SCRIPT
 if [ ! -d root-pombase ]
 then
   git clone /vagrant root-pombase
-  (cd root-pombase; perl Makefile.PL < /dev/null; make)
+  (cd root-pombase; perl Build.PL < /dev/null; ./Build installdeps < /dev/null)
 fi
 
 if [ ! -d pombase ]
