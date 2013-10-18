@@ -13,6 +13,7 @@ package TestStorer;
 use Moose;
 
 extends 'PomBase::TestBase';
+with 'PomBase::Role::XrefStorer';
 
 has organism => (is => 'rw');
 
