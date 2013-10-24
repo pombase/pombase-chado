@@ -87,8 +87,7 @@ AND
   lower(prop.value) in ('inferred from electronic annotation',
    'inferred from expression pattern','non-traceable author statement',
    'inferred from reviewed computational analysis',
-   'traceable author statement', 'inferred from sequence orthology',
-   'inferred from sequence or structural similarity',
+   'traceable author statement',
    'inferred from sequence model', 'inferred by curator'
 )
 EOQ
