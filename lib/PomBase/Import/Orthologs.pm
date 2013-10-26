@@ -149,7 +149,7 @@ method load($fh)
   my $null_pub = $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
 
   ROW: while (my $columns_ref = $csv->getline_hr($fh)) {
-    my $org1_identifier = $columns_ref->{"org1_identifier"};
+    my $org1_identifier = $columns_ref->{"org1_identifier"}->trim();
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
 
     if (!defined $org1_identifier || !defined $org2_identifiers) {
@@ -157,7 +157,7 @@ method load($fh)
       next;
     }
 
-    my @org2_identifiers = split (',', $org2_identifiers);
+    my @org2_identifiers = map { $_->trim(); } split (',', $org2_identifiers);
 
     my $org1_feature;
     eval {
