@@ -418,7 +418,7 @@ method _store_ontology_annotation
         }
       }
 
-      my @props_to_store = qw(col17 residue qualifier condition);
+      my @props_to_store = qw(col17 column_17 residue qualifier condition);
 
       for my $prop_name (@props_to_store) {
         if (defined (my $prop_vals = delete $by_type{$prop_name})) {
@@ -427,6 +427,10 @@ method _store_ontology_annotation
 
             if ($prop_name eq 'condition') {
               $prop_val = $self->_get_real_termid($prop_val);
+            } else {
+              if ($prop_name eq 'col17' || $prop_name eq 'column_17') {
+                $prop_name = 'gene_product_form_id';
+              }
             }
 
             $self->add_feature_cvtermprop($feature_cvterm,
