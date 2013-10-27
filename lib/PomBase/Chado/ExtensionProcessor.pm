@@ -107,9 +107,8 @@ method store_extension($feature_cvterm, $extensions)
   my $gene_ex_extension_relations_cv_name = 'gene_ex_extension_relations';
 
   my @rel_cv_names =
-    ($relationship_cv_name,
+    ($psi_mod_relationship_cv_name, $relationship_cv_name,
      $go_relationship_cv_name, $phenotype_relationship_cv_name,
-     $psi_mod_relationship_cv_name,
      $gene_ex_extension_relations_cv_name);
 
   my $relation_transforms =
