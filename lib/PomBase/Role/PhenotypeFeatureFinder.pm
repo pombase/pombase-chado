@@ -283,7 +283,7 @@ method get_allele($allele_data)
                            ->search_related('subject');
 
     if (defined $new_allele_name) {
-      $existing_rs = $existing_rs->search({ name => $new_allele_name });
+      $existing_rs = $existing_rs->search({ 'LOWER(name)' => lc $new_allele_name });
 
       if ($existing_rs->count() > 1) {
         die 'database inconsistency - there exists more than one allele feature ' .
@@ -293,6 +293,14 @@ method get_allele($allele_data)
       my $existing_allele = $existing_rs->first();
 
       if (defined $existing_allele) {
+        my $existing_name = $existing_allele->name();
+        if ($existing_name ne $new_allele_name) {
+          # the should differ only in case
+          die 'database inconsistency - trying to store an allele ' .
+            qq(with the name "$new_allele_name" but the name exists with different ) .
+            qq(case: "$existing_name"\n);
+        }
+
         my ($existing_description, $existing_description_prop) = _get_allele_description($existing_allele);
 
         if ($existing_allele->name() eq $new_allele_name) {
