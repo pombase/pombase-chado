@@ -47,6 +47,9 @@ with 'PomBase::Role::DbQuery';
 method get_dbxref_id($db_name) {
   if (!exists $new_cvterm_ids{$db_name}) {
     my $db = $self->chado()->resultset('General::Db')->find({ name => $db_name });
+    if (!defined $db) {
+      die "can't find DB: $db_name\n";
+    }
     my $rs = $self->chado()->resultset('General::Dbxref')->search({ db_id => $db->db_id(),
                                                                   accession => { like => '0______' }},
                                                                   { order_by => { -desc => 'accession' }});
