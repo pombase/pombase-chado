@@ -295,10 +295,18 @@ method get_allele($allele_data)
       if (defined $existing_allele) {
         my $existing_name = $existing_allele->name();
         if ($existing_name ne $new_allele_name) {
+          my $props_rs = $existing_allele->search_featureprops('canto_session');
+          my $prop = $props_rs->first();
+          my $session_details = "";
+
+          if (defined $prop) {
+            $session_details = " (from session " . $prop->value() . ")";
+          }
+
           # the should differ only in case
           die 'database inconsistency - trying to store an allele ' .
             qq(with the name "$new_allele_name" but the name exists with different ) .
-            qq(case: "$existing_name"\n);
+            qq(case: "$existing_name"$session_details\n);
         }
 
         my ($existing_description, $existing_description_prop) =
