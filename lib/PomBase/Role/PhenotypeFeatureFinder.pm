@@ -287,7 +287,7 @@ method get_allele($allele_data)
 
       if ($existing_rs->count() > 1) {
         die 'database inconsistency - there exists more than one allele feature ' .
-        'with the name "' . $new_allele_name . '"' . "\n";
+          'with the name "' . $new_allele_name . '"' . "\n";
       }
 
       my $existing_allele = $existing_rs->first();
@@ -301,7 +301,8 @@ method get_allele($allele_data)
             qq(case: "$existing_name"\n);
         }
 
-        my ($existing_description, $existing_description_prop) = _get_allele_description($existing_allele);
+        my ($existing_description, $existing_description_prop) =
+          _get_allele_description($existing_allele);
 
         if ($existing_allele->name() eq $new_allele_name) {
           if (defined $existing_description && defined $new_allele_description &&
@@ -321,7 +322,8 @@ method get_allele($allele_data)
                 $existing_description_prop->value($new_allele_description);
                 $existing_description_prop->update();
               } else {
-                $self->store_featureprop($existing_allele, 'description', $new_allele_description);
+                $self->store_featureprop($existing_allele, 'description',
+                                         $new_allele_description);
               }
               return $existing_allele;
             }
@@ -339,7 +341,8 @@ method get_allele($allele_data)
         # we can have multiple alleles with no name and the description "unknown"
       } else {
         while (defined (my $existing_allele = $existing_rs->next())) {
-          my ($existing_description, $existing_description_prop) = _get_allele_description($existing_allele);
+          my ($existing_description, $existing_description_prop) =
+            _get_allele_description($existing_allele);
 
           if ($new_allele_description eq $existing_description) {
             return $existing_allele;
