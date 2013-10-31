@@ -25,7 +25,7 @@
          ],
          "metadata" : {
             "curation_pub_id" : "PMID:18426916",
-            "curs_key" : "aaaa0006",
+            "canto_session" : "aaaa0006",
             "term_suggestion_count" : "0",
             "unknown_conditions_count" : "0"
          },
@@ -204,7 +204,7 @@
          ],
          "metadata" : {
             "curation_pub_id" : "PMID:19756689",
-            "curs_key" : "aaaa0007",
+            "canto_session" : "aaaa0007",
             "term_suggestion_count" : "1",
             "unknown_conditions_count" : "1"
          },

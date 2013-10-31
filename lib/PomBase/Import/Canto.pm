@@ -129,7 +129,7 @@ method _store_interaction_annotation
   my $gene_uniquename = $args{gene_uniquename};
   my $curator = $args{curator};
   my $feature_a = $args{feature};
-  my $curs_key = $args{curs_key};
+  my $canto_session = $args{canto_session};
 
   my $organism = $feature_a->organism();
 
@@ -149,7 +149,7 @@ method _store_interaction_annotation
         pub => $publication,
         creation_date => $creation_date,
         curator => $curator,
-        curs_key => $curs_key,
+        canto_session => $canto_session,
       );
     }
   };
@@ -245,7 +245,7 @@ method _store_ontology_annotation
   my $curator = $args{curator};
   my $approved_timestamp = $args{approved_timestamp};
   my $approver_email = $args{approver_email};
-  my $curs_key = $args{curs_key};
+  my $canto_session = $args{canto_session};
 
   if (defined $extension_text && $extension_text =~ /\|/) {
     die qq(not loading annotation with '|' in extension: "$extension_text"\n);
@@ -342,7 +342,7 @@ method _store_ontology_annotation
     $self->add_feature_cvtermprop($feature_cvterm,
                                   community_curated => $curator->{community_curated});
     $self->add_feature_cvtermprop($feature_cvterm,
-                                  curs_key => $curs_key);
+                                  canto_session => $canto_session);
     if (defined $approved_timestamp) {
       $self->add_feature_cvtermprop($feature_cvterm,
                                     approved_timestamp => $approved_timestamp);
@@ -479,7 +479,7 @@ method _process_feature
   my $annotation = clone(shift);
   my $session_metadata = shift;
   my $feature = shift;
-  my $curs_key = shift;
+  my $canto_session = shift;
 
   my $annotation_type = delete $annotation->{type};
   my $creation_date = delete $annotation->{creation_date};
@@ -556,7 +556,7 @@ method _process_feature
                                       conditions => $conditions,
                                       with_gene => $with_gene,
                                       extension_text => $extension_text,
-                                      curs_key => $curs_key,
+                                      canto_session => $canto_session,
                                       curator => $curator,
                                       %useful_session_data);
   } else {
@@ -569,7 +569,7 @@ method _process_feature
                                              publication => $publication,
                                              long_evidence => $long_evidence,
                                              feature => $feature,
-                                             curs_key => $curs_key,
+                                             canto_session => $canto_session,
                                              curator => $curator,
                                              %useful_session_data);
       } else {
@@ -582,7 +582,7 @@ method _process_feature
 
 }
 
-method _process_annotation($annotation, $session_metadata, $curs_key)
+method _process_annotation($annotation, $session_metadata, $canto_session)
 {
   my $status = delete $annotation->{status};
 
@@ -606,7 +606,7 @@ method _process_annotation($annotation, $session_metadata, $curs_key)
       } else {
         $feature = $self->get_transcript($gene_data);
       }
-      $self->_process_feature($annotation, $session_metadata, $feature, $curs_key);
+      $self->_process_feature($annotation, $session_metadata, $feature, $canto_session);
     }
   }
 
@@ -614,7 +614,7 @@ method _process_annotation($annotation, $session_metadata, $curs_key)
   if (defined $alleles) {
     for my $allele_data (@$alleles) {
       my $allele = $self->get_allele($allele_data);
-      $self->_process_feature($annotation, $session_metadata, $allele, $curs_key);
+      $self->_process_feature($annotation, $session_metadata, $allele, $canto_session);
     }
   }
 }
@@ -633,18 +633,18 @@ method load($fh)
   my $canto_data = decode_json($json_text);
   my %curation_sessions = %{$canto_data->{curation_sessions}};
 
-  for my $curs_key (keys %curation_sessions) {
-    my %session_data = %{$curation_sessions{$curs_key}};
+  for my $canto_session (keys %curation_sessions) {
+    my %session_data = %{$curation_sessions{$canto_session}};
 
     my @annotations = @{$session_data{annotations}};
 
-    my $error_prefix = "error in $curs_key: ";
+    my $error_prefix = "error in $canto_session: ";
 
     try {
       @annotations = map { $self->_split_vert_bar($_); } @annotations;
 
       for my $annotation (@annotations) {
-        $self->_process_annotation($annotation, $session_data{metadata}, $curs_key);
+        $self->_process_annotation($annotation, $session_data{metadata}, $canto_session);
       }
     } catch {
       (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;

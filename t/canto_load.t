@@ -50,7 +50,7 @@ while (defined (my $fc = $annotations->next())) {
                  'assigned_by' => 'PomBase',
                  'with' => 'PomBase:SPCC576.16c',
                  'condition' => 'PECO:0000012',
-                 'curs_key' => 'aaaa0007',
+                 'canto_session' => 'aaaa0007',
                });
   }
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
@@ -64,7 +64,7 @@ while (defined (my $fc = $annotations->next())) {
                  'curator_name' => 'Some Testperson',
                  'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
-                 'curs_key' => 'aaaa0007',
+                 'canto_session' => 'aaaa0007',
                });
   }
 
@@ -80,7 +80,7 @@ while (defined (my $fc = $annotations->next())) {
                  'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
                  'with' => 'PomBase:SPCC576.16c',
-                 'curs_key' => 'aaaa0007',
+                 'canto_session' => 'aaaa0007',
                });
   }
 }

@@ -73,7 +73,7 @@ method store_interaction()
   my $curator = $args{curator};
   my $approver_email = $args{approver_email};
   my $approved_timestamp = $args{approved_timestamp};
-  my $curs_key = $args{curs_key};
+  my $canto_session = $args{canto_session};
   my $notes = $args{notes} // [];
   my @notes = @$notes;
 
@@ -106,8 +106,8 @@ method store_interaction()
   if (defined $approver_email) {
     $self->store_feature_relationshipprop($rel, approver_email => $approver_email);
   }
-  if (defined $curs_key) {
-    $self->store_feature_relationshipprop($rel, curs_key => $curs_key);
+  if (defined $canto_session) {
+    $self->store_feature_relationshipprop($rel, canto_session => $canto_session);
   }
   if (@notes) {
     for my $note (@notes) {

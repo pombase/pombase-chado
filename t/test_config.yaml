@@ -258,7 +258,7 @@ data:
             accession: 01000003
             db:
               name: PomBase
-        - name: curs_key
+        - name: canto_session
           dbxref:
             accession: 01000004
             db:
@@ -280,7 +280,7 @@ data:
             accession: 011000003
             db:
               name: PomBase
-        - name: curs_key
+        - name: canto_session
           dbxref:
             accession: 011000005
             db:
