@@ -38,7 +38,15 @@ my $password = shift;
 use PomBase::Chado;
 my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
+if (! -e $config_file) {
+  die "can't load config from $config_file: file not found\n";
+}
+
 my $config = LoadFile($config_file);
+
+if (!defined $config) {
+  die "can't load config from $config_file: file is empty\n";
+}
 
 my %retrieve_modules = (
   phenotypes => 'PomBase::Retrieve::Phenotypes',
