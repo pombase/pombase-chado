@@ -76,9 +76,25 @@ sub BUILDARGS
 method retrieve() {
   my $chado = $self->chado();
 
-  my $other_organism = $self->find_organism_by_taxonid($self->other_organism_taxonid());
+  my $taxon_id = $self->other_organism_taxonid();
+
+  my $other_organism = $self->find_organism_by_taxonid($taxon_id);
+
+  if (!defined $other_organism) {
+    die "can't organism with taxon ID $taxon_id in the database\n";
+  }
 
   my $dbh = $self->chado()->storage()->dbh();
+
+  my $transposon_temp = "
+CREATE TEMP TABLE transposons_temp AS
+SELECT fc.feature_id
+FROM feature_cvterm fc
+  JOIN cvterm t ON fc.cvterm_id = t.cvterm_id
+  JOIN cv ON t.cv_id = cv.cv_id
+WHERE cv.name = 'PomBase gene characterisation status'
+  AND t.name = 'transposon'";
+
 
   my $protein_temp = "
 CREATE TEMP TABLE protein_coding_genes AS
@@ -89,7 +105,9 @@ WHERE r.subject_id = s.feature_id
   AND r.type_id = rt.cvterm_id
   AND s.type_id = st.cvterm_id
   AND st.name = 'mRNA'
-  AND s.organism_id = ?;";
+  AND s.organism_id = ?
+  AND r.subject_id NOT IN (select feature_id from transposons_temp)
+  AND r.object_id NOT IN (select feature_id from transposons_temp);";
 
   my $ortholog_temp = "
 CREATE TEMP TABLE ortholog_list AS
@@ -118,7 +136,11 @@ SELECT o_un, string_agg(CASE WHEN s_name IS NULL THEN 'NONE' ELSE s_name END, '|
  ORDER BY o_un";
 
   my $it = do {
-    my $sth = $dbh->prepare($protein_temp);
+    my $sth = $dbh->prepare($transposon_temp);
+    $sth->execute()
+      or die "Couldn't execute: " . $sth->errstr;
+
+    $sth = $dbh->prepare($protein_temp);
     $sth->execute($self->organism()->organism_id())
       or die "Couldn't execute: " . $sth->errstr;
 
