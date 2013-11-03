@@ -54,7 +54,8 @@ sub db_connect
   my ($host, $database, $username, $password) = @_;
   return Bio::Chado::Schema->connect("dbi:Pg:database=$database;host=$host",
                                      $username, $password,
-                                     { auto_savepoint => 1 });
+                                     { auto_savepoint => 1,
+                                       pg_enable_utf8 => 1 });
 }
 
 =head2 id_of_cvterm
