@@ -191,7 +191,7 @@ method store_featureprop($feature, $type_name, $value)
 {
   state $ranks = {};
 
-  assert (defined $value);
+  assert (defined $value, "no value passed to store_featureprop()");
 
   my $rank;
 
