@@ -222,6 +222,18 @@ method make_allele_data($name, $description, $gene_feature) {
   return \%ret;
 }
 
+method _get_allele_session($allele)
+{
+  my $props_rs = $allele->search_featureprops('canto_session');
+  my $prop = $props_rs->first();
+
+  if (defined $prop) {
+    return $prop->value();
+  } else {
+    return undef;
+  }
+}
+
 =head2 get_allele
 
  Usage   : with 'PomBase::Role::PhenotypeFeatureFinder';
@@ -295,16 +307,15 @@ method get_allele($allele_data)
       if (defined $existing_allele) {
         my $existing_name = $existing_allele->name();
         if ($existing_name ne $new_allele_name) {
-          my $props_rs = $existing_allele->search_featureprops('canto_session');
-          my $prop = $props_rs->first();
+          my $canto_session = $self->_get_allele_session($existing_allele);
           my $session_details = "";
 
-          if (defined $prop) {
-            $session_details = " (from session " . $prop->value() . ")";
+          if (defined $canto_session) {
+            $session_details = " (from session $canto_session)";
           }
 
           # the should differ only in case
-          die 'database inconsistency - trying to store an allele ' .
+          die 'trying to store an allele ' .
             qq(with the name "$new_allele_name" but the name exists with different ) .
             qq(case: "$existing_name"$session_details\n);
         }
@@ -336,10 +347,18 @@ method get_allele($allele_data)
               return $existing_allele;
             }
 
+            my $canto_session = $self->_get_allele_session($existing_allele);
+            my $session_details = "";
+
+            if (defined $canto_session) {
+              $session_details = " (from session $canto_session)";
+            }
+
             die 'description for new allele "' . $new_allele_name . '(' .
               ($new_allele_description  // 'undefined') . ')" does not ' .
               'match the existing allele with the same name "' .
-              $new_allele_name . '(' . ($existing_description // 'undefined') . ')"' . "\n";
+              $new_allele_name . '(' . ($existing_description // 'undefined') . ')"' .
+              "$session_details\n";
           }
         }
       }
@@ -369,6 +388,12 @@ method get_allele($allele_data)
 
     if (defined $new_allele_description) {
       $self->store_featureprop($allele, 'description', $new_allele_description);
+    }
+
+    my $canto_session = $allele_data->{canto_session};
+
+    if (defined $canto_session) {
+      $self->store_featureprop($allele, 'canto_session', $canto_session);
     }
 
     my $allele_type = $allele_data->{allele_type};

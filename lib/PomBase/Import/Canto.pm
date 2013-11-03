@@ -282,6 +282,8 @@ method _store_ontology_annotation
       my @processed_allele_quals = map {
         my $res = $self->make_allele_data_from_display_name($feature, $_, \$expression);
 
+        $res->{canto_session} = $canto_session;
+
         my $allele_type_list = delete $by_type{allele_type};
 
         if ($allele_type_list) {
@@ -613,6 +615,7 @@ method _process_annotation($annotation, $session_metadata, $canto_session)
   my $alleles = delete $annotation->{alleles};
   if (defined $alleles) {
     for my $allele_data (@$alleles) {
+      $allele_data->{canto_session} = $canto_session;
       my $allele = $self->get_allele($allele_data);
       $self->_process_feature($annotation, $session_metadata, $allele, $canto_session);
     }
