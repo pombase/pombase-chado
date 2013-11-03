@@ -99,7 +99,7 @@ sub BUILD
   }
 
   if (!defined $organism_taxonid || length $organism_taxonid == 0) {
-    die "no --organism passed to the Canto loader\n";
+    die "no --organism-taxonid passed to the Canto loader\n";
   }
 
   my $organism = $self->find_organism_by_taxonid($organism_taxonid);
