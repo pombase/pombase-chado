@@ -1,5 +1,8 @@
 #!/usr/bin/perl -w
 
+# driver for code that processes or fixes data in Chado, without needing
+# external files
+
 use perl5i::2;
 use Moose;
 
@@ -21,6 +24,8 @@ sub usage
   config_file   - the YAML format configuration file name
   process_type  - possibilities:
                     - "go-filter": filter redundant GO annotations
+                    - "update-allele-names": change "SPAC1234c.12delta" to
+                        "abcdelta" if the gene now has a name
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
@@ -62,6 +67,7 @@ my $config = LoadFile($config_file);
 
 my %process_modules = (
   'go-filter' => 'PomBase::Chado::GOFilter',
+  'update-allele-names' => 'PomBase::Chado::UpdateAlleleNames',
 );
 
 my $process_module = $process_modules{$process_type};
