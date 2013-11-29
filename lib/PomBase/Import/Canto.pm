@@ -258,7 +258,13 @@ method _store_ontology_annotation
     my $cvterm = $self->find_cvterm_by_term_id($termid);
 
     if (!defined $cvterm) {
-      die "can't load annotation, $termid not found in database\n";
+      my $obsolete_cvterm = $self->find_cvterm_by_term_id($fypo_id, { include_obsolete => 1 });
+      if (defined $obsolete_cvterm) {
+        warn "can't load annotation, $fypo_id is an obsolete term\n";
+      } else {
+        warn "can't load annotation, $fypo_id not found in database\n";
+      }
+      return;
     }
 
     my $term_name = $cvterm->name();
