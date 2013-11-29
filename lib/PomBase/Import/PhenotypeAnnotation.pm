@@ -170,7 +170,12 @@ method load($fh)
       };
 
       if (!defined $cvterm) {
-        warn "can't load annotation, $fypo_id not found in database at line ", $fh->input_line_number(), "\n";
+        my $obsolete_cvterm = $self->find_cvterm_by_term_id($fypo_id, { include_obsolete => 1 });
+        if (defined $obsolete_cvterm) {
+          warn "can't load annotation, $fypo_id is an obsolete term, at line ", $fh->input_line_number(), "\n";
+        } else {
+          warn "can't load annotation, $fypo_id not found in database, at line ", $fh->input_line_number(), "\n";
+        }
         return;
       }
 
