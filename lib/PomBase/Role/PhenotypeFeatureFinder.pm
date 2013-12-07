@@ -399,10 +399,12 @@ method get_allele($allele_data)
     my $allele_type = $allele_data->{allele_type};
 
     if (defined $allele_type && length $allele_type > 0) {
-      if (!exists $self->allele_types()->{$allele_type}) {
+      (my $no_spaces_allele_type = $allele_type) =~ s/\s+/_/g;
+
+      if (!exists $self->allele_types()->{$no_spaces_allele_type}) {
         die "no such allele type: $allele_type\n";
       }
-      $self->store_featureprop($allele, allele_type => $allele_type);
+      $self->store_featureprop($allele, allele_type => $no_spaces_allele_type);
     } else {
       die "no allele_type for: $new_uniquename\n";
     }
