@@ -320,7 +320,7 @@ method retrieve() {
         my $id = $dbxref->db()->name() . ':' . $dbxref->accession();
         my $evidence = _safe_join('|', $row_fc_props{evidence});
         if (!defined $evidence || length $evidence == 0) {
-          warn "no evidence for $fc_id\n";
+          warn "no evidence for ", $feature->uniquename(), " <-> ", $cvterm->name() , "\n";
           goto ROW;
         }
         my $evidence_code = $self->evidence_to_code()->{$evidence};
