@@ -222,10 +222,14 @@ method retrieve() {
         my $evidence = _safe_join('|', $row_fc_props{evidence});
         my $evidence_code;
         if (defined $evidence && length $evidence > 0) {
-          $evidence_code = $self->evidence_to_code()->{$evidence};
-          if (!defined $evidence_code) {
-            warn qq|cannot find the evidence code for "$evidence"|;
-            goto ROW;
+          if (defined $self->config()->{evidence_types}->{$evidence}) {
+            $evidence_code = $evidence;
+          } else {
+            $evidence_code = $self->evidence_to_code()->{$evidence};
+            if (!defined $evidence_code) {
+              warn qq|cannot find the evidence code for "$evidence"|;
+              goto ROW;
+            }
           }
         } else {
           warn "no evidence for ", $feature->uniquename(), " <-> ", $cvterm->name() , "\n";
