@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 1;
+use Test::More tests => 3;
 
 use PomBase::TestUtil;
 use PomBase::Retrieve::PhenotypeAnnotationFormat;
@@ -20,9 +20,28 @@ my $results = $exporter->retrieve();
 ok(defined $results);
 
 while (my $data = $results->next()) {
-  use Data::Dumper;
-$Data::Dumper::Maxdepth = 3;
-warn Dumper([$data]);
-
-  warn $exporter->format_result($data), "\n";
+  is($exporter->format_result($data),
+     join ("\t",
+           (
+             'SPAC27D7.13c',
+             'FYPO:0000017',
+             'SPAC27D7.13c',
+             '',
+             '',
+             '972 h-',
+             'not available',
+             'not available',
+             'SPAC27D7.13c',
+             '',
+             '',
+             'nucleotide_mutation',
+             'Co-immunoprecipitation experiment',
+             'PECO:0000005',
+             'FYPO_EXT:0000001',
+             '',
+             '',
+             'PMID:11739790',
+             4896,
+             '20091020'
+           )));
 }
