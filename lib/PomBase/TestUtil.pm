@@ -148,14 +148,16 @@ method _load_test_features($chado)
   my $gene_type = $self->get_cvterm('sequence', 'gene');
   my $mrna_type = $self->get_cvterm('sequence', 'mRNA');
   my $allele_type = $self->get_cvterm('sequence', 'allele');
+  my $instance_of_cvterm = $self->get_cvterm('relationship', 'instance_of');
 
   for my $gene_data (@{$self->test_config()->{test_genes}}) {
     my $organism = $orgs_by_taxon{$gene_data->{taxonid}};
-    $chado->resultset('Sequence::Feature')->create({
-      uniquename => $gene_data->{uniquename},
-      organism_id => $organism->organism_id(),
-      type_id => $gene_type->cvterm_id(),
-    });
+    my $gene =
+      $chado->resultset('Sequence::Feature')->create({
+        uniquename => $gene_data->{uniquename},
+        organism_id => $organism->organism_id(),
+        type_id => $gene_type->cvterm_id(),
+      });
     $chado->resultset('Sequence::Feature')->create({
       uniquename => $gene_data->{uniquename} . '.1',
       organism_id => $organism->organism_id(),
@@ -164,12 +166,18 @@ method _load_test_features($chado)
 
     if (exists $gene_data->{alleles}) {
       for my $allele_data (@{$gene_data->{alleles}}) {
-        $chado->resultset('Sequence::Feature')->create({
-          uniquename => $allele_data->{uniquename},
-          organism_id => $organism->organism_id(),
-          type_id => $allele_type->cvterm_id(),
-        });
+        my $allele_feature =
+          $chado->resultset('Sequence::Feature')->create({
+            %{$allele_data},
+            organism_id => $organism->organism_id(),
+            type_id => $allele_type->cvterm_id(),
+          });
 
+        $chado->resultset('Sequence::FeatureRelationship')->create({
+          subject => $allele_feature,
+          object => $gene,
+          type => $instance_of_cvterm,
+        });
       }
     }
   }

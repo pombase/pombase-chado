@@ -263,6 +263,16 @@ data:
             accession: 01000004
             db:
               name: PomBase
+        - name: penetrance
+          dbxref:
+            accession: 01000005
+            db:
+              name: PomBase
+        - name: condition
+          dbxref:
+            accession: 01000006
+            db:
+              name: PomBase
     - name: feature_relationshipprop_type
       cvterms:
         - name: evidence
@@ -646,6 +656,34 @@ data:
           value: 20091020
       pub:
         uniquename: PMID:11739790
+    - feature:
+        uniquename: 'SPAC27D7.13c:allele-1'
+      cvterm:
+        name: elongated cells
+      is_not: 0
+      feature_cvtermprops:
+        - type:
+            name: evidence
+            cv:
+              name: feature_cvtermprop_type
+          value: Co-immunoprecipitation experiment
+        - type:
+            name: date
+            cv:
+              name: feature_cvtermprop_type
+          value: 20091020
+        - type:
+            name: condition
+            cv:
+              name: feature_cvtermprop_type
+          value: PECO:0000005
+        - type:
+            name: penetrance
+            cv:
+              name: feature_cvtermprop_type
+          value: FYPO_EXT:0000001
+      pub:
+        uniquename: PMID:11739790
   cvtermpath:
     - subject:
         name: microtubule motor activity
@@ -722,6 +760,25 @@ test_genes:
     taxonid: 4896
     alleles:
       - uniquename: 'SPAC27D7.13c:allele-1'
+        featureprops:
+          - type:
+              name: description
+              cv:
+                name: featureprop_type
+              dbxref:
+                accession: 320001
+                db:
+                  name: PomBase
+            value: A123T
+          - type:
+              name: allele_type
+              cv:
+                name: featureprop_type
+              dbxref:
+                accession: 320002
+                db:
+                  name: PomBase
+            value: nucleotide_mutation
   - uniquename: SPCC63.05
     taxonid: 4896
   - uniquename: SPBC14F5.07

@@ -53,6 +53,10 @@ evidence_types:
   'Epitope-tagged protein immunolocalization experiment data': ~
   'Co-immunoprecipitation experiment': ~
 
+phenotype_cv_name: fission_yeast_phenotype
+parental_strain:
+  4896: '972 h-'
+
 cvs:
   PomBase allele types:
     - name: amino_acid_mutation
