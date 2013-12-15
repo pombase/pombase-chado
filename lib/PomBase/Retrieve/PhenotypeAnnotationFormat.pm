@@ -220,15 +220,18 @@ method retrieve() {
         my $dbxref = $cvterm->dbxref();
         my $id = $dbxref->db()->name() . ':' . $dbxref->accession();
         my $evidence = _safe_join('|', $row_fc_props{evidence});
-        if (!defined $evidence || length $evidence == 0) {
+        my $evidence_code;
+        if (defined $evidence && length $evidence > 0) {
+          $evidence_code = $self->evidence_to_code()->{$evidence};
+          if (!defined $evidence_code) {
+            warn qq|cannot find the evidence code for "$evidence"|;
+            goto ROW;
+          }
+        } else {
           warn "no evidence for ", $feature->uniquename(), " <-> ", $cvterm->name() , "\n";
-          goto ROW;
+          $evidence_code = "";
         }
-        my $evidence_code = $self->evidence_to_code()->{$evidence};
-        if (!defined $evidence_code) {
-          warn qq|cannot find the evidence code for "$evidence"|;
-          goto ROW;
-        }
+
         my $pub = $row->pub();
         my $gene = $details->{gene} // die "no gene for ", $feature->uniquename();
         my $gene_uniquename = $gene->uniquename();
