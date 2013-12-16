@@ -190,7 +190,7 @@ method retrieve() {
     my $results =
       $feature_cvterm_rs->search({},
         {
-          prefetch => [ 'feature', 'pub', { cvterm => { dbxref => 'db' } } ]
+          prefetch => [ 'feature', 'pub', { cvterm => [ 'cv', { dbxref => 'db' } ] } ]
         },
       );
 
