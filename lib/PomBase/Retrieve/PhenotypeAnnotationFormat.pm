@@ -47,6 +47,8 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Retriever';
 with 'PomBase::Role::ExtensionDisplayer';
 
+my $ext_cv_name = 'PomBase annotation extension terms';
+
 method _get_allele_details
 {
   my %synonyms = ();
@@ -163,12 +165,17 @@ method retrieve() {
 
   my %feature_details = $self->_get_allele_details();
 
-  my $cv_name = $config->{phenotype_cv_name};
+  my $phenotype_cv_name = $config->{phenotype_cv_name};
   my $parental_strain = $config->{parental_strain}->{$self->organism_taxonid()};
 
   my $it = do {
     my $cvterm_rs =
-      $chado->resultset('Cv::Cvterm')->search({ 'cv.name' => $cv_name },
+      $chado->resultset('Cv::Cvterm')->search({ -or =>
+                                                  [
+                                                    'cv.name' => $phenotype_cv_name,
+                                                    'cv.name' => $ext_cv_name,
+                                                  ]
+                                                },
                                               { join => 'cv' });
 
     my $feature_cvterm_rs =

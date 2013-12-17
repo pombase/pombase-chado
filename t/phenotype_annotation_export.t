@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More tests => 4;
 
 use PomBase::TestUtil;
 use PomBase::Retrieve::PhenotypeAnnotationFormat;
@@ -18,6 +18,8 @@ is ($exporter->header(), '');
 my $results = $exporter->retrieve();
 
 ok(defined $results);
+
+my $count = 0;
 
 while (my $data = $results->next()) {
   is($exporter->format_result($data),
@@ -44,4 +46,8 @@ while (my $data = $results->next()) {
              4896,
              '20091020'
            )));
+
+  $count++;
 }
+
+is($count, 1);
