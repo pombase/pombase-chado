@@ -25,6 +25,7 @@ while (my $data = $results->next()) {
   is($exporter->format_result($data),
      join ("\t",
            (
+             'PomBase',
              'SPAC27D7.13c',
              'FYPO:0000017',
              'SPAC27D7.13c',

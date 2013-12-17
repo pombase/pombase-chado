@@ -160,7 +160,7 @@ method retrieve() {
   my $chado = $self->chado();
   my $config = $self->config();
 
-#  my $db_name = $self->config()->{db_name_for_cv};
+  my $db_name = $self->config()->{db_name_for_cv};
   my $taxon = $self->organism_taxonid();
 
   my %feature_details = $self->_get_allele_details();
@@ -268,7 +268,8 @@ method retrieve() {
 
         my $expression = $details->{expression} // '';
 
-        return [#$db_name,
+        return [
+          $db_name,
           $gene_uniquename, $id, $gene_name,
           $allele_description,
           $expression, $parental_strain,
