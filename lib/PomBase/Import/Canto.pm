@@ -254,15 +254,17 @@ method _store_ontology_annotation
   my $chado = $self->chado();
   my $config = $self->config();
 
+  my $warning_prefix = "warning in $canto_session: ";
+
   my $proc = sub {
     my $cvterm = $self->find_cvterm_by_term_id($termid);
 
     if (!defined $cvterm) {
       my $obsolete_cvterm = $self->find_cvterm_by_term_id($termid, { include_obsolete => 1 });
       if (defined $obsolete_cvterm) {
-        warn "can't load annotation, $termid is an obsolete term\n";
+        warn $warning_prefix, "can't load annotation, $termid is an obsolete term\n";
       } else {
-        warn "can't load annotation, $termid not found in database\n";
+        warn $warning_prefix, "can't load annotation, $termid not found in database\n";
       }
       return;
     }
@@ -365,7 +367,7 @@ method _store_ontology_annotation
           $self->find_chado_feature($with_gene, 1, 1, $self->organism());
         $with_gene = $ref_feature->uniquename();
       } catch {
-        warn "can't find feature using identifier: $with_gene\n";
+        warn "$warning_prefix, can't find feature using identifier: $with_gene\n";
       };
 
       my $db_prefix = $self->db_prefix();
@@ -551,7 +553,7 @@ method _process_feature
     if (keys %$annotation > 0) {
       my @keys = keys %$annotation;
 
-      warn "some data from annotation isn't used: @keys\n";
+      warn "warning in $canto_session: ome data from annotation isn't used: @keys\n";
     }
 
     $self->_store_ontology_annotation(type => $annotation_type,
