@@ -553,7 +553,7 @@ method _process_feature
     if (keys %$annotation > 0) {
       my @keys = keys %$annotation;
 
-      warn "warning in $canto_session: ome data from annotation isn't used: @keys\n";
+      warn "warning in $canto_session: some data from annotation isn't used: @keys\n";
     }
 
     $self->_store_ontology_annotation(type => $annotation_type,
