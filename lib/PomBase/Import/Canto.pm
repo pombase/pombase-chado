@@ -246,6 +246,7 @@ method _store_ontology_annotation
   my $approved_timestamp = $args{approved_timestamp};
   my $approver_email = $args{approver_email};
   my $canto_session = $args{canto_session};
+  my $changed_by => $args{changed_by};
 
   if (defined $extension_text && $extension_text =~ /\|/) {
     die qq(not loading annotation with '|' in extension: "$extension_text"\n);
@@ -360,6 +361,11 @@ method _store_ontology_annotation
     if (defined $approver_email) {
       $self->add_feature_cvtermprop($feature_cvterm,
                                     approver_email => $approver_email);
+    }
+    if (defined $changed_by) {
+      # temporary hack - store as JSON string
+      $self->add_feature_cvtermprop($feature_cvterm,
+                                    changed_by => $changed_by);
     }
     if (defined $with_gene) {
       try {
@@ -496,6 +502,14 @@ method _process_feature
   my $publication_uniquename = delete $annotation->{publication};
   my $evidence_code = delete $annotation->{evidence_code};
   my $curator = delete $annotation->{curator};
+  my $changed_by = delete $annotation->{changed_by};
+
+  my $changed_by_json = undef;
+
+  if (defined $changed_by) {
+    my $encoder = JSON->new()->utf8()->pretty(0)->canonical(1);
+    $changed_by_json = $encoder->encode($changed_by);
+  }
 
   my $publication = $self->find_or_create_pub($publication_uniquename);
 
@@ -568,6 +582,7 @@ method _process_feature
                                       extension_text => $extension_text,
                                       canto_session => $canto_session,
                                       curator => $curator,
+                                      changed_by => $changed_by_json,
                                       %useful_session_data);
   } else {
     if ($annotation_type eq 'genetic_interaction' or
@@ -581,6 +596,7 @@ method _process_feature
                                              feature => $feature,
                                              canto_session => $canto_session,
                                              curator => $curator,
+                                             changed_by => $changed_by_json,
                                              %useful_session_data);
       } else {
         die "no interacting_genes data found in interaction annotation\n";
