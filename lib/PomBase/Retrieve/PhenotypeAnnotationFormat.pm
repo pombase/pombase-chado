@@ -49,36 +49,22 @@ with 'PomBase::Role::ExtensionDisplayer';
 
 my $ext_cv_name = 'PomBase annotation extension terms';
 
-method _get_allele_details
+method _get_allele_details($allele_feature_rs)
 {
   my %synonyms = ();
 
-  my $syn_rs = $self->chado()->resultset('Sequence::FeatureSynonym')->
-    search({ 'feature.organism_id' => $self->organism()->organism_id(),
-             is_current => 1, },
-           { join => 'feature', prefetch => [ 'synonym' ] });
+  my $syn_rs = $allele_feature_rs->search_related('feature_synonyms')->
+    search({ is_current => 1, },
+           { prefetch => [ 'synonym' ] });
 
-  map {
-    push @{$synonyms{$_->feature_id()}}, $_->synonym()->name();
-  } $syn_rs->all();
-
-  my %statuses = ();
-
-  my $statuses_rs = $self->chado()->resultset('Sequence::FeatureCvterm')->
-    search({ 'cv.name' => 'PomBase gene characterisation status' },
-           { join => { cvterm => 'cv' },
-             prefetch => [ 'cvterm', 'feature' ] });
-
-  map {
-    my $uniquename = $_->feature()->uniquename();
-    $uniquename =~ s/\.\d+:pep$//;
-    $statuses{$uniquename} = $_->cvterm()->name();
-  } $statuses_rs->all();
+  while (defined (my $fs = $syn_rs->next())) {
+    push @{$synonyms{$fs->feature_id()}}, $fs->synonym()->name();
+  }
 
   my %featureprops = ();
 
-  my $fprops_rs = $self->chado()->resultset('Sequence::Featureprop')
-    ->search({}, { prefetch => 'type' });
+  my $fprops_rs =
+    $allele_feature_rs->search_related('featureprops', {}, { prefetch => 'type' });
 
   while (defined (my $prop = $fprops_rs->next())) {
     $featureprops{$prop->feature_id()}->{$prop->type()->name()} = $prop->value();
@@ -90,6 +76,9 @@ method _get_allele_details
     search(
       {
         -and => {
+          'subject.feature_id' => {
+            -in => $allele_feature_rs->get_column('feature_id')->as_query(),
+          },
           'subject.organism_id' => $self->organism()->organism_id(),
           'type.name' => 'allele',
           'type_2.name' => 'instance_of',
@@ -117,9 +106,7 @@ method _get_allele_details
       $ret_map{$rel->subject_id()} = {
         gene => $object,
         type => $object->type()->name(),
-        transcript_type => $subject->type()->name(),
         synonyms => $synonyms{$object->feature_id()} // [],
-        status => $statuses{$object->uniquename()} // '',
         %{$featureprops{$rel->subject_id()} // {}},
       };
     }
@@ -165,27 +152,49 @@ method retrieve() {
   my $db_name = $self->config()->{db_name_for_cv};
   my $taxon = $self->organism_taxonid();
 
-  my %feature_details = $self->_get_allele_details();
-
   my $phenotype_cv_name = $config->{phenotype_cv_name};
   my $parental_strain = $config->{parental_strain}->{$self->organism_taxonid()};
 
-  my $it = do {
-    my $cvterm_rs =
-      $chado->resultset('Cv::Cvterm')->search({ -or =>
-                                                  [
-                                                    'cv.name' => $phenotype_cv_name,
-                                                    'cv.name' => $ext_cv_name,
-                                                  ]
-                                                },
-                                              { join => 'cv' });
+  my $phenotype_cv_rs =
+    $chado->resultset('Cv::Cv')->search({ 'cv.name' => $phenotype_cv_name });
 
-    my $feature_cvterm_rs =
+  my $from_extension_cv_terms_rs =
+    $chado->resultset('Cv::Cvterm')->search(
+      {
+        'cv.name' => $ext_cv_name,
+      },
+      {
+        join => [ 'cv', { cvterm_relationship_subjects => 'object' } ],
+        where => \"object.cv_id in (select cv_id from cv obj_cv where obj_cv.name = '$phenotype_cv_name')",
+      });
+
+  my $cvterm_rs =
+    $chado->resultset('Cv::Cvterm')->search({ -or =>
+                                                [
+                                                  'cv.name' => $phenotype_cv_name,
+                                                  cvterm_id => {
+                                                    -in => $from_extension_cv_terms_rs->get_column('cvterm_id')->as_query(),
+                                                  }
+                                                ],
+                                              },
+                                            {
+                                              join => 'cv' });
+
+  my $feature_cvterm_rs =
       $chado->resultset('Sequence::FeatureCvterm')->search(
         {
-          'me.cvterm_id' => { -in => $cvterm_rs->get_column('cvterm_id')->as_query() }
+          'me.cvterm_id' => { -in => $cvterm_rs->get_column('cvterm_id')->as_query() },
+          'feature.organism_id' => $self->organism()->organism_id(),
+        },
+        {
+          join => 'feature',
         });
 
+  my $feature_rs = $feature_cvterm_rs->search_related('feature');
+
+  my %feature_details = $self->_get_allele_details($feature_rs);
+
+  my $it = do {
     my %fc_props = ();
 
     my $fc_props_rs = $feature_cvterm_rs->search_related('feature_cvtermprops');
