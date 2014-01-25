@@ -234,8 +234,11 @@ method retrieve() {
           } else {
             $evidence_code = $self->evidence_to_code()->{$evidence};
             if (!defined $evidence_code) {
-              warn qq|cannot find the evidence code for "$evidence"|;
-              goto ROW;
+              $evidence_code = $self->evidence_to_code()->{ucfirst lc $evidence};
+              if (!defined $evidence_code) {
+                warn qq|cannot find the evidence code for "$evidence"|;
+                goto ROW;
+              }
             }
           }
         } else {
