@@ -253,11 +253,6 @@ method retrieve() {
         my $synonyms_ref = $details->{synonyms} // [];
         my $synonyms = join '|', @{$synonyms_ref};
         my $product = $details->{product} // '';
-        my $status = $details->{status} // '';
-
-        if ($product eq 'dubious' or $status eq 'dubious') {
-          goto ROW;
-        }
 
         my $date = _safe_join('|', [map { _fix_date($_) } @{$row_fc_props{date}}]);
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
