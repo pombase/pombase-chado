@@ -107,10 +107,12 @@ method _get_allele_details
   map {
     my $rel = $_;
     my $object = $rel->object();
-    my $subject = $rel->subject();
     my $type = $rel->type();
+
     if (defined $ret_map{$rel->subject_id()}->{gene}) {
-      die "feature has two instance_of parents";
+      die "feature has two instance_of parents: ", $rel->subject()->uniquename(),
+        " <-> ", $rel->object()->uniquename(),
+        " (", $rel->object()->feature_id(), ")\n";
     } else {
       $ret_map{$rel->subject_id()} = {
         gene => $object,
@@ -216,11 +218,14 @@ method retrieve() {
         my $details = $feature_details{$feature->feature_id()};
 
         if (!defined $details) {
-          warn "can't find details for: ", $feature->uniquename(), "\n";
+          warn "can't find details for: ", $feature->uniquename(), " (id: ",
+            $feature->feature_id(), ")\n";
           goto ROW;
         }
 
         if ($details->{type} ne 'gene') {
+          warn "ignoring allele ", $feature->uniquename(), " for ",
+            $details->{gene}->uniquename(), " - not a gene\n";
           goto ROW;
         }
 
