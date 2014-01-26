@@ -17,7 +17,7 @@ my $importer =
                                             options => [@options]);
 
 my $feature_cvterm_rs = $chado->resultset('Sequence::FeatureCvterm');
-is($feature_cvterm_rs->count(), 6);
+is($feature_cvterm_rs->count(), 7);
 
 open my $fh, '<', "data/phenotype_annotation.tsv" or die;
 my $res;
@@ -33,7 +33,7 @@ if (length $err > 0) {
 }
 
 $feature_cvterm_rs = $chado->resultset('Sequence::FeatureCvterm');
-is($feature_cvterm_rs->count(), 13);
+is($feature_cvterm_rs->count(), 14);
 
 my $found_SPAC2F7_03c_allele_2 = 0;
 
