@@ -104,6 +104,13 @@ method load($fh)
     my $allele_name = $columns_ref->{"allele_name"};
     my $allele_synonym = $columns_ref->{"allele_synonym"};
     my $allele_type = $columns_ref->{"allele_type"};
+
+    if (!$allele_name) {
+      if (lc $allele_type eq 'deletion' && $gene_name) {
+        $allele_name = $gene_name . 'delta';
+      }
+    }
+
     my $evidence = $columns_ref->{"evidence"};
     my $conditions = $columns_ref->{"conditions"};
     my $penetrance = $columns_ref->{"penetrance"};
