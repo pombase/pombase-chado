@@ -96,6 +96,11 @@ method load($fh)
       next;
     }
 
+    if (length $gene_systemtic_id == 0) {
+      warn "no value in the gene_systemtic_id column at line ", $fh->input_line_number(), " - skipping\n";
+      next;
+    }
+
     my $fypo_id = $columns_ref->{"fypo_id"};
     my $allele_description = $columns_ref->{"allele_description"};
     my $genotype_description = $columns_ref->{"genotype_description"};
@@ -106,8 +111,8 @@ method load($fh)
     my $allele_type = $columns_ref->{"allele_type"};
 
     if (!$allele_name) {
-      if (lc $allele_type eq 'deletion' && $gene_name) {
-        $allele_name = $gene_name . 'delta';
+      if (lc $allele_type eq 'deletion') {
+        $allele_name = ($gene_name || $gene_systemtic_id) . 'delta';
       }
     }
 
