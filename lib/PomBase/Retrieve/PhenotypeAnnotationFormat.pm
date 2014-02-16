@@ -303,7 +303,27 @@ method retrieve() {
 
 method header
 {
-  return '';
+  return (join "\t",
+          ('#Gene systematic ID',
+           'FYPO ID',
+           'Allele description',
+           'Expression',
+           'Parental strain',
+           'Strain name (background)',
+           'Genotype description',
+           'Gene name',
+           'Allele name',
+           'Allele synonym',
+           'Allele type',
+           'Evidence',
+           'Condition',
+           'Penetrance',
+           'Expressivity',
+           'Extension',
+           'Reference',
+           'taxon',
+           'Date',
+         )) . "\n";
 }
 
 method format_result($res)
