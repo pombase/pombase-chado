@@ -282,7 +282,7 @@ method retrieve() {
 
         return [
           $db_name,
-          $gene_uniquename, $id, $gene_name,
+          $gene_uniquename, $id,
           $allele_description,
           $expression, $parental_strain,
           'not available',
@@ -304,7 +304,8 @@ method retrieve() {
 method header
 {
   return (join "\t",
-          ('#Gene systematic ID',
+          ('#Database name',
+           'Gene systematic ID',
            'FYPO ID',
            'Allele description',
            'Expression',
@@ -321,7 +322,7 @@ method header
            'Expressivity',
            'Extension',
            'Reference',
-           'taxon',
+           'Taxon',
            'Date',
          )) . "\n";
 }
