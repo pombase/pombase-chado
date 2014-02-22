@@ -246,7 +246,7 @@ method _store_ontology_annotation
   my $approved_timestamp = $args{approved_timestamp};
   my $approver_email = $args{approver_email};
   my $canto_session = $args{canto_session};
-  my $changed_by => $args{changed_by};
+  my $changed_by = $args{changed_by};
 
   if (defined $extension_text && $extension_text =~ /\|/) {
     die qq(not loading annotation with '|' in extension: "$extension_text"\n);
