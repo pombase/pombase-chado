@@ -363,7 +363,6 @@ method _store_ontology_annotation
                                     approver_email => $approver_email);
     }
     if (defined $changed_by) {
-      # temporary hack - store as JSON string
       $self->add_feature_cvtermprop($feature_cvterm,
                                     changed_by => $changed_by);
     }
