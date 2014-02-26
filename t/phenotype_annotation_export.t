@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More tests => 4;
+use Test::LongString;
 
 use PomBase::TestUtil;
 use PomBase::Retrieve::PhenotypeAnnotationFormat;
@@ -13,7 +14,7 @@ my $exporter = PomBase::Retrieve::PhenotypeAnnotationFormat->new(chado => $chado
                                                                  config => $config,
                                                                  options => ['--organism-taxon-id' => 4896]);
 
-is ($exporter->header(), "#Gene systematic ID	FYPO ID	Allele description	Expression	Parental strain	Strain name (background)	Genotype description	Gene name	Allele name	Allele synonym	Allele type	Evidence	Condition	Penetrance	Expressivity	Extension	Reference	taxon	Date\n");
+is_string ($exporter->header(), "#Database name\tGene systematic ID\tFYPO ID\tAllele description\tExpression\tParental strain\tStrain name (background)\tGenotype description\tGene name\tAllele name\tAllele synonym\tAllele type\tEvidence\tCondition\tPenetrance\tExpressivity\tExtension\tReference\tTaxon\tDate\n");
 
 my $results = $exporter->retrieve();
 
@@ -28,7 +29,6 @@ while (my $data = $results->next()) {
              'PomBase',
              'SPAC27D7.13c',
              'FYPO:0000017',
-             'SPAC27D7.13c',
              '',
              '',
              '972 h-',

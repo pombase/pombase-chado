@@ -30,6 +30,9 @@ my $builder = Module::Build->new(
       'Clone'                  => 0,
       'perl5i::2'              => 0,
     },
+    test_requires => {
+      'Test::LongString' => 0,
+    },
     build_requires => {
         'Test::More' => 0,
     },
