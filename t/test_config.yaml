@@ -224,6 +224,13 @@ data:
             db:
               name: MOD
     - name: PomBase annotation extension terms
+      cvterms:
+        - name: 'elongated cells [has_penetrance] low'
+          dbxref:
+            accession: 1300001
+            db:
+              name: PomBase
+                    
     - name: PomBase interaction types
       cvterms:
         - name: interacts_physically
@@ -474,6 +481,18 @@ data:
         name: G-protein coupled receptor signaling pathway
       type:
         name: part_of
+    - subject:
+        name: 'elongated cells [has_penetrance] low'
+      object:
+        name: low
+      type:
+        name: has_penetrance
+    - subject:
+        name: 'elongated cells [has_penetrance] low'
+      object:
+        name: 'elongated cells'
+      type:
+        name: is_a
   extra_cvterm_terms:
   db:
     - name: feature_cvtermprop_type
@@ -659,7 +678,7 @@ data:
     - feature:
         uniquename: 'SPAC27D7.13c:allele-1'
       cvterm:
-        name: elongated cells
+        name: 'elongated cells [has_penetrance] low'
       is_not: 0
       feature_cvtermprops:
         - type:

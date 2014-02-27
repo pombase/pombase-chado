@@ -41,6 +41,8 @@ use Moose;
 
 use List::Gen 'iterate';
 
+use PomBase::Chado;
+
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::OrganismFinder';
@@ -48,6 +50,34 @@ with 'PomBase::Retriever';
 with 'PomBase::Role::ExtensionDisplayer';
 
 my $ext_cv_name = 'PomBase annotation extension terms';
+my $fypo_extensions_cv_name = 'fypo_extensions';
+
+has fypo_extension_termids => (is => 'ro', init_arg => undef,
+                               lazy_build => 1);
+
+sub _build_fypo_extension_termids
+{
+  my $self = shift;
+
+  my $chado = $self->chado();
+
+  my $ext_rs = $chado->resultset('Cv::Cvterm')->search(
+    {
+      'cv.name' => $fypo_extensions_cv_name,
+    },
+    {
+      join => [ 'cv', { dbxref => 'db' } ],
+    });
+
+  my %fypo_extension_termids = ();
+
+  while (defined (my $ext = $ext_rs->next())) {
+    my $termid = PomBase::Chado::id_of_cvterm($ext);
+    $fypo_extension_termids{$ext->name()} = $termid;
+  }
+
+  return \%fypo_extension_termids
+}
 
 method _get_allele_details($allele_feature_rs)
 {
@@ -158,6 +188,8 @@ method retrieve() {
   my $phenotype_cv_rs =
     $chado->resultset('Cv::Cv')->search({ 'cv.name' => $phenotype_cv_name });
 
+  my %fypo_extension_termids = %{$self->fypo_extension_termids()};
+
   my $from_extension_cv_terms_rs =
     $chado->resultset('Cv::Cvterm')->search(
       {
@@ -179,6 +211,45 @@ method retrieve() {
                                               },
                                             {
                                               join => 'cv' });
+
+  my %ext_parent_values = ();
+
+  my $ext_parents_rs =
+    $chado->resultset('Cv::Cvterm')->search(
+      {
+        'me.cvterm_id' => {
+          -in => $from_extension_cv_terms_rs->get_column('cvterm_id')->as_query(),
+        },
+        -or => [
+          'type.name' => 'has_penetrance',
+          'type.name' => 'has_expressivity',
+          ],
+      },
+      {
+        join => { cvterm_relationship_subjects => [ 'type', 'object' ] },
+      }
+    );
+
+  while (defined (my $ext_parent = $ext_parents_rs->next())) {
+    for my $ext_rel ($ext_parent->cvterm_relationship_subjects()) {
+      # we need has_expressivity or has_penetrance
+      my $rel_name = $ext_rel->type()->name();
+
+      next unless $rel_name eq 'has_expressivity' or $rel_name eq 'has_penetrance';
+
+      # "high", "low", ...
+      my $ext_name = $ext_rel->object()->name();
+
+      my $termid = $fypo_extension_termids{$ext_name};
+
+      if (!defined $termid) {
+        warn "'$ext_name' is not a valid penetrance/expressivity in term: ",
+          $ext_parent->name(), "\n";
+      } else {
+        $ext_parent_values{$ext_parent->cvterm_id()}{$rel_name}{$termid} = 1;
+      }
+    }
+  }
 
   my $feature_cvterm_rs =
       $chado->resultset('Sequence::FeatureCvterm')->search(
@@ -275,8 +346,9 @@ method retrieve() {
         my $allele_description = _safe_join(',', $row_fc_props{description});
         my $allele_type = $details->{allele_type};
         my $condition = _safe_join(',', $row_fc_props{condition});
-        my $penetrance = _safe_join(',', $row_fc_props{penetrance});
-        my $expressivity = _safe_join(',', $row_fc_props{expressivity});
+
+        my $penetrance = _safe_join(',', [keys %{$ext_parent_values{$row->cvterm_id()}{has_penetrance}}]);
+        my $expressivity = _safe_join(',', [keys %{$ext_parent_values{$row->cvterm_id()}{has_expressivity}}]);
 
         my $expression = $details->{expression} // '';
 

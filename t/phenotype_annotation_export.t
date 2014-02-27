@@ -23,7 +23,7 @@ ok(defined $results);
 my $count = 0;
 
 while (my $data = $results->next()) {
-  is($exporter->format_result($data),
+  is_string($exporter->format_result($data),
      join ("\t",
            (
              'PomBase',

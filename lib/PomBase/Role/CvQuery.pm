@@ -209,7 +209,7 @@ method find_cvterm_by_term_id($term_id, $options)
       ->search({ db_id => $db->db_id(),
                  accession => $dbxref_accession });
 
-    my %search_flags = ();
+    my %search_flags = ( prefetch => 'cv' );
     if (!$include_obsolete) {
       $search_flags{is_obsolete} = 0;
     }
