@@ -222,7 +222,8 @@ method find_cvterm_by_term_id($term_id, $options)
       # try alt_id instead
       push @cvterms, $dbxref_rs->search_related('cvterm_dbxrefs')
                                ->search({ is_for_definition => 0 })
-                               ->search_related('cvterm', \%search_flags)
+                               ->search_related('cvterm', \%search_flags,
+                                                { prefetch => 'cv' })
                                ->all();
     }
 

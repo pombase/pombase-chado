@@ -71,6 +71,8 @@ method _build_extension_processor
   return $processor;
 }
 
+my $fypo_extensions_cv_name = 'fypo_extensions';
+
 method load($fh)
 {
   my $chado = $self->chado();
@@ -152,16 +154,36 @@ method load($fh)
 
       my $long_evidence = $self->config()->{evidence_types}->{$evidence}->{name} // $evidence;
 
-      if (length $penetrance > 0 &&
-          !defined $self->find_cvterm_by_term_id($penetrance)) {
-         warn "can't load annotation, $penetrance not found at line ", $fh->input_line_number(), "\n";
-        return;
+      if (length $penetrance > 0) {
+        my $penetrance_cvterm = $self->find_cvterm_by_term_id($penetrance);
+
+        if (defined $penetrance_cvterm) {
+          if ($penetrance_cvterm->cv()->name() ne $fypo_extensions_cv_name) {
+            warn "can't load annotation, '$penetrance' is not from the ",
+              "$fypo_extensions_cv_name CV at line ", $fh->input_line_number(), "\n";
+            return;
+          }
+        } else {
+          warn "can't load annotation, $penetrance not found at line ",
+            $fh->input_line_number(), " of PHAF file\n";
+          return;
+        }
       }
 
-      if (length $expressivity > 0 &&
-          !defined $self->find_cvterm_by_term_id($expressivity)) {
-        warn "can't load annotation, $expressivity not found at line ", $fh->input_line_number(), "\n";
-        return;
+      if (length $expressivity > 0) {
+        my $expressivity_cvterm = $self->find_cvterm_by_term_id($expressivity);
+
+        if (defined $expressivity_cvterm) {
+          if ($expressivity_cvterm->cv()->name() ne $fypo_extensions_cv_name) {
+            warn "can't load annotation, '$expressivity' is not from the ",
+              "$fypo_extensions_cv_name CV at line ", $fh->input_line_number(), "\n";
+            return;
+          }
+        } else {
+          warn "can't load annotation, $expressivity not found at line ",
+            $fh->input_line_number(), " of PHAF file\n";
+          return;
+        }
       }
 
       my $gene = $self->find_chado_feature("$gene_systemtic_id", 1, 1, $organism);
