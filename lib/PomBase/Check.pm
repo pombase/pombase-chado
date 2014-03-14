@@ -54,14 +54,16 @@ method _do_query_checks() {
   for my $check (@query_checks) {
     my $name = $check->{name};
     my $query = $check->{query};
+    # if true, show the result set content on failure:
+    my $verbose_fail = $check->{verbose_fail};
     my $expected_conf = $check->{expected} //
       die "expected value not set for $name\n";
     print "$name - ";
 
-    my $sth = $dbh->prepare($query);
-    $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+    my $count_sth = $dbh->prepare("select count(*) from ($query) as sub");
+    $count_sth->execute() or die "Couldn't execute: " . $count_sth->errstr;
 
-    my @data = $sth->fetchrow_array();
+    my @data = $count_sth->fetchrow_array();
 
     die "query ('$query') didn't return exactly one row" if @data != 1;
 
@@ -109,6 +111,14 @@ method _do_query_checks() {
 
     if ($failure) {
       say "FAILURE: $failure";
+      if ($verbose_fail) {
+        my $sth = $dbh->prepare($query);
+        $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+
+        while (my @data = $sth->fetchrow_array()) {
+          say "  @data";
+        }
+      }
     } else {
       say "SUCCESS";
     }
