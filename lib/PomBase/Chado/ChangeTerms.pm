@@ -97,27 +97,101 @@ method process()
     my $temp_table_name = "pombase_change_terms_temp";
 
     $dbh->do("CREATE TEMPORARY TABLE $temp_table_name(" .
-             "from_cvterm_id INTEGER, " .
-             "to_cvterm_id INTEGER)");
-    $dbh->do("CREATE UNIQUE INDEX ${temp_table_name}_from_idx ON " .
-             "$temp_table_name(to_cvterm_id)");
+             "from_db_name TEXT, " .
+             "from_accession TEXT, " .
+             "to_db_name TEXT, " .
+             "to_accession TEXT)");
+#    $dbh->do("CREATE UNIQUE INDEX ${temp_table_name}_from_idx ON " .
+#             "$temp_table_name(to_db_name)");
+
+    my $sth = $dbh->prepare("INSERT INTO $temp_table_name(" .
+                            "from_db_name, from_accession, to_db_name, to_accession) " .
+                             "VALUES (?, ?, ?, ?)");
 
     for my $from_termid (keys %{$self->termid_map()}) {
-      my $from_cvterm = $self->find_cvterm_by_term_id($from_termid);
-      my $to_cvterm = $self->find_cvterm_by_term_id($self->termid_map()->{$from_termid});
+      if (my ($from_db_name, $from_accession) = $from_termid =~ /(\w+):(\w+)/) {
+        my $to_termid = $self->termid_map()->{$from_termid};
 
-      my $from_cvterm_id = $from_cvterm->cvterm_id();
-      my $to_cvterm_id = $to_cvterm->cvterm_id();
-
-      $dbh->do("INSERT INTO $temp_table_name(from_cvterm_id, to_cvterm_id) " .
-               "VALUES ($from_cvterm_id, $to_cvterm_id)");
+        if (my ($to_db_name, $to_accession) = $to_termid =~ /(\w+):(\w+)/) {
+          $sth->execute($from_db_name, $from_accession, $to_db_name, $to_accession);
+        } else {
+          die "term id not in the form 'DB_NAME:ACCESSION': $to_termid\n";
+        }
+      } else {
+        die "term id not in the form 'DB_NAME:ACCESSION': $from_termid\n";
+      }
     }
 
-    $dbh->do("update feature_cvterm set cvterm_id = " .
-             " (select to_cvterm_id from pombase_change_terms_temp " .
-             "   where cvterm_id = from_cvterm_id) " .
-             " where cvterm_id in " .
-             "   (select from_cvterm_id from pombase_change_terms_temp)");
+    $dbh->do(<<"SQL"
+CREATE TEMPORARY TABLE ${temp_table_name}_cv_db AS
+   SELECT t.cvterm_id, db.name as db_name, x.accession
+     FROM cvterm t JOIN dbxref x on t.dbxref_id = x.dbxref_id
+                   JOIN db on x.db_id = db.db_id
+SQL
+);
+
+    my $temp_cvterm_ids_table = "${temp_table_name}_cvterm_ids";
+
+    $dbh->do(<<"SQL"
+CREATE TEMPORARY TABLE $temp_cvterm_ids_table AS
+  SELECT from_term_cv_db.cvterm_id AS from_cvterm_id,
+         to_term_cv_db.cvterm_id AS to_cvterm_id
+    FROM $temp_table_name tmp
+         JOIN ${temp_table_name}_cv_db from_term_cv_db ON
+              from_term_cv_db.db_name = tmp.from_db_name AND
+              from_term_cv_db.accession = tmp.from_accession
+         JOIN ${temp_table_name}_cv_db to_term_cv_db ON
+              to_term_cv_db.db_name = tmp.to_db_name AND
+              to_term_cv_db.accession = tmp.to_accession
+SQL
+);
+
+    $sth = $dbh->prepare(<<"SQL"
+SELECT pub.uniquename, f.uniquename, f.name,
+       t_old.name, db_old.name || ':' || x_old.accession as old_termid,
+       t_new.name, db_new.name || ':' || x_new.accession as new_termid
+  FROM feature_cvterm fc1, feature_cvterm fc2,
+       $temp_cvterm_ids_table ids
+       JOIN feature f ON fc1.feature_id = f.feature_id
+       JOIN pub ON pub.pub_id = fc1.pub_id
+       JOIN cvterm t_old ON t_old.cvterm_id = ids.from_cvterm_id
+       JOIN dbxref x_old ON x_old.dbxref_id = t_old.dbxref_id
+       JOIN db db_old ON db_old.db_id = x_old.db_id
+       JOIN cvterm t_new ON t_new.cvterm_id = ids.to_cvterm_id
+       JOIN dbxref x_new ON x_new.dbxref_id = t_new.dbxref_id
+       JOIN db db_new ON db_new.db_id = x_new.db_id
+ WHERE fc2.cvterm_id = ids.from_cvterm_id
+   AND fc1.feature_id = fc2.feature_id
+   AND fc1.cvterm_id = ids.to_cvterm_id
+   AND fc1.pub_id = fc2.pub_id
+SQL
+);
+    $sth->execute();
+    my $row_count = 0;
+    while (my @data = $sth->fetchrow_array()) {
+      if ($row_count == 0) {
+        warn "These term changes aren't possible because resulting " .
+          "feature_cvterm annotation would be duplicates:\n";
+      }
+      my ($pub_uniquename, $feature_uniquename, $feature_name,
+          $old_term_name, $old_termid, $new_term_name, $new_termid) = @data;
+
+      warn "  $pub_uniquename - $feature_uniquename" .
+        (defined $feature_name ? "($feature_name)" : '') .
+        "  $old_termid($old_term_name) -> $new_termid($new_term_name)";
+      $row_count++;
+    }
+
+
+    $dbh->do(<<"SQL"
+UPDATE feature_cvterm SET cvterm_id =
+ (SELECT to_cvterm_id FROM $temp_cvterm_ids_table
+   WHERE cvterm_id = from_cvterm_id)
+ WHERE cvterm_id IN
+   (SELECT from_cvterm_id FROM $temp_cvterm_ids_table)
+SQL
+);
+
 
 # OR:
 # update feature_cvterm set cvterm_id = to_cvterm_id from
