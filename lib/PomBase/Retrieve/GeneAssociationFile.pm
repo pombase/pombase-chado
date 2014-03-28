@@ -244,7 +244,7 @@ func _current_date {
 method retrieve() {
   my $chado = $self->chado();
 
-  my $db_name = $self->config()->{db_name_for_cv};
+  my $db_name = $self->config()->{database_name};
   my $taxon = 'taxon:' . $self->organism_taxonid();
   my $date_now = _current_date();
 
