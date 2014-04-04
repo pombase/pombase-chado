@@ -93,7 +93,7 @@ method make_gaf_extension($feature_cvterm)
     search({ 'type.name' => { -like => "$annotation_ex_prefix%" }, },
            { join => 'type' });
 
-  my $db_name = $self->config()->{db_name_for_cv};
+  my $db_name = $self->config()->{database_name};
 
   while (defined (my $prop = $props_rs->next())) {
     if ($prop->type()->name() =~ /^$annotation_ex_prefix(.*)/) {
