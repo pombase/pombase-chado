@@ -343,7 +343,7 @@ method _store_ontology_annotation
       $self->create_feature_cvterm($feature, $cvterm, $publication, $is_not);
 
     $self->add_feature_cvtermprop($feature_cvterm,
-                                  assigned_by => $config->{db_name_for_cv});
+                                  assigned_by => $config->{database_name});
     $self->add_feature_cvtermprop($feature_cvterm,
                                   evidence => $long_evidence);
     $self->add_feature_cvtermprop($feature_cvterm,
