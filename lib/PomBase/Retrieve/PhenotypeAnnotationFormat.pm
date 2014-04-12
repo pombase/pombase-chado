@@ -179,7 +179,7 @@ method retrieve() {
   my $chado = $self->chado();
   my $config = $self->config();
 
-  my $db_name = $self->config()->{db_name_for_cv};
+  my $db_name = $self->config()->{database_name};
   my $taxon = $self->organism_taxonid();
 
   my $phenotype_cv_name = $config->{phenotype_cv_name};
