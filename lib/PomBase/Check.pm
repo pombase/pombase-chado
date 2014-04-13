@@ -115,7 +115,7 @@ method _do_query_checks() {
         my $sth = $dbh->prepare($query);
         $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
-        while (my @data = $sth->fetchrow_array()) {
+        while (my @data = map { $_ // '[null]' } $sth->fetchrow_array()) {
           say "  @data";
         }
       }
