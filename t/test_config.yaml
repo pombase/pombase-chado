@@ -16,7 +16,7 @@ data:
                 dbxref:
                   accession: exact
                   db:
-                    name: PomBase
+                    name: PBO
             - synonym: ISA
               type:
                 name: poor_synonym
@@ -25,7 +25,7 @@ data:
                 dbxref:
                   accession: poor_synonym
                   db:
-                    name: PomBase
+                    name: PBO
         - name: part_of
           dbxref:
             accession: part_of
@@ -229,7 +229,7 @@ data:
           dbxref:
             accession: 1300001
             db:
-              name: PomBase
+              name: PBO
                     
     - name: PomBase interaction types
       cvterms:
@@ -237,168 +237,168 @@ data:
           dbxref:
             accession: 111000001
             db:
-              name: PomBase
+              name: PBO
         - name: interacts_genetically
           dbxref:
             accession: 111000002
             db:
-              name: PomBase
+              name: PBO
     - name: feature_cvtermprop_type
       cvterms:
         - name: assigned_by
           dbxref:
             accession: 01000000
             db:
-              name: PomBase
+              name: PBO
         - name: evidence
           dbxref:
             accession: 01000001
             db:
-              name: PomBase
+              name: PBO
         - name: date
           dbxref:
             accession: 01000002
             db:
-              name: PomBase
+              name: PBO
         - name: qualifier
           dbxref:
             accession: 01000003
             db:
-              name: PomBase
+              name: PBO
         - name: canto_session
           dbxref:
             accession: 01000004
             db:
-              name: PomBase
+              name: PBO
         - name: penetrance
           dbxref:
             accession: 01000005
             db:
-              name: PomBase
+              name: PBO
         - name: condition
           dbxref:
             accession: 01000006
             db:
-              name: PomBase
+              name: PBO
     - name: feature_relationshipprop_type
       cvterms:
         - name: evidence
           dbxref:
             accession: 011000001
             db:
-              name: PomBase
+              name: PBO
         - name: source_database
           dbxref:
             accession: 011000002
             db:
-              name: PomBase
+              name: PBO
         - name: date
           dbxref:
             accession: 011000003
             db:
-              name: PomBase
+              name: PBO
         - name: canto_session
           dbxref:
             accession: 011000005
             db:
-              name: PomBase
+              name: PBO
         - name: curator_name
           dbxref:
             accession: 011000006
             db:
-              name: PomBase
+              name: PBO
         - name: curator_email
           dbxref:
             accession: 011000007
             db:
-              name: PomBase
+              name: PBO
         - name: community_curated
           dbxref:
             accession: 011000008
             db:
-              name: PomBase
+              name: PBO
     - name: PomBase organism property types
       cvterms:
         - name: taxon_id
           dbxref:
             accession: 10000002
             db:
-              name: PomBase
+              name: PBO
     - name: PomBase publication types
       cvterms:
         - name: paper
           dbxref:
             accession: 20000003
             db:
-              name: PomBase
+              name: PBO
         - name: null
           dbxref:
             accession: 20000004
             db:
-              name: PomBase
+              name: PBO
     - name: go/extensions/gorel
       cvterms:
         - name: exists_during
           dbxref:
             accession: 0010000
             db:
-              name: PomBase
+              name: PBO
         - name: has_substrate
           dbxref:
             accession: 0010001
             db:
-              name: PomBase
+              name: PBO
         - name: requires_feature
           dbxref:
             accession: 0010002
             db:
-              name: PomBase
+              name: PBO
     - name: cvterm_property_type
       cvterms:
         - name: annotation_extension_relation-exists_during
           dbxref:
             accession: 0020000
             db:
-              name: PomBase
+              name: PBO
         - name: annotation_extension_relation-has_substrate
           dbxref:
             accession: 0020001
             db:
-              name: PomBase
+              name: PBO
         - name: annotation_extension_relation-requires_feature
           dbxref:
             accession: 0020002
             db:
-              name: PomBase
+              name: PBO
         - name: annotation_extension_relation-dependent_on
           dbxref:
             accession: 0020003
             db:
-              name: PomBase
+              name: PBO
         - name: extension_relations_status
           dbxref:
             accession: 0020004
             db:
-              name: PomBase
+              name: PBO
     - name: PomBase feature property types
       cvterms:
         - name: description
           dbxref:
             accession: 0030001
             db:
-              name: PomBase
+              name: PBO
         - name: allele_type
           dbxref:
             accession: 0030002
             db:
-              name: PomBase
+              name: PBO
     - name: species_dist
       cvterms:
         - name: 'predominantly single copy (one to one)'
           dbxref:
             accession: 0040001
             db:
-              name: PomBase
+              name: PBO
     - name: phenotype_condition
       cvterms:
         - name: standard glucose rich medium
@@ -787,7 +787,7 @@ test_genes:
               dbxref:
                 accession: 320001
                 db:
-                  name: PomBase
+                  name: PBO
             value: A123T
           - type:
               name: allele_type
@@ -796,7 +796,7 @@ test_genes:
               dbxref:
                 accession: 320002
                 db:
-                  name: PomBase
+                  name: PBO
             value: nucleotide_mutation
   - uniquename: SPCC63.05
     taxonid: 4896
