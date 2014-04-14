@@ -116,5 +116,11 @@ method get_pub_from_db_xref($qual, $db_xref) {
 
 }
 
+method create_feature_pub($feature, $pub) {
+  $self->chado()->resultset('Sequence::FeaturePub')->create({
+    feature => $feature,
+    pub => $pub,
+  });
+}
 
 1;
