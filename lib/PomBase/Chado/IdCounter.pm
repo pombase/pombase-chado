@@ -54,6 +54,9 @@ method get_dbxref_id($db_name) {
                                                                   accession => { like => '0______' }},
                                                                   { order_by => { -desc => 'accession' }});
     my $largest = $rs->first();
+    if (!defined $largest) {
+      croak 'No dbxrefs for: ', $db->name();
+    }
     my $new_num = $largest->accession() + 1;
     $new_cvterm_ids{$db_name} = $new_num;
   }
