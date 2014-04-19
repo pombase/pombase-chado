@@ -57,10 +57,10 @@ while (my @data = $sth->fetchrow_array()) {
 
 $dbh->do("TRUNCATE cvtermpath");
 
+$dbh->do("CREATE TEMPORARY TABLE $temp_table_name ($column_defs_sql)");
+
 for my $filename (@filenames) {
   my $column_name_sql = join ", ", @column_names;
-
-  $dbh->do("CREATE TEMPORARY TABLE $temp_table_name ($column_defs_sql)");
 
   $dbh->do("COPY $temp_table_name($column_name_sql) FROM STDIN")
     or die "failed to COPY into $temp_table_name: ", $dbh->errstr, "\n";
@@ -144,6 +144,8 @@ SQL
 
     $dbh->do($fill_path_sql);
   }
+
+  $dbh->do("TRUNCATE $temp_table_name");
 }
 
 $dbh->commit();
