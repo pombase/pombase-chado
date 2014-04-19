@@ -7,15 +7,27 @@ use File::Temp qw/ tempfile /;
 use DBI;
 
 if (@ARGV < 4) {
-  die "$0: needs four or more arguments\n";
+  die <<"EOF";
+$0: ERROR: needs four or more arguments
+
+This script is a wrapper for owltools with the --save-closure-for-chado
+option.  The terms from the ontology files must be present in Chado
+before running this script.
+
+The OBO file arguments are passed to owltools and the output is stored in
+the cvtermpath table via a temporary table.
+
+Usage:
+  $0 database_name username password obo_file_name [obo_file_name ...]
+EOF
 }
 
-my ($connect_str, $user, $pass, @filenames) = @ARGV;
+my ($database_name, $user, $pass, @filenames) = @ARGV;
 
-my $dbh = DBI->connect($connect_str, $user, $pass,
+my $dbh = DBI->connect("dbi:Pg:db=$database_name", $user, $pass,
                        { AutoCommit => 0, PrintError => 1,
                          RaiseError => 1 })
-  or die "Cannot connect using $connect_str: $DBI::errstr\n";
+  or die "Cannot connect to $database_name: $DBI::errstr\n";
 
 my $temp_table_name = "owltools_closure_temp";
 
