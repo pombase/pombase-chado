@@ -62,8 +62,7 @@ open my $DUMP, '>', '/tmp/inf_dump.tsv';
 for my $filename (@filenames) {
   my $column_name_sql = join ", ", @column_names;
 
-  $dbh->do("DROP TABLE $temp_table_name");
-  $dbh->do("CREATE TABLE $temp_table_name ($column_defs_sql)");
+  $dbh->do("CREATE TEMPORARY TABLE $temp_table_name ($column_defs_sql)");
 
   $dbh->do("COPY $temp_table_name($column_name_sql) FROM STDIN")
     or die "failed to COPY into $temp_table_name: ", $dbh->errstr, "\n";
