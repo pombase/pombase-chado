@@ -18,16 +18,16 @@ The OBO file arguments are passed to owltools and the output is stored in
 the cvtermpath table via a temporary table.
 
 Usage:
-  $0 database_name username password obo_file_name [obo_file_name ...]
+  $0 host database_name username password obo_file_name [obo_file_name ...]
 EOF
 }
 
-my ($database_name, $user, $pass, @filenames) = @ARGV;
+my ($host, $database_name, $user, $pass, @filenames) = @ARGV;
 
-my $dbh = DBI->connect("dbi:Pg:db=$database_name", $user, $pass,
+my $dbh = DBI->connect("dbi:Pg:db=$database_name;host=$host", $user, $pass,
                        { AutoCommit => 0, PrintError => 1,
                          RaiseError => 1 })
-  or die "Cannot connect to $database_name: $DBI::errstr\n";
+  or die "Cannot connect to $database_name on $host: $DBI::errstr\n";
 
 my $temp_table_name = "owltools_closure_temp";
 
