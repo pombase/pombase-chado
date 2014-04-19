@@ -57,8 +57,6 @@ while (my @data = $sth->fetchrow_array()) {
 
 $dbh->do("TRUNCATE cvtermpath");
 
-open my $DUMP, '>', '/tmp/inf_dump.tsv';
-
 for my $filename (@filenames) {
   my $column_name_sql = join ", ", @column_names;
 
@@ -76,9 +74,6 @@ for my $filename (@filenames) {
     or die "can't open owltools output from $temp_filename: $!\n";
 
   while (defined (my $line = <$owltools_out>)) {
-
-    print $DUMP $line;
-
     chomp $line;
     my ($subjectid, $rel_name, $pathdistance, $objectid) = split /\t/, $line;
 
