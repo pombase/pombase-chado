@@ -148,4 +148,20 @@ SQL
   $dbh->do("TRUNCATE $temp_table_name");
 }
 
+# add an entry with pathdistance = 0 for each term in each CV
+my $null_path_sql = <<"EOF";
+INSERT INTO cvtermpath (subject_id, object_id, cv_id, pathdistance, type_id)
+ (WITH cvs AS
+   (SELECT cv_id FROM cvterm WHERE cvterm_id IN (SELECT subject_id AS cvterm_id FROM cvtermpath
+     UNION SELECT object_id AS cvterm_id FROM cvtermpath))
+  SELECT cvterm_id, cvterm_id, 10, 0,
+         (SELECT cvterm_id
+            FROM cvterm t
+            JOIN cv ON cv.cv_id = t.cv_id
+           WHERE t.name = 'is_a' and cv.name = 'relationship')
+         FROM cvterm WHERE cvterm.cv_id IN (SELECT cv_id FROM cvs));
+EOF
+
+$dbh->do($null_path_sql);
+
 $dbh->commit();
