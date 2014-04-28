@@ -37,7 +37,7 @@ Six arguments are always required:
   import_type   - possibilities:
                     - "biogrid": interaction data in BioGRID BioTAB 2.0 format
                     - "gaf": GO gene association file format
-                    - "canto": curation data in Canto YAML format
+                    - "canto-json": curation data in Canto YAML format
                     - "orthologs": a file of orthologs
   host          - the database server machine name
   database_name - the Chado database name
@@ -51,7 +51,7 @@ Options specific to an input type should come straight after the input_type
 argument.
 
 eg.
-  $0 config.yaml canto --organism-taxon=4896 --db-prefix=PomBase dbname user pass < in_file.json
+  $0 config.yaml canto-json --organism-taxon=4896 --db-prefix=PomBase localhost dbname user pass < in_file.json
 
 The orthologs file should be tab delimited with two columns.  The
 first column should contain an identifier.  The second column should
