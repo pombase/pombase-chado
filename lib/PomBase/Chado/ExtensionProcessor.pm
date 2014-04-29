@@ -415,7 +415,8 @@ method process_one_annotation($featurecvterm, $extension_text)
                 $self->find_chado_feature($identifier, 1, 1, $organism);
               $identifier = $ref_feature->uniquename();
             } catch {
-              warn "can't find feature using identifier: $identifier (error $_)\n";
+              chomp (my $message = $_);
+              warn "can't find feature using identifier: $identifier (error $message)\n";
             };
           } else {
             if ($identifier =~ /^(Pfam:PF\d+)$/) {
