@@ -140,6 +140,7 @@ method load($fh)
                                   $long_evidence);
 
     if (defined $residue) {
+      $residue =~ s/^residue=//;
       $self->add_feature_cvtermprop($feature_cvterm, 'residue', $residue);
     }
 
