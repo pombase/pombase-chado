@@ -21,6 +21,7 @@ my %input_types = (
   'canto-json' => 'PomBase::Import::Canto',
   orthologs => 'PomBase::Import::Orthologs',
   quantitative => 'PomBase::Import::Quantitative',
+  modification => 'PomBase::Import::Modification',
   phenotype_annotation => 'PomBase::Import::PhenotypeAnnotation',
 );
 
