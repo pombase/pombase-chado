@@ -24,7 +24,6 @@ my $builder = Module::Build->new(
       'Moose'                  => 0,
       'MooseX::Traits'         => 0,
       'Text::CSV'              => 0,
-      'Tie::Hash::Indexed'     => 0,
       'YAML'                   => 0,
       'YAML::Any'              => 0,
       'Clone'                  => 0,
