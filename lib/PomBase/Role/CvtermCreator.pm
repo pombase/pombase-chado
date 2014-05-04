@@ -96,8 +96,13 @@ method find_or_create_cvterm($cv, $term_name) {
       $db = $self->chado()->resultset('General::Db')->create({ name => $db_name });
     }
 
-    my $formatted_id =
-      $self->config()->{id_counter}->get_formatted_id($db->name());
+    my $formatted_id;
+
+    try {
+      $formatted_id = $self->config()->{id_counter}->get_formatted_id($db->name());
+    } catch {
+      die "failed to get the next ", $db->name(), " ID for storing $term_name: $_";
+    };
 
     my $dbxref_rs = $self->chado()->resultset('General::Dbxref');
 
