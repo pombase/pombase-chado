@@ -134,10 +134,12 @@ method load($fh)
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $mod_cvterm, $pub, 0);
 
-    my $long_evidence =
-      $self->config()->{evidence_types}->{$evidence_code}->{name};
-    $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
-                                  $long_evidence);
+    my $evidence_config = $self->config()->{evidence_types}->{$evidence_code};
+    if (!defined $evidence_config) {
+      die qq(unknown evidence code "$evidence_code"\n);
+    }
+    my $long_evidence = $evidence_config->{name};
+    $self->add_feature_cvtermprop($feature_cvterm, 'evidence', $long_evidence);
 
     if (defined $residue) {
       $residue =~ s/^residue=//;
