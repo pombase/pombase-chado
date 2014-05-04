@@ -223,6 +223,25 @@ data:
             accession: 01157
             db:
               name: MOD
+    - name: PSI-MOD_extension_relations
+      cvterms:
+        - name: during
+          dbxref:
+            accession: 6200003
+            db:
+              name: PBO
+    - name: gene_ex
+      cvterms:
+        - name: RNA level
+          dbxref:
+            accession: 6200001
+            db:
+              name: PBO
+        - name: protein level
+          dbxref:
+            accession: 6200002
+            db:
+              name: PBO
     - name: PomBase annotation extension terms
       cvterms:
         - name: 'elongated cells [has_penetrance] low'

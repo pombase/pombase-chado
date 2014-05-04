@@ -193,7 +193,7 @@ method BUILD
   my $test_config = LoadFile($TEST_CONFIG_FILE);
   $self->test_config($test_config);
 
-  my @cvs_to_copy = ("PomBase allele types", "PSI-MOD_extension_relations");
+  my @cvs_to_copy = ("PomBase allele types");
 
   my $config = LoadFile('load-pombase-chado.yaml');
   $self->config($config);

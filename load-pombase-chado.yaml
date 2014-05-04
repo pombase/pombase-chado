@@ -52,6 +52,16 @@ evidence_types:
   'Synthetic Haploinsufficiency': ~
   'Epitope-tagged protein immunolocalization experiment data': ~
   'Co-immunoprecipitation experiment': ~
+  'ECO:0000006':
+    name: experimental evidence
+  'ECO:0000337':
+    name: gel electrophoresis evidence
+  'ECO:0000221':
+    name: high throughput nucleotide sequencing assay evidence
+  'ECO:0000098':
+    name: in situ hybridization assay evidence
+  'ECO:0001096':
+    name: mass spectrometry evidence
 
 phenotype_cv_name: fission_yeast_phenotype
 parental_strain:
