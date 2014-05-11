@@ -60,6 +60,9 @@ has organism => (is => 'rw', init_arg => undef);
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
+has gene_ex_qualifiers => (is => 'ro', init_arg => undef,
+                           lazy_build => 1);
+
 method _build_extension_processor
 {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
@@ -67,6 +70,16 @@ method _build_extension_processor
                                                           pre_init_cache => 1,
                                                           verbose => $self->verbose());
   return $processor;
+}
+
+
+method _build_gene_ex_qualifiers
+{
+  my @gene_ex_qualifiers = @{$self->config()->{gene_ex_qualifiers}};
+
+  my %gene_ex_qualifiers = map { ($_, 1) } @gene_ex_qualifiers;
+
+  return \%gene_ex_qualifiers;
 }
 
 method BUILD
@@ -149,6 +162,9 @@ method load($fh)
     my $long_evidence = $evidence_config->{name};
     $self->add_feature_cvtermprop($feature_cvterm, 'evidence', $long_evidence);
 
+    if (!exists $self->gene_ex_qualifiers()->{$level}) {
+      die qq("$level" is not a valid qualifier for gene expression annotation\n);
+    }
     $self->add_feature_cvtermprop($feature_cvterm, 'qualifier', $level);
 
     $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
