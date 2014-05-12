@@ -257,7 +257,10 @@ method _store_ontology_annotation
 
   my $warning_prefix = "warning in $canto_session: ";
 
-  my $proc = sub {
+  # nested transaction
+  $chado->txn_begin();
+
+  try {
     my $cvterm = $self->find_cvterm_by_term_id($termid);
 
     if (!defined $cvterm) {
@@ -458,10 +461,14 @@ method _store_ontology_annotation
       for my $type (keys %by_type) {
         die "unhandled type: $type\n";
       }
-    }
-  };
+    };
 
-  $chado->txn_do($proc);
+    $chado->txn_commit();
+  } catch {
+    $chado->txn_rollback();
+    chomp (my $message = $_);
+    warn "$warning_prefix, $message\n";
+  }
 }
 
 # split any annotation with an extension with a vertical bar into multiple
