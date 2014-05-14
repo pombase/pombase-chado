@@ -671,7 +671,7 @@ method load($fh)
 
     my @annotations = @{$session_data{annotations}};
 
-    my $error_prefix = "error in $canto_session: ";
+    my $error_prefix = "warning in $canto_session: ";
 
     @annotations = map { $self->_split_vert_bar($_); } @annotations;
 
