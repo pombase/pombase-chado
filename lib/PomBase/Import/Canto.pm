@@ -673,16 +673,16 @@ method load($fh)
 
     my $error_prefix = "error in $canto_session: ";
 
-    try {
-      @annotations = map { $self->_split_vert_bar($_); } @annotations;
+    @annotations = map { $self->_split_vert_bar($_); } @annotations;
 
-      for my $annotation (@annotations) {
+    for my $annotation (@annotations) {
+      try {
         $self->_process_annotation($annotation, $session_data{metadata}, $canto_session);
+      } catch {
+        (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
+        chomp $message;
+        warn $error_prefix . "$message\n";
       }
-    } catch {
-      (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
-      chomp $message;
-      warn $error_prefix . "$message\n";
     }
   }
 }
