@@ -375,7 +375,7 @@ method _store_ontology_annotation
           $self->find_chado_feature($with_gene, 1, 1, $self->organism());
         $with_gene = $ref_feature->uniquename();
       } catch {
-        warn "$warning_prefix, can't find feature using identifier: $with_gene\n";
+        warn $warning_prefix, "can't find feature using identifier: $with_gene\n";
       };
 
       my $db_prefix = $self->db_prefix();
@@ -467,7 +467,7 @@ method _store_ontology_annotation
   } catch {
     $chado->txn_rollback();
     chomp (my $message = $_);
-    warn "$warning_prefix, $message\n";
+    warn $warning_prefix, "$message\n";
   }
 }
 
