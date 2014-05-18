@@ -101,9 +101,9 @@ method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
       ($is_not // 0), " rank: $rank\n";
   }
 
-  my $create_args = { feature_id => $chado_object->feature_id(),
-                      cvterm_id => $cvterm->cvterm_id(),
-                      pub_id => $pub->pub_id(),
+  my $create_args = { feature => $chado_object,
+                      cvterm => $cvterm,
+                      pub => $pub,
                       is_not => $is_not,
                       rank => $rank };
 

@@ -42,10 +42,10 @@ use PomBase::Chado;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::CvtermpropStorer';
 with 'PomBase::Role::XrefStorer';
-with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::CvtermRelationshipStorer';
@@ -122,6 +122,7 @@ method store_extension($feature_cvterm, $extensions)
       }
     }
   } @$extensions;
+
 
   my %extensions_so_far = ();
 
@@ -243,7 +244,7 @@ method store_extension($feature_cvterm, $extensions)
     $self->chado()->resultset('Sequence::FeatureCvterm')
       ->search({ cvterm_id => $new_term->cvterm_id(),
                  feature_id => $feature_cvterm->feature_id(),
-                 pub_id => $feature_cvterm->pub()->pub_id(),
+                 pub_id => $feature_cvterm->pub_id(),
                  rank => $feature_cvterm->rank() });
 
   my $update_failed = undef;
@@ -260,15 +261,17 @@ method store_extension($feature_cvterm, $extensions)
     };
   }
 
-  my $warn_message =
-   'storing feature_cvterm from ' .
-   $feature_cvterm->feature()->uniquename() . ' to ' .
-   $new_term->name();
+  if ($self->verbose() || defined $update_failed) {
+    my $warn_message =
+      'storing feature_cvterm from ' .
+      $feature_cvterm->feature()->uniquename() . ' to ' .
+      $new_term->name();
 
-  warn "$warn_message\n" if $self->verbose();
-
-  if (defined $update_failed) {
-    die $warn_message . " - failed to store feature_cvterm: $update_failed\n";
+    if (defined $update_failed) {
+      die $warn_message . " - failed to store feature_cvterm: $update_failed\n";
+    } else {
+      warn "$warn_message\n" ;
+    }
   }
 
   return $new_term;

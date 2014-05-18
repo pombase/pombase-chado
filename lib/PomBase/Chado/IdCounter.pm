@@ -46,7 +46,7 @@ with 'PomBase::Role::DbQuery';
 # return a new ID in the given db
 method get_dbxref_id($db_name) {
   if (!exists $new_cvterm_ids{$db_name}) {
-    my $db = $self->chado()->resultset('General::Db')->find({ name => $db_name });
+    my $db = $self->get_db($db_name);
     if (!defined $db) {
       die "can't find DB: $db_name\n";
     }

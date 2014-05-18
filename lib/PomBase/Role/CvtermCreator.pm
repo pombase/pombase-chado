@@ -77,14 +77,14 @@ method find_or_create_cvterm($cv, $term_name) {
 
   my $cvterm = $self->find_cvterm_by_name($cv, $term_name);
 
-  # nested transaction
-  my $cvterm_guard = $self->chado()->txn_scope_guard();
-
   if (defined $cvterm) {
     warn "    found cvterm_id ", $cvterm->cvterm_id(),
       " when looking for $term_name in ", $cv->name(),"\n" if $self->verbose();
   } else {
     warn "    failed to find: $term_name in ", $cv->name(), "\n" if $self->verbose();
+
+    # nested transaction
+    my $cvterm_guard = $self->chado()->txn_scope_guard();
 
     my $db_name = $self->config->{db_name_for_cv};
 
@@ -119,10 +119,10 @@ method find_or_create_cvterm($cv, $term_name) {
                                    dbxref_id => $dbxref->dbxref_id(),
                                    cv_id => $cv->cv_id() });
 
+    $cvterm_guard->commit();
+
     warn "    created new cvterm, id: ", $cvterm->cvterm_id(), "\n" if $self->verbose();
   }
-
-  $cvterm_guard->commit();
 
   die 'no cvterm found or created for: ' . $cv->name() . ' ' . $term_name unless defined $cvterm;
 

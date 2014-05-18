@@ -39,6 +39,7 @@ use perl5i::2;
 use Moose::Role;
 
 requires 'chado';
+requires 'get_db';
 
 method get_cv($cv_name)
 {
@@ -73,7 +74,8 @@ method get_cvterm($cv_name, $cvterm_name)
 
   my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
   my $cvterm = $cvterm_rs->find({ name => $cvterm_name,
-                                  cv_id => $cv->cv_id() });
+                                  cv_id => $cv->cv_id() },
+                                { prefetch => 'cv' });
 
   $cache->{$cv_name}->{$cvterm_name} = $cvterm;
 
@@ -199,7 +201,7 @@ method find_cvterm_by_term_id($term_id, $options)
     my $dbxref_accession = $2;
 
     my $chado = $self->chado();
-    my $db = $chado->resultset('General::Db')->find({ name => $db_name });
+    my $db = $self->get_db($db_name);
 
     if (!defined $db) {
       die "no Db found with name '$db_name'\n";
