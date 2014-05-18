@@ -129,7 +129,7 @@ method load($fh)
       }
     }
     my $conditions = $columns_ref->{"Condition"};
-    my $source = $columns_ref->{"Source"};
+    my $reference = $columns_ref->{"Reference"};
 
     my $annotation_extension = "during($during)";
 
@@ -153,7 +153,7 @@ method load($fh)
     };
     next unless defined $feature;
 
-    my $pub = $self->find_or_create_pub($source);
+    my $pub = $self->find_or_create_pub($reference);
 
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $term, $pub, 0);
