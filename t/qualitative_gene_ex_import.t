@@ -8,6 +8,9 @@ my $test_util = PomBase::TestUtil->new();
 my $chado = $test_util->chado();
 my $config = $test_util->config();
 
+$config->{gene_ex_qualifiers} =
+  [qw(decreased absent increased present unchanged constant fluctuates)];
+
 my $importer =
   PomBase::Import::Qualitative->new(chado => $chado, config => $config);
 

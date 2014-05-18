@@ -55,8 +55,6 @@ with 'PomBase::Role::FeatureCvtermCreator';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
-has organism_taxonid => (is => 'rw', init_arg => undef);
-has organism => (is => 'rw', init_arg => undef);
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
