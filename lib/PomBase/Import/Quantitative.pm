@@ -46,17 +46,15 @@ use PomBase::Chado::ExtensionProcessor;
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::FeatureFinder';
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::CvQuery';
-with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
-has organism_taxonid => (is => 'rw', init_arg => undef);
-has organism => (is => 'rw', init_arg => undef);
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
@@ -69,67 +67,72 @@ method _build_extension_processor
   return $processor;
 }
 
-method BUILD
-{
-  my $organism_taxonid = undef;
-
-  my @opt_config = ('organism_taxonid=s' => \$organism_taxonid);
-  if (!GetOptionsFromArray($self->options(), @opt_config)) {
-    croak "option parsing failed";
-  }
-
-  if (!defined $organism_taxonid) {
-    die "the --organism_taxonid argument is required\n";
-  }
-
-  $self->organism_taxonid($organism_taxonid);
-  my $organism = $self->find_organism_by_taxonid($organism_taxonid);
-  $self->organism($organism);
-}
-
-
 method load($fh)
 {
   my $chado = $self->chado();
-
-  my $organism = $self->organism();
 
   my $rna_level_cvterm = $self->get_cvterm('gene_ex', 'RNA level');
   my $protein_level_cvterm = $self->get_cvterm('gene_ex', 'protein level');
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
 
-  $csv->column_names ($csv->getline($fh));
+  $csv->column_names($csv->getline($fh));
 
-  my $evidence_code = "ECO:0000006";
-  my $long_evidence =
-    $self->config()->{evidence_types}->{$evidence_code}->{name};
+  while (my $columns_ref = $csv->getline($fh)) {
+    if (@$columns_ref == 1 && $columns_ref->[0]->trim()->length() == 0) {
+      # empty line
+      next;
+    }
 
-  while (my $columns_ref = $csv->getline_hr($fh)) {
-    my $systematic_id = $columns_ref->{"Systematic ID"};
-    my $type = $columns_ref->{"Type"};
-    my $during = $columns_ref->{"During"}->trim();
-    my $average_copies_per_cell = $columns_ref->{"Average copies per cell"};
+    my ($systematic_id, $gene_name, $type, $during, $average_copies_per_cell,
+        $range, $evidence_code, $scale, $conditions, $pubmedid, $taxonid, $date) =
+          map { $_->trim() || undef } @$columns_ref;
+
+    if (!defined $systematic_id) {
+      die qq(mandatory column value for systematic ID missing at line $.\n);
+    }
+    if (!defined $type) {
+      die qq(mandatory column value for feature type missing at line $.\n);
+    }
+    if (!defined $during) {
+      die qq(mandatory column value for expression level missing at line $.\n);
+    }
+    if (!defined $average_copies_per_cell) {
+      die qq(mandatory column value for average copies per cell missing at line $.\n);
+    }
+    if (!defined $evidence_code) {
+      die qq(mandatory column value for evidence missing at line $.\n);
+    }
+    if (!defined $scale) {
+      die qq(mandatory column value for scale missing at line $.\n);
+    }
+    if (!defined $pubmedid) {
+      die qq(mandatory column value for reference missing at line $.\n);
+    }
+    if (!defined $taxonid) {
+      die qq(mandatory column value for taxon missing at line $.\n);
+    }
+    if (!defined $date) {
+      die qq(mandatory column value for date missing at line $.\n);
+    }
+
     if ($average_copies_per_cell eq 'NA') {
       $average_copies_per_cell = undef;
     }
-    my $range = $columns_ref->{"Range"};
-    if ($range eq 'NA') {
+    if (defined $range && $range eq 'NA') {
       $range = undef;
     }
-    my $quant_gene_ex_cell_distribution = $columns_ref->{"Evidence"};
-    if (lc $quant_gene_ex_cell_distribution eq 'population' or
-        lc $quant_gene_ex_cell_distribution eq 'population wide') {
-      $quant_gene_ex_cell_distribution = 'population_wide';
+    my $lc_scale = lc $scale;
+    if ($lc_scale eq 'population' or
+        $lc_scale eq 'population wide') {
+      $scale = 'population_wide';
     } else {
-      if (lc $quant_gene_ex_cell_distribution eq 'single cell') {
-        $quant_gene_ex_cell_distribution = 'single_cell';
+      if ($lc_scale eq 'single cell' or $lc_scale eq 'single_cell') {
+        $scale = 'single_cell';
       } else {
-        die qq(text in "Evidence" column not recognised: $quant_gene_ex_cell_distribution\n);
+        die qq(text in "Scale" column not recognised: $scale\n);
       }
     }
-    my $conditions = $columns_ref->{"Condition"};
-    my $reference = $columns_ref->{"Reference"};
 
     my $annotation_extension = "during($during)";
 
@@ -145,6 +148,8 @@ method load($fh)
       }
     }
 
+    my $organism = $self->find_organism_by_taxonid($taxonid);
+
     my $feature;
     try {
       $feature = $self->find_chado_feature($systematic_id, 1, 0, $organism);
@@ -153,7 +158,15 @@ method load($fh)
     };
     next unless defined $feature;
 
-    my $pub = $self->find_or_create_pub($reference);
+    if (defined $gene_name && defined $feature->name() &&
+        $feature->name() ne $gene_name) {
+      warn qq(gene name "$gene_name" from the input file doesn't match ) .
+        qq(the gene name for $systematic_id from Chado ") . $feature->name() .
+        qq("\n);
+      next;
+    }
+
+    my $pub = $self->find_or_create_pub($pubmedid);
 
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $term, $pub, 0);
@@ -166,10 +179,16 @@ method load($fh)
       $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_copies_per_cell',
                                     $range);
     }
+
+    my $long_evidence =
+      $self->config()->{evidence_types}->{$evidence_code}->{name};
+    if (!defined $long_evidence) {
+      die "unknown evidence code: $evidence_code at line $.\n";
+    }
     $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                   $long_evidence);
-    $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_cell_distribution',
-                                  $quant_gene_ex_cell_distribution);
+    $self->add_feature_cvtermprop($feature_cvterm, 'scale',
+                                  $scale);
 
     my @conditions = split /\s*,\s*/, $conditions;
     for (my $i = 0; $i < @conditions; $i++) {
