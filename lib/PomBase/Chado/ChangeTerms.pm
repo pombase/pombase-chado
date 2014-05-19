@@ -41,6 +41,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 
 has options => (is => 'ro', isa => 'ArrayRef');
@@ -101,8 +102,6 @@ method process()
              "from_accession TEXT, " .
              "to_db_name TEXT, " .
              "to_accession TEXT)");
-#    $dbh->do("CREATE UNIQUE INDEX ${temp_table_name}_from_idx ON " .
-#             "$temp_table_name(to_db_name)");
 
     my $sth = $dbh->prepare("INSERT INTO $temp_table_name(" .
                             "from_db_name, from_accession, to_db_name, to_accession) " .
@@ -137,23 +136,24 @@ CREATE TEMPORARY TABLE $temp_cvterm_ids_table AS
   SELECT from_term_cv_db.cvterm_id AS from_cvterm_id,
          to_term_cv_db.cvterm_id AS to_cvterm_id
     FROM $temp_table_name tmp
-         JOIN ${temp_table_name}_cv_db from_term_cv_db ON
-              from_term_cv_db.db_name = tmp.from_db_name AND
-              from_term_cv_db.accession = tmp.from_accession
-         JOIN ${temp_table_name}_cv_db to_term_cv_db ON
-              to_term_cv_db.db_name = tmp.to_db_name AND
-              to_term_cv_db.accession = tmp.to_accession
+    JOIN ${temp_table_name}_cv_db from_term_cv_db ON
+         from_term_cv_db.db_name = tmp.from_db_name AND
+         from_term_cv_db.accession = tmp.from_accession
+    JOIN ${temp_table_name}_cv_db to_term_cv_db ON
+         to_term_cv_db.db_name = tmp.to_db_name AND
+         to_term_cv_db.accession = tmp.to_accession
 SQL
 );
 
     $sth = $dbh->prepare(<<"SQL"
-SELECT pub.uniquename, f.uniquename, f.name,
+SELECT fc2.feature_cvterm_id, pub.uniquename, f.uniquename, f.name,
        t_old.name, db_old.name || ':' || x_old.accession as old_termid,
        t_new.name, db_new.name || ':' || x_new.accession as new_termid
-  FROM feature_cvterm fc1, feature_cvterm fc2,
-       $temp_cvterm_ids_table ids
+  FROM feature_cvterm fc2,
+       feature_cvterm fc1
        JOIN feature f ON fc1.feature_id = f.feature_id
-       JOIN pub ON pub.pub_id = fc1.pub_id
+       JOIN pub ON pub.pub_id = fc1.pub_id,
+       $temp_cvterm_ids_table ids
        JOIN cvterm t_old ON t_old.cvterm_id = ids.from_cvterm_id
        JOIN dbxref x_old ON x_old.dbxref_id = t_old.dbxref_id
        JOIN db db_old ON db_old.db_id = x_old.db_id
@@ -166,38 +166,37 @@ SELECT pub.uniquename, f.uniquename, f.name,
    AND fc1.pub_id = fc2.pub_id
 SQL
 );
+
+    my @do_not_update_rows = ();
+
     $sth->execute();
     my $row_count = 0;
     while (my @data = $sth->fetchrow_array()) {
-      if ($row_count == 0) {
-        warn "These term changes aren't possible because resulting " .
-          "feature_cvterm annotation would be duplicates:\n";
+      if (!@do_not_update_rows) {
+        warn "These term changes aren't possible because a duplicate " .
+          "would result:\n";
       }
-      my ($pub_uniquename, $feature_uniquename, $feature_name,
+      my ($feature_cvterm_id, $pub_uniquename, $feature_uniquename, $feature_name,
           $old_term_name, $old_termid, $new_term_name, $new_termid) = @data;
 
       warn "  $pub_uniquename - $feature_uniquename" .
         (defined $feature_name ? "($feature_name)" : '') .
-        "  $old_termid($old_term_name) -> $new_termid($new_term_name)";
-      $row_count++;
+        "  $old_termid($old_term_name) -> $new_termid($new_term_name)\n";
+      push @do_not_update_rows, $feature_cvterm_id;
     }
 
+    my $placeholders = join ",", (('?') x @do_not_update_rows);
 
-    $dbh->do(<<"SQL"
+    $sth = $dbh->prepare(<<"SQL"
 UPDATE feature_cvterm SET cvterm_id =
  (SELECT to_cvterm_id FROM $temp_cvterm_ids_table
    WHERE cvterm_id = from_cvterm_id)
- WHERE cvterm_id IN
-   (SELECT from_cvterm_id FROM $temp_cvterm_ids_table)
+ WHERE cvterm_id IN (SELECT from_cvterm_id FROM $temp_cvterm_ids_table)
+   AND feature_cvterm_id NOT IN ($placeholders)
 SQL
 );
 
-
-# OR:
-# update feature_cvterm set cvterm_id = to_cvterm_id from
-# feature_cvterm fc inner join pombase_change_terms_temp on
-# from_cvterm_id = fc.cvterm_id
-
+    $sth->execute(@do_not_update_rows);
   };
 
   $chado->txn_do($proc);

@@ -1,0 +1,2 @@
+GO:0007186	GO:0055085	#comment
+GO:0005816	GO:0003674	#comment
