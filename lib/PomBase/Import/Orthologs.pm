@@ -47,6 +47,7 @@ with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::OrganismFinder';
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';

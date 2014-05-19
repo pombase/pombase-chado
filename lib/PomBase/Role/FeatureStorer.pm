@@ -41,6 +41,7 @@ use Moose::Role;
 use Carp::Assert;
 
 with 'PomBase::Role::Embl::StoreLocation';
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 
 requires 'find_or_create_pub';

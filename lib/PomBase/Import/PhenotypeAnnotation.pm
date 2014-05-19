@@ -46,10 +46,10 @@ use PomBase::Chado::ExtensionProcessor;
 
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::OrganismFinder';
-with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';

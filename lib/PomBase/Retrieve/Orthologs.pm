@@ -46,6 +46,7 @@ with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Retriever';
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 
 has other_organism_taxonid => (is => 'rw');
