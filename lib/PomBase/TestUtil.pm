@@ -49,6 +49,7 @@ has chado => (is => 'rw', init_arg => undef, isa => 'Bio::Chado::Schema');
 has verbose => (is => 'rw');
 has load_test_features => (is => 'rw', default => 1);
 
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 
 my $TEST_CONFIG_FILE = 't/test_config.yaml';
