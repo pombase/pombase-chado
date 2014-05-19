@@ -45,6 +45,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
+with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Retriever';

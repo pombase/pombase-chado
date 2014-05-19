@@ -26,6 +26,8 @@ sub usage
                     - "go-filter": filter redundant GO annotations
                     - "update-allele-names": change "SPAC1234c.12delta" to
                         "abcdelta" if the gene now has a name
+                    - "change-terms": change terms in annotations based on a
+                           mapping file
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
@@ -53,8 +55,13 @@ my $database = shift;
 my $username = shift;
 my $password = shift;
 
-if (!defined $password || @ARGV > 0) {
+if (!defined $password) {
   die "$0: not enough arguments";
+  usage();
+}
+
+if (@ARGV > 0) {
+  die "$0: not many arguments";
   usage();
 }
 
@@ -68,6 +75,7 @@ my $config = LoadFile($config_file);
 my %process_modules = (
   'go-filter' => 'PomBase::Chado::GOFilter',
   'update-allele-names' => 'PomBase::Chado::UpdateAlleleNames',
+  'change-terms' => 'PomBase::Chado::ChangeTerms',
 );
 
 my $process_module = $process_modules{$process_type};
