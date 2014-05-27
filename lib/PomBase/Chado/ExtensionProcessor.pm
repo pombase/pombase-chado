@@ -419,7 +419,7 @@ method process_one_annotation($featurecvterm, $extension_text)
               $identifier = $ref_feature->uniquename();
             } catch {
               chomp (my $message = $_);
-              warn "can't find feature using identifier: $identifier (error $message)\n";
+              warn "in extension for $feature_uniquename, can't find feature with identifier: $identifier\n";
             };
           } else {
             if ($identifier =~ /^(Pfam:PF\d+)$/) {
