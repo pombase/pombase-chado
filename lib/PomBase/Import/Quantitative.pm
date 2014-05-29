@@ -86,7 +86,14 @@ method load($fh)
 
     my ($systematic_id, $gene_name, $type, $during, $average_copies_per_cell,
         $range, $evidence_code, $scale, $conditions, $pubmedid, $taxonid, $date) =
-          map { $_->trim() || undef } @$columns_ref;
+          map {
+            my $trimmed = $_->trim();
+            if (length $trimmed > 0) {
+              $trimmed;
+            } else {
+              undef
+            }
+          } @$columns_ref;
 
     if (!defined $systematic_id) {
       die qq(mandatory column value for systematic ID missing at line $.\n);
