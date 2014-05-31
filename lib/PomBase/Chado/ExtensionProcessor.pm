@@ -181,7 +181,7 @@ method store_extension($feature_cvterm, $extensions)
       }
 
       if (!defined $rel) {
-        die "can't find relation cvterm for: $rel_name in these CVs:\n@rel_cv_names";
+        die "can't find relation cvterm for: $rel_name in these CVs: @rel_cv_names";
       }
 
       if (defined $term) {
