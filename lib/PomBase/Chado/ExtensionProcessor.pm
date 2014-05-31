@@ -52,7 +52,7 @@ with 'PomBase::Role::CvtermRelationshipStorer';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::FeatureFinder';
 
-has verbose => (is => 'ro');
+has verbose => (is => 'rw');
 has cache => (is => 'ro', init_arg => undef, lazy_build => 1,
               builder => '_build_cache');
 has pre_init_cache => (is => 'rw', default => 0);
@@ -176,7 +176,10 @@ method store_extension($feature_cvterm, $extensions)
       my $rel = undef;
 
       for my $rel_cv_name (@rel_cv_names) {
+        warn "checking for $rel_name in $rel_cv_name\n";
+        $self->verbose(1);
         $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name);
+        $self->verbose(0);
         last if defined $rel;
       }
 
