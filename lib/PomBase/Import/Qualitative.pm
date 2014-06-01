@@ -58,8 +58,8 @@ has options => (is => 'ro', isa => 'ArrayRef');
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
-has gene_ex_qualifiers => (is => 'ro', init_arg => undef,
-                           lazy_build => 1);
+has gene_ex_qualifiers => (is => 'rw', init_arg => undef,
+                           lazy_build => 1, required => 1);
 
 method _build_extension_processor
 {
@@ -82,7 +82,21 @@ method _build_gene_ex_qualifiers
 
 method BUILD
 {
+  my $gene_ex_qualifiers = undef;
 
+  my @opt_config = ("gene-ex-qualifiers=s" => \$gene_ex_qualifiers);
+
+  my @options_copy = @{$self->options()};
+
+  if (!GetOptionsFromArray(\@options_copy, @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  if (!defined $gene_ex_qualifiers) {
+    croak qq(the "qualitative" import type needs a --gene-ex-qualifiers option);
+  }
+
+  $self->gene_ex_qualifiers($gene_ex_qualifiers);
 }
 
 method load($fh)
