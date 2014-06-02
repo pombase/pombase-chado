@@ -108,6 +108,10 @@ method find_cvterm_by_name($cv, $term_name, %options) {
   state $cache = {};
 
   if (exists $cache->{$cv->name()}->{$term_name}) {
+    warn "      found as $term_name in cache\n" if $self->verbose();
+    if (!defined $cache->{$cv->name()}->{$term_name}) {
+      croak "$term_name from ", $cv->name(), " was stored as undef in cache\n";
+    }
     return $cache->{$cv->name()}->{$term_name};
   }
 
