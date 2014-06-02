@@ -42,6 +42,7 @@ use Text::CSV;
 use Getopt::Long qw(GetOptionsFromArray);
 
 use PomBase::Chado::ExtensionProcessor;
+use PomBase::Chado::GeneExQualifiersUtil;
 
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
@@ -58,8 +59,17 @@ has options => (is => 'ro', isa => 'ArrayRef');
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
-has gene_ex_qualifiers => (is => 'rw', init_arg => undef,
-                           lazy_build => 1, required => 1);
+has gene_ex_qualifiers_array => (is => 'rw', init_arg => undef);
+
+method _build_gene_ex_qualifiers
+{
+  my @gene_ex_qualifiers = @{$self->gene_ex_qualifiers_array()};
+
+  my %gene_ex_qualifiers = map { ($_, 1) } @gene_ex_qualifiers;
+
+  return \%gene_ex_qualifiers;
+}
+has gene_ex_qualifiers => (is => 'rw', init_arg => undef, lazy_build => 1);
 
 method _build_extension_processor
 {
@@ -70,21 +80,13 @@ method _build_extension_processor
   return $processor;
 }
 
-
-method _build_gene_ex_qualifiers
-{
-  my @gene_ex_qualifiers = @{$self->config()->{gene_ex_qualifiers}};
-
-  my %gene_ex_qualifiers = map { ($_, 1) } @gene_ex_qualifiers;
-
-  return \%gene_ex_qualifiers;
-}
-
 method BUILD
 {
-  my $gene_ex_qualifiers = undef;
+  my $gene_ex_qualifiers_file = undef;
 
-  my @opt_config = ("gene-ex-qualifiers=s" => \$gene_ex_qualifiers);
+  my $gene_ex_qualifier_util = PomBase::Chado::GeneExQualifiersUtil->new();
+
+  my @opt_config = ("gene-ex-qualifiers=s" => \$gene_ex_qualifiers_file);
 
   my @options_copy = @{$self->options()};
 
@@ -92,11 +94,16 @@ method BUILD
     croak "option parsing failed";
   }
 
-  if (!defined $gene_ex_qualifiers) {
+  if (!defined $gene_ex_qualifiers_file) {
     croak qq(the "qualitative" import type needs a --gene-ex-qualifiers option);
   }
 
-  $self->gene_ex_qualifiers($gene_ex_qualifiers);
+  my $gene_ex_qualifiers = $gene_ex_qualifier_util->read_qualifiers($gene_ex_qualifiers_file);
+
+  croak "failed to read gene_ex_qualifiers from $gene_ex_qualifiers_file"
+    unless $gene_ex_qualifiers;
+
+  $self->gene_ex_qualifiers_array($gene_ex_qualifiers);
 }
 
 method load($fh)
@@ -167,17 +174,17 @@ method load($fh)
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $type_cvterm, $pub, 0);
 
+    if (!exists $self->gene_ex_qualifiers()->{$level}) {
+      die qq("$level" is not a valid qualifier for gene expression annotation in line:\n@$columns_ref\n);
+    }
+    $self->add_feature_cvtermprop($feature_cvterm, 'qualifier', $level);
+
     my $evidence_config = $self->config()->{evidence_types}->{$evidence_code};
     if (!defined $evidence_config) {
       die qq(unknown evidence code "$evidence_code"\n);
     }
     my $long_evidence = $evidence_config->{name};
     $self->add_feature_cvtermprop($feature_cvterm, 'evidence', $long_evidence);
-
-    if (!exists $self->gene_ex_qualifiers()->{$level}) {
-      die qq("$level" is not a valid qualifier for gene expression annotation\n);
-    }
-    $self->add_feature_cvtermprop($feature_cvterm, 'qualifier', $level);
 
     $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
 
