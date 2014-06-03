@@ -176,10 +176,8 @@ method store_extension($feature_cvterm, $extensions)
       my $rel = undef;
 
       for my $rel_cv_name (@rel_cv_names) {
-        warn "checking for $rel_name in $rel_cv_name\n";
-        $self->verbose(1);
+        warn "checking for $rel_name in $rel_cv_name\n" if $self->verbose;
         $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name);
-        $self->verbose(0);
         last if defined $rel;
       }
 
