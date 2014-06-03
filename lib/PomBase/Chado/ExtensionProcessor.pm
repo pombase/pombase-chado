@@ -182,7 +182,16 @@ method store_extension($feature_cvterm, $extensions)
       }
 
       if (!defined $rel) {
-        die "can't find relation cvterm for: $rel_name in these CVs: @rel_cv_names";
+        for my $rel_cv_name (@rel_cv_names) {
+          warn "checking for obsolete $rel_name in $rel_cv_name\n" if $self->verbose;
+          $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name,
+                                            include_obsolete => 1);
+          die "found relation term $rel_name in $rel_cv_name but it's obsolete\n";
+        }
+
+        die "NOT FOUND $rel_name";
+
+        die "can't find relation cvterm for: $rel_name in these CVs: @rel_cv_names\n";
       }
 
       if (defined $term) {

@@ -92,6 +92,8 @@ method get_cvterm($cv_name, $cvterm_name)
 
 # find cvterm by query with name or cvtermsynonym
 method find_cvterm_by_name($cv, $term_name, %options) {
+  $options{include_obsolete} //= 0;
+
   if (!defined $cv) {
     carp "cv is undefined";
   }
@@ -122,8 +124,13 @@ method find_cvterm_by_name($cv, $term_name, %options) {
   }
 
   my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
-  my $cvterm = $cvterm_rs->find({ name => $term_name, cv_id => $cv->cv_id(),
-                                  is_obsolete => 0 },
+  my %find_query = (name => $term_name, cv_id => $cv->cv_id());
+
+  if (!$options{include_obsolete}) {
+    $find_query{is_obsolete} = 0;
+  }
+
+  my $cvterm = $cvterm_rs->find(\%find_query,
                                 { %search_options });
 
   if (defined $cvterm) {
