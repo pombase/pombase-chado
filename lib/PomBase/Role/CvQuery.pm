@@ -191,7 +191,7 @@ method find_cvterm_by_term_id($term_id, $options)
   my $include_obsolete = $options->{include_obsolete} // 0;
 
   if (!defined $term_id) {
-    die "no term_id passed to find_cvterm_by_term_id()";
+    croak "no term_id passed to find_cvterm_by_term_id()";
   }
 
   my $key = $term_id . "_include_obsolete:$include_obsolete";
