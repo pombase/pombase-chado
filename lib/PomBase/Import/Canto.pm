@@ -266,11 +266,10 @@ method _store_ontology_annotation
     if (!defined $cvterm) {
       my $obsolete_cvterm = $self->find_cvterm_by_term_id($termid, { include_obsolete => 1 });
       if (defined $obsolete_cvterm) {
-        warn $warning_prefix, "can't load annotation, $termid is an obsolete term\n";
+        die $warning_prefix, "can't load annotation, $termid is an obsolete term\n";
       } else {
-        warn $warning_prefix, "can't load annotation, $termid not found in database\n";
+        die $warning_prefix, "can't load annotation, $termid not found in database\n";
       }
-      return;
     }
 
     my $term_name = $cvterm->name();
@@ -307,7 +306,9 @@ method _store_ontology_annotation
         $res;
       } @$allele_quals;
 
-      return if @processed_allele_quals == 0;
+      if (@processed_allele_quals == 0) {
+        die "can't find allele data\n";
+      }
 
       if (@processed_allele_quals > 1) {
         die "can't process annotation with two allele qualifiers\n";
