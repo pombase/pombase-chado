@@ -452,7 +452,6 @@ method process_one_annotation($featurecvterm, $extension_text)
       } split /\|/, $detail;
     } else {
       die "annotation extension qualifier on $feature_uniquename not understood: $_\n";
-      ();
     }
   } @extension_qualifiers;
 
