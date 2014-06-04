@@ -116,7 +116,7 @@ method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
     die "no name for property\n";
   }
   if (!defined $value) {
-    die "no value for $name\n";
+    die "no value when storing $name prop into feature_cvtermprop\n";
   }
 
   if (!defined $rank) {
