@@ -38,6 +38,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 use feature qw(switch);
+no if $] >= 5.018, warnings => "experimental::smartmatch";
 
 use Module::Find;
 
