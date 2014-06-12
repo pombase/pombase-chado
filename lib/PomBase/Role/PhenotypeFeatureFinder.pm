@@ -278,7 +278,8 @@ method get_allele($allele_data)
     return $allele;
   } else {
     my $new_allele_name = $allele_data->{name};
-    $new_allele_name = undef if defined $new_allele_name && $new_allele_name eq 'noname';
+    $new_allele_name = undef if
+      defined $new_allele_name && ($new_allele_name eq 'noname' || $new_allele_name eq '');
 
     my $new_allele_description = $allele_data->{description};
     $new_allele_description =~ s/[\s\N{ZERO WIDTH SPACE}]*,[\s\N{ZERO WIDTH SPACE}]*/,/g;
