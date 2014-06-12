@@ -95,8 +95,13 @@ my $database = shift;
 my $username = shift;
 my $password = shift;
 
-if (!defined $password || @ARGV > 0) {
+if (!defined $password) {
   die "$0: not enough arguments";
+  usage();
+}
+
+if (@ARGV > 0) {
+  die "$0: too many arguments";
   usage();
 }
 
