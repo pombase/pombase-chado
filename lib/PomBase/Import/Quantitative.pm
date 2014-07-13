@@ -126,6 +126,16 @@ method load($fh)
     if ($average_copies_per_cell eq 'NA') {
       $average_copies_per_cell = undef;
     }
+
+    if (defined $average_copies_per_cell) {
+      if ($average_copies_per_cell !~ /^(?:[><])\d+(?:\.\d+)?$/) {
+        warn "skipping this annotation:\n@$columns_ref\n" .
+          "because copies per cell must be a positive " .
+          "floating point number with an optional '>' or '<' at the start\n";
+        next;
+      }
+    }
+
     if (defined $range && $range eq 'NA') {
       $range = undef;
     }
