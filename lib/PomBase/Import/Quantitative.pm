@@ -123,7 +123,7 @@ method load($fh)
       die qq(mandatory column value for date missing at line $.\n);
     }
 
-    if ($average_copies_per_cell eq 'NA') {
+    if ($average_copies_per_cell eq 'ND') {
       $average_copies_per_cell = undef;
     }
 
