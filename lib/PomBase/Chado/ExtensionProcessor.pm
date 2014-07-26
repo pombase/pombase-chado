@@ -380,7 +380,7 @@ method process_one_annotation($featurecvterm, $extension_text)
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
 
   warn "processing annotation extension for $feature_uniquename <-> ",
-    $featurecvterm->cvterm()->name(), "\n" if $self->verbose();
+    $featurecvterm->cvterm()->name(), "   ext: $extension_text\n" if $self->verbose();
 
   (my $extension_copy = $extension_text) =~ s/(\([^\)]+\))/_replace_commas($1)/eg;
 
