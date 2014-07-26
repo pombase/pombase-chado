@@ -411,7 +411,7 @@ method process_one_annotation($featurecvterm, $extension_text)
             die "can't find term with ID: $term_id\n";
           }
         } else {
-          if ($identifier =~ /^(PomBase|GeneDB_?Spombe):([\w\d\.\-]+)/i) {
+          if ($identifier =~ /^(PomBase|GeneDB_?Spombe):([\w\d\.\-]+)$/i) {
             $identifier = $2;
             my $organism = $self->find_organism_by_common_name('pombe');
             try {
