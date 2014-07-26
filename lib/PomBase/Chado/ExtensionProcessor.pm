@@ -427,7 +427,7 @@ method process_one_annotation($featurecvterm, $extension_text)
               $identifier = $1;
             } else {
               warn "in annotation extension for $feature_uniquename, can't " .
-                "parse identifier: $identifier - no prefix\n";
+                "parse identifier: $identifier\n";
               ();
             }
           }
