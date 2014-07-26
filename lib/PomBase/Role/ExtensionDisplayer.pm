@@ -71,13 +71,16 @@ method make_gaf_extension($feature_cvterm)
 
   my $isa_parent_term = undef;
 
+  my @rel_cv_names = @{$self->config()->{extension_relation_cv_names}};
+
   while (defined (my $rel = $parent_rels_rs->next())) {
-    if ($rel->type()->cv()->name() eq 'go/extensions/gorel') {
-      push @parents, { rel_type_name => $rel->type()->name(),
-                       detail => PomBase::Chado::id_of_cvterm($rel->object()) };
+    if ($rel->type()->name() eq 'is_a') {
+      $isa_parent_term = $rel->object();
     } else {
-      if ($rel->type()->name() eq 'is_a') {
-        $isa_parent_term = $rel->object();
+      my $rel_cv_name = $rel->type()->cv()->name();
+      if (grep { $_ eq $rel_cv_name } @rel_cv_names ) {
+        push @parents, { rel_type_name => $rel->type()->name(),
+                         detail => PomBase::Chado::id_of_cvterm($rel->object()) };
       }
     }
   }
