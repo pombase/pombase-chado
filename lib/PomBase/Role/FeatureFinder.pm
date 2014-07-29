@@ -40,18 +40,50 @@ use Moose::Role;
 
 with 'PomBase::Role::ChadoUser';
 
-method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism) {
+
+=head2 find_chado_feature
+
+ Usage   : my $feature = $some_object->find_chado_feature($identifier);
+ Function: Return a Sequence::Feature object from Chado
+ Args    : $identifier    - the uniquename of the feature to find (required)
+           $try_name      - if true, try the feature name as well as the
+                            uniquename (optional, default: false)
+           $ignore_case   - if true match case insensitively (optional,
+                            default: false)
+           $organism      - if defined search for feature only from this organism
+                            (optional)
+           $feature_types - an array ref of feature types to search eg.
+                            ['pseudogene', 'gene']  (optional, default: all types)
+
+ Return  :
+
+=cut
+
+method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism, $feature_types) {
    my $rs = $self->chado()->resultset('Sequence::Feature');
 
    state $cache = {};
 
-   my $cache_key = "$systematic_id $try_name $ignore_case";
+   $try_name //= 0;
+   $ignore_case //= 0;
+   my $organism_fullname = '';
+   if (defined $organism) {
+     $organism_fullname = $organism->genus() . '_' . $organism->species();
+   }
+
+   my $cache_key = "$systematic_id $try_name $ignore_case $organism_fullname " .
+     join ('+', @{$feature_types // []});
 
    if (exists $cache->{$cache_key}) {
      return $cache->{$cache_key};
    }
    if (defined $organism) {
      $rs = $rs->search({ organism_id => $organism->organism_id() });
+   }
+
+   if (defined $feature_types) {
+     $rs = $rs->search({ 'type.name' => { -in => $feature_types } },
+                       { join => 'type' });
    }
 
    my $feature;
