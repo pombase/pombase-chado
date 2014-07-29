@@ -789,15 +789,18 @@ test_organisms:
 
 test_genes:
   - uniquename: SPBC2F12.13
+    name: klp5
     taxonid: 4896
   - uniquename: SPAC1093.06c
     taxonid: 4896
   - uniquename: SPCC576.16c
     taxonid: 4896
   - uniquename: SPAC27D7.13c
+    name: ssm4
     taxonid: 4896
     alleles:
       - uniquename: 'SPAC27D7.13c:allele-1'
+        name: ssm4-m1
         featureprops:
           - type:
               name: description

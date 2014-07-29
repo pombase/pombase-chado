@@ -156,6 +156,7 @@ method _load_test_features($chado)
     my $gene =
       $chado->resultset('Sequence::Feature')->create({
         uniquename => $gene_data->{uniquename},
+        name => $gene_data->{name},
         organism_id => $organism->organism_id(),
         type_id => $gene_type->cvterm_id(),
       });
