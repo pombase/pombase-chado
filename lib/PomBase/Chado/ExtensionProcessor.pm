@@ -418,11 +418,12 @@ method process_one_annotation($featurecvterm, $extension_text)
             my $organism = $self->find_organism_by_common_name('pombe');
             try {
               my $ref_feature =
-                $self->find_chado_feature($identifier, 1, 1, $organism);
+                $self->find_chado_feature($identifier, 1, 1, $organism, ['gene']);
               $identifier = $ref_feature->uniquename();
             } catch {
               chomp (my $message = $_);
-              warn "in extension for $feature_uniquename, can't find feature with identifier: $identifier\n";
+              warn "in extension for $feature_uniquename, can't find " .
+                "feature with identifier: $identifier - $message\n";
             };
           } else {
             if ($identifier =~ /^(Pfam:PF\d+)$/) {
