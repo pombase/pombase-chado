@@ -177,7 +177,9 @@ method store_extension($feature_cvterm, $extensions)
           warn "checking for obsolete $rel_name in $rel_cv_name\n" if $self->verbose;
           $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name,
                                             include_obsolete => 1);
-          die "found relation term $rel_name in $rel_cv_name but it's obsolete\n";
+          if (defined $rel) {
+            die "found relation term $rel_name in $rel_cv_name but it's obsolete\n";
+          }
         }
 
         die "NOT FOUND $rel_name";
