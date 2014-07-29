@@ -57,7 +57,7 @@ is ($klp5_feature->uniquename(), 'SPBC2F12.13');
 $klp5_feature = $test->find_chado_feature('klp5', 1, 0, $organism);
 is ($klp5_feature->uniquename(), 'SPBC2F12.13');
 
-my $ssm4_feature = $test->find_chado_feature('ssm4', 1, 0, $organism, ['gene']);
+my $ssm4_feature = $test->find_chado_feature('ssm4', 1, 0, $organism, ['gene', 'pseudogene']);
 is ($ssm4_feature->uniquename(), 'SPAC27D7.13c');
 
 my $ssm4_m1_feature = $test->find_chado_feature('ssm4-m1', 1, 0, $organism, ['allele']);
