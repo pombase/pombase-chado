@@ -107,7 +107,7 @@ method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism, $
 
    if ($try_name) {
      if ($ignore_case) {
-       my @results = $rs->search(\[ "LOWER(name) = ?",
+       my @results = $rs->search(\[ "LOWER(me.name) = ?",
                                  [ plain_value => lc $systematic_id ]])->all();
        if (@results > 1) {
          die "too many matches for $systematic_id\n";
@@ -115,7 +115,7 @@ method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism, $
          $feature = $results[0];
        }
      } else {
-       $feature = $rs->find({ name => $systematic_id });
+       $feature = $rs->find({ 'me.name' => $systematic_id });
      }
 
      if (defined $feature) {
