@@ -90,9 +90,24 @@ method get_cvterm($cv_name, $cvterm_name)
   return $cvterm;
 }
 
-# find cvterm by query with name or cvtermsynonym
-method find_cvterm_by_name($cv, $term_name, %options) {
+=head2 find_cvterm_by_name
+
+ Usage   : my $cvterm = $self->find_cvterm_by_name($cv, 'during', %options);
+ Function: find cvterm by query with name or cvtermsynonym
+ Args    : $cv - the Cv::Cv object or the name of the Cv to query
+           $term_name - the term name or synonym
+           %options - optional, possibilities:
+               include_obsolete - if true query obsolete terms (default false)
+               prefetch_dbxref - if true prefetch the Dbxref object
+               query_synonyms - if true, query cvtermsynonyms too
+                                (default true)
+ Return  : The Cv::Cvterm object
+
+=cut
+
+method find_cvterm_by_name($cv, $term_name,%options) {
   $options{include_obsolete} //= 0;
+  $options{query_synonyms} //= 1;
 
   if (!defined $cv) {
     carp "cv is undefined";
@@ -107,10 +122,12 @@ method find_cvterm_by_name($cv, $term_name, %options) {
     }
   }
 
+  warn "    find_cvterm_by_name('", $cv->name(), "', '$term_name')\n" if $self->verbose();
+
   state $cache = {};
 
   if (exists $cache->{$cv->name()}->{$term_name}) {
-    warn "      found as $term_name in cache\n" if $self->verbose();
+    warn "      found $term_name in cache\n" if $self->verbose();
     if (!defined $cache->{$cv->name()}->{$term_name}) {
       croak "$term_name from ", $cv->name(), " was stored as undef in cache\n";
     }
@@ -134,9 +151,12 @@ method find_cvterm_by_name($cv, $term_name, %options) {
                                 { %search_options });
 
   if (defined $cvterm) {
+    warn "      found $term_name in DB\n" if $self->verbose();
     $cache->{$cv->name()}->{$term_name} = $cvterm;
     return $cvterm;
   } else {
+    return undef unless $options{query_synonyms};
+
     my $synonym_rs = $self->chado()->resultset('Cv::Cvtermsynonym');
     my $exact_cvterm = $self->get_cvterm('synonym_type', 'exact');
     my $search_rs =
