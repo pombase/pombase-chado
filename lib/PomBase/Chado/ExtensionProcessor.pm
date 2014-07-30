@@ -168,8 +168,18 @@ method store_extension($feature_cvterm, $extensions)
 
       for my $rel_cv_name (@rel_cv_names) {
         warn "checking for $rel_name in $rel_cv_name\n" if $self->verbose;
-        $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name);
+        $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name,
+                                          query_synonyms => 0);
         last if defined $rel;
+      }
+
+      if (!defined $rel) {
+        for my $rel_cv_name (@rel_cv_names) {
+          warn "checking for $rel_name using cvtermsynonyms in $rel_cv_name\n" if $self->verbose;
+          $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name,
+                                            query_synonyms => 1);
+          last if defined $rel;
+        }
       }
 
       if (!defined $rel) {
