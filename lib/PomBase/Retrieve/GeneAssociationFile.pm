@@ -325,9 +325,9 @@ method retrieve() {
           warn "no evidence for ", $feature->uniquename(), " <-> ", $cvterm->name() , "\n";
           goto ROW;
         }
-        my $evidence_code = $self->evidence_to_code()->{$evidence};
+        my $evidence_code = $self->config()->{evidence_name_to_code}->{lc $evidence};
         if (!defined $evidence_code) {
-          warn q|can't find the evidence code for "$evidence"|;
+          warn qq|can't find the evidence code for "$evidence"|;
           goto ROW;
         }
         my $aspect = $cv_abbreviations{$cv_name};

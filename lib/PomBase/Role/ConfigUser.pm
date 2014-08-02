@@ -38,6 +38,6 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
-has config => (is => 'ro', required => 1, isa => 'HashRef');
+has config => (is => 'ro', required => 1, isa => 'PomBase::Config');
 
 1;

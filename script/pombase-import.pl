@@ -5,7 +5,6 @@ use Moose;
 
 use Getopt::Long qw(:config pass_through);
 use lib qw(lib);
-use YAML qw(LoadFile);
 
 my $dry_run = 0;
 my $verbose = 0;
@@ -107,12 +106,13 @@ if (@ARGV > 0) {
 
 use PomBase::Chado;
 use PomBase::Chado::IdCounter;
+use PomBase::Config;
 
 my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
 my $guard = $chado->txn_scope_guard;
 
-my $config = LoadFile($config_file);
+my $config = PomBase::Config->new(file_name => $config_file);
 
 my $id_counter = PomBase::Chado::IdCounter->new(config => $config,
                                                 chado => $chado);

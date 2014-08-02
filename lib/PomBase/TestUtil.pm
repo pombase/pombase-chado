@@ -43,7 +43,7 @@ use File::Temp qw(tempfile);
 use Bio::Chado::Schema;
 use PomBase::Chado::IdCounter;
 
-has config => (is => 'rw', init_arg => undef, isa => 'HashRef');
+has config => (is => 'rw', init_arg => undef, isa => 'PomBase::Config');
 has test_config => (is => 'rw', init_arg => undef, isa => 'HashRef');
 has chado => (is => 'rw', init_arg => undef, isa => 'Bio::Chado::Schema');
 has verbose => (is => 'rw');
@@ -198,7 +198,7 @@ method BUILD
   my @cvs_to_copy = ("PomBase allele types");
 
   my $config = LoadFile('load-pombase-chado.yaml');
-  $self->config($config);
+  $self->config(PomBase::Config->new(hash => $config));
 
   for my $cv_to_copy (@cvs_to_copy) {
     push @{$test_config->{data}->{cv}},

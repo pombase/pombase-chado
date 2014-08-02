@@ -36,13 +36,15 @@ my $username = shift;
 my $password = shift;
 
 use PomBase::Chado;
+use PomBase::Config;
+
 my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
 if (! -e $config_file) {
   die "can't load config from $config_file: file not found\n";
 }
 
-my $config = LoadFile($config_file);
+my $config = PomBase::Config->new(file_name => $config_file);
 
 if (!defined $config) {
   die "can't load config from $config_file: file is empty\n";

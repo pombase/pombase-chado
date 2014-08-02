@@ -319,13 +319,11 @@ method retrieve() {
           if (defined $self->config()->{evidence_types}->{$evidence}) {
             $evidence_code = $evidence;
           } else {
-            $evidence_code = $self->evidence_to_code()->{$evidence};
+            # maybe the name is used instead of the code
+            $evidence_code = $config->{evidence_name_to_code}->{lc $evidence};
             if (!defined $evidence_code) {
-              $evidence_code = $self->evidence_to_code()->{ucfirst lc $evidence};
-              if (!defined $evidence_code) {
-                warn qq|cannot find the evidence code for "$evidence"|;
-                goto ROW;
-              }
+              warn qq|cannot find the evidence code for "$evidence"|;
+              goto ROW;
             }
           }
         } else {

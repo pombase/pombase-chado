@@ -66,11 +66,13 @@ if (@ARGV > 0) {
 }
 
 use PomBase::Chado;
+use PomBase::Config;
 use PomBase::Chado::IdCounter;
 
 my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 my $guard = $chado->txn_scope_guard;
-my $config = LoadFile($config_file);
+
+my $config = PomBase::Config->new(file_name => $config_file);
 
 my %process_modules = (
   'go-filter' => 'PomBase::Chado::GOFilter',
