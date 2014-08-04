@@ -185,16 +185,20 @@ SQL
       push @do_not_update_rows, $feature_cvterm_id;
     }
 
-    my $placeholders = join ",", (('?') x @do_not_update_rows);
-
-    $sth = $dbh->prepare(<<"SQL"
+    my $sql = <<"SQL";
 UPDATE feature_cvterm SET cvterm_id =
  (SELECT to_cvterm_id FROM $temp_cvterm_ids_table
    WHERE cvterm_id = from_cvterm_id)
  WHERE cvterm_id IN (SELECT from_cvterm_id FROM $temp_cvterm_ids_table)
-   AND feature_cvterm_id NOT IN ($placeholders)
 SQL
-);
+
+    if (@do_not_update_rows) {
+      my $placeholders = join ",", (('?') x @do_not_update_rows);
+
+      $sql .= "   AND feature_cvterm_id NOT IN ($placeholders)";
+    }
+
+    $sth = $dbh->prepare();
 
     $sth->execute(@do_not_update_rows);
   };
