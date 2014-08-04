@@ -474,14 +474,19 @@ method _store_ontology_annotation
 
 # split any annotation with an extension with a vertical bar into multiple
 # annotations
-method _split_vert_bar($annotation)
+method _split_vert_bar($error_prefix, $annotation)
 {
   my $extension_text = $annotation->{annotation_extension};
 
   if (defined $extension_text) {
     if ($extension_text =~ /\|\s*$/) {
-      die qq(trailing "|" in annotation_extension: "$extension_text"\n);
+      warn $error_prefix . qq(trailing "|" in annotation_extension: "$extension_text"\n);
+      $extension_text =~ s/\|\s*$//;
+
+      $annotation->{annotation_extension} = $extension_text;
     }
+
+warn "$extension_text\n";
 
     my @ex_bits = split /\|/, $extension_text;
 
@@ -674,7 +679,7 @@ method load($fh)
 
     my $error_prefix = "warning in $canto_session: ";
 
-    @annotations = map { $self->_split_vert_bar($_); } @annotations;
+    @annotations = map { $self->_split_vert_bar($error_prefix, $_); } @annotations;
 
     for my $annotation (@annotations) {
       try {
