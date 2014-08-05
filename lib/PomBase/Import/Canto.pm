@@ -486,8 +486,6 @@ method _split_vert_bar($error_prefix, $annotation)
       $annotation->{annotation_extension} = $extension_text;
     }
 
-warn "$extension_text\n";
-
     my @ex_bits = split /\|/, $extension_text;
 
     if (@ex_bits > 1) {
