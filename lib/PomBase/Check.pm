@@ -56,7 +56,7 @@ method _do_query_checks() {
     my $name = $check->{name};
     my $query = $check->{query};
     # if true, show the result set content on failure:
-    my $verbose_fail = $check->{verbose_fail};
+    my $verbose_fail = $check->{verbose_fail} && $check->{verbose_fail} eq 'true';
     my $expected_conf = $check->{expected} //
       die "expected value not set for $name\n";
     print "$name - ";
