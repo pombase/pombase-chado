@@ -198,7 +198,7 @@ SQL
       $sql .= "   AND feature_cvterm_id NOT IN ($placeholders)";
     }
 
-    $sth = $dbh->prepare();
+    $sth = $dbh->prepare($sql);
 
     $sth->execute(@do_not_update_rows);
   };
