@@ -101,7 +101,7 @@ method add_feature_dbxref($feature, $dbxref_value)
 
 method get_pub_from_db_xref($qual, $db_xref) {
   if (defined $db_xref) {
-    if ($db_xref =~ /^((\w+):(.+))/) {
+    if ($db_xref =~ /^((\w+):(.+))/ && ($1 eq 'PMID' && $2->is_integer())) {
       return $self->find_or_create_pub($db_xref);
     } else {
       warn "qualifier ($qual) has unknown format db_xref (", $db_xref,
