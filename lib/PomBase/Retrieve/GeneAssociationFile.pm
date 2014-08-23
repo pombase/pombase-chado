@@ -40,6 +40,8 @@ use perl5i::2;
 use Moose;
 use feature 'state';
 
+use Getopt::Long qw(GetOptionsFromArray :config pass_through);
+
 use List::Gen 'iterate';
 
 with 'PomBase::Role::ConfigUser';
@@ -52,6 +54,26 @@ with 'PomBase::Role::ExtensionDisplayer';
 
 my @go_cv_names = qw(biological_process cellular_component molecular_function);
 my $ext_cv_name = 'PomBase annotation extension terms';
+
+has filter_by_term => (is => 'rw');
+
+sub BUILDARGS
+{
+  my $class = shift;
+  my %args = @_;
+
+  my $filter_by_term = undef;
+
+  my @opt_config = ("filter-by-term=s" => \$filter_by_term);
+
+  if (!GetOptionsFromArray($args{options}, @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  $args{filter_by_term} = $filter_by_term;
+
+  return \%args;
+}
 
 method _get_feature_details
 {
@@ -261,9 +283,26 @@ method retrieve() {
       ]);
 
     my $cvterm_rs =
-      $chado->resultset('Cv::Cvterm')->search({
-        cv_id => { -in => $cv_rs->get_column('cv_id')->as_query() } }
-                                            );
+      $chado->resultset('Cv::Cvterm')->search(
+        {
+          cv_id => { -in => $cv_rs->get_column('cv_id')->as_query() }
+        }
+      );
+
+    if ($self->filter_by_term()) {
+      if (my ($db_name, $accession) = $self->filter_by_term() =~ /^(\w+):(\d+)$/) {
+        my $where = "me.cvterm_id in " .
+          "(select subject_id from cvtermpath cp " .
+          "join cvterm t on cp.object_id = t.cvterm_id " .
+          "join dbxref x on x.dbxref_id = t.dbxref_id " .
+          "join db on x.db_id = db.db_id " .
+          "where db.name = '$db_name' and x.accession = '$accession')";
+        $cvterm_rs = $cvterm_rs->search({}, {
+          where => \$where,
+        });
+      }
+    }
+
     my $feature_cvterm_rs =
       $chado->resultset('Sequence::FeatureCvterm')->search(
         {

@@ -10,11 +10,16 @@ sub usage
 {
   die qq($0: needs six arguments:
   config_file   - the YAML format configuration file name
-  retrieve_type - eg. "phenotypes", "orthologs", "ontology"
+  export_type - eg. "phenotypes", "orthologs", "ontology", "gaf"
   host          - the machine hosting the database
   database_name - the Chado database name
   username      - the database user name
   password      - the database password
+
+Options for the "gaf" export type:
+    --filter-by-term=<term> - only export annotations using the given term or
+                              its descendents
+    --organism-taxon-id=<id> - NCBI taxon ID of the annotations to export
 );
 }
 
