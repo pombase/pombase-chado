@@ -41,6 +41,7 @@ use YAML qw(LoadFile);
 use File::Temp qw(tempfile);
 
 use Bio::Chado::Schema;
+use PomBase::Config;
 use PomBase::Chado::IdCounter;
 
 has config => (is => 'rw', init_arg => undef, isa => 'PomBase::Config');
