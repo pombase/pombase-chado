@@ -398,6 +398,10 @@ method retrieve() {
                 $so_type, $taxon, $date, $assigned_by, $extensions // '',
                 $gene_product_form_id];
       } else {
+        if (defined $self->filter_by_term()) {
+          return undef;
+        }
+
         if (!defined $nd_rows) {
           $nd_rows = _make_nd_rows(\%feature_details, \%gene_aspect_count);
         }
