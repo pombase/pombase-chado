@@ -56,6 +56,7 @@ my @go_cv_names = qw(biological_process cellular_component molecular_function);
 my $ext_cv_name = 'PomBase annotation extension terms';
 
 has filter_by_term => (is => 'rw');
+has filter_term_by_sql => (is => 'rw');
 
 sub BUILDARGS
 {
@@ -63,14 +64,17 @@ sub BUILDARGS
   my %args = @_;
 
   my $filter_by_term = undef;
+  my $filter_term_by_sql = undef;
 
-  my @opt_config = ("filter-by-term=s" => \$filter_by_term);
+  my @opt_config = ("filter-by-term=s" => \$filter_by_term,
+                    "filter-term-by-sql=s" => \$filter_term_by_sql);
 
   if (!GetOptionsFromArray($args{options}, @opt_config)) {
     croak "option parsing failed";
   }
 
   $args{filter_by_term} = $filter_by_term;
+  $args{filter_term_by_sql} = $filter_term_by_sql;
 
   return \%args;
 }
@@ -269,6 +273,12 @@ method retrieve() {
   my $chado = $self->chado();
 
   my $db_name = $self->config()->{database_name};
+
+  if (!defined $db_name) {
+    die qq(For GAF export the "database_name" option must be set in the ) .
+      "configuration file\n";
+  }
+
   my $taxon = 'taxon:' . $self->organism_taxonid();
   my $date_now = _current_date();
 
@@ -301,6 +311,13 @@ method retrieve() {
           where => \$where,
         });
       }
+    }
+
+    if ($self->filter_term_by_sql()) {
+      my $where = 'me.cvterm_id in (' . $self->filter_term_by_sql() . ')';
+      $cvterm_rs = $cvterm_rs->search({}, {
+        where => \$where,
+      });
     }
 
     my $feature_cvterm_rs =
@@ -398,7 +415,7 @@ method retrieve() {
                 $so_type, $taxon, $date, $assigned_by, $extensions // '',
                 $gene_product_form_id];
       } else {
-        if (defined $self->filter_by_term()) {
+        if (defined $self->filter_by_term() || defined $self->filter_term_by_sql()) {
           return undef;
         }
 

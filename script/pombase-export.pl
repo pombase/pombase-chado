@@ -19,6 +19,8 @@ sub usage
 Options for the "gaf" export type:
     --filter-by-term=<term> - only export annotations using the given term or
                               its descendents
+    --filter-term-by-sql=<sql> - filter rows by cvterm_id, this should be a
+                                 valid SQL that returns cvterm_id rows.
     --organism-taxon-id=<id> - NCBI taxon ID of the annotations to export
 );
 }
