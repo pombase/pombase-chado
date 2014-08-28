@@ -411,6 +411,11 @@ data:
             accession: 0030002
             db:
               name: PBO
+        - name: uniprot_identifier
+          dbxref:
+            accession: 0030003
+            db:
+              name: PBO
     - name: species_dist
       cvterms:
         - name: 'predominantly single copy (one to one)'
@@ -791,6 +796,10 @@ test_genes:
   - uniquename: SPBC2F12.13
     name: klp5
     taxonid: 4896
+    featureprops:
+      - type:
+          name: uniprot_identifier
+        value: O59751
   - uniquename: SPAC1093.06c
     taxonid: 4896
   - uniquename: SPCC576.16c

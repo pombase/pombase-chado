@@ -131,10 +131,29 @@ method BUILD
   $self->use_first_with_id($use_first_with_id);
 }
 
+method _read_uniprot_ids ()
+{
+  my $chado = $self->chado();
+
+  my %id_map = ();
+
+  my $rs = $chado->resultset('Sequence::Featureprop')
+    ->search({ 'type.name' => 'uniprot_identifier' },
+             { join => ['type', { feature => 'type' } ] });
+
+  while (defined (my $prop = $rs->next())) {
+    $id_map{$prop->value()} = $prop->feature()->uniquename();
+  }
+
+  return %id_map;
+}
+
 method load($fh)
 {
   my $chado = $self->chado();
   my $config = $self->config();
+
+  my %pombase_uniprot = $self->_read_uniprot_ids();
 
   my @assigned_by_filter = @{$self->assigned_by_filter};
   my %assigned_by_filter = map { $_ => 1 } @assigned_by_filter;
@@ -260,6 +279,10 @@ method load($fh)
           warn "ignoring line because of with filter: $with_or_from\n";
         }
         next LINE;
+      }
+
+      if ($with_or_from =~ /^UniProtKB:(\w+)$/ && defined $pombase_uniprot{$1}) {
+        $withs_and_froms[$i] = "PomBase:$pombase_uniprot{$1}";
       }
     }
 

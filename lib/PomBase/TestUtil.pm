@@ -154,13 +154,18 @@ method _load_test_features($chado)
 
   for my $gene_data (@{$self->test_config()->{test_genes}}) {
     my $organism = $orgs_by_taxon{$gene_data->{taxonid}};
-    my $gene =
-      $chado->resultset('Sequence::Feature')->create({
+    my %feature_create_args =
+      (
         uniquename => $gene_data->{uniquename},
         name => $gene_data->{name},
         organism_id => $organism->organism_id(),
         type_id => $gene_type->cvterm_id(),
-      });
+      );
+    if (defined $gene_data->{featureprops}) {
+      $feature_create_args{featureprops} = $gene_data->{featureprops};
+    }
+    my $gene =
+      $chado->resultset('Sequence::Feature')->create({ %feature_create_args });
     $chado->resultset('Sequence::Feature')->create({
       uniquename => $gene_data->{uniquename} . '.1',
       organism_id => $organism->organism_id(),
