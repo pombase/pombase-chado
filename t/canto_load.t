@@ -12,7 +12,7 @@ my $config = $test_util->config();
 use PomBase::Import::Canto;
 
 my $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 6);
+is($annotations->count(), 7);
 
 my $feature_rs = $chado->resultset('Sequence::Feature');
 is($feature_rs->count(), 19);
