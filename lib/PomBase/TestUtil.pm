@@ -203,8 +203,9 @@ method BUILD
 
   my @cvs_to_copy = ("PomBase allele types");
 
-  my $config = LoadFile('load-pombase-chado.yaml');
-  $self->config(PomBase::Config->new(hash => $config));
+  my $raw_config = LoadFile('load-pombase-chado.yaml');
+  my $config = PomBase::Config->new(hash => $raw_config);
+  $self->config($config);
 
   for my $cv_to_copy (@cvs_to_copy) {
     push @{$test_config->{data}->{cv}},
