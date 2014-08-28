@@ -50,6 +50,11 @@ method BUILD
   if (defined $self->file_name()) {
     my $load_config = LoadFile($self->file_name());
 
+    if (!defined $load_config) {
+      die "failed to read any configuration from: ", $self->file_name(),
+        " - is the file empty?\n";
+    }
+
     %new_data = %$load_config;
   } else {
     if (defined $self->hash()) {
