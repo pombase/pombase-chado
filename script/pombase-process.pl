@@ -78,6 +78,7 @@ my %process_modules = (
   'go-filter' => 'PomBase::Chado::GOFilter',
   'update-allele-names' => 'PomBase::Chado::UpdateAlleleNames',
   'change-terms' => 'PomBase::Chado::ChangeTerms',
+  'uniprot-ids-to-local' => 'PomBase::Chado::UniProtIDsToLocal',
 );
 
 my $process_module = $process_modules{$process_type};
