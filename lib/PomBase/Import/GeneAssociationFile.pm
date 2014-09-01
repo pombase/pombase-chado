@@ -50,6 +50,7 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
+with 'PomBase::Role::UniProtIDMap';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
@@ -131,29 +132,10 @@ method BUILD
   $self->use_first_with_id($use_first_with_id);
 }
 
-method _read_uniprot_ids ()
-{
-  my $chado = $self->chado();
-
-  my %id_map = ();
-
-  my $rs = $chado->resultset('Sequence::Featureprop')
-    ->search({ 'type.name' => 'uniprot_identifier' },
-             { join => ['type', { feature => 'type' } ] });
-
-  while (defined (my $prop = $rs->next())) {
-    $id_map{$prop->value()} = $prop->feature()->uniquename();
-  }
-
-  return %id_map;
-}
-
 method load($fh)
 {
   my $chado = $self->chado();
   my $config = $self->config();
-
-  my %pombase_uniprot = $self->_read_uniprot_ids();
 
   my @assigned_by_filter = @{$self->assigned_by_filter};
   my %assigned_by_filter = map { $_ => 1 } @assigned_by_filter;
@@ -281,8 +263,9 @@ method load($fh)
         next LINE;
       }
 
-      if ($with_or_from =~ /^UniProtKB:(\w+)$/ && defined $pombase_uniprot{$1}) {
-        $withs_and_froms[$i] = "PomBase:$pombase_uniprot{$1}";
+      my $local_id = $self->lookup_uniprot_id($with_or_from);
+      if (defined $local_id) {
+        $withs_and_froms[$i] = $self->config()->{database_name} . ":$local_id";
       }
     }
 
