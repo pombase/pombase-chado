@@ -64,6 +64,7 @@ my %retrieve_modules = (
   ontology => 'PomBase::Retrieve::Ontology',
   gaf => 'PomBase::Retrieve::GeneAssociationFile',
   phaf => 'PomBase::Retrieve::PhenotypeAnnotationFormat',
+  'go-physical-interactions' => 'PomBase::Retrieve::GOPhysicalInteractions',
 );
 
 my $retrieve_module = $retrieve_modules{$retrieve_type};
