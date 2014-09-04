@@ -65,6 +65,7 @@ my %retrieve_modules = (
   gaf => 'PomBase::Retrieve::GeneAssociationFile',
   phaf => 'PomBase::Retrieve::PhenotypeAnnotationFormat',
   'go-physical-interactions' => 'PomBase::Retrieve::GOPhysicalInteractions',
+  'go-substrates' => 'PomBase::Retrieve::GOSubstrates',
 );
 
 my $retrieve_module = $retrieve_modules{$retrieve_type};
