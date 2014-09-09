@@ -61,11 +61,11 @@ method process()
 
   my $go_cvterms_query = <<'EOQ';
 CREATE TEMP TABLE go_cvterms AS
-SELECT cvterm.* FROM cvterm, cv
-WHERE
-  cvterm.cv_id = cv.cv_id
-AND
-  cv.name in ('biological_process', 'cellular_component', 'molecular_function');
+SELECT t.* FROM cvterm t
+  JOIN pombase_feature_cvterm_ext_resolved_terms res ON t.cvterm_id = res.cvterm_id
+ WHERE res.base_cv_name IN ('biological_process', 'cellular_component', 'molecular_function');
+
+CREATE INDEX go_cvterms_cvterm_id_idx on go_cvterms(cvterm_id);
 EOQ
 
   my $sth = $dbh->prepare($go_cvterms_query);
