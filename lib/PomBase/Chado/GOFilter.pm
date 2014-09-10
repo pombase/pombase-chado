@@ -74,9 +74,9 @@ EOQ
   my $poor_ev_query = <<'EOQ';
 CREATE TEMP TABLE poor_evidence_fcs AS
 SELECT feature_cvterm.* FROM feature_cvterm, feature_cvtermprop prop,
-       cvterm prop_type, go_cvterms
+       cvterm prop_type
 WHERE
-  feature_cvterm.cvterm_id = go_cvterms.cvterm_id
+  feature_cvterm.cvterm_id in (select cvterm_id from go_cvterms)
 AND
   feature_cvterm.feature_cvterm_id = prop.feature_cvterm_id
 AND
