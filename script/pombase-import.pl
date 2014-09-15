@@ -22,7 +22,7 @@ my %input_types = (
   quantitative => 'PomBase::Import::Quantitative',
   qualitative => 'PomBase::Import::Qualitative',
   modification => 'PomBase::Import::Modification',
-  phenotype_annotation => 'PomBase::Import::PhenotypeAnnotation',
+  'phenotype-annotation' => 'PomBase::Import::PhenotypeAnnotation',
 );
 
 sub usage
