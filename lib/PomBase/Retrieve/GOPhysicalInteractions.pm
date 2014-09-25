@@ -94,6 +94,10 @@ method retrieve() {
             goto ROW;
           }
 
+          if ($with_identifier =~ /^GO:/) {
+            goto ROW;
+          }
+
           my @withs = split /\|/, $with_identifier;
 
           if (@withs > 1) {
