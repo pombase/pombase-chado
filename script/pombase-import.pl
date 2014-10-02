@@ -129,7 +129,7 @@ $import_module->new(chado => \$chado, config => \$config,
                     verbose => \$verbose,
                     options => [\@options]);
     };
-  die "$@" if $@;
+  die "import failed: $@" if $@;
 } else {
   die "unknown type to import: $import_type\n";
 }
