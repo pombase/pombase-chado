@@ -193,7 +193,7 @@ func _fix_with($db_name, $with)
 {
   if ($with =~ /:/) {
     if ($with =~ /GeneDB_Spombe/) {
-      die $with;
+      die qq("GeneDB_Spombe:" from "$with" is obsolete\n);
     }
     return $with;
   } else {
