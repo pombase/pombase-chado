@@ -207,6 +207,17 @@ method BUILD
   my $config = PomBase::Config->new(hash => $raw_config);
   $self->config($config);
 
+  $config->{extension_relation_cv_names} =
+    [
+      qw(
+          relationship
+          gene_ex_extension_relations
+          go/extensions/gorel
+          fypo_extension_relations
+          PSI-MOD_extension_relations
+      )
+    ];
+
   for my $cv_to_copy (@cvs_to_copy) {
     push @{$test_config->{data}->{cv}},
       {
