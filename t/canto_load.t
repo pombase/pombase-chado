@@ -27,7 +27,7 @@ $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 14);
+is($annotations->count(), 15);
 
 my $test_term_count = 0;
 

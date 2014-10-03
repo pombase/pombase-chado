@@ -416,6 +416,11 @@ data:
             accession: 0030003
             db:
               name: PBO
+        - name: canto_session
+          dbxref:
+            accession: 0030004
+            db:
+              name: PBO
     - name: species_dist
       cvterms:
         - name: 'predominantly single copy (one to one)'
