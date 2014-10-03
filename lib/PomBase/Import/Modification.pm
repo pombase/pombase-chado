@@ -116,7 +116,7 @@ method load($fh)
 
     my $feature;
     try {
-      $feature = $self->find_chado_feature($systematic_id, 1, 0, $organism);
+      $feature = $self->find_chado_feature("$systematic_id.1", 1, 0, $organism);
     } catch {
       warn "skipping annotation: $_";
     };
