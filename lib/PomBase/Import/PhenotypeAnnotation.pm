@@ -94,7 +94,7 @@ method load($fh)
     my $gene_systemtic_id = $columns_ref->{"gene_systemtic_id"}->trim();
 
     if ($gene_systemtic_id =~ /^#/ ||
-        ($. == 1 && $gene_systemtic_id =~ 'Gene .*ID')) {
+        ($. == 1 && $gene_systemtic_id =~ /Gene .*ID/)) {
       next;
     }
 
