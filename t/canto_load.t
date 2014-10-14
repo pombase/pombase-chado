@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 15;
+use Test::More tests => 14;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -15,7 +15,7 @@ my $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 7);
 
 my $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 19);
+is($feature_rs->count(), 21);
 
 
 my $importer =
@@ -37,7 +37,7 @@ while (defined (my $fc = $annotations->next())) {
 
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1:allele-1' &&
       $fc->cvterm->name() eq
-      'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPAC2F7.03c [requires_feature] Pfam:PF00564') {
+      'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564') {
     $test_term_count++;
     cmp_deeply(\%prop_hash,
                {
@@ -51,6 +51,8 @@ while (defined (my $fc = $annotations->next())) {
                  'with' => 'PomBase:SPCC576.16c',
                  'condition' => 'PECO:0000012',
                  'canto_session' => 'aaaa0007',
+                 'approved_timestamp' => '2014-10-07 02:51:14',
+                 'approver_email' => 'val@sanger.ac.uk',
                });
   }
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
@@ -65,11 +67,13 @@ while (defined (my $fc = $annotations->next())) {
                  'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
                  'canto_session' => 'aaaa0007',
+                 'approved_timestamp' => '2014-10-07 02:51:14',
+                 'approver_email' => 'val@sanger.ac.uk',
                });
   }
 
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
-      $fc->cvterm()->name() eq 'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC2F12.13') {
+      $fc->cvterm()->name() eq 'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c') {
     $test_term_count++;
     cmp_deeply(\%prop_hash,
                {
@@ -81,25 +85,45 @@ while (defined (my $fc = $annotations->next())) {
                  'assigned_by' => 'PomBase',
                  'with' => 'PomBase:SPCC576.16c',
                  'canto_session' => 'aaaa0007',
+                 'approved_timestamp' => '2014-10-07 02:51:14',
+                 'approver_email' => 'val@sanger.ac.uk',
                });
   }
 }
 
 is($test_term_count, 3);
 
-my $allele = $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPAC27D7.13c:allele-2' });
-ok(defined $allele);
-
-is($allele->name(), 'ssm4-D4');
-is($allele->search_featureprops('description')->first()->value(), 'del_100-200');
-
 $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 21);
+is($feature_rs->count(), 29);
 
-my @allele_cvterms = map { $_->cvterm(); } $allele->feature_cvterms();
-is(@allele_cvterms, 1);
-is($allele_cvterms[0]->name(), 'elongated cells');
+my $genotype_1 = $chado->resultset('Sequence::Feature')
+  ->find({ uniquename => 'aaaa0007-genotype-1' });
 
+my @genotype_1_cvterms = map { $_->cvterm(); } $genotype_1->feature_cvterms();
+is(@genotype_1_cvterms, 1);
+is($genotype_1_cvterms[0]->name(), 'T-shaped cells');
+
+my @genotype_1_alleles = $genotype_1->child_features();
+
+is (scalar(@genotype_1_alleles), 2);
+
+cmp_deeply(
+  [sort {
+    $a->{uniquename} cmp $b->{uniquename};
+  } map {
+    { uniquename => $_->uniquename(),
+      name => $_->name() };
+  } @genotype_1_alleles],
+  [
+    {
+      'uniquename' => 'SPAC27D7.13c:allele-2',
+      'name' => 'ssm4delta',
+    },
+    {
+      'uniquename' => 'SPCC63.05:allele-1',
+      'name' => 'SPCC63.05delta',
+    }
+  ]);
 
 my $interaction_gene = $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPCC63.05' });
 my $feature_rel_rs = $chado->resultset('Sequence::FeatureRelationship')

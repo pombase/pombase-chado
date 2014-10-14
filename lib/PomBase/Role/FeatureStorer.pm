@@ -48,7 +48,13 @@ requires 'find_or_create_pub';
 
 method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
 {
-  my $so_cvterm = $self->get_cvterm('sequence', $so_type);
+  my $feature_type_term;
+
+  if ($so_type eq 'genotype') {
+    $feature_type_term = $self->get_cvterm('PomBase extra feature types', $so_type);
+  } else {
+    $feature_type_term = $self->get_cvterm('sequence', $so_type);
+  }
 
   use Carp qw(cluck);
 
@@ -57,10 +63,10 @@ method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
   warn "  storing $uniquename/", ($name ? $name : 'no_name'),
     " ($so_type)\n" if $self->verbose();
 
-  die "can't find cvterm for $so_type\n" unless defined $so_cvterm;
+  die "can't find SO cvterm for $so_type\n" unless defined $feature_type_term;
 
   my %create_args = (
-    type_id => $so_cvterm->cvterm_id(),
+    type_id => $feature_type_term->cvterm_id(),
     uniquename => $uniquename,
     organism_id => $organism->organism_id(),
   );
