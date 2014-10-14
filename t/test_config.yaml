@@ -138,6 +138,13 @@ data:
             accession: orthologous_to
             db:
               name: SO
+    - name: PomBase extra feature types
+      cvterms:
+        - name: genotype
+          dbxref:
+            accession: genotype
+            db:
+              name: PBO
     - name: molecular_function
       cvterms:
         - name: microtubule motor activity
@@ -566,6 +573,12 @@ data:
       organism:
         genus: Schizosacchaomyces
         species: pombe
+    - uniquename: SPBC1105.11c
+      type:
+        name: gene
+      organism:
+        genus: Schizosacchaomyces
+        species: pombe
     - uniquename: ENSG00000124562
       type:
         name: gene
@@ -808,6 +821,8 @@ test_genes:
   - uniquename: SPAC1093.06c
     taxonid: 4896
   - uniquename: SPCC576.16c
+    taxonid: 4896
+  - uniquename: SPBC1105.11c
     taxonid: 4896
   - uniquename: SPAC27D7.13c
     name: ssm4

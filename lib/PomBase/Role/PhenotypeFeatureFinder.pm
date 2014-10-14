@@ -43,6 +43,7 @@ requires 'get_cvterm';
 requires 'find_chado_feature';
 requires 'find_organism_by_full_name';
 requires 'store_feature_rel';
+requires 'config';
 
 has allele_types => (is => 'rw', init_arg => undef, lazy_build => 1);
 
@@ -84,13 +85,24 @@ method get_gene($gene_data)
   return $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
 }
 
-method get_transcript($gene_data)
+method get_transcript($gene)
 {
-  my $gene_uniquename = $gene_data->{uniquename};
-  my $organism_name = $gene_data->{organism};
-  my $organism = $self->find_organism_by_full_name($organism_name);
+  return $self->find_chado_feature($gene->uniquename() . ".1", 1, 1, $gene->organism());
+}
 
-  return $self->find_chado_feature("$gene_uniquename.1", 1, 1, $organism);
+method get_genotype($genotype_identifier, $genotype_name, $alleles)
+{
+  my $organism = $alleles->[0]->organism();
+
+  my $genotype = $self->store_feature($genotype_identifier,
+                                      $genotype_name, [], 'genotype',
+                                      $organism);
+
+  map {
+    $self->store_feature_rel($_, $genotype, 'part_of');
+  } @$alleles;
+
+  return $genotype;
 }
 
 func _get_allele_description($allele) {
@@ -266,12 +278,16 @@ method get_allele($allele_data)
     $gene = $allele_data->{gene};
   }
 
-  if (exists $allele_data->{primary_identifier}) {
+  my $canto_session = $allele_data->{canto_session};
+
+  if (exists $allele_data->{primary_identifier} &&
+      $allele_data->{primary_identifier} !~ /:($canto_session)-\d+$/) {
     $allele = $self->chado()->resultset('Sequence::Feature')
                    ->find({ uniquename => $allele_data->{primary_identifier},
                             organism_id => $gene->organism()->organism_id() });
     if (!defined $allele) {
       use Data::Dumper;
+      $Data::Dumper::Maxdepth = 3;
       die "failed to find allele from: ", Dumper([$allele_data]);
     }
 
