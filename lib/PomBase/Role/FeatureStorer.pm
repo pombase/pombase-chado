@@ -48,7 +48,13 @@ requires 'find_or_create_pub';
 
 method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
 {
-  my $feature_type_term = $self->get_cvterm('sequence', $so_type);
+  my $feature_type_term;
+
+  if ($so_type eq 'genotype') {
+    $feature_type_term = $self->get_cvterm('PomBase extra feature types', $so_type);
+  } else {
+    $feature_type_term = $self->get_cvterm('sequence', $so_type);
+  }
 
   use Carp qw(cluck);
 

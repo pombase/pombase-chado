@@ -138,6 +138,8 @@ data:
             accession: orthologous_to
             db:
               name: SO
+    - name: PomBase extra feature types
+      cvterms:
         - name: genotype
           dbxref:
             accession: genotype
