@@ -130,6 +130,7 @@ method _store_interaction_annotation
   my $curator = $args{curator};
   my $feature_a = $args{feature};
   my $canto_session = $args{canto_session};
+  my $session_genes = $args{session_genes};
 
   my $organism = $feature_a->organism();
 
@@ -137,9 +138,8 @@ method _store_interaction_annotation
   my $config = $self->config();
 
   my $proc = sub {
-    for my $feature_b_data (@$interacting_genes) {
-      my $feature_b_uniquename = $feature_b_data->{primary_identifier};
-      my $feature_b = $self->find_chado_feature($feature_b_uniquename, 1, 1, $organism);
+    for my $feature_b_key (@$interacting_genes) {
+      my $feature_b = $session_genes->{$feature_b_key};
       $self->store_interaction(
         feature_a => $feature_a,
         feature_b => $feature_b,
@@ -324,8 +324,8 @@ method _store_ontology_annotation
         }
       }
 
-      if ($feature->type()->name() ne 'allele') {
-        die qq|phenotype annotation for "$term_name ($termid)" must have allele information | .
+      if ($feature->type()->name() ne 'genotype') {
+        die qq|phenotype annotation for "$term_name ($termid)" must have genotype information | .
           "has " . $feature->type()->name() . " instead\n";
       }
     }
@@ -506,6 +506,7 @@ method _process_feature
   my $session_metadata = shift;
   my $feature = shift;
   my $canto_session = shift;
+  my $session_genes = shift;
 
   my $annotation_type = delete $annotation->{type};
   my $creation_date = delete $annotation->{creation_date};
@@ -607,6 +608,7 @@ method _process_feature
                                              canto_session => $canto_session,
                                              curator => $curator,
                                              changed_by => $changed_by_json,
+                                             session_genes => $session_genes,
                                              %useful_session_data);
       } else {
         die "no interacting_genes data found in interaction annotation\n";
@@ -618,7 +620,7 @@ method _process_feature
 
 }
 
-method _process_annotation($annotation, $session_metadata, $canto_session)
+method _process_annotation($annotation, $session_genes, $session_genotypes, $session_metadata, $canto_session)
 {
   my $status = delete $annotation->{status};
 
@@ -631,29 +633,74 @@ method _process_annotation($annotation, $session_metadata, $canto_session)
     die "unhandled status type: $status\n";
   }
 
-  my $genes = delete $annotation->{genes};
-  if (defined $genes) {
-    for my $gene_data (values %$genes) {
-      my $feature;
-      if ($annotation->{type} eq 'phenotype' or
-          $annotation->{type} eq 'genetic_interaction' or
-          $annotation->{type} eq 'physical_interaction') {
-        $feature = $self->get_gene($gene_data);
-      } else {
-        $feature = $self->get_transcript($gene_data);
-      }
-      $self->_process_feature($annotation, $session_metadata, $feature, $canto_session);
+  my $gene_key = delete $annotation->{gene};
+  if (defined $gene_key) {
+    my $gene = $session_genes->{$gene_key};
+
+    if (!defined $gene) {
+      die "internal error: no gene found for $gene_key";
     }
+
+    my $feature;
+    if ($annotation->{type} eq 'phenotype' or
+        $annotation->{type} eq 'genetic_interaction' or
+        $annotation->{type} eq 'physical_interaction') {
+      $feature = $gene;
+    } else {
+      $feature = $self->get_transcript($gene);
+    }
+    $self->_process_feature($annotation, $session_metadata, $feature,
+                            $canto_session, $session_genes);
   }
 
-  my $alleles = delete $annotation->{alleles};
-  if (defined $alleles) {
-    for my $allele_data (@$alleles) {
-      $allele_data->{canto_session} = $canto_session;
-      my $allele = $self->get_allele($allele_data);
-      $self->_process_feature($annotation, $session_metadata, $allele, $canto_session);
-    }
+  my $genotype_key = delete $annotation->{genotype};
+  if (defined $genotype_key) {
+    my $genotype = $session_genotypes->{$genotype_key};
+    $self->_process_feature($annotation, $session_metadata, $genotype,
+                            $canto_session, $session_genes);
   }
+}
+
+method _query_genes($session_gene_data)
+{
+  my %ret = ();
+
+  while (my ($key, $details) = each %$session_gene_data) {
+    $ret{$key} = $self->get_gene($details);
+  }
+
+  return %ret;
+}
+
+method _get_alleles($canto_session, $session_genes, $session_allele_data)
+{
+  my %ret = ();
+
+  for my $key (sort keys %$session_allele_data) {
+    my $allele_data = clone $session_allele_data->{$key};
+    $allele_data->{canto_session} = $canto_session;
+    $allele_data->{gene} = $session_genes->{$allele_data->{gene}};
+    $ret{$key} = $self->get_allele($allele_data);
+  }
+
+  return %ret;
+}
+
+method _get_genotypes($session_alleles, $session_genotype_data)
+{
+  my %ret = ();
+
+  while (my ($genotype_identifier, $details) = each %$session_genotype_data) {
+    my @alleles = map {
+      my $allele_key = $_;
+      $session_alleles->{$allele_key};
+    } @{$details->{alleles}};
+
+    $ret{$genotype_identifier} =
+      $self->get_genotype($genotype_identifier, $details->{name}, \@alleles);
+  }
+
+  return %ret;
 }
 
 method load($fh)
@@ -673,6 +720,12 @@ method load($fh)
   for my $canto_session (keys %curation_sessions) {
     my %session_data = %{$curation_sessions{$canto_session}};
 
+    my %session_genes = $self->_query_genes($session_data{genes});
+    my %session_alleles =
+      $self->_get_alleles($canto_session, \%session_genes, $session_data{alleles});
+    my %session_genotypes =
+      $self->_get_genotypes(\%session_alleles, $session_data{genotypes});
+
     my @annotations = @{$session_data{annotations}};
 
     my $error_prefix = "warning in $canto_session: ";
@@ -681,7 +734,8 @@ method load($fh)
 
     for my $annotation (@annotations) {
       try {
-        $self->_process_annotation($annotation, $session_data{metadata}, $canto_session);
+        $self->_process_annotation($annotation, \%session_genes, \%session_genotypes,
+                                   $session_data{metadata}, $canto_session);
       } catch {
         (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
         chomp $message;
