@@ -71,6 +71,10 @@ method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism, $
      $organism_fullname = $organism->genus() . '_' . $organism->species();
    }
 
+   if (!defined $systematic_id) {
+     croak "no systematic_id passed to find_chado_feature()";
+   }
+
    my $cache_key = "$systematic_id $try_name $ignore_case $organism_fullname " .
      join ('+', @{$feature_types // []});
 
