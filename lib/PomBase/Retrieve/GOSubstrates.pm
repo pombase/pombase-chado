@@ -79,6 +79,8 @@ and f.organism_id = | . $self->organism()->organism_id();
     iterate {
       my @data = $sth->fetchrow_array();
       if (@data) {
+        # this is a hack - turn transcript IDs in gene IDs
+        $data[0] =~ s/\.\d$//;
         return [@data];
       } else {
         return undef;
