@@ -86,7 +86,7 @@ method load($fh)
                         parental_strain strain_background genotype_description
                         gene_name allele_name allele_synonym allele_type
                         evidence conditions penetrance expressivity extension
-                        reference taxon date));
+                        reference taxon date illegal_extra_column));
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
     $csv->is_missing (0) and next; # This was an empty line
@@ -100,6 +100,12 @@ method load($fh)
 
     if (length $gene_systemtic_id == 0) {
       warn "no value in the gene_systemtic_id column at line ", $fh->input_line_number(), " - skipping\n";
+      next;
+    }
+
+    if ($columns_ref->{illegal_extra_column}) {
+      warn "too many columns at line ", $fh->input_line_number(),
+        " starting with: $columns_ref->{illegal_extra_column}\n";
       next;
     }
 
