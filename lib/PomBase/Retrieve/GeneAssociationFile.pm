@@ -301,12 +301,15 @@ method retrieve() {
 
     if ($self->filter_by_term()) {
       if (my ($db_name, $accession) = $self->filter_by_term() =~ /^(\w+):(\d+)$/) {
-        my $where = "me.cvterm_id in " .
-          "(select subject_id from cvtermpath cp " .
-          "join cvterm t on cp.object_id = t.cvterm_id " .
-          "join dbxref x on x.dbxref_id = t.dbxref_id " .
-          "join db on x.db_id = db.db_id " .
-          "where db.name = '$db_name' and x.accession = '$accession')";
+        my $where =
+          "\
+me.cvterm_id in
+(select res_terms.cvterm_id from pombase_feature_cvterm_ext_resolved_terms res_terms
+ join cvtermpath cp on cp.subject_id = res_terms.base_cvterm_id
+ join cvterm t on cp.object_id = t.cvterm_id
+ join dbxref x on x.dbxref_id = t.dbxref_id
+ join db on x.db_id = db.db_id
+ where db.name = '$db_name' and x.accession = '$accession')";
         $cvterm_rs = $cvterm_rs->search({}, {
           where => \$where,
         });
