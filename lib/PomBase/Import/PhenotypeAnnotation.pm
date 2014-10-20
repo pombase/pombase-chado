@@ -89,8 +89,6 @@ method load($fh)
                         reference taxon date illegal_extra_column));
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
-    $csv->is_missing (0) and next; # This was an empty line
-
     my $gene_systemtic_id = $columns_ref->{"gene_systemtic_id"}->trim();
 
     if ($gene_systemtic_id =~ /^#/ ||
