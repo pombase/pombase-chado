@@ -70,6 +70,8 @@ and f.organism_id = | . $self->organism()->organism_id();
 
   my $dbh = $chado->storage()->dbh();
 
+  my $seen_rows = {};
+
   my $it = do {
 
     my $sth = $dbh->prepare($sql);
@@ -77,8 +79,17 @@ and f.organism_id = | . $self->organism()->organism_id();
       or die "Couldn't execute query: " . $sth->errstr();
 
     iterate {
+    ROW:
       my @data = $sth->fetchrow_array();
       if (@data) {
+        my $key = "@data";
+
+        if ($seen_rows->{$key}) {
+          goto ROW;
+        }
+
+        $seen_rows->{$key} = 1;
+
         # this is a hack - turn transcript IDs in gene IDs
         $data[0] =~ s/\.\d$//;
         return [@data];

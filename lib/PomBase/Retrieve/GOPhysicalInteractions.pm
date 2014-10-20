@@ -69,6 +69,8 @@ method retrieve() {
   my $retriever = $self->gaf_retriever();
   my $results = $retriever->retrieve();
 
+  my $seen_rows = {};
+
   # used as a temporary storage when a "with" has more than one ID separated by
   # pipes
   my $left_over_split_row = undef;
@@ -109,6 +111,14 @@ method retrieve() {
           my $database_name = $self->config()->{database_name};
 
           $with_identifier =~ s/^$database_name://;
+
+          my $key = "$gene_identifier - $with_identifier - $pub_uniquename";
+
+          if ($seen_rows->{$key}) {
+            goto ROW;
+          }
+
+          $seen_rows->{$key} = 1;
 
           return [$gene_identifier, $with_identifier, $pub_uniquename];
         } else {
