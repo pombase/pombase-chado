@@ -105,6 +105,37 @@ method get_genotype($genotype_identifier, $genotype_name, $alleles)
   return $genotype;
 }
 
+method _get_genotype_uniquename
+{
+  my $dbh = $self->chado()->storage()->dbh();
+
+  my $database_name = $self->config()->{database_name};
+  my $prefix = "$database_name-genotype-";
+
+  my $sql = "select max(substring(uniquename from '^$prefix(.*)\$')::integer)+1
+from feature where uniquename like '$prefix%'";
+
+  my $sth = $dbh->prepare($sql);
+
+  $sth->execute()
+    or die "Couldn't execute query: " . $sth->errstr();
+
+  my @data = $sth->fetchrow_array();
+
+  my $new_suffix = $data[0] // 1;
+
+  return "$prefix$new_suffix";
+}
+
+method get_genotype_for_allele($allele_data)
+{
+  my $allele = $self->get_allele($allele_data);
+
+  my $genotype_identifier = $self->_get_genotype_uniquename();
+
+  return $self->get_genotype($genotype_identifier, undef, [$allele]);
+}
+
 func _get_allele_description($allele) {
   my $description_prop = $allele->search_featureprops('description')->first();
   if (defined $description_prop) {
@@ -267,6 +298,11 @@ method get_allele($allele_data)
 {
   my $allele;
   my $gene;
+
+use Data::Dumper;
+$Data::Dumper::Maxdepth = 3;
+warn "ALLELE_DATA: ", Dumper([$allele_data]);
+
 
   if (!defined $allele_data) {
     croak "no 'allele_data' key passed to get_allele()";

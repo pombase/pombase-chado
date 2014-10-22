@@ -315,7 +315,7 @@ method _store_ontology_annotation
       if (@processed_allele_quals > 1) {
         die "can't process annotation with two allele qualifiers\n";
       } else {
-        $feature = $self->get_allele($processed_allele_quals[0]);
+        $feature = $self->get_genotype_for_allele($processed_allele_quals[0]);
       }
     }
 

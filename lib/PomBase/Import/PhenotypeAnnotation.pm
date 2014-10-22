@@ -242,7 +242,7 @@ method load($fh)
         allele_type => $allele_type,
       };
 
-      my $allele_feature = $self->get_allele($allele_data);
+      my $allele_feature = $self->get_genotype_for_allele($allele_data);
 
       my $feature_cvterm =
         $self->create_feature_cvterm($allele_feature, $cvterm, $pub, 0);
