@@ -59,7 +59,8 @@ method _do_query_checks() {
     my $verbose_fail = $check->{verbose_fail} && $check->{verbose_fail} eq 'true';
     my $expected_conf = $check->{expected} //
       die "expected value not set for $name\n";
-    print "$name - ";
+    my $description = $check->{description} // $name;
+    print "$description - ";
 
     my $count_sth = $dbh->prepare("select count(*) from ($query) as sub");
     $count_sth->execute() or die "Couldn't execute: " . $count_sth->errstr;
