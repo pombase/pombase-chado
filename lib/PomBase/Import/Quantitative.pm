@@ -84,7 +84,7 @@ method load($fh)
       next;
     }
 
-    my ($systematic_id, $gene_name, $type, $during, $average_copies_per_cell,
+    my ($systematic_id, $gene_name, $type, $annotation_extension, $average_copies_per_cell,
         $range, $evidence_code, $scale, $conditions, $pubmedid, $taxonid, $date) =
           map {
             my $trimmed = $_->trim();
@@ -100,9 +100,6 @@ method load($fh)
     }
     if (!defined $type) {
       die qq(mandatory column value for feature type missing at line $.\n);
-    }
-    if (!defined $during) {
-      die qq(mandatory column value for expression level missing at line $.\n);
     }
     if (!defined $average_copies_per_cell) {
       die qq(mandatory column value for average copies per cell missing at line $.\n);
@@ -150,8 +147,6 @@ method load($fh)
         die qq(text in "Scale" column not recognised: $scale\n);
       }
     }
-
-    my $annotation_extension = "during($during)";
 
     my $term;
 
