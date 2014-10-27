@@ -76,8 +76,6 @@ method load($fh)
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
 
-  $csv->column_names($csv->getline($fh));
-
   while (my $columns_ref = $csv->getline($fh)) {
     if (@$columns_ref == 1 && $columns_ref->[0]->trim()->length() == 0) {
       # empty line
@@ -94,6 +92,12 @@ method load($fh)
               undef
             }
           } @$columns_ref;
+
+
+    if ($systematic_id =~ /^#/ ||
+        ($. == 1 && $systematic_id =~ /systematic.id/i)) {
+      next;
+    }
 
     if (!defined $systematic_id) {
       die qq(mandatory column value for systematic ID missing at line $.\n);
