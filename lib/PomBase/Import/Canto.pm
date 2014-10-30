@@ -41,6 +41,8 @@ use Moose;
 use charnames ':full';
 use Scalar::Util;
 
+use utf8;
+
 use JSON;
 use Clone qw(clone);
 use Getopt::Long qw(GetOptionsFromArray);
