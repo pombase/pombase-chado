@@ -669,7 +669,8 @@ method load($fh)
     $json_text = <$fh>;
   }
 
-  my $canto_data = decode_json($json_text);
+  my $canto_data = $decoder->decode($json_text);
+
   my %curation_sessions = %{$canto_data->{curation_sessions}};
 
   for my $canto_session (keys %curation_sessions) {
