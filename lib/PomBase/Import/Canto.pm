@@ -660,7 +660,7 @@ method _process_annotation($annotation, $session_metadata, $canto_session)
 
 method load($fh)
 {
-  my $decoder = JSON->new()->utf8();
+  my $decoder = JSON->new();
 
   my $json_text;
 
