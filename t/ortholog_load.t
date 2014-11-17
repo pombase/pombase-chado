@@ -20,7 +20,7 @@ my @options = ("--publication=$pub_uniquename",
                "--swap-direction");
 
 my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-is($rel_rs->count(), 2);
+is($rel_rs->count(), 3);
 
 my $importer = PomBase::Import::Orthologs->new(chado => $chado,
                                                config => $config,
@@ -36,7 +36,7 @@ my ($out, $err) = capture {
 like($err, qr|can't find feature in Chado for ENSG00000142544|);
 
 $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-is($rel_rs->count(), 3);
+is($rel_rs->count(), 4);
 
 my $rel;
 
