@@ -158,7 +158,19 @@ method load($fh)
       next;
     }
 
-    my @org2_identifiers = map { $_->trim(); } split (',', $org2_identifiers);
+    my %org2_identifiers = ();
+
+    map {
+      my $trimmed_identifier = $_->trim();
+      if (exists $org2_identifiers{$trimmed_identifier}) {
+        warn "line $.: Skipping ortholog mentioned twice in input file: " .
+          "$org1_identifier <-> $trimmed_identifier\n";
+      } else {
+        $org2_identifiers{$trimmed_identifier} = 1;
+      }
+    } split (',', $org2_identifiers);
+
+    my @org2_identifiers = sort keys %org2_identifiers;
 
     my $org1_feature;
     eval {
@@ -190,23 +202,27 @@ method load($fh)
       }
 
       my $proc = sub {
-        try {
-          my $feature_rel;
-          if ($self->swap_direction()) {
-            $feature_rel = $self->store_feature_rel($org2_feature, $org1_feature, $orthologous_to_term);
-          } else {
-            $feature_rel = $self->store_feature_rel($org1_feature, $org2_feature, $orthologous_to_term);
-          }
-
-          $load_orthologs_count++;
-
-          $self->store_feature_rel_pub($feature_rel, $self->publication());
-        } catch {
-          warn "Failed to load row: $_\n";
+        my $feature_rel;
+        if ($self->swap_direction()) {
+          $feature_rel = $self->store_feature_rel($org2_feature, $org1_feature, $orthologous_to_term, 1);
+        } else {
+          $feature_rel = $self->store_feature_rel($org1_feature, $org2_feature, $orthologous_to_term, 1);
         }
+
+        $load_orthologs_count++;
+
+        $self->store_feature_rel_pub($feature_rel, $self->publication());
       };
 
-      $chado->txn_do($proc);
+      try {
+        $chado->txn_do($proc);
+      } catch {
+        if (/duplicate key value violates unique constraint/) {
+          warn "line $.: Skipping ortholog that's already loaded: $org1_identifier <-> $org2_identifier\n";
+        } else {
+          warn "line $.: Failed to load ortholog $org1_identifier <-> $org2_identifier:\n$_\n";
+        }
+      };
     }
   }
 

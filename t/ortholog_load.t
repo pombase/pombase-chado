@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 9;
+use Test::More tests => 10;
 
 use PomBase::TestUtil;
 
@@ -34,6 +34,7 @@ my ($out, $err) = capture {
 };
 
 like($err, qr|can't find feature in Chado for ENSG00000142544|);
+like($err, qr|duplicate annotation SPBC2F12.13 <-> ENSG00000124562|);
 
 $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
 is($rel_rs->count(), 4);
