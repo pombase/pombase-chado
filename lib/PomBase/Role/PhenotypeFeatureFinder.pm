@@ -324,7 +324,7 @@ method get_allele($allele_data)
         my ($existing_description, $existing_description_prop) =
           _get_allele_description($existing_allele);
 
-        if ($existing_allele->name() eq $new_allele_name) {
+        if ($existing_name eq $new_allele_name) {
           if (defined $existing_description && defined $new_allele_description &&
               lc $existing_description eq lc $new_allele_description ||
               !defined $existing_description && !defined $new_allele_description) {
