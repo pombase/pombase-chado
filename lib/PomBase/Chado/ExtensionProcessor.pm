@@ -428,7 +428,7 @@ method process_one_annotation($featurecvterm, $extension_text)
             my $organism = $self->find_organism_by_common_name('pombe');
             try {
               my $ref_feature =
-                $self->find_chado_feature($identifier, 1, 1, $organism, ['gene']);
+                $self->find_chado_feature($identifier, 1, 1, $organism, ['gene', 'pseudogene']);
               $identifier = $ref_feature->uniquename();
             } catch {
               chomp (my $message = $_);
