@@ -205,8 +205,6 @@ method store_extension($feature_cvterm, $extensions)
           }
         }
 
-        die "NOT FOUND $rel_name";
-
         die "can't find relation cvterm for: $rel_name in these CVs: @rel_cv_names\n";
       }
 
