@@ -182,19 +182,6 @@ method store_extension($feature_cvterm, $extensions)
         }
       }
 
-      # try again but change "_" to " " to cope with eg. "coincident with"
-      # see: https://sourceforge.net/p/pombase/chado/420/
-      if (!defined $rel) {
-        (my $rel_name_with_spaces = $rel_name) =~ s/_/ /g;
-
-        for my $rel_cv_name (@rel_cv_names) {
-          warn "checking for $rel_name_with_spaces using cvtermsynonyms in $rel_cv_name\n" if $self->verbose;
-          $rel = $self->find_cvterm_by_name($rel_cv_name, $rel_name_with_spaces,
-                                            query_synonyms => 1);
-          last if defined $rel;
-        }
-      }
-
       if (!defined $rel) {
         for my $rel_cv_name (@rel_cv_names) {
           warn "checking for obsolete $rel_name in $rel_cv_name\n" if $self->verbose;
