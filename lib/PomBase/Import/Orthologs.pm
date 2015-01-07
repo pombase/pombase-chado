@@ -153,8 +153,8 @@ method load($fh)
     my $org1_identifier = $columns_ref->{"org1_identifier"}->trim();
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
 
-    if (!defined $org1_identifier || !defined $org2_identifiers) {
-      warn "not enough columns at line $. of input\n";
+    if (!defined $org2_identifiers) {
+      warn "not enough columns at line $. of line $org1_identifier - missing TAB character?\n";
       next;
     }
 
