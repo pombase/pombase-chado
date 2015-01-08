@@ -410,7 +410,9 @@ me.cvterm_id in
         my $so_type = $so_type_map{$details->{transcript_type}};
         my $assigned_by = _safe_join('|', $row_fc_props{assigned_by});
 
-        $gene_aspect_count{$gene_uniquename}{$aspect}++;
+        if (1||!$row->is_not()) {
+          $gene_aspect_count{$gene_uniquename}{$aspect}++;
+        }
 
         return [$db_name, $gene_uniquename, $gene_name,
                 $qualifier, $id, $pub->uniquename(),
