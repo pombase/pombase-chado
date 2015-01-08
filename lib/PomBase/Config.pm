@@ -71,7 +71,9 @@ method BUILD
   # add a lowercase version of each evidence code
   for my $code (keys %{$self->{evidence_types}}) {
     my $details = $self->{evidence_types}->{$code};
-    if (!defined $details) {
+    if (defined $details) {
+      $self->{evidence_types}->{lc $details->{name}} //= $details;
+    } else {
       $details = { name => $code };
       $self->{evidence_types}->{$code} = $details;
     }
