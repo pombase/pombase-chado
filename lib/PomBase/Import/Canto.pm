@@ -534,28 +534,14 @@ method _process_feature
 
   my $config = $self->config();
 
-  state $evidence_long_names = {
-    map {
-      (lc $_, 1);
-    } keys %{$config->{evidence_types}}
-  };
-
   if (!defined $evidence_code or length $evidence_code == 0) {
     die "no evidence code for $annotation_type\n";
   } else {
-    if (exists $config->{evidence_types}->{$evidence_code}) {
+    if (exists $config->{evidence_types}->{lc $evidence_code}) {
       my $ev_data = $config->{evidence_types}->{$evidence_code};
-      if (defined $ev_data) {
-        $long_evidence = $ev_data->{name};
-      } else {
-        $long_evidence = $evidence_code;
-      }
+      $long_evidence = $ev_data->{name};
     } else {
-      if ($evidence_long_names->{lc $evidence_code}) {
-        $long_evidence = lc $evidence_code;
-      } else {
-        die "unknown evidence code: $evidence_code\n";
-      }
+      die "unknown evidence code: $evidence_code\n";
     }
   }
 
