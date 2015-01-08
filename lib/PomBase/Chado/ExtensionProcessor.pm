@@ -152,6 +152,35 @@ method store_extension($feature_cvterm, $extensions)
     $self->store_cvterm_rel($new_term, $old_cvterm, $self->isa_cvterm);
   }
 
+  for my $extension (@$extensions) {
+    my $rel_name = $extension->{rel_name};
+    my $term = $extension->{term};
+
+    my $extension_restriction_conf = $self->config()->{extension_restrictions};
+    my $cv_restrictions_conf = $extension_restriction_conf->{$old_cv_name};
+
+    if (defined $cv_restrictions_conf) {
+      if (exists $cv_restrictions_conf->{allowed}) {
+        if (!grep { $_ eq $rel_name } @{$cv_restrictions_conf->{allowed}}) {
+          die "$rel_name() not allowed for $old_cv_name\n";
+        }
+      }
+      if (exists $cv_restrictions_conf->{not_allowed}) {
+        if (grep { $_ eq $rel_name } @{$cv_restrictions_conf->{not_allowed}}) {
+          die "$rel_name() not allowed for $old_cv_name\n";
+        }
+      }
+    }
+
+    my $all_not_allowed_rels = $extension_restriction_conf->{all}->{not_allowed};
+
+    if (defined $all_not_allowed_rels) {
+      if (grep { $_ eq $rel_name } @$all_not_allowed_rels) {
+        die "$rel_name() not allowed in extension\n";
+      }
+    }
+  }
+
   if (!exists $self->cache()->{$new_name}) {
     # we load cvterms from older builds from an OBO file but the file
     # doesn't store the non-isa relations and the props - recreate them
@@ -196,30 +225,6 @@ method store_extension($feature_cvterm, $extensions)
       }
 
       if (defined $term) {
-        my $extension_restriction_conf = $self->config()->{extension_restrictions};
-        my $cv_restrictions_conf = $extension_restriction_conf->{$old_cv_name};
-
-        if (defined $cv_restrictions_conf) {
-          if (exists $cv_restrictions_conf->{allowed}) {
-            if (!grep { $_ eq $rel_name } @{$cv_restrictions_conf->{allowed}}) {
-              die "$rel_name() not allowed for $old_cv_name\n";
-            }
-          }
-          if (exists $cv_restrictions_conf->{not_allowed}) {
-            if (grep { $_ eq $rel_name } @{$cv_restrictions_conf->{not_allowed}}) {
-              die "$rel_name() not allowed for $old_cv_name\n";
-            }
-          }
-        }
-
-        my $all_not_allowed_rels = $extension_restriction_conf->{all}->{not_allowed};
-
-        if (defined $all_not_allowed_rels) {
-          if (grep { $_ eq $rel_name } @$all_not_allowed_rels) {
-            die "$rel_name() not allowed in extension\n";
-          }
-        }
-
         if ($self->get_cvterm_rel($new_term, $term, $rel)->count() > 0) {
           my $id = PomBase::Chado::id_of_cvterm($term);
           my $feature_uniquename = $feature_cvterm->feature()->uniquename();
