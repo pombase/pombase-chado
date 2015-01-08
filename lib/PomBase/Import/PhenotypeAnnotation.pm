@@ -156,7 +156,12 @@ method load($fh)
         return;
       }
 
-      my $long_evidence = $self->config()->{evidence_types}->{$evidence}->{name} // $evidence;
+      my $long_evidence = $self->config()->{evidence_types}->{lc $evidence}->{name};
+
+      if (!defined $long_evidence) {
+        $long_evidence = $evidence;
+        warn "can't load annotation, unknown evidence: $evidence at line ", $fh->input_line_number(), "\n";
+      }
 
       if (length $penetrance > 0) {
         my $penetrance_cvterm = $self->find_cvterm_by_term_id($penetrance);
