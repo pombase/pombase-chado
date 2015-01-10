@@ -538,7 +538,7 @@ method _process_feature
     die "no evidence code for $annotation_type\n";
   } else {
     if (exists $config->{evidence_types}->{lc $evidence_code}) {
-      my $ev_data = $config->{evidence_types}->{$evidence_code};
+      my $ev_data = $config->{evidence_types}->{lc $evidence_code};
       $long_evidence = $ev_data->{name};
     } else {
       die "unknown evidence code: $evidence_code\n";
