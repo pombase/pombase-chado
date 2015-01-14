@@ -138,6 +138,8 @@ my $genotype_term = $chado->resultset('Cv::Cvterm')
            join => 'cv',
          });
 
+my $dbh = $chado->storage()->dbh();
+
 my $id_counter = $max_id + 1;
 
 while (my ($allele_id, $details) = each %alleles) {
@@ -159,7 +161,14 @@ while (my ($allele_id, $details) = each %alleles) {
     type_id => $part_of->cvterm_id(),
   });
 
+  my $allele_id = $allele->feature_id();
+  my $genotype_id = $genotype->feature_id();
+
+  $dbh->do("update feature_cvterm set feature_id = $genotype_id where feature_id = $allele_id");
+
   $id_counter++;
 }
+
+warn "Created ", (scalar(keys %alleles)), " genotype features\n";
 
 $guard->commit unless $dry_run;
