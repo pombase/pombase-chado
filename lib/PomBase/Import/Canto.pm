@@ -733,6 +733,48 @@ method _get_genotypes($session_alleles, $session_genotype_data)
   return %ret;
 }
 
+method _query_genes($session_gene_data)
+{
+  my %ret = ();
+
+  while (my ($key, $details) = each %$session_gene_data) {
+    $ret{$key} = $self->get_gene($details);
+  }
+
+  return %ret;
+}
+
+method _get_alleles($canto_session, $session_genes, $session_allele_data)
+{
+  my %ret = ();
+
+  for my $key (sort keys %$session_allele_data) {
+    my $allele_data = clone $session_allele_data->{$key};
+    $allele_data->{canto_session} = $canto_session;
+    $allele_data->{gene} = $session_genes->{$allele_data->{gene}};
+    $ret{$key} = $self->get_allele($allele_data);
+  }
+
+  return %ret;
+}
+
+method _get_genotypes($session_alleles, $session_genotype_data)
+{
+  my %ret = ();
+
+  while (my ($genotype_identifier, $details) = each %$session_genotype_data) {
+    my @alleles = map {
+      my $allele_key = $_;
+      $session_alleles->{$allele_key};
+    } @{$details->{alleles}};
+
+    $ret{$genotype_identifier} =
+      $self->get_genotype($genotype_identifier, $details->{name}, \@alleles);
+  }
+
+  return %ret;
+}
+
 method load($fh)
 {
   my $decoder = JSON->new();
