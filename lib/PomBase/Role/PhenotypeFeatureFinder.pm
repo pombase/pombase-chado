@@ -299,11 +299,6 @@ method get_allele($allele_data)
   my $allele;
   my $gene;
 
-use Data::Dumper;
-$Data::Dumper::Maxdepth = 3;
-warn "ALLELE_DATA: ", Dumper([$allele_data]);
-
-
   if (!defined $allele_data) {
     croak "no 'allele_data' key passed to get_allele()";
   }
