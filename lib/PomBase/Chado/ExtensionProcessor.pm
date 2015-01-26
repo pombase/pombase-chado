@@ -442,8 +442,13 @@ method process_one_annotation($featurecvterm, $extension_text)
             if ($identifier =~ /^(Pfam:PF\d+)$/) {
               $identifier = $1;
             } else {
-              die "in annotation extension for $feature_uniquename, can't " .
-                "parse identifier: $identifier\n";
+              if ($rel_name eq 'has_penetrance' &&
+                  $identifier =~ /^(.*)\%$/ && $1->is_number()) {
+                # the "identifier" is the percentage penetrance value
+              } else {
+                die "in annotation extension for $feature_uniquename, can't " .
+                  "parse identifier: $identifier\n";
+              }
             }
           }
         }

@@ -164,18 +164,20 @@ method load($fh)
       }
 
       if (length $penetrance > 0) {
-        my $penetrance_cvterm = $self->find_cvterm_by_term_id($penetrance);
+        if ($penetrance !~ /^[\d\.]+\%$/) {
+          my $penetrance_cvterm = $self->find_cvterm_by_term_id($penetrance);
 
-        if (defined $penetrance_cvterm) {
-          if ($penetrance_cvterm->cv()->name() ne $fypo_extensions_cv_name) {
-            warn "can't load annotation, '$penetrance' is not from the ",
-              "$fypo_extensions_cv_name CV at line ", $fh->input_line_number(), "\n";
+          if (defined $penetrance_cvterm) {
+            if ($penetrance_cvterm->cv()->name() ne $fypo_extensions_cv_name) {
+              warn "can't load annotation, '$penetrance' is not from the ",
+                "$fypo_extensions_cv_name CV at line ", $fh->input_line_number(), "\n";
+              return;
+            }
+          } else {
+            warn "can't load annotation, $penetrance not found at line ",
+              $fh->input_line_number(), " of PHAF file\n";
             return;
           }
-        } else {
-          warn "can't load annotation, $penetrance not found at line ",
-            $fh->input_line_number(), " of PHAF file\n";
-          return;
         }
       }
 
