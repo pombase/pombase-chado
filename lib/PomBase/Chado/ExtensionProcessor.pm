@@ -138,7 +138,7 @@ method store_extension($feature_cvterm, $extensions)
 
     if (exists $extensions_so_far{$this_extension}) {
       my $termid = PomBase::Chado::id_of_cvterm($old_cvterm);
-      if (!grep { $_ eq $termid } @{$self->config()->{allowed_duplicate_extensions}} {
+      if (!grep { $_ eq $termid } @{$self->config()->{allowed_duplicate_extensions}}) {
         die qq(duplicated extension: "$this_extension"\n);
       }
     } else {
