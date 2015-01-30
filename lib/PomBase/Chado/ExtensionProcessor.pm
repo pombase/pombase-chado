@@ -252,7 +252,18 @@ method store_extension($feature_cvterm, $extensions)
 
         warn qq{storing extension as cvtermprop for $new_name: $ex_type -> $identifier\n} if $self->verbose();
 
-        $self->store_cvtermprop($new_term, $ex_type, $identifier);
+        state $ranks = {};
+
+        my $key = $new_term->cvterm_id() . ":$ex_type:$identifier";
+
+        # to avoid duplicate cvtermprop errors:
+        if (exists $ranks->{$key}) {
+          $ranks->{$key}++;
+        } else {
+          $ranks->{$key} = 0;
+        }
+
+        $self->store_cvtermprop($new_term, $ex_type, $identifier, $ranks->{$key});
       }
     }
   }

@@ -41,8 +41,10 @@ use Moose::Role;
 requires 'get_cvterm';
 requires 'chado';
 
-method store_cvtermprop($cvterm, $type_name, $value)
+method store_cvtermprop($cvterm, $type_name, $value, $rank)
 {
+  $rank //= 0;
+
   my $type_cvterm = $self->get_cvterm('cvterm_property_type', $type_name);
 
   if (!defined $type_cvterm) {
@@ -54,6 +56,7 @@ method store_cvtermprop($cvterm, $type_name, $value)
       cvterm_id => $cvterm->cvterm_id(),
       type_id => $type_cvterm->cvterm_id(),
       value => $value,
+      rank => $rank,
     });
   } catch {
     warn "Failed to create cvtermprop for cvterm: ", $cvterm->name(),
