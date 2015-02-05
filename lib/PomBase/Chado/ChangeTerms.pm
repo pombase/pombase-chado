@@ -47,11 +47,16 @@ with 'PomBase::Role::CvQuery';
 has options => (is => 'ro', isa => 'ArrayRef');
 has termid_map => (is => 'rw', init_arg => undef);
 
+# don't remap annotation for any feature_cvterms that have this property
+has exclude_by_fc_prop => (is => 'rw', init_arg => undef);
+
 method BUILD
 {
   my $mapping_file = undef;
+  my $exclude_by_fc_prop = undef;
 
-  my @opt_config = ('mapping-file=s' => \$mapping_file,);
+  my @opt_config = ('mapping-file=s' => \$mapping_file,
+                    'exclude-by-fc-prop=s' => \$exclude_by_fc_prop,);
 
   my @options_copy = @{$self->options()};
 
@@ -62,6 +67,8 @@ method BUILD
   if (!defined $mapping_file) {
     die "no --mapping-file argument\n";
   }
+
+  $self->exclude_by_fc_prop($exclude_by_fc_prop);
 
   my %termid_map = ();
 
@@ -145,7 +152,7 @@ CREATE TEMPORARY TABLE $temp_cvterm_ids_table AS
 SQL
 );
 
-    $sth = $dbh->prepare(<<"SQL"
+    my $find_clashes_sql = <<"SQL";
 SELECT fc2.feature_cvterm_id, pub.uniquename, f.uniquename, f.name,
        t_old.name, db_old.name || ':' || x_old.accession as old_termid,
        t_new.name, db_new.name || ':' || x_new.accession as new_termid
@@ -165,11 +172,30 @@ SELECT fc2.feature_cvterm_id, pub.uniquename, f.uniquename, f.name,
    AND fc1.cvterm_id = ids.to_cvterm_id
    AND fc1.pub_id = fc2.pub_id
 SQL
-);
+
+    my $exclude_by_fc_prop = $self->exclude_by_fc_prop();
+
+    my $exclude_by_fc_sql = <<'SQL';
+SELECT feature_cvterm_id FROM feature_cvtermprop p
+        JOIN cvterm pt on p.type_id = pt.cvterm_id
+       WHERE pt.name = ?
+SQL
+
+    if ($exclude_by_fc_prop) {
+      $find_clashes_sql .=
+        " AND fc1.feature_cvterm_id NOT IN ($exclude_by_fc_sql)";
+    }
+
+    $sth = $dbh->prepare($find_clashes_sql);
 
     my @do_not_update_rows = ();
 
-    $sth->execute();
+    if ($exclude_by_fc_prop) {
+      $sth->execute($exclude_by_fc_prop);
+    } else {
+      $sth->execute();
+    }
+
     my $row_count = 0;
     while (my @data = $sth->fetchrow_array()) {
       if (!@do_not_update_rows) {
@@ -198,9 +224,15 @@ SQL
       $sql .= "   AND feature_cvterm_id NOT IN ($placeholders)";
     }
 
+    my @execute_args = @do_not_update_rows;
+    if ($exclude_by_fc_prop) {
+      push @execute_args, $exclude_by_fc_prop;
+      $sql .= "   AND feature_cvterm_id NOT IN ($exclude_by_fc_sql)";
+    }
+
     $sth = $dbh->prepare($sql);
 
-    $sth->execute(@do_not_update_rows);
+    $sth->execute(@execute_args);
   };
 
   $chado->txn_do($proc);
