@@ -153,13 +153,13 @@ SQL
 );
 
     my $find_clashes_sql = <<"SQL";
-SELECT fc2.feature_cvterm_id, pub.uniquename, f.uniquename, f.name,
+SELECT current_fc.feature_cvterm_id, pub.uniquename, f.uniquename, f.name,
        t_old.name, db_old.name || ':' || x_old.accession as old_termid,
        t_new.name, db_new.name || ':' || x_new.accession as new_termid
-  FROM feature_cvterm fc2,
-       feature_cvterm fc1
-       JOIN feature f ON fc1.feature_id = f.feature_id
-       JOIN pub ON pub.pub_id = fc1.pub_id,
+  FROM feature_cvterm current_fc,
+       feature_cvterm new_fc
+       JOIN feature f ON new_fc.feature_id = f.feature_id
+       JOIN pub ON pub.pub_id = new_fc.pub_id,
        $temp_cvterm_ids_table ids
        JOIN cvterm t_old ON t_old.cvterm_id = ids.from_cvterm_id
        JOIN dbxref x_old ON x_old.dbxref_id = t_old.dbxref_id
@@ -167,10 +167,10 @@ SELECT fc2.feature_cvterm_id, pub.uniquename, f.uniquename, f.name,
        JOIN cvterm t_new ON t_new.cvterm_id = ids.to_cvterm_id
        JOIN dbxref x_new ON x_new.dbxref_id = t_new.dbxref_id
        JOIN db db_new ON db_new.db_id = x_new.db_id
- WHERE fc2.cvterm_id = ids.from_cvterm_id
-   AND fc1.feature_id = fc2.feature_id
-   AND fc1.cvterm_id = ids.to_cvterm_id
-   AND fc1.pub_id = fc2.pub_id
+ WHERE current_fc.cvterm_id = ids.from_cvterm_id
+   AND new_fc.feature_id = current_fc.feature_id
+   AND new_fc.cvterm_id = ids.to_cvterm_id
+   AND new_fc.pub_id = current_fc.pub_id
 SQL
 
     my $exclude_by_fc_prop = $self->exclude_by_fc_prop();
@@ -183,7 +183,7 @@ SQL
 
     if ($exclude_by_fc_prop) {
       $find_clashes_sql .=
-        " AND fc1.feature_cvterm_id NOT IN ($exclude_by_fc_sql)";
+        " AND current_fc.feature_cvterm_id NOT IN ($exclude_by_fc_sql)";
     }
 
     $sth = $dbh->prepare($find_clashes_sql);
