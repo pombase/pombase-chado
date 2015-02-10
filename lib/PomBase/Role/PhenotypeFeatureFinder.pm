@@ -39,6 +39,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
+requires 'allele_type_from_desc';
 requires 'get_cvterm';
 requires 'find_chado_feature';
 requires 'find_organism_by_full_name';
@@ -112,61 +113,6 @@ func _is_na_mutation_desc($description)
   return $description =~ /^[atgc]+\d+[atgc]+$/i;
 }
 
-=head2 is_aa_mutation_desc
-
- Usage   : if ($self->is_aa_mutation_desc($description)) { ... }
- Function: Return true if the $description looks like an amino acid
-           mutation, like; "K10A" and doesn't look like a nucleotide
-           mutation description like "A10T"
-
-=cut
-method is_aa_mutation_desc($description)
-{
-  return 0 unless defined $description;
-
-  $description = $description->trim();
-
-  my $seen_aa_desc = 0;
-
-  if ($description =~ /,/) {
-    for my $bit (split /,/, $description) {
-      $bit = $bit->trim();
-      if (_could_be_aa_mutation_desc($bit)) {
-        if (!_is_na_mutation_desc($bit)) {
-          $seen_aa_desc = 1;
-        }
-      } else {
-        return 0;
-      }
-    }
-
-    return $seen_aa_desc;
-  }
-
-  return _could_be_aa_mutation_desc($description) && !_is_na_mutation_desc($description);
-}
-
-method allele_type_from_desc($description, $gene_name)
-{
-  $description = $description->trim();
-  if (grep { $_ eq $description } ('deletion', 'wild_type', 'wild type', 'unknown', 'other', 'unrecorded')) {
-    return ($description =~ s/\s+/_/r);
-  } else {
-    if ($self->is_aa_mutation_desc($description)) {
-      return 'amino_acid_mutation';
-    } else {
-      if ($description =~ /^[A-Z]\d+->(amber|ochre|opal|stop)$/i) {
-        return 'nonsense_mutation';
-      } else {
-        if (defined $gene_name && $description =~ /^$gene_name/) {
-          return 'other';
-        }
-      }
-    }
-  }
-
-  return undef;
-}
 
 method fix_expression_allele($name, $description_ref, $expression_ref)
 {

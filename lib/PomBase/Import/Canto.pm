@@ -63,6 +63,7 @@ with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::InteractionStorer';
+with 'PomBase::Role::LegacyAlleleHandler';
 with 'PomBase::Role::PhenotypeFeatureFinder';
 
 has verbose => (is => 'ro');
