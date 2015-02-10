@@ -53,13 +53,10 @@ sub is_aa_mutation_desc
 
   return 0 unless defined $description;
 
-  $description = $description->trim();
-
   my $seen_aa_desc = 0;
 
-  if ($description =~ /,/) {
-    for my $bit (split /,/, $description) {
-      $bit = $bit->trim();
+  if ($description =~ /\s*,\s*/) {
+    for my $bit (split /\s*,\s*/, $description) {
       if (_could_be_aa_mutation_desc($bit)) {
         if (!_is_na_mutation_desc($bit)) {
           $seen_aa_desc = 1;
@@ -73,6 +70,20 @@ sub is_aa_mutation_desc
   }
 
   return _could_be_aa_mutation_desc($description) && !_is_na_mutation_desc($description);
+}
+
+sub _could_be_aa_mutation_desc
+{
+  my $description = shift;
+
+  return $description =~ /^[a-z]+\d+[a-z]+$/i;
+}
+
+sub _is_na_mutation_desc
+{
+  my $description = shift;
+
+  return $description =~ /^[atgc]+\d+[atgc]+$/i;
 }
 
 sub allele_type_from_desc

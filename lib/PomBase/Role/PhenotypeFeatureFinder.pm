@@ -103,17 +103,6 @@ func _get_allele_description($allele) {
   }
 }
 
-func _could_be_aa_mutation_desc($description)
-{
-  return $description =~ /^[a-z]+\d+[a-z]+$/i;
-}
-
-func _is_na_mutation_desc($description)
-{
-  return $description =~ /^[atgc]+\d+[atgc]+$/i;
-}
-
-
 method fix_expression_allele($name, $description_ref, $expression_ref)
 {
   if ($name eq 'noname' and
