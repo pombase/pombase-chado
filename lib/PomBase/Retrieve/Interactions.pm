@@ -39,6 +39,8 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
+use Getopt::Long qw(GetOptionsFromArray :config pass_through);
+
 use List::Gen 'iterate';
 
 with 'PomBase::Role::ConfigUser';
@@ -47,6 +49,29 @@ with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Retriever';
+
+has since_date => (is => 'rw');
+
+sub BUILDARGS
+{
+  my $class = shift;
+  my %args = @_;
+
+  my $since_date = undef;
+
+  my @opt_config = ("since-date=s" => \$since_date);
+
+  if (!GetOptionsFromArray($args{options}, @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  if (defined $since_date) {
+    $args{since_date} = $since_date;
+  }
+
+  return \%args;
+}
+
 
 method _organism_taxonid($organism) {
   state $cache = {};
@@ -130,6 +155,23 @@ method retrieve() {
                                        object => [ 'type', 'organism' ] },
                        });
 
+  if (defined $self->since_date()) {
+    my $since_date = $self->since_date();
+    my $where_sql = <<"SQL";
+me.feature_relationship_id IN
+ (SELECT feature_relationship_id FROM feature_relationshipprop p
+    JOIN cvterm ptype ON p.type_id = ptype.cvterm_id
+   WHERE ptype.name = 'date' AND
+      (CASE WHEN ptype.name = 'date' AND p.value IS NOT NULL
+            THEN value::date ELSE NULL END) >= date '$since_date')
+SQL
+
+    $rel_rs = $rel_rs->search({},
+                              {
+                                where => \$where_sql,
+                              });
+  }
+
   my %props = $self->_read_rel_props($rel_rs);
   my %pubs = $self->_read_pubs($rel_rs);
 
@@ -152,11 +194,12 @@ method retrieve() {
           my $org_b_taxonid = $self->_organism_taxonid($row->object()->organism());
           my $evidence_code = $props{$row->feature_relationship_id()}{evidence};
           my $pubmedid = $pubs{$row->feature_relationship_id()};
+          my $date = $props{$row->feature_relationship_id()}{date};
 
           return [$gene_a_uniquename, $gene_b_uniquename,
                   $org_a_taxonid, $org_b_taxonid,
                   $evidence_code, $pubmedid, '',
-                  '', '', ''];
+                  '', '', "annotation_date: $date"];
         } else {
           return undef;
         }
