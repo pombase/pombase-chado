@@ -48,7 +48,7 @@ with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 
 method _do_query_checks() {
-  my @query_checks = @{$self->config()->{query_checks}};
+  my @query_checks = @{$self->config()->{check_chado}->{query_checks}};
 
   my $dbh = $self->chado()->storage()->dbh();
 

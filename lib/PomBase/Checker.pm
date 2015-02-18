@@ -50,7 +50,7 @@ requires 'description';
 
 =cut
 method checker_config() {
-  return $self->config()->{ref $self};
+  return $self->config()->{check_chado}->{ref $self};
 }
 
 1;
