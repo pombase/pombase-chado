@@ -121,6 +121,9 @@ method load($fh)
       if (lc $allele_type eq 'deletion') {
         $allele_name = ($gene_name || $gene_systemtic_id) . 'delta';
       }
+      if ($allele_type =~ /wild[\s_]type/i) {
+        $allele_name = ($gene_name || $gene_systemtic_id) . '+';
+      }
     }
 
     my $evidence = $columns_ref->{"evidence"};
