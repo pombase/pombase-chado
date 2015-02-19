@@ -1,5 +1,5 @@
 use perl5i::2;
-use Test::More tests => 9;
+use Test::More tests => 11;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -83,8 +83,8 @@ while (defined (my $fc = $feature_cvterm_rs->next())) {
       ],
     });
   } else {
-    if ($feature->uniquename() eq 'SPBC2F12.13:allele-2') {
-      is ($feature->name(), 'gene2delta');
+    if ($feature->uniquename() eq 'SPBC2F12.13:allele-1') {
+      is ($feature->name(), 'klp5delta');
     }
 
     if ($feature->uniquename() eq 'SPAC1093.06c:allele-2') {

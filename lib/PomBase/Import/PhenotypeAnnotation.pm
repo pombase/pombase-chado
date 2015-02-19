@@ -116,16 +116,6 @@ method load($fh)
     my $allele_name = $columns_ref->{"allele_name"};
     my $allele_synonym = $columns_ref->{"allele_synonym"};
     my $allele_type = $columns_ref->{"allele_type"};
-
-    if (!$allele_name) {
-      if (lc $allele_type eq 'deletion') {
-        $allele_name = ($gene_name || $gene_systemtic_id) . 'delta';
-      }
-      if ($allele_type =~ /wild[\s_]type/i) {
-        $allele_name = ($gene_name || $gene_systemtic_id) . '+';
-      }
-    }
-
     my $evidence = $columns_ref->{"evidence"};
     my $conditions = $columns_ref->{"conditions"};
     my $penetrance = $columns_ref->{"penetrance"};
@@ -135,28 +125,45 @@ method load($fh)
     my $date = $columns_ref->{"date"};
     my $taxonid = $columns_ref->{"taxon"};
 
+    if (!defined $taxonid) {
+      warn "Taxon missing - skipping\n";
+      return;
+    }
+
+    $taxonid =~ s/taxon://ig;
+
+    if (!$taxonid->is_integer()) {
+      warn "Taxon is not a number: $taxonid at line ", $fh->input_line_number(), " - skipping\n";
+      return;
+    }
+
     my $proc = sub {
-      if (!defined $evidence || length $evidence == 0) {
-        warn "no value in the evidence column at line ", $fh->input_line_number(), " - skipping\n";
-        return;
-      }
-
-      if (!defined $taxonid) {
-        warn "Taxon missing - skipping\n";
-        return;
-      }
-
-      $taxonid =~ s/taxon://ig;
-
-      if (!$taxonid->is_integer()) {
-        warn "Taxon is not a number: $taxonid at line ", $fh->input_line_number(), " - skipping\n";
-        return;
-      }
-
       my $organism = $self->find_organism_by_taxonid($taxonid);
 
       if (!defined $organism) {
         warn "ignoring annotation for organism $taxonid at line ", $fh->input_line_number(), "\n";
+        return;
+      }
+
+      my $gene = $self->find_chado_feature("$gene_systemtic_id", 1, 1, $organism);
+
+      if (!defined $gene) {
+        warn "gene ($gene_systemtic_id) not found - skipping line ", $fh->input_line_number(), "\n";
+        return;
+      }
+
+
+      if (!$allele_name) {
+        if (lc $allele_type eq 'deletion') {
+          $allele_name = ($gene->name() || $gene_systemtic_id) . 'delta';
+        }
+        if ($allele_type =~ /wild[\s_]type/i) {
+          $allele_name = ($gene->name() || $gene_systemtic_id) . '+';
+        }
+      }
+
+      if (!defined $evidence || length $evidence == 0) {
+        warn "no value in the evidence column at line ", $fh->input_line_number(), " - skipping\n";
         return;
       }
 
@@ -201,13 +208,6 @@ method load($fh)
         }
       }
 
-      my $gene = $self->find_chado_feature("$gene_systemtic_id", 1, 1, $organism);
-
-      if (!defined $gene) {
-        warn "gene ($gene_systemtic_id) not found - skipping line ", $fh->input_line_number(), "\n";
-        return;
-      }
-
       my $pub = $self->find_or_create_pub($reference);
 
       my $cvterm = undef;
@@ -231,7 +231,7 @@ method load($fh)
       my $gene_uniquename = $gene->uniquename();
       my $existing_gene_name = $gene->name() // '';
 
-      if (length $gene_name > 0 && $gene_name ne $existing_gene_name &&
+      if ($gene_name ne $existing_gene_name &&
           $gene_name ne $gene_uniquename) {
         warn qq|gene name from phenotype annotation file ("$gene_name") doesn't | .
           qq|match the existing name ("$existing_gene_name") for $gene_uniquename | .
