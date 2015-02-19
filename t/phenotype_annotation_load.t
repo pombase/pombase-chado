@@ -64,6 +64,7 @@ while (defined (my $fc = $feature_cvterm_rs->next())) {
               'PECO:0000005',
               'PECO:0000081'
             ],
+            expression => ['Null'],
     });
 
     my $featureprop_rs = $feature->featureprops();
@@ -89,6 +90,12 @@ while (defined (my $fc = $feature_cvterm_rs->next())) {
 
     if ($feature->uniquename() eq 'SPAC1093.06c:allele-2') {
       is ($feature->name(), 'SPAC1093.06c+');
+
+      my %props = map {
+        ($_->type()->name(), $_->value());
+      } $fc->feature_cvtermprops()->all();
+
+      is ($props{expression}, "Overexpression");
     }
   }
 }

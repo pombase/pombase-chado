@@ -110,6 +110,7 @@ method load($fh)
 
     my $fypo_id = $columns_ref->{"fypo_id"};
     my $allele_description = $columns_ref->{"allele_description"};
+    my $expression = ucfirst $columns_ref->{"expression"};
     my $genotype_description = $columns_ref->{"genotype_description"};
     my $strain_background = $columns_ref->{"strain_background"};
     my $gene_name = $columns_ref->{"gene_name"};
@@ -156,6 +157,12 @@ method load($fh)
       if (!$allele_name) {
         if (lc $allele_type eq 'deletion') {
           $allele_name = ($gene->name() || $gene_systemtic_id) . 'delta';
+          if ($expression && $expression ne 'Null') {
+            warn qq(expression "$expression" for $allele_name at line ),
+              $fh->input_line_number(), qq( should be "Null"\n);
+          } else {
+            $expression = 'Null';
+          }
         }
         if ($allele_type =~ /wild[\s_]type/i) {
           $allele_name = ($gene->name() || $gene_systemtic_id) . '+';
@@ -266,6 +273,10 @@ method load($fh)
       }
       if (length $expressivity > 0) {
         push @extension_bits, "has_expressivity($expressivity)";
+      }
+
+      if ($expression) {
+        $self->add_feature_cvtermprop($feature_cvterm, 'expression', $expression);
       }
 
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
