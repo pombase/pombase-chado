@@ -103,15 +103,17 @@ func _get_allele_description($allele) {
   }
 }
 
-method fix_expression_allele($name, $description_ref, $expression_ref)
+method fix_expression_allele($gene_name, $name, $description_ref, $expression_ref)
 {
-  if ($name eq 'noname' and
+  if ($$name eq 'noname' and
       grep /^$$description_ref$/, qw(overexpression endogenous knockdown)) {
     if (defined $$expression_ref) {
-      die "can't have expression=$$expression_ref AND allele=$name($description_ref)\n";
+      die "can't have expression=$$expression_ref AND allele=$$name($description_ref)\n";
     } else {
       $$expression_ref = ucfirst $$description_ref;
       $$description_ref = 'wild type';
+
+      $$name = "$gene_name+";
     }
   }
 }
@@ -124,7 +126,7 @@ method make_allele_data_from_display_name($gene_feature, $display_name, $express
     $name = $name->trim($whitespace_re);
     my $description = $2;
     $description = $description->trim($whitespace_re);
-    $self->fix_expression_allele($name, \$description, $expression_ref);
+    $self->fix_expression_allele($gene_feature->name(), \$name, \$description, $expression_ref);
     return $self->make_allele_data($name, $description, $gene_feature);
   } else {
     if ($display_name =~ /.*delta$/) {
