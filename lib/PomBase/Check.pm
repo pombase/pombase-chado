@@ -131,6 +131,7 @@ method run() {
   my @check_modules = usesub PomBase::Check;
 
   for my $module (@check_modules) {
+    warn "Running check: $module\n";
     my $obj = $module->new(config => $self->config(),
                            chado => $self->chado());
 
