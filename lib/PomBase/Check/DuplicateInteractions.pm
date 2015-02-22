@@ -90,11 +90,7 @@ method check() {
   my $feature_rel_rs = $self->chado()->resultset('Sequence::FeatureRelationship')
     ->search({ -or => [ 'type.name' => 'interacts_genetically',
                         'type.name' => 'interacts_physically' ]},
-             { join => 'type' })
-#    ->search({ 'me.feature_relationship_id' =>  46518 })
-#    ->search({ 'subject.uniquename' => 'SPAC222.10c' },
-#             { join => 'subject' })
-;
+             { join => 'type' });
 
   my %props = ();
 
@@ -119,8 +115,6 @@ method check() {
     $props{$_->feature_relationship_id()}->{$type_name} = $_->value();
    } @all_props;
 
-  warn "Got props\n";
-
   my $fr_prefetch_rs = $feature_rel_rs
     ->search({},
              {
@@ -130,8 +124,6 @@ method check() {
 
   my %seen_rel = ();
   my @reciprocal_interactions_to_check = ();
-
-  warn "starting loop\n";
 
   while (defined (my $rel = $fr_prefetch_rs->next())) {
     my $sub_uniquename = $rel->subject()->uniquename();
