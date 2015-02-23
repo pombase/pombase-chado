@@ -41,6 +41,7 @@ use Moose::Role;
 requires 'store_feature_relationshipprop';
 requires 'store_feature_rel_pub';
 requires 'store_feature_rel';
+requires 'config';
 
 has genetic_interaction_type => (is => 'ro', init_arg => undef,
                                  lazy => 1,
@@ -49,6 +50,9 @@ has physical_interaction_type => (is => 'ro', init_arg => undef,
                                   lazy => 1,
                                   builder => '_build_physical_interaction');
 
+
+has symmetrical_interaction_evidence_codes => (is => 'rw', init_arg => undef,
+                                               lazy_build => 1);
 
 method _build_genetic_interaction()
 {
@@ -60,7 +64,26 @@ method _build_physical_interaction()
   return $self->get_cvterm('PomBase interaction types', 'interacts_physically');
 }
 
-method store_interaction()
+method _build_symmetrical_interaction_evidence_codes()
+{
+  my @symmetrical_ev_codes = ();
+
+  my %evidence_types = %{$self->config()->{evidence_types}};
+
+  map {
+    my $ev_name = $_;
+
+    my $symmetrical = $evidence_types{$ev_name}->{symmetrical};
+
+    if ($symmetrical && lc $symmetrical ne 'no') {
+      push @symmetrical_ev_codes, $ev_name;
+    }
+  } keys %evidence_types;
+
+  return [@symmetrical_ev_codes];
+}
+
+method _store_interaction_helper()
 {
   my %args = @_;
   my $feature_a = $args{feature_a};
@@ -115,6 +138,45 @@ method store_interaction()
     }
   }
   $self->store_feature_rel_pub($rel, $pub);
+
+  return $rel;
+}
+
+=head2 store_interaction
+
+ Usage   : $self->store_interaction(%args);
+ Function:
+ Args    :
+  feature_a - a Sequence::Feature (bait)
+  feature_b - a Sequence::Feature (prey)
+  rel_type_name - 'physical_interaction' or 'genetic_interaction'
+  evidence_type - an evidence type eg. "Synthetic Lethality"
+  source_db - eg. "PomBase"
+  pub - a Pub object
+  creation_date
+  curator - { name => '...', email => '...' }
+  approver_email
+  approved_timestamp
+  canto_session
+  notes - list of strings
+
+ Return  : a list of the FeatureRelationship object that were created
+
+=cut
+
+method store_interaction()
+{
+  my $rel_1 = $self->_store_interaction_helper(@_);
+
+  my %args = @_;
+  my $evidence_type = $args{evidence_type};
+
+  if (grep { $_ eq $evidence_type } @{$self->symmetrical_interaction_evidence_codes()}) {
+    ($args{feature_a}, $args{feature_b}) = ($args{feature_b}, $args{feature_a});
+    return ($rel_1, $self->_store_interaction_helper(%args));
+  } else {
+    return $rel_1;
+  }
 }
 
 1;

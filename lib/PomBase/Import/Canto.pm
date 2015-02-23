@@ -143,6 +143,7 @@ method _store_interaction_annotation
     for my $feature_b_data (@$interacting_genes) {
       my $feature_b_uniquename = $feature_b_data->{primary_identifier};
       my $feature_b = $self->find_chado_feature($feature_b_uniquename, 1, 1, $organism);
+      # this will store the reciprocal annotation for symmetrical interactions
       $self->store_interaction(
         feature_a => $feature_a,
         feature_b => $feature_b,
