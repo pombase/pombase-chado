@@ -51,9 +51,108 @@ evidence_types:
     name: Traceable Author Statement
   UNK:
     name: Unknown
-  'Synthetic Haploinsufficiency': ~
+  Microscopy: ~
+  'Cell growth assay': ~
+  'Other': ~
+  'Other direct assay': ~
+  'Affinity Capture-Luminescence': ~
+  'Affinity Capture-MS': ~
+  'Affinity Capture-RNA': ~
+  'Affinity Capture-Western': ~
+  'Biochemical Activity': ~
+  'Chromatography evidence': ~
+  'Co-crystal Structure':
+    name: Co-crystal Structure
+    symmetrical: yes
+  'Co-fractionation':
+    name: Co-fractionation
+    symmetrical: yes
+  'Co-localization':
+    name: Co-localization
+    symmetrical: yes
+  'Co-purification':
+    name: Co-purification
+    symmetrical: yes
+  'Dosage Growth Defect': ~
+  'Dosage Lethality': ~
+  'Dosage Rescue': ~
+  'FRET':
+    name: FRET
+  'Far Western': ~
+  'Microarray RNA expression level data': ~
+  'Negative Genetic':
+    name: Negative Genetic
+    symmetrical: yes
+  'PCA':
+    name: PCA
+    symmetrical: yes
+  'Phenotypic Enhancement': ~
+  'Phenotypic Suppression': ~
+  'Positive Genetic':
+    name: Positive Genetic
+    symmetrical: yes
+  'Protein-RNA': ~
+  'Protein-peptide': ~
+  'Reconstituted Complex': ~
+  'Synthetic Growth Defect':
+    name: Synthetic Growth Defect
+    symmetrical: yes
+  'Synthetic Haploinsufficiency':
+    name: Synthetic Haploinsufficiency
+    symmetrical: yes
+  'Synthetic Lethality':
+    name: Synthetic Lethality
+    symmetrical: yes
+  'Synthetic Rescue': ~
+  'Two-hybrid': ~
+  'Reporter gene assay': ~
+  'Enzyme assay data': ~
+  'Flow cytometry data': ~
+  'Chromatin immunoprecipitation experiment': ~
+  'Fusion protein localization experiment': ~
+  'Immunolocalization experiment data': ~
   'Epitope-tagged protein immunolocalization experiment data': ~
+  'Protein localization experiment': ~
   'Co-immunoprecipitation experiment': ~
+  'Electrophoretic mobility shift assay data': ~
+  'Northern assay evidence': ~
+  'Particle size and count assay': ~
+  'Western blot assay': ~
+  'Substance quantification': ~
+  'Substance quantification evidence': ~
+  'Transcript expression level evidence': ~
+  'competitive growth assay evidence': ~
+  'Plasmid maintenance assay evidence': ~
+  'Sodium dodecyl sulfate polyacrylamide gel electrophoresis': ~
+  'FPR':
+    name: fitness profiling
+    definition: "ECO term name is 'competitive growth assay evidence' (ECO:0000336)"
+  'ECO:0000000':
+    name: evidence
+    definition: A type of information that is used to support an assertion.
+  'ECO:0000007':
+    name: immunofluorescence evidence
+  'ECO:0000049':
+    name: reporter gene assay evidence
+  'ECO:0000106':
+    name: Northern assay evidence
+  'ECO:0000112':
+    name: Western blot evidence
+  'ECO:0000124':
+    name: fusion protein localization evidence
+  'ECO:0000058':
+    name: expression microarray evidence
+  'ECO:0000336':
+    name: competitive growth assay evidence
+  'ECO:0000108':
+    name: reverse transcription polymerase chain reaction transcription evidence
+  'ECO:0000110':
+    name: RNA protection assay evidence
+  'ECO:0000048':
+    name: transcript expression level evidence
+  'ECO:0000231':
+    name: quantitative PCR
+    definition: "ECO term name is 'quantitative polymerase chain reaction evidence'"
   'ECO:0000006':
     name: experimental evidence
   'ECO:0000337':
@@ -64,6 +163,8 @@ evidence_types:
     name: in situ hybridization assay evidence
   'ECO:0001096':
     name: mass spectrometry evidence
+  'ECO:0000059':
+    name: experimental phenotypic evidence
 
 phenotype_cv_name: fission_yeast_phenotype
 parental_strain:

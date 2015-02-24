@@ -114,9 +114,25 @@ method _store_interaction_helper()
     }
   }
 
-  my $rel = $self->store_feature_rel($feature_a, $feature_b, $rel_type);
+  my @existing_interactions =
+    $self->get_feature_relationship($feature_a, $feature_b, $pub, $evidence_type);
 
-  $self->store_feature_relationshipprop($rel, evidence => $evidence_type);
+  if (@existing_interactions > 1) {
+    die "more than one existing interaction for ", $feature_a->uniquename(),
+      " <- ", $evidence_type, " -> ", $feature_b->uniquename(), "  from ",
+      $pub->uniquename();
+  }
+
+  my $rel;
+
+  if (@existing_interactions == 1) {
+    $rel = $existing_interactions[0];
+  } else {
+    $rel = $self->store_feature_rel($feature_a, $feature_b, $rel_type);
+    $self->store_feature_rel_pub($rel, $pub);
+    $self->store_feature_relationshipprop($rel, evidence => $evidence_type);
+  }
+
   $self->store_feature_relationshipprop($rel, source_database => $source_db);
   $self->store_feature_relationshipprop($rel, date => $creation_date);
   if (defined $curator) {
@@ -137,7 +153,6 @@ method _store_interaction_helper()
       $self->store_feature_relationshipprop($rel, interaction_note => $note);
     }
   }
-  $self->store_feature_rel_pub($rel, $pub);
 
   return $rel;
 }
