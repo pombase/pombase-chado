@@ -59,6 +59,7 @@ with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::FeatureRelationshipFinder';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';

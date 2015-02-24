@@ -42,6 +42,7 @@ requires 'store_feature_relationshipprop';
 requires 'store_feature_rel_pub';
 requires 'store_feature_rel';
 requires 'config';
+requires 'get_feature_relationship';
 
 has genetic_interaction_type => (is => 'ro', init_arg => undef,
                                  lazy => 1,
