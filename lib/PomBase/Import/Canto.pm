@@ -150,7 +150,7 @@ method _store_interaction_annotation
         feature_b => $feature_b,
         rel_type_name => $annotation_type,
         evidence_type => $long_evidence,
-        source_db => $config->{db_name_for_cv},
+        source_db => $config->{database_name},
         pub => $publication,
         creation_date => $creation_date,
         curator => $curator,
