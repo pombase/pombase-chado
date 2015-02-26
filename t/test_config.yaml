@@ -589,6 +589,32 @@ data:
           name: relationship
       object:
         uniquename: SPAC2F7.03c
+    - subject:
+        uniquename: SPCC63.05
+      type:
+        name: interacts_genetically
+        cv:
+          name: PomBase interaction types
+      object:
+        uniquename: SPBC14F5.07
+      feature_relationshipprops:
+        - type:
+            name: evidence
+            cv:
+              name: feature_relationshipprop_type
+          value: Synthetic Haploinsufficiency
+        - type:
+            name: source_database
+            cv:
+              name: feature_relationshipprop_type
+          value: BioGRID
+      feature_relationship_pubs:
+        - pub:
+            type:
+              name: paper
+              cv:
+                name: PomBase publication types
+            uniquename: PMID:19756689
   feature_cvterm:
     - feature:
         uniquename: SPBC2F12.13.1
