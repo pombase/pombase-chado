@@ -126,15 +126,22 @@ method _store_interaction_helper()
 
   my $rel;
 
+  my $existing_rel = undef;
+
   if (@existing_interactions == 1) {
     $rel = $existing_interactions[0];
+    $existing_rel = $rel;
   } else {
     $rel = $self->store_feature_rel($feature_a, $feature_b, $rel_type);
     $self->store_feature_rel_pub($rel, $pub);
     $self->store_feature_relationshipprop($rel, evidence => $evidence_type);
   }
 
-  $self->store_feature_relationshipprop($rel, source_database => $source_db);
+  if (!$existing_rel) {
+    # only store for new interactions
+    $self->store_feature_relationshipprop($rel, source_database => $source_db);
+  }
+
   $self->store_feature_relationshipprop($rel, date => $creation_date);
   if (defined $curator) {
     $self->store_feature_relationshipprop($rel, curator_name => $curator->{name});
