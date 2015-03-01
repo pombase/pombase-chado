@@ -63,6 +63,10 @@ has with_filter_values => (is => 'rw', isa => 'HashRef',
 has term_id_filter_values => (is => 'rw', isa => 'HashRef',
                               init_arg => undef);
 
+has binding_term_list => (is => 'rw', isa => 'ArrayRef',
+                          init_arg => undef,
+                          lazy_build => 1);
+
 method _load_first_column($filename)
 {
   return unless $filename;
@@ -84,6 +88,31 @@ method _load_first_column($filename)
   close $file or die "$!";
 
   return %ret_val;
+}
+
+method _build_binding_term_list
+{
+  my $dbh = $self->chado()->storage()->dbh();
+
+  my $sth = $dbh->prepare(<<'SQL');
+    SELECT 'GO:' || x.accession
+      FROM cvtermpath path
+      JOIN cvterm subj ON path.subject_id = subj.cvterm_id
+      JOIN dbxref x ON subj.dbxref_id = x.dbxref_id
+      JOIN cvterm obj ON obj.cvterm_id = path.object_id
+      JOIN cv obj_cv ON obj_cv.cv_id = obj.cv_id
+     WHERE obj_cv.name = 'molecular_function' and obj.name = 'protein binding';
+SQL
+
+  $sth->execute();
+
+  my @binding_term_list = ('GO:0005515');
+
+  while (my @data = $sth->fetchrow_array()) {
+    push @binding_term_list, $data[0];
+  }
+
+  return \@binding_term_list;
 }
 
 method BUILD
@@ -172,6 +201,8 @@ method load($fh)
   my %term_id_filter = %{$self->term_id_filter_values()};
 
   my $use_first_with_id = $self->use_first_with_id();
+
+  my @binding_term_list = @{$self->binding_term_list()};
 
  LINE:
   while (defined (my $line = $fh->getline())) {

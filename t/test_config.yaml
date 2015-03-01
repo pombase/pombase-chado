@@ -160,6 +160,11 @@ data:
             accession: 0004930
             db:
               name: GO
+        - name: protein binding
+          dbxref:
+            accession: 0005515
+            db:
+              name: GO
     - name: cellular_component
       cvterms:
         - name: spindle
