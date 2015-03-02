@@ -125,6 +125,8 @@ method check() {
   my %seen_rel = ();
   my @reciprocal_interactions_to_check = ();
 
+  my $success = 1;
+
   while (defined (my $rel = $fr_prefetch_rs->next())) {
     my $sub_uniquename = $rel->subject()->uniquename();
     my $obj_uniquename = $rel->object()->uniquename();
@@ -156,6 +158,7 @@ method check() {
       my $other_rel = $seen_rel{$key};
       my $other_source = _get_source($props{$other_rel->feature_relationship_id()});
       warn "already exists: $key  sources: $source and $other_source\n";
+      $success = 0;
     } else {
       $seen_rel{$key} = $rel;
     }
@@ -171,8 +174,9 @@ method check() {
   for my $reciprocal_key (@reciprocal_interactions_to_check) {
     if (!exists $seen_rel{$reciprocal_key}) {
       warn "missing annotation for: $reciprocal_key\n";
+      $success = 0;
     }
   }
 
-  return 0;
+  return $success;
 }
