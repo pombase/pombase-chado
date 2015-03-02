@@ -94,7 +94,7 @@ method check() {
 
   my %props = ();
 
-  my @all_props =
+  my $prop_rs =
     $self->chado()->resultset('Sequence::FeatureRelationshipprop')
       ->search({
         -or => [
@@ -106,14 +106,13 @@ method check() {
         feature_relationship_id => {
           -in => $feature_rel_rs->get_column('feature_relationship_id')->as_query(),
         }
-      }, { join => 'type', prefetch => 'type' })
-        ->all();
+      }, { join => 'type', prefetch => 'type' });
 
-  map {
-    my $type_name = $_->type()->name();
+  while (defined (my $prop = $prop_rs->next())) {
+    my $type_name = $prop->type()->name();
 
-    $props{$_->feature_relationship_id()}->{$type_name} = $_->value();
-   } @all_props;
+    $props{$prop->feature_relationship_id()}->{$type_name} = $prop->value();
+   }
 
   my $fr_prefetch_rs = $feature_rel_rs
     ->search({},
