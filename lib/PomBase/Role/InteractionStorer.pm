@@ -99,6 +99,7 @@ method _store_interaction_helper()
   my $approved_timestamp = $args{approved_timestamp};
   my $canto_session = $args{canto_session};
   my $notes = $args{notes} // [];
+  my $is_inferred = $args{is_inferred};
   my @notes = @$notes;
 
   my $rel_type;
@@ -141,6 +142,7 @@ method _store_interaction_helper()
     # only store for new interactions
     $self->store_feature_relationshipprop($rel, source_database => $source_db);
     $self->store_feature_relationshipprop($rel, date => $creation_date);
+    $self->store_feature_relationshipprop($rel, is_inferred => ($is_inferred ? 'yes' : 'no'));
   }
 
   if (defined $curator) {
@@ -189,12 +191,15 @@ method _store_interaction_helper()
 
 method store_interaction()
 {
-  my $rel_1 = $self->_store_interaction_helper(@_);
-
   my %args = @_;
+  $args{is_inferred} = 0;
+
+  my $rel_1 = $self->_store_interaction_helper(%args);
+
   my $evidence_type = $args{evidence_type};
 
   if (grep { $_ eq $evidence_type } @{$self->symmetrical_interaction_evidence_codes()}) {
+    $args{is_inferred} = 1;
     ($args{feature_a}, $args{feature_b}) = ($args{feature_b}, $args{feature_a});
     return ($rel_1, $self->_store_interaction_helper(%args));
   } else {

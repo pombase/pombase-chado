@@ -336,6 +336,11 @@ data:
             accession: 011000008
             db:
               name: PBO
+        - name: is_inferred
+          dbxref:
+            accession: 011000009
+            db:
+              name: PBO
     - name: PomBase organism property types
       cvterms:
         - name: taxon_id
