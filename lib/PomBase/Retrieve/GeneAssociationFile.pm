@@ -101,7 +101,7 @@ method _get_feature_details
 
   map {
     my $uniquename = $_->feature()->uniquename();
-    $uniquename =~ s/\.\d+:pep$//;
+    $uniquename =~ s/\.\d+(:pep)?$//;
     $products{$uniquename} = $_->cvterm()->name();
   } $products_rs->all();
 
@@ -114,7 +114,7 @@ method _get_feature_details
 
   map {
     my $uniquename = $_->feature()->uniquename();
-    $uniquename =~ s/\.\d+:pep$//;
+    $uniquename =~ s/\.\d+(:pep)?$//;
     $statuses{$uniquename} = $_->cvterm()->name();
   } $statuses_rs->all();
 
