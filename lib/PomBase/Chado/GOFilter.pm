@@ -88,7 +88,7 @@ AND
    'inferred from expression pattern','non-traceable author statement',
    'inferred from reviewed computational analysis',
    'traceable author statement',
-   'inferred from sequence model', 'inferred by curator'
+   'inferred from sequence model'
 )
 EOQ
 
