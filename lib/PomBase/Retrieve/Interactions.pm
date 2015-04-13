@@ -183,6 +183,10 @@ SQL
         my $row = $rel_rs->next();
 
         if (defined $row) {
+          my $is_inferred = $props{$row->feature_relationship_id()}{is_inferred};
+
+          goto ROW if $is_inferred eq 'yes';
+
           my $source_database = $props{$row->feature_relationship_id()}{source_database};
           if ($source_database ne $db_name) {
             goto ROW;
