@@ -175,7 +175,7 @@ SQL
   my %props = $self->_read_rel_props($rel_rs);
   my %pubs = $self->_read_pubs($rel_rs);
 
-  my $db_name = $self->config()->{db_name_for_cv};
+  my $db_name = $self->config()->{database_name};
 
   my $it = do {
     iterate {
