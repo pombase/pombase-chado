@@ -20,7 +20,7 @@ sub usage
 {
   die qq(
 usage:
-  $0 <args> < input_file
+  $0 <args>
 
 Args:
   host          - the database server machine name
@@ -29,6 +29,10 @@ Args:
   password      - the database password
 );
 
+}
+
+if (!@ARGV) {
+  usage();
 }
 
 my @options = ();
