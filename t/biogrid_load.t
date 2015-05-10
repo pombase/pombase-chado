@@ -13,7 +13,7 @@ use PomBase::Import::BioGRID;
 my $pub_uniquename = "PMID:19029536";
 
 my @options = (
-  "--organism-taxonid-filter=4896",
+  "--organism-taxonid-filter=4896:4896",
   "--interaction-note-filter=Contributed by PomBase|contributed by PomBase|triple mutant",
   "--evidence-code-filter=Co-localization");
 

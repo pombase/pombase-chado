@@ -100,6 +100,20 @@ method load($fh)
   $csv->column_names ($csv->getline($fh));
 
   my $organism_taxonid_filter = $self->organism_taxonid_filter();
+
+  # if organism_taxonid_filter is "1234:4567" the "1234" is the taxon ID we
+  # filter on and the "4567" is the taxonid we actually store
+  my $dest_organism_taxonid = undef;
+
+  if (defined $organism_taxonid_filter) {
+    if ($organism_taxonid_filter =~ /(\d+):(\d+)/) {
+      $organism_taxonid_filter = $1;
+      $dest_organism_taxonid = $2;
+    } else {
+      $dest_organism_taxonid = $organism_taxonid_filter;
+    }
+  }
+
   my @evidence_code_filter = @{$self->evidence_code_filter() // []};
   my $interaction_note_filter = $self->interaction_note_filter();
 
@@ -153,17 +167,24 @@ method load($fh)
       }
     }
 
-    if (defined $organism_taxonid_filter &&
-        ($taxon_a ne $organism_taxonid_filter ||
-         $taxon_b ne $organism_taxonid_filter)) {
-      warn "ignoring interaction of $uniquename_a(taxon $taxon_a) " .
-        "with $uniquename_b(taxon $taxon_b) " .
-        "because one of the interactors is not from taxon $organism_taxonid_filter\n";
-      next;
-    }
+    my $organism_a;
+    my $organism_b;
 
-    my $organism_a = $self->find_organism_by_taxonid($taxon_a);
-    my $organism_b = $self->find_organism_by_taxonid($taxon_b);
+    if (defined $organism_taxonid_filter) {
+      if ($taxon_a ne $organism_taxonid_filter ||
+          $taxon_b ne $organism_taxonid_filter) {
+        warn "ignoring interaction of $uniquename_a(taxon $taxon_a) " .
+          "with $uniquename_b(taxon $taxon_b) " .
+          "because one of the interactors is not from taxon $organism_taxonid_filter\n";
+        next;
+      }
+
+      $organism_a = $self->find_organism_by_taxonid($dest_organism_taxonid);
+      $organism_b = $organism_a;
+    } else {
+      $organism_a = $self->find_organism_by_taxonid($taxon_a);
+      $organism_b = $self->find_organism_by_taxonid($taxon_b);
+    }
 
     if (!defined $organism_a) {
       warn "ignoring $experimental_system_type interaction of $uniquename_a " .
