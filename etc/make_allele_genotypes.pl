@@ -115,7 +115,7 @@ my $genotype_rs =
     });
 
 my $uniquename_prefix = 'pombase-genotype-';
-my $name_prefix = 'h+ ';
+my $name_prefix = '';
 my $max_id = 0;
 
 while (defined (my $genotype = $genotype_rs->next())) {
