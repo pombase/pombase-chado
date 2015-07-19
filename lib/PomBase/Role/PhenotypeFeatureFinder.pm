@@ -105,15 +105,12 @@ method get_genotype($genotype_identifier, $genotype_name, $alleles)
   return $genotype;
 }
 
-method _get_genotype_uniquename
+method _get_genotype_suffix_pg
 {
-  my $dbh = $self->chado()->storage()->dbh();
+  my $dbh = shift;
+  my $prefix = shift;
 
-  my $database_name = $self->config()->{database_name};
-  my $prefix = "$database_name-genotype-";
-
-  my $sql = "select max(substring(uniquename from '^$prefix(.*)\$')::integer)+1
-from feature where uniquename like '$prefix%'";
+  my $sql = "select max(substring(uniquename from '^$prefix(.*)\$')::integer)+1 from feature where uniquename like '$prefix%'";
 
   my $sth = $dbh->prepare($sql);
 
@@ -122,7 +119,46 @@ from feature where uniquename like '$prefix%'";
 
   my @data = $sth->fetchrow_array();
 
-  my $new_suffix = $data[0] // 1;
+  return $data[0] // 1;
+}
+
+method _get_genotype_suffix_sqlite
+{
+  my $dbh = shift;
+  my $prefix = shift;
+
+  my $sql = "select uniquename from feature where uniquename like '$prefix%'";
+
+  my $sth = $dbh->prepare($sql);
+
+  $sth->execute()
+    or die "Couldn't execute query: " . $sth->errstr();
+
+  my $max = 1;
+
+  while (my @data = $sth->fetchrow_array()) {
+    if ($data[0] > $max) {
+      $max = $data[0];
+    }
+  }
+
+  return $max;
+}
+
+method _get_genotype_uniquename
+{
+  my $dbh = $self->chado()->storage()->dbh();
+
+  my $database_name = $self->config()->{database_name};
+  my $prefix = "$database_name-genotype-";
+
+  my $new_suffix;
+
+  if ($self->chado()->storage()->connect_info()->[0] =~ /dbi:SQLite/) {
+    $new_suffix = $self->_get_genotype_suffix_sqlite($dbh, $prefix);
+  } else {
+    $new_suffix = $self->_get_genotype_suffix_pg($dbh, $prefix);
+  }
 
   return "$prefix$new_suffix";
 }
