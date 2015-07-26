@@ -438,11 +438,13 @@ method get_allele($allele_data)
               $session_details = " (from session $canto_session)";
             }
 
-            die 'description for new allele "' . $new_allele_name . '(' .
+            warn 'description for new allele "' . $new_allele_name . '(' .
               ($new_allele_description  // 'undefined') . ')" does not ' .
               'match the existing allele with the same name "' .
               $new_allele_name . '(' . ($existing_description // 'undefined') . ')"' .
               "$session_details\n";
+
+            return $existing_allele;
           }
         }
       }
