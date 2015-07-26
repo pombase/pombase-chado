@@ -115,6 +115,7 @@ method load($fh)
     my $allele_name = $columns_ref->{"allele_name"};
     my $allele_synonym = $columns_ref->{"allele_synonym"};
     my $allele_type = $columns_ref->{"allele_type"};
+    my $expression = $columns_ref->{"expression"};
 
     if (!$allele_name) {
       if (lc $allele_type eq 'deletion') {
@@ -242,7 +243,7 @@ method load($fh)
         allele_type => $allele_type,
       };
 
-      my $allele_feature = $self->get_genotype_for_allele($allele_data);
+      my $allele_feature = $self->get_genotype_for_allele($allele_data, $expression);
 
       my $feature_cvterm =
         $self->create_feature_cvterm($allele_feature, $cvterm, $pub, 0);

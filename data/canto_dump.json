@@ -25,16 +25,11 @@
          },
          "metadata" : {
             "accepted_timestamp" : "2012-02-15 13:45:00",
-            "annotation_status" : "APPROVED",
-            "annotation_status_datestamp" : "2014-10-07 02:51:42",
-            "approval_in_progress_timestamp" : "2014-10-07 02:51:39",
-            "approved_timestamp" : "2014-10-07 02:51:42",
-            "approver_email" : "val@sanger.ac.uk",
-            "approver_name" : "Val Wood",
+            "annotation_status" : "CURATION_IN_PROGRESS",
+            "annotation_status_datestamp" : "2012-02-15 13:45:00",
             "canto_session" : "aaaa0006",
             "curation_in_progress_timestamp" : "2012-02-15 13:45:00",
             "curation_pub_id" : "PMID:18426916",
-            "needs_approval_timestamp" : "2014-10-07 02:51:25",
             "session_created_timestamp" : "2012-02-15 13:45:00",
             "session_genes_count" : "1",
             "session_term_suggestions_count" : "0",
@@ -101,6 +96,10 @@
                "publication" : "PMID:19756689",
                "status" : "new",
                "term" : "GO:0055085",
+               "term_suggestion" : {
+                  "definition" : "The process in which miscellaneous stuff is transported from one side of a membrane to the other.",
+                  "name" : "miscellaneous transmembrane transport"
+               },
                "type" : "biological_process"
             },
             {
@@ -166,7 +165,10 @@
                "type" : "genetic_interaction"
             },
             {
-               "conditions" : [],
+               "conditions" : [
+                  "PECO:0000137",
+                  "rich medium"
+               ],
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
@@ -174,8 +176,7 @@
                   "name" : "Some Testperson"
                },
                "evidence_code" : "Epitope-tagged protein immunolocalization experiment data",
-               "expression" : "Overexpression",
-               "genotype" : "aaaa0007-genotype-1",
+               "genotype" : "aaaa0007-genotype-test-1",
                "publication" : "PMID:19756689",
                "status" : "new",
                "term" : "FYPO:0000013",
@@ -189,7 +190,7 @@
                   "name" : "Some Testperson"
                },
                "evidence_code" : "Co-immunoprecipitation experiment",
-               "genotype" : "aaaa0007-genotype-2",
+               "genotype" : "aaaa0007-genotype-test-2",
                "publication" : "PMID:19756689",
                "status" : "new",
                "term" : "FYPO:0000017",
@@ -229,36 +230,38 @@
             }
          },
          "genotypes" : {
-            "aaaa0007-genotype-1" : {
+            "aaaa0007-genotype-test-1" : {
                "alleles" : [
-                  "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-1",
-                  "Schizosaccharomyces pombe SPCC63.05:aaaa0007-1"
+                  {
+                     "id" : "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-1"
+                  },
+                  {
+                     "id" : "Schizosaccharomyces pombe SPCC63.05:aaaa0007-1"
+                  }
                ],
                "name" : "h+ SPCC63.05delta ssm4KE"
             },
-            "aaaa0007-genotype-2" : {
+            "aaaa0007-genotype-test-2" : {
                "alleles" : [
-                  "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-3"
+                  {
+                     "expression" : "Knockdown",
+                     "id" : "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-3"
+                  }
                ]
             }
          },
          "metadata" : {
             "accepted_timestamp" : "2012-02-15 13:45:00",
-            "annotation_status" : "APPROVED",
-            "annotation_status_datestamp" : "2014-10-07 02:51:14",
-            "approval_in_progress_timestamp" : "2014-10-07 02:47:06",
-            "approved_timestamp" : "2014-10-07 02:51:14",
-            "approver_email" : "val@sanger.ac.uk",
-            "approver_name" : "Val Wood",
+            "annotation_status" : "CURATION_IN_PROGRESS",
+            "annotation_status_datestamp" : "2012-02-15 13:45:00",
             "canto_session" : "aaaa0007",
             "curation_in_progress_timestamp" : "2012-02-15 13:45:00",
             "curation_pub_id" : "PMID:19756689",
-            "needs_approval_timestamp" : "2014-10-07 02:46:58",
             "session_created_timestamp" : "2012-02-15 13:45:00",
             "session_genes_count" : "4",
-            "session_term_suggestions_count" : "0",
+            "session_term_suggestions_count" : "1",
             "session_unknown_conditions_count" : "1",
-            "term_suggestion_count" : "0",
+            "term_suggestion_count" : "1",
             "unknown_conditions_count" : "1"
          },
          "organisms" : {

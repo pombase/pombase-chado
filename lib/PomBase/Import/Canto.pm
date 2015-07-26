@@ -315,7 +315,7 @@ method _store_ontology_annotation
       if (@processed_allele_quals > 1) {
         die "can't process annotation with two allele qualifiers\n";
       } else {
-        $feature = $self->get_genotype_for_allele($processed_allele_quals[0]);
+        $feature = $self->get_genotype_for_allele($processed_allele_quals[0], $expression);
       }
     }
 
@@ -676,12 +676,18 @@ method _get_alleles($canto_session, $session_genes, $session_allele_data)
 
 method _get_genotypes($session_alleles, $session_genotype_data)
 {
+  confess "no alleles passed to _get_genotypes()" unless $session_alleles;
   my %ret = ();
+
+  return %ret if !$session_alleles;
 
   while (my ($genotype_identifier, $details) = each %$session_genotype_data) {
     my @alleles = map {
-      my $allele_key = $_;
-      $session_alleles->{$allele_key};
+      my $allele_key = $_->{id};
+      {
+        expression => $_->{expression},
+        allele => $session_alleles->{$allele_key},
+      };
     } @{$details->{alleles}};
 
     $ret{$genotype_identifier} =

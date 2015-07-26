@@ -79,7 +79,8 @@ method _build_ranks() {
 
 method store_feature_relationshipprop($feature_relationship, $type_name, $value)
 {
-  my $type_cvterm = $self->get_cvterm('feature_relationshipprop_type', $type_name);
+  my $type_cvterm =
+    $self->find_or_create_cvterm('feature_relationshipprop_type', $type_name);
 
   if (!defined $type_cvterm) {
     use Carp qw(longmess);

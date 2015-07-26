@@ -92,14 +92,24 @@ method get_transcript($gene)
 
 method get_genotype($genotype_identifier, $genotype_name, $alleles)
 {
-  my $organism = $alleles->[0]->organism();
+  my $first_allele_data = $alleles->[0];
+
+  if (!$first_allele_data->{allele}) {
+    confess "allele data for genotypes must have the form { id => '', " .
+      "expression => '' } - expression is optional";
+  }
+
+  my $organism = $first_allele_data->{allele}->organism();
 
   my $genotype = $self->store_feature($genotype_identifier,
                                       $genotype_name, [], 'genotype',
                                       $organism);
 
   map {
-    $self->store_feature_rel($_, $genotype, 'part_of');
+    my $rel = $self->store_feature_rel($_->{allele}, $genotype, 'part_of');
+    if ($_->{expression}) {
+      $self->store_feature_relationshipprop($rel, 'expression', $_->{expression});
+    }
   } @$alleles;
 
   return $genotype;
@@ -163,13 +173,14 @@ method _get_genotype_uniquename
   return "$prefix$new_suffix";
 }
 
-method get_genotype_for_allele($allele_data)
+method get_genotype_for_allele($allele_data, $expression)
 {
   my $allele = $self->get_allele($allele_data);
 
   my $genotype_identifier = $self->_get_genotype_uniquename();
 
-  return $self->get_genotype($genotype_identifier, undef, [$allele]);
+  return $self->get_genotype($genotype_identifier, undef,
+                             [{ allele => $allele, expression => $expression }]);
 }
 
 func _get_allele_description($allele) {
@@ -469,6 +480,8 @@ method get_allele($allele_data)
     $allele = $self->store_feature($new_uniquename,
                                    $new_allele_name, [], 'allele',
                                    $gene->organism());
+
+    die "store_feature() failed uniquename: $new_uniquename" unless $allele;
 
     $self->store_feature_rel($allele, $gene, $instance_of_cvterm);
 
