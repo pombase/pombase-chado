@@ -71,7 +71,16 @@ method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
 
   my $feature_rs = $self->chado()->resultset('Sequence::Feature');
 
-  return $feature_rs->create({ %create_args });
+  my $new_feature = undef;
+
+  try {
+    $new_feature = $feature_rs->create({ %create_args });
+  } catch {
+    use Carp 'longmess';
+    warn "create() failed '$_':", longmess();
+  };
+
+  return $new_feature;
 }
 
 method find_or_create_synonym($synonym_name, $type_name)
