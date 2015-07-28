@@ -425,12 +425,12 @@ method get_allele($allele_data)
             # descriptions match - same allele
             return $existing_allele;
           } else {
-            if ($new_allele_description eq 'unknown') {
+            if (!$new_allele_description or $new_allele_description eq 'unknown') {
               # that's OK, just use the previous description
               return $existing_allele;
             }
 
-            if ($existing_description eq 'unknown') {
+            if (!$existing_description or $existing_description eq 'unknown') {
               # that's OK, just set the existing description
               if (defined $existing_description_prop) {
                 $existing_description_prop->value($new_allele_description);
@@ -468,11 +468,23 @@ method get_allele($allele_data)
           my ($existing_description, $existing_description_prop) =
             _get_allele_description($existing_allele);
 
-          if ($new_allele_description eq $existing_description) {
+          if (!defined $new_allele_description && !defined $existing_description) {
+            return $existing_allele;
+          }
+
+          if ((defined $new_allele_description && defined $existing_description) &&
+              $new_allele_description eq $existing_description) {
             return $existing_allele;
           }
         }
       }
+    }
+
+    my $allele_type = $allele_data->{allele_type};
+
+    if ($allele_type eq 'deletion' && $new_allele_description &&
+        $new_allele_description eq 'deletion') {
+      $new_allele_description = undef;
     }
 
     # fall through - no allele exists with matching name or description
@@ -494,8 +506,6 @@ method get_allele($allele_data)
     if (defined $canto_session) {
       $self->store_featureprop($allele, 'canto_session', $canto_session);
     }
-
-    my $allele_type = $allele_data->{allele_type};
 
     if (defined $allele_type && length $allele_type > 0) {
       (my $no_spaces_allele_type = $allele_type) =~ s/\s+/_/g;
