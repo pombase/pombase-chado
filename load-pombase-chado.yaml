@@ -109,6 +109,7 @@ evidence_types:
   'Enzyme assay data': ~
   'Flow cytometry data': ~
   'Chromatin immunoprecipitation experiment': ~
+  'Quantitative PCR': ~
   'Fusion protein localization experiment': ~
   'Immunolocalization experiment data': ~
   'Epitope-tagged protein immunolocalization experiment data': ~
@@ -121,7 +122,8 @@ evidence_types:
   'Substance quantification': ~
   'Substance quantification evidence': ~
   'Transcript expression level evidence': ~
-  'competitive growth assay evidence': ~
+  'Competitive growth assay evidence': ~
+  'Gel electrophoresis evidence': ~
   'Plasmid maintenance assay evidence': ~
   'Sodium dodecyl sulfate polyacrylamide gel electrophoresis': ~
   'FPR':

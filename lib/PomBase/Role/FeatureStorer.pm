@@ -48,7 +48,7 @@ requires 'find_or_create_pub';
 
 method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
 {
-  my $so_cvterm = $self->get_cvterm('sequence', $so_type);
+  my $feature_type_term = $self->get_cvterm('sequence', $so_type);
 
   use Carp qw(cluck);
 
@@ -57,10 +57,10 @@ method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
   warn "  storing $uniquename/", ($name ? $name : 'no_name'),
     " ($so_type)\n" if $self->verbose();
 
-  die "can't find cvterm for $so_type\n" unless defined $so_cvterm;
+  die "can't find SO cvterm for $so_type\n" unless defined $feature_type_term;
 
   my %create_args = (
-    type_id => $so_cvterm->cvterm_id(),
+    type_id => $feature_type_term->cvterm_id(),
     uniquename => $uniquename,
     organism_id => $organism->organism_id(),
   );
@@ -71,7 +71,16 @@ method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
 
   my $feature_rs = $self->chado()->resultset('Sequence::Feature');
 
-  return $feature_rs->create({ %create_args });
+  my $new_feature = undef;
+
+  try {
+    $new_feature = $feature_rs->create({ %create_args });
+  } catch {
+    use Carp 'longmess';
+    warn "create() failed '$_':", longmess();
+  };
+
+  return $new_feature;
 }
 
 method find_or_create_synonym($synonym_name, $type_name)

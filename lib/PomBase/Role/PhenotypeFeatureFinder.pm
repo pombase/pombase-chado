@@ -44,6 +44,7 @@ requires 'get_cvterm';
 requires 'find_chado_feature';
 requires 'find_organism_by_full_name';
 requires 'store_feature_rel';
+requires 'config';
 
 has allele_types => (is => 'rw', init_arg => undef, lazy_build => 1);
 
@@ -85,13 +86,102 @@ method get_gene($gene_data)
   return $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
 }
 
-method get_transcript($gene_data)
+method get_transcript($gene)
 {
-  my $gene_uniquename = $gene_data->{uniquename};
-  my $organism_name = $gene_data->{organism};
-  my $organism = $self->find_organism_by_full_name($organism_name);
+  return $self->find_chado_feature($gene->uniquename() . ".1", 1, 1, $gene->organism());
+}
 
-  return $self->find_chado_feature("$gene_uniquename.1", 1, 1, $organism);
+method get_genotype($genotype_identifier, $genotype_name, $alleles)
+{
+  my $first_allele_data = $alleles->[0];
+
+  if (!$first_allele_data->{allele}) {
+    confess "allele data for genotypes must have the form { id => '', " .
+      "expression => '' } - expression is optional";
+  }
+
+  my $organism = $first_allele_data->{allele}->organism();
+
+  my $genotype = $self->store_feature($genotype_identifier,
+                                      $genotype_name, [], 'genotype',
+                                      $organism);
+
+  map {
+    my $rel = $self->store_feature_rel($_->{allele}, $genotype, 'part_of');
+    if ($_->{expression}) {
+      $self->store_feature_relationshipprop($rel, 'expression', $_->{expression});
+    }
+  } @$alleles;
+
+  return $genotype;
+}
+
+method _get_genotype_suffix_pg
+{
+  my $dbh = shift;
+  my $prefix = shift;
+
+  my $sql = "select max(substring(uniquename from '^$prefix(.*)\$')::integer)+1 from feature where uniquename like '$prefix%'";
+
+  my $sth = $dbh->prepare($sql);
+
+  $sth->execute()
+    or die "Couldn't execute query: " . $sth->errstr();
+
+  my @data = $sth->fetchrow_array();
+
+  return $data[0] // 1;
+}
+
+method _get_genotype_suffix_sqlite
+{
+  my $dbh = shift;
+  my $prefix = shift;
+
+  my $sql = "select uniquename from feature where uniquename like '$prefix%'";
+
+  my $sth = $dbh->prepare($sql);
+
+  $sth->execute()
+    or die "Couldn't execute query: " . $sth->errstr();
+
+  my $max = 1;
+
+  while (my @data = $sth->fetchrow_array()) {
+    if ($data[0] > $max) {
+      $max = $data[0];
+    }
+  }
+
+  return $max;
+}
+
+method _get_genotype_uniquename
+{
+  my $dbh = $self->chado()->storage()->dbh();
+
+  my $database_name = $self->config()->{database_name};
+  my $prefix = "$database_name-genotype-";
+
+  my $new_suffix;
+
+  if ($self->chado()->storage()->connect_info()->[0] =~ /dbi:SQLite/) {
+    $new_suffix = $self->_get_genotype_suffix_sqlite($dbh, $prefix);
+  } else {
+    $new_suffix = $self->_get_genotype_suffix_pg($dbh, $prefix);
+  }
+
+  return "$prefix$new_suffix";
+}
+
+method get_genotype_for_allele($allele_data, $expression)
+{
+  my $allele = $self->get_allele($allele_data);
+
+  my $genotype_identifier = $self->_get_genotype_uniquename();
+
+  return $self->get_genotype($genotype_identifier, undef,
+                             [{ allele => $allele, expression => $expression }]);
 }
 
 func _get_allele_description($allele) {
@@ -203,12 +293,16 @@ method get_allele($allele_data)
     $gene = $allele_data->{gene};
   }
 
-  if (exists $allele_data->{primary_identifier}) {
+  my $canto_session = $allele_data->{canto_session};
+
+  if (exists $allele_data->{primary_identifier} &&
+      $allele_data->{primary_identifier} !~ /:($canto_session)-\d+$/) {
     $allele = $self->chado()->resultset('Sequence::Feature')
                    ->find({ uniquename => $allele_data->{primary_identifier},
                             organism_id => $gene->organism()->organism_id() });
     if (!defined $allele) {
       use Data::Dumper;
+      $Data::Dumper::Maxdepth = 3;
       die "failed to find allele from: ", Dumper([$allele_data]);
     }
 
@@ -268,12 +362,12 @@ method get_allele($allele_data)
             # descriptions match - same allele
             return $existing_allele;
           } else {
-            if ($new_allele_description eq 'unknown') {
+            if (!$new_allele_description or $new_allele_description eq 'unknown') {
               # that's OK, just use the previous description
               return $existing_allele;
             }
 
-            if ($existing_description eq 'unknown') {
+            if (!$existing_description or $existing_description eq 'unknown') {
               # that's OK, just set the existing description
               if (defined $existing_description_prop) {
                 $existing_description_prop->value($new_allele_description);
@@ -292,11 +386,13 @@ method get_allele($allele_data)
               $session_details = " (from session $canto_session)";
             }
 
-            die 'description for new allele "' . $new_allele_name . '(' .
+            warn 'description for new allele "' . $new_allele_name . '(' .
               ($new_allele_description  // 'undefined') . ')" does not ' .
               'match the existing allele with the same name "' .
               $new_allele_name . '(' . ($existing_description // 'undefined') . ')"' .
               "$session_details\n";
+
+            return $existing_allele;
           }
         }
       }
@@ -309,11 +405,23 @@ method get_allele($allele_data)
           my ($existing_description, $existing_description_prop) =
             _get_allele_description($existing_allele);
 
-          if ($new_allele_description eq $existing_description) {
+          if (!defined $new_allele_description && !defined $existing_description) {
+            return $existing_allele;
+          }
+
+          if ((defined $new_allele_description && defined $existing_description) &&
+              $new_allele_description eq $existing_description) {
             return $existing_allele;
           }
         }
       }
+    }
+
+    my $allele_type = $allele_data->{allele_type};
+
+    if ($allele_type eq 'deletion' && $new_allele_description &&
+        $new_allele_description eq 'deletion') {
+      $new_allele_description = undef;
     }
 
     # fall through - no allele exists with matching name or description
@@ -321,6 +429,8 @@ method get_allele($allele_data)
     $allele = $self->store_feature($new_uniquename,
                                    $new_allele_name, [], 'allele',
                                    $gene->organism());
+
+    die "store_feature() failed uniquename: $new_uniquename" unless $allele;
 
     $self->store_feature_rel($allele, $gene, $instance_of_cvterm);
 
@@ -333,8 +443,6 @@ method get_allele($allele_data)
     if (defined $canto_session) {
       $self->store_featureprop($allele, 'canto_session', $canto_session);
     }
-
-    my $allele_type = $allele_data->{allele_type};
 
     if (defined $allele_type && length $allele_type > 0) {
       (my $no_spaces_allele_type = $allele_type) =~ s/\s+/_/g;

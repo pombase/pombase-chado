@@ -138,6 +138,11 @@ data:
             accession: orthologous_to
             db:
               name: SO
+        - name: genotype
+          dbxref:
+            accession: genotype
+            db:
+              name: PBO
     - name: molecular_function
       cvterms:
         - name: microtubule motor activity
@@ -339,6 +344,11 @@ data:
         - name: is_inferred
           dbxref:
             accession: 011000009
+            db:
+              name: PBO
+        - name: expression
+          dbxref:
+            accession: 011000010
             db:
               name: PBO
     - name: PomBase organism property types
@@ -568,6 +578,12 @@ data:
     - uniquename: SPAC2F7.03c.1
       type:
         name: mRNA
+      organism:
+        genus: Schizosacchaomyces
+        species: pombe
+    - uniquename: SPBC1105.11c
+      type:
+        name: gene
       organism:
         genus: Schizosacchaomyces
         species: pombe
@@ -839,6 +855,8 @@ test_genes:
   - uniquename: SPAC1093.06c
     taxonid: 4896
   - uniquename: SPCC576.16c
+    taxonid: 4896
+  - uniquename: SPBC1105.11c
     taxonid: 4896
   - uniquename: SPAC27D7.13c
     name: ssm4
