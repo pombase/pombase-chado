@@ -45,6 +45,7 @@ requires 'find_chado_feature';
 requires 'find_organism_by_full_name';
 requires 'store_feature_rel';
 requires 'config';
+requires 'store_feature_relationshipprop';
 
 has allele_types => (is => 'rw', init_arg => undef, lazy_build => 1);
 

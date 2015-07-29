@@ -56,6 +56,7 @@ with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::LegacyAlleleHandler';
+with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::PhenotypeFeatureFinder';
 
 has verbose => (is => 'ro');
