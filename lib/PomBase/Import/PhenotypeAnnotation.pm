@@ -117,7 +117,6 @@ method load($fh)
     my $allele_name = $columns_ref->{"allele_name"};
     my $allele_synonym = $columns_ref->{"allele_synonym"};
     my $allele_type = $columns_ref->{"allele_type"};
-    my $expression = $columns_ref->{"expression"};
 
     if (!$allele_name) {
       if (lc $allele_type eq 'deletion') {
