@@ -350,9 +350,11 @@ method get_allele($allele_data)
           }
 
           # the should differ only in case
-          die 'trying to store an allele ' .
+          warn 'trying to store an allele ' .
             qq(with the name "$new_allele_name" but the name exists with different ) .
             qq(case: "$existing_name"$session_details\n);
+
+          $new_allele_name = $existing_name;
         }
 
         my ($existing_description, $existing_description_prop) =
