@@ -318,11 +318,24 @@ method get_allele($allele_data)
       $new_allele_description =~ s/[\s\N{ZERO WIDTH SPACE}]*,[\s\N{ZERO WIDTH SPACE}]*/,/g;
     }
 
+    my $gene_uniquename = $gene->uniquename();
+    my $gene_name = $gene->name();
+
     if (!defined $new_allele_name && !defined $new_allele_description) {
-      croak "internal error - no name or description passed to get_allele()";
+      if ($allele_data->{allele_type} eq 'wild_type') {
+        $new_allele_name = ($gene_name || $gene_uniquename) . '+';
+      } else {
+        if ($allele_data->{allele_type} eq 'deletion') {
+          $new_allele_name = ($gene_name || $gene_uniquename) . 'delta';
+        } else {
+          use Data::Dumper;
+          $Data::Dumper::Maxdepth = 3;
+          warn Dumper([$allele_data]);
+          croak "internal error - no name or description passed to get_allele()";
+        }
+      }
     }
 
-    my $gene_uniquename = $gene->uniquename();
     my $instance_of_cvterm = $self->get_cvterm('relationship', 'instance_of');
     my $existing_rs = $gene->search_related('feature_relationship_objects')
                            ->search({ 'me.type_id' => $instance_of_cvterm->cvterm_id() },
