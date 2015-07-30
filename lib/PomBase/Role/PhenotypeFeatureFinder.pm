@@ -314,7 +314,7 @@ method get_allele($allele_data)
       defined $new_allele_name && ($new_allele_name eq 'noname' || $new_allele_name eq '');
 
     my $new_allele_description = $allele_data->{description};
-    if (!$new_allele_description) {
+    if ($new_allele_description) {
       $new_allele_description =~ s/[\s\N{ZERO WIDTH SPACE}]*,[\s\N{ZERO WIDTH SPACE}]*/,/g;
     }
 
