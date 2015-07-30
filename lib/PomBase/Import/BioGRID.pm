@@ -51,6 +51,7 @@ with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::FeatureRelationshipFinder';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::XrefStorer';
+with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
