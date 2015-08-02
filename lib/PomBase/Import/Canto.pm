@@ -560,7 +560,9 @@ method _process_feature
     my $expression = delete $annotation->{expression};
     my $conditions = delete $annotation->{conditions};
 
-    if (defined delete $annotation->{term_suggestion}) {
+    my $term_suggestion = delete $annotation->{term_suggestion};
+    if (defined $term_suggestion &&
+        ($term_suggestion->{name} || $term_suggestion->{definition})) {
       die "annotation with term suggestion not loaded\n";
     }
 
