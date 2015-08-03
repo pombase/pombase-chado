@@ -187,3 +187,24 @@ cvs:
     - name: unknown
       description: An allele whose type has not been established.
     - name: other
+
+extension_restrictions:
+  fission_yeast_phenotype:
+    allowed:
+      - is_bearer_of
+  biological_process:
+    allowed:
+      - exists_during
+      - happens_during
+      - has_substrate
+      - requires_feature
+  molecular_function:
+    allowed:
+      - happens_during
+  cellular_component:
+    allowed:
+      - exists_during
+  'PSI-MOD':
+    allowed:
+      - absent_during
+
