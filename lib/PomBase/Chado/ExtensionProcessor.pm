@@ -172,6 +172,8 @@ method store_extension($feature_cvterm, $extensions)
           die "$rel_name() not allowed for $old_cv_name\n";
         }
       }
+    } else {
+      die "$rel_name() not allowed because no extension relations are configured for $old_cv_name\n";
     }
 
     my $all_not_allowed_rels = $extension_restriction_conf->{all}->{not_allowed};
