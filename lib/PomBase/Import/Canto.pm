@@ -673,7 +673,13 @@ method _get_alleles($canto_session, $session_genes, $session_allele_data)
     my $allele_data = clone $session_allele_data->{$key};
     $allele_data->{canto_session} = $canto_session;
     $allele_data->{gene} = $session_genes->{$allele_data->{gene}};
-    $ret{$key} = $self->get_allele($allele_data);
+    my ($out, $err) = capture {
+      $ret{$key} = $self->get_allele($allele_data);
+    };
+
+    if ($err) {
+      warn "warning in $canto_session: $err\n";
+    }
   }
 
   return %ret;
