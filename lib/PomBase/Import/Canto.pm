@@ -678,6 +678,7 @@ method _get_alleles($canto_session, $session_genes, $session_allele_data)
     };
 
     if ($err) {
+      chomp $err;
       warn "warning in $canto_session: $err\n";
     }
   }
