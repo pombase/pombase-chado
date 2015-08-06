@@ -92,7 +92,7 @@ method get_transcript($gene)
   return $self->find_chado_feature($gene->uniquename() . ".1", 1, 1, $gene->organism());
 }
 
-method get_genotype($genotype_identifier, $genotype_name, $alleles)
+method get_genotype($genotype_identifier, $genotype_name, $genotype_background, $alleles)
 {
   my $first_allele_data = $alleles->[0];
 
@@ -106,6 +106,11 @@ method get_genotype($genotype_identifier, $genotype_name, $alleles)
   my $genotype = $self->store_feature($genotype_identifier,
                                       $genotype_name, [], 'genotype',
                                       $organism);
+
+  if ($genotype_background) {
+    $self->store_featureprop($genotype, 'genotype_background',
+                             $genotype_background);
+  }
 
   map {
     my $rel = $self->store_feature_rel($_->{allele}, $genotype, 'part_of');
@@ -181,7 +186,7 @@ method get_genotype_for_allele($allele_data, $expression)
 
   my $genotype_identifier = $self->_get_genotype_uniquename();
 
-  return $self->get_genotype($genotype_identifier, undef,
+  return $self->get_genotype($genotype_identifier, undef, undef,
                              [{ allele => $allele, expression => $expression }]);
 }
 

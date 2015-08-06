@@ -703,7 +703,8 @@ method _get_genotypes($session_alleles, $session_genotype_data)
     } @{$details->{alleles}};
 
     $ret{$genotype_identifier} =
-      $self->get_genotype($genotype_identifier, $details->{name}, \@alleles);
+      $self->get_genotype($genotype_identifier, $details->{name},
+                          $details->{background}, \@alleles);
   }
 
   return %ret;
