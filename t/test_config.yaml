@@ -436,6 +436,11 @@ data:
             accession: 0030004
             db:
               name: PBO
+        - name: genotype_background
+          dbxref:
+            accession: 0030005
+            db:
+              name: PBO
     - name: species_dist
       cvterms:
         - name: 'predominantly single copy (one to one)'
