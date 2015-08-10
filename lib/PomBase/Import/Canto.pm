@@ -408,11 +408,6 @@ method _store_ontology_annotation
       $expression = ucfirst $ext_expression;
     }
 
-    if (defined $expression) {
-      if (!defined $allele_type || $allele_type ne 'deletion') {
-        $self->add_feature_cvtermprop($feature_cvterm, expression => $expression);
-      }
-    }
     if (defined $conditions) {
       for (my $i = 0; $i < @$conditions; $i++) {
         my $termid = $conditions->[$i];
