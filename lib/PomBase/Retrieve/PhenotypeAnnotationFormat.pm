@@ -81,36 +81,14 @@ sub _build_fypo_extension_termids
   return \%fypo_extension_termids
 }
 
-method _get_allele_details($allele_feature_rs)
+method _get_allele_gene_map
 {
-  my %synonyms = ();
+  my %allele_gene_map = ();
 
-  my $syn_rs = $allele_feature_rs->search_related('feature_synonyms')->
-    search({ is_current => 1, },
-           { prefetch => [ 'synonym' ] });
-
-  while (defined (my $fs = $syn_rs->next())) {
-    push @{$synonyms{$fs->feature_id()}}, $fs->synonym()->name();
-  }
-
-  my %featureprops = ();
-
-  my $fprops_rs =
-    $allele_feature_rs->search_related('featureprops', {}, { prefetch => 'type' });
-
-  while (defined (my $prop = $fprops_rs->next())) {
-    $featureprops{$prop->feature_id()}->{$prop->type()->name()} = $prop->value();
-  }
-
-  my %ret_map = ();
-
-  my $gene_rs = $self->chado()->resultset('Sequence::FeatureRelationship')->
+  my $allele_gene_rs = $self->chado()->resultset('Sequence::FeatureRelationship')->
     search(
       {
         -and => {
-          'subject.feature_id' => {
-            -in => $allele_feature_rs->get_column('feature_id')->as_query(),
-          },
           'subject.organism_id' => $self->organism()->organism_id(),
           'type.name' => 'allele',
           'type_2.name' => 'instance_of',
@@ -118,31 +96,104 @@ method _get_allele_details($allele_feature_rs)
             'type_3.name' => 'gene',
             'type_3.name' => 'pseudogene',
           ],
-          'type_2.name' => 'instance_of',
-         },
-       },
+        },
+      },
       {
         join => [ { subject => 'type' }, 'type', { object => 'type' } ],
         prefetch => [ { subject => 'type' }, { object => 'type' }, 'type' ] });
 
-  map {
-    my $rel = $_;
-    my $object = $rel->object();
+  while (defined (my $rel = $allele_gene_rs->next())) {
+    my $allele = $rel->subject();
+    my $gene = $rel->object();
     my $type = $rel->type();
 
-    if (defined $ret_map{$rel->subject_id()}->{gene}) {
-      die "feature has two instance_of parents: ", $rel->subject()->uniquename(),
-        " <-> ", $rel->object()->uniquename(),
-        " (", $rel->object()->feature_id(), ")\n";
-    } else {
-      $ret_map{$rel->subject_id()} = {
-        gene => $object,
-        type => $object->type()->name(),
-        synonyms => $synonyms{$object->feature_id()} // [],
-        %{$featureprops{$rel->subject_id()} // {}},
-      };
+    $allele_gene_map{$allele->uniquename()} = {
+      gene_uniquename => $gene->uniquename(),
+      gene_name => $gene->name(),
     }
-  } $gene_rs->all();
+  }
+
+  return %allele_gene_map;
+}
+
+method _get_allele_props
+{
+  my %allele_props = ();
+
+  my $allele_props_rs =
+    $self->chado()->resultset('Sequence::Featureprop')
+      ->search({ 'type_2.name' => 'allele' }, { join => ['type', {  feature => 'type' }] });
+
+  while (defined (my $prop = $allele_props_rs->next())) {
+    $allele_props{$prop->feature()->uniquename()}->{$prop->type()->name()} = $prop->value();
+  }
+
+  return %allele_props;
+}
+
+method _get_genotype_allele_props($genotype_allele_rs)
+{
+  my %genotype_allele_props = ();
+
+  my $genotype_allele_prop_rs = $self->chado()->resultset('Sequence::FeatureRelationshipprop')->
+    search(
+      {
+        'feature_relationship_id' => {
+          -in => $genotype_allele_rs->get_column('feature_relationship_id')->as_query(),
+        },
+      },
+      {
+        prefetch => 'type',
+      });
+
+  while (defined (my $prop = $genotype_allele_prop_rs->next())) {
+    $genotype_allele_props{$prop->feature_relationship_id()}
+      ->{$prop->type()->name()} = $prop->value();
+  }
+
+  return %genotype_allele_props;
+}
+
+method _get_genotype_details ($genotype_feature_rs)
+{
+  my %allele_gene_map = $self->_get_allele_gene_map();
+
+  my %allele_props = $self->_get_allele_props();
+
+  my %ret_map = ();
+
+  my $genotype_allele_rs = $self->chado()->resultset('Sequence::FeatureRelationship')->
+    search(
+      {
+        -and => {
+          'object.organism_id' => $self->organism()->organism_id(),
+          'type.name' => 'allele',
+          'type_2.name' => 'part_of',
+          'object.feature_id' => {
+            -in => $genotype_feature_rs->get_column('feature_id')->as_query(),
+          },
+         },
+       },
+      {
+        join => [ { subject => 'type' }, 'type', { object => 'type' } ],
+        prefetch => [ { subject => 'type' }, 'type', { object => 'type' } ] });
+
+  my %genotype_allele_props = $self->_get_genotype_allele_props($genotype_allele_rs);
+
+  map {
+    my $rel = $_;
+    my $allele = $rel->subject();
+    my $genotype = $rel->object();
+
+    push @{$ret_map{$genotype->uniquename()}},
+      {
+        expression => $genotype_allele_props{$rel->feature_relationship_id()}->{expression},
+        %{$allele_gene_map{$allele->uniquename()}},
+        allele_uniquename => $allele->uniquename(),
+        allele_name => $allele->name(),
+        %{$allele_props{$allele->uniquename} // {}},
+      };
+  } $genotype_allele_rs->all();
 
   return %ret_map;
 }
@@ -263,9 +314,9 @@ method retrieve() {
           join => 'feature',
         });
 
-  my $feature_rs = $feature_cvterm_rs->search_related('feature');
+  my $genotype_rs = $feature_cvterm_rs->search_related('feature');
 
-  my %feature_details = $self->_get_allele_details($feature_rs);
+  my %genotype_details = $self->_get_genotype_details($genotype_rs);
 
   my $it = do {
     my %fc_props = ();
@@ -292,22 +343,28 @@ method retrieve() {
       if (defined $row) {
         my ($extensions, $base_cvterm) = $self->make_gaf_extension($row);
 
+        $extensions =~ s/(has_penetrance|has_expressivity)\([^\)]+\)//;
+
         my $fc_id = $row->feature_cvterm_id();
         my %row_fc_props = %{$fc_props{$fc_id}};
         my $cvterm = $base_cvterm // $row->cvterm();
 
-        my $feature = $row->feature();
-        my $details = $feature_details{$feature->feature_id()};
+        my $genotype = $row->feature();
+        my $details = $genotype_details{$genotype->uniquename()};
 
         if (!defined $details) {
-          warn "can't find details for: ", $feature->uniquename(), " (id: ",
-            $feature->feature_id(), ")\n";
+          warn "can't find details for: ", $genotype->uniquename(), " (id: ",
+            $genotype->feature_id(), ")\n";
           goto ROW;
         }
 
-        if ($details->{type} ne 'gene') {
-          warn "ignoring allele ", $feature->uniquename(), " for ",
-            $details->{gene}->uniquename(), " - not a gene\n";
+        if (@{$details} > 1) {
+          my $allele_string =
+            join ' ',
+            map {
+              $_->{allele_name};
+            } @{$details};
+          warn "ignoring multi-allele $allele_string\n";
           goto ROW;
         }
 
@@ -327,46 +384,47 @@ method retrieve() {
             }
           }
         } else {
-          warn "no evidence for ", $feature->uniquename(), " <-> ", $cvterm->name() , "\n";
+          warn "no evidence for ", $genotype->uniquename(), " <-> ", $cvterm->name() , "\n";
           $evidence_code = "";
         }
 
         my $pub = $row->pub();
-        my $gene = $details->{gene} // die "no gene for ", $feature->uniquename();
-        my $gene_uniquename = $gene->uniquename();
-        my $gene_name = $gene->name() // $gene_uniquename;
-        my $synonyms_ref = $details->{synonyms} // [];
-        my $synonyms = join '|', @{$synonyms_ref};
-        my $product = $details->{product} // '';
+
+        my $first_allele = $details->[0];
+
+        my $gene_uniquename = $first_allele->{gene_uniquename};
+        my $gene_name = $first_allele->{gene_name} // $gene_uniquename;
+        my $product = $first_allele->{product} // '';
 
         my $date = _safe_join('|', [map { _fix_date($_) } @{$row_fc_props{date}}]);
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
         my $assigned_by = _safe_join('|', $row_fc_props{assigned_by});
 
         my $allele_description = _safe_join(',', $row_fc_props{description});
-        my $allele_type = $details->{allele_type};
+        my $allele_type = $first_allele->{allele_type};
         my $condition = _safe_join(',', $row_fc_props{condition});
 
         my $penetrance = _safe_join(',', [keys %{$ext_parent_values{$row->cvterm_id()}{has_penetrance}}]);
         my $expressivity = _safe_join(',', [keys %{$ext_parent_values{$row->cvterm_id()}{has_expressivity}}]);
 
-        my $expression = $details->{expression} // '';
+        my $expression = $first_allele->{expression} // '';
 
         return [
           $db_name,
           $gene_uniquename, $id,
           $allele_description,
           $expression, $parental_strain,
-          'not available',
-          'not available',
-          $gene_name, $feature->name() // '',
-          $synonyms,
+          '',
+          '',
+          $gene_name,
+          $first_allele->{allele_name} // '',
+          '',
           $allele_type,
           $evidence_code, $condition,
           $penetrance, $expressivity,
           $extensions // '', $pub->uniquename(),
           $taxon, $date,
-          ]
+        ]
       }
     }
     };

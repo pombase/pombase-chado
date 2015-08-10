@@ -254,7 +254,6 @@ data:
             accession: 1300001
             db:
               name: PBO
-                    
     - name: PomBase interaction types
       cvterms:
         - name: interacts_physically
@@ -757,7 +756,7 @@ data:
       pub:
         uniquename: PMID:11739790
     - feature:
-        uniquename: 'SPAC27D7.13c:allele-1'
+        uniquename: 'aaaa0007-genotype-1'
       cvterm:
         name: 'elongated cells [has_penetrance] low'
       is_not: 0
@@ -869,6 +868,9 @@ test_genes:
     alleles:
       - uniquename: 'SPAC27D7.13c:allele-1'
         name: ssm4-m1
+        part_of_genotype:
+          uniquename: 'aaaa0007-genotype-1'
+          expression: Knockdown
         featureprops:
           - type:
               name: description

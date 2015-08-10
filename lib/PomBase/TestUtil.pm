@@ -150,7 +150,10 @@ method _load_test_features($chado)
   my $gene_type = $self->get_cvterm('sequence', 'gene');
   my $mrna_type = $self->get_cvterm('sequence', 'mRNA');
   my $allele_type = $self->get_cvterm('sequence', 'allele');
+  my $genotype_type = $self->get_cvterm('sequence', 'genotype');
   my $instance_of_cvterm = $self->get_cvterm('relationship', 'instance_of');
+  my $part_of_cvterm = $self->get_cvterm('relationship', 'part_of');
+  my $expression_cvterm = $self->get_cvterm('feature_relationshipprop_type', 'expression');
 
   for my $gene_data (@{$self->test_config()->{test_genes}}) {
     my $organism = $orgs_by_taxon{$gene_data->{taxonid}};
@@ -174,6 +177,8 @@ method _load_test_features($chado)
 
     if (exists $gene_data->{alleles}) {
       for my $allele_data (@{$gene_data->{alleles}}) {
+        my $genotype_data = delete $allele_data->{part_of_genotype};
+
         my $allele_feature =
           $chado->resultset('Sequence::Feature')->create({
             %{$allele_data},
@@ -186,6 +191,28 @@ method _load_test_features($chado)
           object => $gene,
           type => $instance_of_cvterm,
         });
+
+        if ($genotype_data) {
+          my $genotype_feature =
+            $chado->resultset('Sequence::Feature')->create(
+              {
+                uniquename => $genotype_data->{uniquename},
+                organism_id => $organism->organism_id(),
+                type_id => $genotype_type->cvterm_id(),
+              });
+
+          my $feat_rel =
+            $chado->resultset('Sequence::FeatureRelationship')->create({
+              subject => $allele_feature,
+              object => $genotype_feature,
+              type => $part_of_cvterm,
+            });
+          $chado->resultset('Sequence::FeatureRelationshipprop')->create({
+            feature_relationship_id => $feat_rel->feature_relationship_id(),
+            type_id => $expression_cvterm->cvterm_id(),
+            value => $genotype_data->{expression},
+          });
+        }
       }
     }
   }
