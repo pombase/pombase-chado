@@ -309,9 +309,10 @@ method retrieve() {
         {
           'me.cvterm_id' => { -in => $cvterm_rs->get_column('cvterm_id')->as_query() },
           'feature.organism_id' => $self->organism()->organism_id(),
+          'type.name' => 'genotype',
         },
         {
-          join => 'feature',
+          join => { 'feature' => 'type' },
         });
 
   my $genotype_rs = $feature_cvterm_rs->search_related('feature');
@@ -342,8 +343,6 @@ method retrieve() {
 
       if (defined $row) {
         my ($extensions, $base_cvterm) = $self->make_gaf_extension($row);
-
-        $extensions =~ s/(has_penetrance|has_expressivity)\([^\)]+\)//;
 
         my $fc_id = $row->feature_cvterm_id();
         my %row_fc_props = %{$fc_props{$fc_id}};
