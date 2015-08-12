@@ -115,6 +115,12 @@ method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
   if (!defined $name) {
     die "no name for property\n";
   }
+  if ($name eq 'expression') {
+    # temporary hack to fix https://github.com/pombase/pombase-chado/issues/475
+    warn 'FEAT: ', $feature_cvterm->feature()->uniquename();
+    confess "expression not allowed as a feature_cvtermprop, value $value";
+  }
+
   if (!defined $value) {
     die "no value when storing $name prop into feature_cvtermprop\n";
   }
