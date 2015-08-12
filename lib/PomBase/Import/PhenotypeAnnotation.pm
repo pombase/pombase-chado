@@ -284,10 +284,6 @@ method load($fh)
         push @extension_bits, "has_expressivity($expressivity)";
       }
 
-      if ($expression) {
-        $self->add_feature_cvtermprop($feature_cvterm, 'expression', $expression);
-      }
-
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                    $long_evidence);
 
