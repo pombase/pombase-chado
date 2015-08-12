@@ -361,7 +361,7 @@ method retrieve() {
           my $allele_string =
             join ' ',
             map {
-              $_->{allele_name};
+              $_->{allele_name} // $_->{allele_uniquename};
             } @{$details};
           warn "ignoring multi-allele $allele_string\n";
           goto ROW;
