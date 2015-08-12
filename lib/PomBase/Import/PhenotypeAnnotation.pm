@@ -264,10 +264,10 @@ method load($fh)
         allele_type => $allele_type,
       };
 
-      my $allele_feature = $self->get_genotype_for_allele($allele_data, $expression);
+      my $genotype_feature = $self->get_genotype_for_allele($allele_data, $expression);
 
       my $feature_cvterm =
-        $self->create_feature_cvterm($allele_feature, $cvterm, $pub, 0);
+        $self->create_feature_cvterm($genotype_feature, $cvterm, $pub, 0);
 
       $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
 
