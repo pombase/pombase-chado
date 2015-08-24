@@ -7,13 +7,6 @@ CREATE TABLE cv (
   name varchar(255) NOT NULL,
   definition text
 );
-CREATE TABLE cvprop (
-  cvprop_id INTEGER PRIMARY KEY NOT NULL,
-  cv_id integer NOT NULL,
-  type_id integer NOT NULL,
-  value text,
-  rank integer NOT NULL DEFAULT 0
-);
 CREATE TABLE cvterm (
   cvterm_id INTEGER PRIMARY KEY NOT NULL,
   cv_id integer NOT NULL,
@@ -69,13 +62,6 @@ CREATE TABLE dbxref (
   accession varchar(255) NOT NULL,
   version varchar(255) NOT NULL DEFAULT '',
   description text
-);
-CREATE TABLE dbxrefprop (
-  dbxrefprop_id INTEGER PRIMARY KEY NOT NULL,
-  dbxref_id integer NOT NULL,
-  type_id integer NOT NULL,
-  value text NOT NULL DEFAULT '',
-  rank integer NOT NULL DEFAULT 0
 );
 CREATE TABLE feature (
   feature_id INTEGER PRIMARY KEY NOT NULL,
@@ -182,16 +168,6 @@ CREATE TABLE featureloc (
   locgroup integer NOT NULL DEFAULT 0,
   rank integer NOT NULL DEFAULT 0
 );
-CREATE TABLE featureloc_pub (
-  featureloc_pub_id INTEGER PRIMARY KEY NOT NULL,
-  featureloc_id integer NOT NULL,
-  pub_id integer NOT NULL
-);
-CREATE TABLE featureprop_pub (
-  featureprop_pub_id INTEGER PRIMARY KEY NOT NULL,
-  featureprop_id integer NOT NULL,
-  pub_id integer NOT NULL
-);
 CREATE TABLE organism (
   organism_id INTEGER PRIMARY KEY NOT NULL,
   abbreviation varchar(255),
@@ -200,71 +176,12 @@ CREATE TABLE organism (
   common_name varchar(255),
   comment text
 );
-CREATE TABLE organism_dbxref (
-  organism_dbxref_id INTEGER PRIMARY KEY NOT NULL,
-  organism_id integer NOT NULL,
-  dbxref_id integer NOT NULL
-);
 CREATE TABLE organismprop (
   organismprop_id INTEGER PRIMARY KEY NOT NULL,
   organism_id integer NOT NULL,
   type_id integer NOT NULL,
   value text,
   rank integer NOT NULL DEFAULT 0
-);
-CREATE TABLE phylonode (
-  phylonode_id INTEGER PRIMARY KEY NOT NULL,
-  phylotree_id integer NOT NULL,
-  parent_phylonode_id integer,
-  left_idx integer NOT NULL,
-  right_idx integer NOT NULL,
-  type_id integer,
-  feature_id integer,
-  label varchar(255),
-  distance double precision
-);
-CREATE TABLE phylonode_dbxref (
-  phylonode_dbxref_id INTEGER PRIMARY KEY NOT NULL,
-  phylonode_id integer NOT NULL,
-  dbxref_id integer NOT NULL
-);
-CREATE TABLE phylonode_organism (
-  phylonode_organism_id INTEGER PRIMARY KEY NOT NULL,
-  phylonode_id integer NOT NULL,
-  organism_id integer NOT NULL
-);
-CREATE TABLE phylonode_pub (
-  phylonode_pub_id INTEGER PRIMARY KEY NOT NULL,
-  phylonode_id integer NOT NULL,
-  pub_id integer NOT NULL
-);
-CREATE TABLE phylonode_relationship (
-  phylonode_relationship_id INTEGER PRIMARY KEY NOT NULL,
-  subject_id integer NOT NULL,
-  object_id integer NOT NULL,
-  type_id integer NOT NULL,
-  rank integer,
-  phylotree_id integer NOT NULL
-);
-CREATE TABLE phylonodeprop (
-  phylonodeprop_id INTEGER PRIMARY KEY NOT NULL,
-  phylonode_id integer NOT NULL,
-  type_id integer NOT NULL,
-  value text NOT NULL DEFAULT '',
-  rank integer NOT NULL DEFAULT 0
-);
-CREATE TABLE phylotree (
-  phylotree_id INTEGER PRIMARY KEY NOT NULL,
-  dbxref_id integer NOT NULL,
-  name varchar(255),
-  type_id integer,
-  analysis_id integer,
-  comment text
-);
-CREATE TABLE phylotree_pub (
-  phylotree_pub_id INTEGER PRIMARY KEY NOT NULL,
-  phylotree_id integer NOT NULL,
-  pub_id integer NOT NULL
 );
 CREATE TABLE pub (
   pub_id INTEGER PRIMARY KEY NOT NULL,
@@ -288,21 +205,6 @@ CREATE TABLE pub_dbxref (
   dbxref_id integer NOT NULL,
   is_current boolean NOT NULL DEFAULT true
 );
-CREATE TABLE pub_relationship (
-  pub_relationship_id INTEGER PRIMARY KEY NOT NULL,
-  subject_id integer NOT NULL,
-  object_id integer NOT NULL,
-  type_id integer NOT NULL
-);
-CREATE TABLE pubauthor (
-  pubauthor_id INTEGER PRIMARY KEY NOT NULL,
-  pub_id integer NOT NULL,
-  rank integer NOT NULL,
-  editor boolean DEFAULT false,
-  surname varchar(100) NOT NULL,
-  givennames varchar(100),
-  suffix varchar(100)
-);
 CREATE TABLE pubprop (
   pubprop_id INTEGER PRIMARY KEY NOT NULL,
   pub_id integer NOT NULL,
@@ -324,9 +226,6 @@ CREATE TABLE featureprop (
   rank integer NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX cv_c1 ON cv (name);
-CREATE INDEX cvprop_idx_cv_id ON cvprop (cv_id);
-CREATE INDEX cvprop_idx_type_id ON cvprop (type_id);
-CREATE UNIQUE INDEX cvprop_c1 ON cvprop (cv_id, type_id, rank);
 CREATE INDEX cvterm_idx_cv_id ON cvterm (cv_id);
 CREATE INDEX cvterm_idx_dbxref_id ON cvterm (dbxref_id);
 CREATE UNIQUE INDEX cvterm_c1 ON cvterm (name, cv_id, is_obsolete);
@@ -352,9 +251,6 @@ CREATE UNIQUE INDEX cvtermsynonym_c1 ON cvtermsynonym (cvterm_id, synonym);
 CREATE UNIQUE INDEX db_c1 ON db (name);
 CREATE INDEX dbxref_idx_db_id ON dbxref (db_id);
 CREATE UNIQUE INDEX dbxref_c1 ON dbxref (db_id, accession, version);
-CREATE INDEX dbxrefprop_idx_dbxref_id ON dbxrefprop (dbxref_id);
-CREATE INDEX dbxrefprop_idx_type_id ON dbxrefprop (type_id);
-CREATE UNIQUE INDEX dbxrefprop_c1 ON dbxrefprop (dbxref_id, type_id, rank);
 CREATE INDEX feature_idx_dbxref_id ON feature (dbxref_id);
 CREATE INDEX feature_idx_organism_id ON feature (organism_id);
 CREATE INDEX feature_idx_type_id ON feature (type_id);
@@ -399,58 +295,15 @@ CREATE UNIQUE INDEX feature_synonym_c1 ON feature_synonym (synonym_id, feature_i
 CREATE INDEX featureloc_idx_feature_id ON featureloc (feature_id);
 CREATE INDEX featureloc_idx_srcfeature_id ON featureloc (srcfeature_id);
 CREATE UNIQUE INDEX featureloc_c1 ON featureloc (feature_id, locgroup, rank);
-CREATE INDEX featureloc_pub_idx_featureloc_id ON featureloc_pub (featureloc_id);
-CREATE INDEX featureloc_pub_idx_pub_id ON featureloc_pub (pub_id);
-CREATE UNIQUE INDEX featureloc_pub_c1 ON featureloc_pub (featureloc_id, pub_id);
-CREATE INDEX featureprop_pub_idx_featureprop_id ON featureprop_pub (featureprop_id);
-CREATE INDEX featureprop_pub_idx_pub_id ON featureprop_pub (pub_id);
-CREATE UNIQUE INDEX featureprop_pub_c1 ON featureprop_pub (featureprop_id, pub_id);
 CREATE UNIQUE INDEX organism_c1 ON organism (genus, species);
-CREATE INDEX organism_dbxref_idx_dbxref_id ON organism_dbxref (dbxref_id);
-CREATE INDEX organism_dbxref_idx_organism_id ON organism_dbxref (organism_id);
-CREATE UNIQUE INDEX organism_dbxref_c1 ON organism_dbxref (organism_id, dbxref_id);
 CREATE INDEX organismprop_idx_organism_id ON organismprop (organism_id);
 CREATE INDEX organismprop_idx_type_id ON organismprop (type_id);
 CREATE UNIQUE INDEX organismprop_c1 ON organismprop (organism_id, type_id, rank);
-CREATE INDEX phylonode_idx_feature_id ON phylonode (feature_id);
-CREATE INDEX phylonode_idx_phylotree_id ON phylonode (phylotree_id);
-CREATE INDEX phylonode_idx_parent_phylonode_id ON phylonode (parent_phylonode_id);
-CREATE INDEX phylonode_idx_type_id ON phylonode (type_id);
-CREATE UNIQUE INDEX phylonode_phylotree_id_key ON phylonode (phylotree_id, left_idx);
-CREATE UNIQUE INDEX phylonode_phylotree_id_key1 ON phylonode (phylotree_id, right_idx);
-CREATE INDEX phylonode_dbxref_idx_dbxref_id ON phylonode_dbxref (dbxref_id);
-CREATE INDEX phylonode_dbxref_idx_phylonode_id ON phylonode_dbxref (phylonode_id);
-CREATE UNIQUE INDEX phylonode_dbxref_phylonode_id_key ON phylonode_dbxref (phylonode_id, dbxref_id);
-CREATE INDEX phylonode_organism_idx_organism_id ON phylonode_organism (organism_id);
-CREATE UNIQUE INDEX phylonode_organism_phylonode_id_key ON phylonode_organism (phylonode_id);
-CREATE INDEX phylonode_pub_idx_phylonode_id ON phylonode_pub (phylonode_id);
-CREATE INDEX phylonode_pub_idx_pub_id ON phylonode_pub (pub_id);
-CREATE UNIQUE INDEX phylonode_pub_phylonode_id_key ON phylonode_pub (phylonode_id, pub_id);
-CREATE INDEX phylonode_relationship_idx_object_id ON phylonode_relationship (object_id);
-CREATE INDEX phylonode_relationship_idx_phylotree_id ON phylonode_relationship (phylotree_id);
-CREATE INDEX phylonode_relationship_idx_subject_id ON phylonode_relationship (subject_id);
-CREATE INDEX phylonode_relationship_idx_type_id ON phylonode_relationship (type_id);
-CREATE UNIQUE INDEX phylonode_relationship_subject_id_key ON phylonode_relationship (subject_id, object_id, type_id);
-CREATE INDEX phylonodeprop_idx_phylonode_id ON phylonodeprop (phylonode_id);
-CREATE INDEX phylonodeprop_idx_type_id ON phylonodeprop (type_id);
-CREATE UNIQUE INDEX phylonodeprop_phylonode_id_key ON phylonodeprop (phylonode_id, type_id, value, rank);
-CREATE INDEX phylotree_idx_analysis_id ON phylotree (analysis_id);
-CREATE INDEX phylotree_idx_dbxref_id ON phylotree (dbxref_id);
-CREATE INDEX phylotree_idx_type_id ON phylotree (type_id);
-CREATE INDEX phylotree_pub_idx_phylotree_id ON phylotree_pub (phylotree_id);
-CREATE INDEX phylotree_pub_idx_pub_id ON phylotree_pub (pub_id);
-CREATE UNIQUE INDEX phylotree_pub_phylotree_id_key ON phylotree_pub (phylotree_id, pub_id);
 CREATE INDEX pub_idx_type_id ON pub (type_id);
 CREATE UNIQUE INDEX pub_c1 ON pub (uniquename);
 CREATE INDEX pub_dbxref_idx_dbxref_id ON pub_dbxref (dbxref_id);
 CREATE INDEX pub_dbxref_idx_pub_id ON pub_dbxref (pub_id);
 CREATE UNIQUE INDEX pub_dbxref_c1 ON pub_dbxref (pub_id, dbxref_id);
-CREATE INDEX pub_relationship_idx_object_id ON pub_relationship (object_id);
-CREATE INDEX pub_relationship_idx_subject_id ON pub_relationship (subject_id);
-CREATE INDEX pub_relationship_idx_type_id ON pub_relationship (type_id);
-CREATE UNIQUE INDEX pub_relationship_c1 ON pub_relationship (subject_id, object_id, type_id);
-CREATE INDEX pubauthor_idx_pub_id ON pubauthor (pub_id);
-CREATE UNIQUE INDEX pubauthor_c1 ON pubauthor (pub_id, rank);
 CREATE INDEX pubprop_idx_pub_id ON pubprop (pub_id);
 CREATE INDEX pubprop_idx_type_id ON pubprop (type_id);
 CREATE UNIQUE INDEX pubprop_c1 ON pubprop (pub_id, type_id, rank);
