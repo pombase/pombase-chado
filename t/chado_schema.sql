@@ -312,4 +312,9 @@ CREATE UNIQUE INDEX synonym_c1 ON synonym (name, type_id);
 CREATE INDEX featureprop_idx_type_id ON featureprop (type_id);
 CREATE INDEX featureprop_idx_feature_id ON featureprop (feature_id);
 CREATE UNIQUE INDEX featureprop_c1 ON featureprop (feature_id, type_id, rank);
+
+CREATE VIEW pombase_feature_cvterm_with_ext_parents AS SELECT fc.feature_cvterm_id, fc.feature_id, pub_id, parent_t.name AS base_cvterm_name, parent_t.cvterm_id AS base_cvterm_id, parent_cv.name AS base_cv_name, child_t.name as cvterm_name, child_t.cvterm_id as cvterm_id FROM feature_cvterm fc JOIN cvterm child_t ON child_t.cvterm_id = fc.cvterm_id JOIN cvterm_relationship r ON child_t.cvterm_id = r.subject_id JOIN cvterm parent_t ON r.object_id = parent_t.cvterm_id JOIN cv parent_cv ON parent_cv.cv_id = parent_t.cv_id JOIN cv child_cv ON child_cv.cv_id = child_t.cv_id JOIN cvterm r_type ON r.type_id = r_type.cvterm_id WHERE r_type.name = 'is_a' AND child_cv.name = 'PomBase annotation extension terms';
+CREATE VIEW pombase_feature_cvterm_no_ext_terms AS SELECT fc.feature_cvterm_id, fc.feature_id, pub_id, t.name AS base_cvterm_name, t.cvterm_id AS base_cvterm_id, cv.name AS base_cv_name, t.name as cvterm_name, t.cvterm_id FROM feature_cvterm fc JOIN cvterm t ON t.cvterm_id = fc.cvterm_id JOIN cv ON cv.cv_id = t.cv_id WHERE cv.name <> 'PomBase annotation extension terms';
+CREATE VIEW pombase_feature_cvterm_ext_resolved_terms AS SELECT * from pombase_feature_cvterm_no_ext_terms UNION SELECT * from pombase_feature_cvterm_with_ext_parents;
+
 COMMIT;

@@ -75,12 +75,12 @@ ok (defined $fc);
 my $ex_processor = PomBase::Chado::ExtensionProcessor->new(chado => $chado,
                                                            config => $config);
 
-$ex_processor->process_one_annotation($fc, 'has_substrate(GO:0051329)');
+$ex_processor->process_one_annotation($fc, 'exists_during(GO:0051329)');
 
 my $fcs2 = $feat->feature_cvterms();
 ok (defined $fcs2);
 
-is($fc->cvterm()->name(), $spindle_cvterm->name() . ' [has_substrate] interphase of mitotic cell cycle');
+is($fc->cvterm()->name(), $spindle_cvterm->name() . ' [exists_during] interphase of mitotic cell cycle');
 
 
 my @options2 = ('--constraint-type', 'db_name',
@@ -120,7 +120,7 @@ my $results3 = $retriever3->retrieve();
 my @parent_data3 = ();
 
 while (defined (my $data = $results3->next())) {
-  if ($data->[0] eq 'spindle pole body [has_substrate] interphase of mitotic cell cycle') {
+  if ($data->[0] eq 'spindle pole body [exists_during] interphase of mitotic cell cycle') {
     is($data->[4], 'spindle pole body'); # parent
     is($data->[5], 'GO');
     is($data->[6], '0005816');

@@ -35,7 +35,7 @@ my $spac2f7_03c_annotation_found = 0;
 
 while (defined (my $fc = $feature_cvterm_rs->next())) {
   if ($fc->cvterm()->name() eq 'protein modification categorized by amino acid modified') {
-    if ($fc->feature()->uniquename() eq 'SPBC2F12.13') {
+    if ($fc->feature()->uniquename() eq 'SPBC2F12.13.1') {
       $spbc2f12_13_annotation_found = 1;
       is($fc->pub()->uniquename(), "PMID:11739790");
       is($fc->feature_cvtermprops(), 3);
@@ -44,7 +44,7 @@ while (defined (my $fc = $feature_cvterm_rs->next())) {
       my $evidence = $rs->first()->value();
       is($evidence, 'Inferred from Direct Assay');
     }
-    if ($fc->feature()->uniquename() eq 'SPAC2F7.03c') {
+    if ($fc->feature()->uniquename() eq 'SPAC2F7.03c.1') {
       $spac2f7_03c_annotation_found = 1;
       is($fc->pub()->uniquename(), "PMID:11739790");
     }
