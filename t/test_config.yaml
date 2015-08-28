@@ -553,43 +553,78 @@ data:
       type:
         name: paper
   feature:
+    - uniquename: chromosome_1
+      type:
+        name: chromosome
+      organism:
+        genus: Schizosaccharomyces
+        species: pombe
+      residues: gatcacgtacatcaccttgtaagaatttatctgcaatagtccttcggtattgtacattgttccaagcatagtaaactaacgatatcaagtttgcctttctagcccatgacctacagtcagaagtgtaagccatatcactgtcggcatgttcaaactttgtcaaaccacaaaataaacaaagtccttgaaatcgaatacgtagtttacattctcgcaagttgtggtcggccttgccacatttataacaagtagataagcgtacggggcatgctttcccggtatgagcacgaatttctgtgtctgggttaccaagagtgcaacttagacattcatctttatacactcgaaagaatcgctcga
     - uniquename: SPBC2G5.03
       type:
         name: gene
       organism:
-        genus: Schizosacchaomyces
+        genus: Schizosaccharomyces
         species: pombe
     - uniquename: SPBC2F12.13
       name: klp5
       type:
         name: gene
       organism:
-        genus: Schizosacchaomyces
+        genus: Schizosaccharomyces
         species: pombe
+      featureprops:
+        - type:
+            name: uniprot_identifier
+          value: O59751
     - uniquename: SPBC2F12.13.1
       type:
         name: mRNA
       organism:
-        genus: Schizosacchaomyces
+        genus: Schizosaccharomyces
+        species: pombe
+    - uniquename: SPBC2F12.13:exon:1
+      type:
+        name: exon
+      organism:
+        genus: Schizosaccharomyces
+        species: pombe
+    - uniquename: SPBC2F12.13:exon:2
+      type:
+        name: exon
+      organism:
+        genus: Schizosaccharomyces
         species: pombe
     - uniquename: SPAC2F7.03c
       name: pom1
       type:
         name: gene
       organism:
-        genus: Schizosacchaomyces
+        genus: Schizosaccharomyces
         species: pombe
     - uniquename: SPAC2F7.03c.1
       type:
         name: mRNA
       organism:
-        genus: Schizosacchaomyces
+        genus: Schizosaccharomyces
+        species: pombe
+    - uniquename: SPAC2F7.03c:exon:1
+      type:
+        name: exon
+      organism:
+        genus: Schizosaccharomyces
+        species: pombe
+    - uniquename: SPAC2F7.03c:exon:2
+      type:
+        name: exon
+      organism:
+        genus: Schizosaccharomyces
         species: pombe
     - uniquename: SPBC1105.11c
       type:
         name: gene
       organism:
-        genus: Schizosacchaomyces
+        genus: Schizosaccharomyces
         species: pombe
     - uniquename: ENSG00000124562
       type:
@@ -597,7 +632,72 @@ data:
       organism:
         genus: Homo
         species: sapiens
+  featurelocs:
+    - feature:
+        uniquename: SPBC2F12.13:exon:1
+      srcfeature:
+        uniquename: chromosome_1
+      fmin: 10
+      fmax: 20
+      strand: 1
+    - feature:
+        uniquename: SPBC2F12.13:exon:2
+      srcfeature:
+        uniquename: chromosome_1
+      fmin: 88
+      fmax: 150
+      strand: 1
+    - feature:
+        uniquename: SPAC2F7.03c:exon:1
+      srcfeature:
+        uniquename: chromosome_1
+      fmin: 90
+      fmax: 120
+      strand: -1
+    - feature:
+        uniquename: SPAC2F7.03c:exon:2
+      srcfeature:
+        uniquename: chromosome_1
+      fmin: 20
+      fmax: 30
+      strand: -1
   feature_relationships:
+    - subject:
+        uniquename: SPBC2F12.13:exon:1
+      type:
+        name: part_of
+        cv:
+          name: relationship
+      object:
+        uniquename: SPBC2F12.13.1
+      rank: 1
+    - subject:
+        uniquename: SPBC2F12.13:exon:2
+      type:
+        name: part_of
+        cv:
+          name: relationship
+      object:
+        uniquename: SPBC2F12.13.1
+      rank: 2
+    - subject:
+        uniquename: SPAC2F7.03c:exon:1
+      type:
+        name: part_of
+        cv:
+          name: relationship
+      object:
+        uniquename: SPAC2F7.03c.1
+      rank: 1
+    - subject:
+        uniquename: SPAC2F7.03c:exon:2
+      type:
+        name: part_of
+        cv:
+          name: relationship
+      object:
+        uniquename: SPAC2F7.03c.1
+      rank: 2
     - subject:
         uniquename: SPBC2F12.13.1
       type:
@@ -849,18 +949,9 @@ test_organisms:
     taxonid: 9606
 
 test_genes:
-  - uniquename: SPBC2F12.13
-    name: klp5
-    taxonid: 4896
-    featureprops:
-      - type:
-          name: uniprot_identifier
-        value: O59751
   - uniquename: SPAC1093.06c
     taxonid: 4896
   - uniquename: SPCC576.16c
-    taxonid: 4896
-  - uniquename: SPBC1105.11c
     taxonid: 4896
   - uniquename: SPAC27D7.13c
     name: ssm4
@@ -894,12 +985,6 @@ test_genes:
     taxonid: 4896
   - uniquename: SPBC14F5.07
     taxonid: 4896
-  - uniquename: SPAC2F7.03c
-    taxonid: 4896
-  - uniquename: SPBC2G5.03
-    taxonid: 4896
-  - uniquename: ENSG00000124562
-    taxonid: 9606
 
 test_mode: 1
 

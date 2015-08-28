@@ -69,6 +69,13 @@ method _load_cv($chado, $cv_conf)
   }
 }
 
+method _load_features($chado, $feature_conf)
+{
+  for my $row (@$feature_conf) {
+    $chado->resultset("Sequence::Feature")->create($row);
+  }
+}
+
 method _load_feature_cvterms($chado, $feature_cvterm_conf)
 {
   for my $row (@$feature_cvterm_conf) {
@@ -80,6 +87,13 @@ method _load_feature_relationships($chado, $feature_rel_conf)
 {
   for my $row (@$feature_rel_conf) {
     $chado->resultset("Sequence::FeatureRelationship")->create($row);
+  }
+}
+
+method _load_featurelocs($chado, $featurelocs_conf)
+{
+  for my $row (@$featurelocs_conf) {
+    $chado->resultset("Sequence::Featureloc")->create($row);
   }
 }
 
@@ -146,6 +160,8 @@ method _load_test_features($chado)
       warn " added org: ", $org_data->{taxonid}, "\n";
     }
   }
+
+  $self->_load_features($chado, $test_data->{feature});
 
   my $gene_type = $self->get_cvterm('sequence', 'gene');
   my $mrna_type = $self->get_cvterm('sequence', 'mRNA');
@@ -219,6 +235,7 @@ method _load_test_features($chado)
 
   $self->_load_feature_cvterms($chado, $test_data->{feature_cvterm});
   $self->_load_feature_relationships($chado, $test_data->{feature_relationships});
+  $self->_load_featurelocs($chado, $test_data->{featurelocs});
 }
 
 method BUILD
