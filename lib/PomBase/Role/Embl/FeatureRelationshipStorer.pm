@@ -71,7 +71,7 @@ method _build_ranks() {
 
 
 
-method store_feature_rel($subject, $object, $rel_type, $no_duplicates)
+method store_feature_rel($subject, $object, $rel_type, $no_duplicates, $rank_arg)
 {
   my $rel_cvterm;
 
@@ -105,11 +105,15 @@ method store_feature_rel($subject, $object, $rel_type, $no_duplicates)
 
   my $rank = 0;
 
-  if (!$no_duplicates) {
-    if (exists $self->ranks()->{$key}) {
-      $rank = ++$self->ranks()->{$key};
-    } else {
-      $self->ranks()->{$key} = 0;
+  if (defined $rank_arg) {
+    $rank = $rank_arg;
+  } else {
+    if (!$no_duplicates) {
+      if (exists $self->ranks()->{$key}) {
+        $rank = ++$self->ranks()->{$key};
+      } else {
+        $self->ranks()->{$key} = 0;
+      }
     }
   }
 
