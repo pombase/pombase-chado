@@ -15,7 +15,7 @@ my $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 7);
 
 my $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 22);
+is($feature_rs->count(), 24);
 
 
 my $importer =
@@ -90,7 +90,7 @@ while (defined (my $fc = $annotations->next())) {
 is($test_term_count, 2);
 
 $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 31);
+is($feature_rs->count(), 33);
 
 my $genotype_1 = $chado->resultset('Sequence::Feature')
   ->find({ uniquename => 'aaaa0007-genotype-test-1' });

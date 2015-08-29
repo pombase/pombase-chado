@@ -20,7 +20,7 @@ my @options = ("--publication=$pub_uniquename",
                "--swap-direction");
 
 my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-is($rel_rs->count(), 3);
+is($rel_rs->count(), 9);
 
 my $importer = PomBase::Import::Orthologs->new(chado => $chado,
                                                config => $config,

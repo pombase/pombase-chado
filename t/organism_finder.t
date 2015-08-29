@@ -7,7 +7,7 @@ use PomBase::TestUtil;
 use PomBase::TestBase;
 
 my $test_util = PomBase::TestUtil->new();
-my $test = PomBase::TestBase->with_traits('Role::OrganismFinder')->new(chado => $test_util->chado());
+my $test = PomBase::TestBase->with_traits(qw(Role::OrganismFinder Role::DbQuery Role::CvQuery))->new(chado => $test_util->chado());
 
 func check_organism($org)
 {

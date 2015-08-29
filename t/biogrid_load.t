@@ -18,7 +18,7 @@ my @options = (
   "--evidence-code-filter=Co-localization");
 
 my $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-is($rel_rs->count(), 5);
+is($rel_rs->count(), 9);
 
 my $importer = PomBase::Import::BioGRID->new(chado => $chado,
                                              config => $config,
@@ -34,7 +34,7 @@ fail "Message from importer: $out" if $out;
 fail "Error from importer: $err" if $err;
 
 $rel_rs = $chado->resultset('Sequence::FeatureRelationship');
-is($rel_rs->count(), 11);
+is($rel_rs->count(), 15);
 
 my $SPAC1093_06c_count = 0;
 my $SPCC576_16c_count = 0;
