@@ -345,7 +345,9 @@ method retrieve() {
         my ($extensions, $base_cvterm) = $self->make_gaf_extension($row);
 
         # we have columns for these:
-        $extensions =~ s/(has_penetrance|has_expressivity)\([^\)]+\)//;
+        if ($extensions) {
+          $extensions =~ s/(has_penetrance|has_expressivity)\([^\)]+\)//;
+        }
 
         my $fc_id = $row->feature_cvterm_id();
         my %row_fc_props = %{$fc_props{$fc_id}};
