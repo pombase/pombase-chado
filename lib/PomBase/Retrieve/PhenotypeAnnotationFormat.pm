@@ -293,15 +293,36 @@ method retrieve() {
       # "high", "low", ...
       my $ext_name = $ext_rel->object()->name();
 
-      my $termid = $fypo_extension_termids{$ext_name};
+      my $value = $fypo_extension_termids{$ext_name};
 
-      if (!defined $termid) {
+      if (!defined $value) {
         warn "'$ext_name' is not a valid penetrance/expressivity in term: ",
           $ext_parent->name(), "\n";
       } else {
-        $ext_parent_values{$ext_parent->cvterm_id()}{$rel_name}{$termid} = 1;
+        $ext_parent_values{$ext_parent->cvterm_id()}{$rel_name}{$value} = 1;
       }
     }
+  }
+
+  my $ext_cvtermprops_rs =
+    $chado->resultset('Cv::Cvtermprop')->search(
+      {
+        'me.cvterm_id' => {
+          -in => $from_extension_cv_terms_rs->get_column('cvterm_id')->as_query(),
+        },
+        -or => [
+          'type.name' => 'annotation_extension_relation-has_penetrance',
+          'type.name' => 'annotation_extension_relation-has_expressivity',
+        ],
+      },
+      {
+        join => 'type'
+      }
+    );
+
+  while (defined (my $ext_prop = $ext_cvtermprops_rs->next())) {
+    my $rel_name = $ext_prop->type->name() =~ s/annotation_extension_relation-//r;
+    $ext_parent_values{$ext_prop->cvterm_id()}{$rel_name}{$ext_prop->value()} = 1;
   }
 
   my $feature_cvterm_rs =
@@ -344,9 +365,9 @@ method retrieve() {
       if (defined $row) {
         my ($extensions, $base_cvterm) = $self->make_gaf_extension($row);
 
-        # we have columns for these:
+        # we have separate columns for these:
         if ($extensions) {
-          $extensions =~ s/(has_penetrance|has_expressivity)\([^\)]+\)//;
+          $extensions =~ s/(has_penetrance|has_expressivity)\([^\)]+\),?//g;
         }
 
         my $fc_id = $row->feature_cvterm_id();
