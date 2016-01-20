@@ -371,7 +371,8 @@ method retrieve() {
         }
 
         my $fc_id = $row->feature_cvterm_id();
-        my %row_fc_props = %{$fc_props{$fc_id}};
+        my $fc_props_ref = $fc_props{$fc_id};
+        my %row_fc_props = %{$fc_props_ref // {}};
         my $cvterm = $base_cvterm // $row->cvterm();
 
         my $genotype = $row->feature();
