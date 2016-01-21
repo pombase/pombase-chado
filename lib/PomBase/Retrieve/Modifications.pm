@@ -119,7 +119,7 @@ select fc.feature_cvterm_id, gene.uniquename, gene.name, db.name || ':' || x.acc
         my ($extensions) = $self->make_gaf_extension($feature_cvterms{$feature_cvterm_id});
         return [$gene_uniquename, $gene_name // '', $psimodid,
                 $evidence // '', $residue // '',
-                $extensions // '', $pmid, $taxonid, $date];
+                $extensions // '', $pmid, $taxonid, $date // ''];
     } else {
         return undef;
       }
@@ -134,6 +134,10 @@ method header
 
 method format_result($res)
 {
+  use Data::Dumper;
+$Data::Dumper::Maxdepth = 3;
+print Dumper($res) , " \n";
+
   return (join "\t", @$res);
 }
 
