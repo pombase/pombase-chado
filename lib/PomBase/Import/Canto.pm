@@ -360,7 +360,7 @@ method _store_ontology_annotation
     $self->add_feature_cvtermprop($feature_cvterm,
                                   curator_email => $curator->{email});
     $self->add_feature_cvtermprop($feature_cvterm,
-                                  community_curated => $curator->{community_curated});
+                                  community_curated => ($curator->{community_curated} ? 'true' : 'false'));
     $self->add_feature_cvtermprop($feature_cvterm,
                                   canto_session => $canto_session);
     if (defined $approved_timestamp) {
