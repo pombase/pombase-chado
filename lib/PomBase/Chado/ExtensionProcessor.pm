@@ -405,6 +405,61 @@ sub _unreplace_commas
   return $string;
 }
 
+method _process_identifier($feature_uniquename, $rel_name, $arg) {
+  my $identifier = $arg->trim();
+
+  my $nested_extension_bit = undef;
+  if ($identifier =~ /(.+?)(\^.*)/) {
+    # nested annotation extension - store and ignore
+    $identifier = $1;
+    $nested_extension_bit = $2;
+  }
+
+  my $term_id = undef;
+  my $term = undef;
+  if ($identifier =~ /^(\w+):(\d+)$/) {
+    $term_id = $identifier;
+    $term = $self->find_cvterm_by_term_id($term_id);
+    if (!defined $term) {
+      die "can't find term with ID: $term_id\n";
+    }
+  } else {
+    if ($identifier =~ /^(PomBase|GeneDB_?Spombe):([\w\d\.\-]+)$/i) {
+      $identifier = $2;
+      my $organism = $self->find_organism_by_common_name('pombe');
+      try {
+        my $ref_feature =
+          $self->find_chado_feature($identifier, 1, 1, $organism, ['gene', 'pseudogene']);
+        $identifier = $ref_feature->uniquename();
+      } catch {
+        chomp (my $message = $_);
+        warn "in extension for $feature_uniquename, can't find " .
+          "feature with identifier: $identifier - $message\n";
+      };
+    } else {
+      if ($identifier =~ /^(Pfam:PF\d+)$/) {
+        $identifier = $1;
+      } else {
+        if ($rel_name eq 'has_penetrance' &&
+              $identifier =~ /^[><]?(.*)\%$/ && $1->is_number()) {
+          # the "identifier" is the percentage penetrance value
+        } else {
+          die "in annotation extension for $feature_uniquename, can't " .
+            "parse identifier: $identifier\n";
+        }
+      }
+    }
+  }
+
+  return {
+    rel_name => $rel_name,
+      term => $term,
+      term_id => $term_id,
+      identifier => $identifier,
+      nested_extension => $nested_extension_bit,
+    };
+}
+
 method process_one_annotation($featurecvterm, $extension_text)
 {
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
@@ -423,59 +478,7 @@ method process_one_annotation($featurecvterm, $extension_text)
       my $detail = $2;
 
       map {
-        my $identifier = $_->trim();
-
-        my $nested_extension_bit = undef;
-        if ($identifier =~ /(.+?)(\^.*)/) {
-          # nested annotation extension - store and ignore
-          $identifier = $1;
-          $nested_extension_bit = $2;
-        }
-
-        my $term_id = undef;
-        my $term = undef;
-        if ($identifier =~ /^(\w+):(\d+)$/) {
-          $term_id = $identifier;
-          $term = $self->find_cvterm_by_term_id($term_id);
-          if (!defined $term) {
-            die "can't find term with ID: $term_id\n";
-          }
-        } else {
-          if ($identifier =~ /^(PomBase|GeneDB_?Spombe):([\w\d\.\-]+)$/i) {
-            $identifier = $2;
-            my $organism = $self->find_organism_by_common_name('pombe');
-            try {
-              my $ref_feature =
-                $self->find_chado_feature($identifier, 1, 1, $organism, ['gene', 'pseudogene']);
-              $identifier = $ref_feature->uniquename();
-            } catch {
-              chomp (my $message = $_);
-              warn "in extension for $feature_uniquename, can't find " .
-                "feature with identifier: $identifier - $message\n";
-            };
-          } else {
-            if ($identifier =~ /^(Pfam:PF\d+)$/) {
-              $identifier = $1;
-            } else {
-              if ($rel_name eq 'has_penetrance' &&
-                  $identifier =~ /^[><]?(.*)\%$/ && $1->is_number()) {
-                # the "identifier" is the percentage penetrance value
-              } else {
-                die "in annotation extension for $feature_uniquename, can't " .
-                  "parse identifier: $identifier\n";
-              }
-            }
-          }
-        }
-
-        {
-          rel_name => $rel_name,
-          term => $term,
-          term_id => $term_id,
-          identifier => $identifier,
-          nested_extension => $nested_extension_bit,
-        }
-      } split /\|/, $detail;
+        $self->_process_identifier($feature_uniquename, $rel_name, $_) } split /\|/, $detail;
     } else {
       die "annotation extension qualifier on $feature_uniquename not understood: $_\n";
     }
