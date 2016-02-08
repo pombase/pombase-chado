@@ -343,6 +343,8 @@ method _store_ontology_annotation
     my @column_17_values = ();
 
     if ($extensions) {
+      warn "$extensions\n";
+
       @$extensions =
         map {
           my @ret_val = ();
@@ -461,44 +463,44 @@ method _store_ontology_annotation
       $annotation_extension = '';
     }
 
-#        my ($out, $err) = capture {
-    $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension, $extensions);
-#        };
-#        if (length $out > 0) {
-#          die $out;
-#        }
-#        if (length $err > 0) {
-#          die $err;
-#        }
+    my ($out, $err) = capture {
+      $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension, $extensions);
+    };
+    if (length $out > 0) {
+      die $out;
+    }
+    if (length $err > 0) {
+      die $err;
+    }
 
-      my @props_to_store = qw(col17 column_17 residue qualifier condition);
+    my @props_to_store = qw(col17 column_17 residue qualifier condition);
 
-      for my $prop_name (@props_to_store) {
-        if (defined (my $prop_vals = delete $by_type{$prop_name})) {
-          for (my $i = 0; $i < @$prop_vals; $i++) {
-            my $prop_val = $prop_vals->[$i];
+    for my $prop_name (@props_to_store) {
+      if (defined (my $prop_vals = delete $by_type{$prop_name})) {
+        for (my $i = 0; $i < @$prop_vals; $i++) {
+          my $prop_val = $prop_vals->[$i];
 
-            if ($prop_name eq 'residue') {
-              push @residues, $prop_val;
+          if ($prop_name eq 'residue') {
+            push @residues, $prop_val;
+          } else {
+            if ($prop_name eq 'qualifier') {
+              push @qualifiers, $prop_val;
             } else {
-              if ($prop_name eq 'qualifier') {
-                push @qualifiers, $prop_val;
+              if ($prop_name eq 'column_17' or $prop_name eq 'col17') {
+                push @column_17_values, $prop_val;
               } else {
-                if ($prop_name eq 'column_17' or $prop_name eq 'col17') {
-                  push @column_17_values, $prop_val;
-                } else {
-                  if ($prop_name eq 'condition') {
-                    $prop_val = $self->_get_real_termid($prop_val);
-                  }
-
-                  $self->add_feature_cvtermprop($feature_cvterm,
-                                                $prop_name, $prop_val, $i);
+                if ($prop_name eq 'condition') {
+                  $prop_val = $self->_get_real_termid($prop_val);
                 }
+
+                $self->add_feature_cvtermprop($feature_cvterm,
+                                              $prop_name, $prop_val, $i);
               }
             }
           }
         }
       }
+    }
 
     for (my $i = 0; $i < @residues; $i++) {
       my $residue = $residues[$i];
