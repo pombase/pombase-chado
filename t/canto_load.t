@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 13;
+use Test::More tests => 12;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -27,7 +27,7 @@ $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 15);
+is($annotations->count(), 14);
 
 my $test_term_count = 0;
 
@@ -87,10 +87,10 @@ while (defined (my $fc = $annotations->next())) {
   }
 }
 
-is($test_term_count, 2);
+is($test_term_count, 1);
 
 $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 33);
+is($feature_rs->count(), 31);
 
 my $genotype_1 = $chado->resultset('Sequence::Feature')
   ->find({ uniquename => 'aaaa0007-genotype-test-1' });

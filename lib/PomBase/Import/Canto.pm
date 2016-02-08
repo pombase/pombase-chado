@@ -247,6 +247,7 @@ method _store_ontology_annotation
   my $conditions = $args{conditions};
   my $with_gene = $args{with_gene};
   my $extension_text = $args{extension_text};
+  my $extensions = $args{extensions};
   my $curator = $args{curator};
   my $approved_timestamp = $args{approved_timestamp};
   my $approver_email = $args{approver_email};
@@ -337,15 +338,43 @@ method _store_ontology_annotation
 
     my $is_not = 0;
 
+    my @residues = ();
+    my @qualifiers = ();
+    my @column_17_values = ();
+
+    if ($extensions) {
+      @$extensions =
+        map {
+          my @ret_val = ();
+          if ($_->{relation} eq 'residue') {
+            push @residues, $_->{rangeValue};
+          } else {
+            if ($_->{relation} eq 'qualifier') {
+              if ($_->{rangeValue} eq 'NOT') {
+                $is_not = 1;
+              } else {
+                push @qualifiers, $_->{rangeValue};
+              }
+            } else {
+              @ret_val = ($_);
+            }
+          }
+          @ret_val;
+        } @$extensions;
+    }
+
     if (exists $by_type{qualifier}) {
-      @{$by_type{qualifier}} = grep {
-        if (lc $_ eq 'not') {
-          $is_not = 1;
-          0;
-        } else {
-          1;
-        }
-      } @{$by_type{qualifier}};
+      # don't override the NOT from the extensions
+      if (!$is_not) {
+        @{$by_type{qualifier}} = grep {
+          if (lc $_ eq 'not') {
+            $is_not = 1;
+            0;
+          } else {
+            1;
+          }
+        } @{$by_type{qualifier}};
+      }
     }
 
     my $feature_cvterm =
@@ -422,20 +451,25 @@ method _store_ontology_annotation
       }
     }
 
-    if (keys %by_type > 0) {
-      my $annotation_extension_data = delete $by_type{annotation_extension};
-      if (defined $annotation_extension_data) {
-        my $annotation_extension = join ',', @$annotation_extension_data;
-        my ($out, $err) = capture {
-        $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
-        };
-        if (length $out > 0) {
-          die $out;
-        }
-        if (length $err > 0) {
-          die $err;
-        }
-      }
+    my $annotation_extension_data = delete $by_type{annotation_extension};
+
+    my $annotation_extension;
+
+    if (defined $annotation_extension_data) {
+      $annotation_extension = join ',', @$annotation_extension_data;
+    } else{
+      $annotation_extension = '';
+    }
+
+#        my ($out, $err) = capture {
+    $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension, $extensions);
+#        };
+#        if (length $out > 0) {
+#          die $out;
+#        }
+#        if (length $err > 0) {
+#          die $err;
+#        }
 
       my @props_to_store = qw(col17 column_17 residue qualifier condition);
 
@@ -444,25 +478,43 @@ method _store_ontology_annotation
           for (my $i = 0; $i < @$prop_vals; $i++) {
             my $prop_val = $prop_vals->[$i];
 
-            if ($prop_name eq 'condition') {
-              $prop_val = $self->_get_real_termid($prop_val);
+            if ($prop_name eq 'residue') {
+              push @residues, $prop_val;
             } else {
-              if ($prop_name eq 'col17' || $prop_name eq 'column_17') {
-                $prop_name = 'gene_product_form_id';
+              if ($prop_name eq 'qualifier') {
+                push @qualifiers, $prop_val;
+              } else {
+                if ($prop_name eq 'column_17' or $prop_name eq 'col17') {
+                  push @column_17_values, $prop_val;
+                } else {
+                  if ($prop_name eq 'condition') {
+                    $prop_val = $self->_get_real_termid($prop_val);
+                  }
+
+                  $self->add_feature_cvtermprop($feature_cvterm,
+                                                $prop_name, $prop_val, $i);
+                }
               }
             }
-
-            $self->add_feature_cvtermprop($feature_cvterm,
-                                          $prop_name, $prop_val, $i);
-
           }
         }
       }
 
-      for my $type (keys %by_type) {
-        die "unhandled type: $type\n";
-      }
-    };
+    for (my $i = 0; $i < @residues; $i++) {
+      my $residue = $residues[$i];
+      $self->add_feature_cvtermprop($feature_cvterm, residue => $residue, $i);
+    }
+
+    for (my $i = 0; $i < @qualifiers; $i++) {
+      my $qualifier = $qualifiers[$i];
+      $self->add_feature_cvtermprop($feature_cvterm, qualifier => $qualifier, $i);
+    }
+
+    for (my $i = 0; $i < @column_17_values; $i++) {
+      my $col_17_value = $column_17_values[$i];
+      $self->add_feature_cvtermprop($feature_cvterm,
+                                    'gene_product_form_id' => $col_17_value, $i);
+    }
 
     $chado->txn_commit();
   } catch {
@@ -552,6 +604,7 @@ method _process_feature
     my $termid = delete $annotation->{term};
     my $with_gene = delete $annotation->{with_gene};
     my $extension_text = delete $annotation->{annotation_extension};
+    my $extensions = delete $annotation->{extension};
     my $expression = delete $annotation->{expression};
     my $conditions = delete $annotation->{conditions};
 
@@ -579,6 +632,7 @@ method _process_feature
                                       conditions => $conditions,
                                       with_gene => $with_gene,
                                       extension_text => $extension_text,
+                                      extensions => $extensions,
                                       canto_session => $canto_session,
                                       curator => $curator,
                                       changed_by => $changed_by_json,

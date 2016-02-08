@@ -460,7 +460,7 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
     };
 }
 
-method process_one_annotation($featurecvterm, $extension_text)
+method process_one_annotation($featurecvterm, $extension_text, $extensions)
 {
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
 
@@ -483,6 +483,14 @@ method process_one_annotation($featurecvterm, $extension_text)
       die "annotation extension qualifier on $feature_uniquename not understood: $_\n";
     }
   } @extension_qualifiers;
+
+  push @extensions,
+    map {
+      my $rel_name = $_->{relation};
+      my $value = $_->{rangeValue};
+
+      $self->_process_identifier($feature_uniquename, $rel_name, $value);
+    } @$extensions;
 
   if (@extensions) {
     $self->store_extension($featurecvterm, \@extensions);
