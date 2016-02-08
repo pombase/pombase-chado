@@ -134,10 +134,6 @@ method header
 
 method format_result($res)
 {
-  use Data::Dumper;
-$Data::Dumper::Maxdepth = 3;
-print Dumper($res) , " \n";
-
   return (join "\t", @$res);
 }
 
