@@ -98,7 +98,8 @@ method get_genotype($genotype_identifier, $genotype_name, $genotype_background, 
 
   if (!$first_allele_data->{allele}) {
     confess "allele data for genotypes must have the form { id => '', " .
-      "expression => '' } - expression is optional";
+      "expression => '' } (where expression is optional) \n details:",
+      Dumper([$genotype_identifier, $alleles]);
   }
 
   my $organism = $first_allele_data->{allele}->organism();
