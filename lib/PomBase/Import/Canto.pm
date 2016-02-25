@@ -644,8 +644,12 @@ method _process_annotation($annotation, $session_genes, $session_genotypes, $ses
   my $genotype_key = delete $annotation->{genotype};
   if (defined $genotype_key) {
     my $genotype = $session_genotypes->{$genotype_key};
-    $self->_process_feature($annotation, $session_metadata, $genotype,
-                            $canto_session, $session_genes);
+    if (defined $genotype_key) {
+      $self->_process_feature($annotation, $session_metadata, $genotype,
+                              $canto_session, $session_genes);
+    } else {
+      warn "can't store annotation for missing genotype: $genotype_key\n";
+    }
   }
 }
 
@@ -697,9 +701,13 @@ method _get_genotypes($session_alleles, $session_genotype_data)
       };
     } @{$details->{alleles}};
 
-    $ret{$genotype_identifier} =
-      $self->get_genotype($genotype_identifier, $details->{name},
-                          $details->{background}, \@alleles);
+    if (@alleles) {
+      $ret{$genotype_identifier} =
+        $self->get_genotype($genotype_identifier, $details->{name},
+                            $details->{background}, \@alleles);
+    } else {
+      warn "genotype $genotype_identifier has no alleles\n";
+    }
   }
 
   return %ret;
