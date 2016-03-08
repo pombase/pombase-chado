@@ -70,7 +70,7 @@ while (my $data = $results->next()) {
              'PomBase',
              'SPAC27D7.13c',
              'FYPO:0000017',
-             '',
+             'A123T',
              'Knockdown',
              '972 h-',
              '',

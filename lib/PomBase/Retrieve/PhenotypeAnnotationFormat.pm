@@ -426,7 +426,7 @@ method retrieve() {
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
         my $assigned_by = _safe_join('|', $row_fc_props{assigned_by});
 
-        my $allele_description = _safe_join(',', $row_fc_props{description});
+        my $allele_description = $first_allele->{description} // '';
         my $allele_type = $first_allele->{allele_type};
         my $condition = _safe_join(',', $row_fc_props{condition});
 
