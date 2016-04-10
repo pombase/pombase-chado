@@ -343,8 +343,6 @@ method _store_ontology_annotation
     my @column_17_values = ();
 
     if ($extensions) {
-      warn "$extensions\n";
-
       @$extensions =
         map {
           my @ret_val = ();
