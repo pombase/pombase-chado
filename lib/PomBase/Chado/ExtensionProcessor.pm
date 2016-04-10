@@ -441,7 +441,7 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
         $identifier = $1;
       } else {
         if ($rel_name eq 'has_penetrance' &&
-              $identifier =~ /^[><]?(.*)\%$/ && $1->is_number()) {
+            $identifier =~ /^[><]?(.*?)\%?$/ && $1->is_number()) {
           # the "identifier" is the percentage penetrance value
         } else {
           die "in annotation extension for $feature_uniquename, can't " .
