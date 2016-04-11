@@ -349,14 +349,18 @@ method _store_ontology_annotation
           if ($_->{relation} eq 'residue') {
             push @residues, $_->{rangeValue};
           } else {
-            if ($_->{relation} eq 'has_qualifier') {
-              if ($_->{rangeValue} eq 'NOT') {
-                $is_not = 1;
-              } else {
-                push @qualifiers, $_->{rangeValue};
-              }
+            if ($_->{relation} =~ /^col(?:umn)?(?:_)?17$/) {
+              push @column_17_values, $_->{rangeValue};
             } else {
-              @ret_val = ($_);
+              if ($_->{relation} eq 'has_qualifier') {
+                if ($_->{rangeValue} eq 'NOT') {
+                  $is_not = 1;
+                } else {
+                  push @qualifiers, $_->{rangeValue};
+                }
+              } else {
+                @ret_val = ($_);
+              }
             }
           }
           @ret_val;
