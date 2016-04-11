@@ -445,8 +445,21 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
              $identifier =~ /^\d+(?:\.\d+)?\%?-\d+(?:\.\d+)?\%?$/)) {
           # the "identifier" is the percentage penetrance value
         } else {
-          die "in annotation extension for $feature_uniquename, can't " .
+          my $organism = $self->find_organism_by_common_name('pombe');
+          my $ref_feature = undef;
+          try {
+            # try gene name/uniquename with no prefix
+            $ref_feature =
+              $self->find_chado_feature($identifier, 1, 1, $organism,
+                                        ['gene', 'pseudogene']);
+          };
+
+          if ($ref_feature) {
+            $identifier = $ref_feature->uniquename();
+          } else {
+            die "in annotation extension for $feature_uniquename, can't " .
             "parse identifier: $identifier\n";
+          };
         }
       }
     }
