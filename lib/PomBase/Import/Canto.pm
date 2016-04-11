@@ -349,7 +349,7 @@ method _store_ontology_annotation
           if ($_->{relation} eq 'residue') {
             push @residues, $_->{rangeValue};
           } else {
-            if ($_->{relation} eq 'qualifier') {
+            if ($_->{relation} eq 'has_qualifier') {
               if ($_->{rangeValue} eq 'NOT') {
                 $is_not = 1;
               } else {
