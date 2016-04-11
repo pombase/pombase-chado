@@ -135,7 +135,7 @@ method load($fh)
     my $taxonid = $columns_ref->{"taxon"};
 
     if (!defined $taxonid) {
-      warn "Taxon missing - skipping\n";
+      warn "Taxon missing, not enough columns - skipping\n";
       return;
     }
 
