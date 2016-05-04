@@ -86,14 +86,22 @@ method retrieve() {
         if ($row) {
           my ($gene_identifier, $with_identifier, $pub_uniquename,
               $evidence_code) =
-            ($row->[1], $row->[7], $row->[5], $row->[6]);
+            ($row->[1], $row->[7]->trim(), $row->[5], $row->[6]);
 
           if ($evidence_code ne 'IPI') {
             goto ROW;
           }
 
-          if ($with_identifier->trim()->length() == 0) {
+          if ($with_identifier->length() == 0) {
             goto ROW;
+          } else {
+            if ($with_identifier =~ /^UniProt/) {
+              warn "Not exporting GO physical interaction that has a UniProt " .
+                "ID ($with_identifier) as the with field.  This ID need to " .
+                "be added to: " .
+                $self->config()->{pombase_to_uniprot_mapping} . "\n";
+              goto ROW;
+            }
           }
 
           if ($with_identifier =~ /^GO:/) {
