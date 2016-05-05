@@ -356,14 +356,14 @@ method get_allele($allele_data)
                            ->search_related('subject');
 
     if (defined $new_allele_name) {
-      $existing_rs = $existing_rs->search({ 'LOWER(name)' => lc $new_allele_name });
+      my $existing_lower_name_rs = $existing_rs->search({ 'LOWER(name)' => lc $new_allele_name });
 
-      if ($existing_rs->count() > 1) {
+      if ($existing_lower_name_rs->count() > 1) {
         die 'database inconsistency - there exists more than one allele feature ' .
           'with the name "' . $new_allele_name . '"' . "\n";
       }
 
-      my $existing_allele = $existing_rs->first();
+      my $existing_allele = $existing_lower_name_rs->first();
 
       if (defined $existing_allele) {
         my $existing_name = $existing_allele->name();
@@ -467,6 +467,25 @@ method get_allele($allele_data)
           }
 
           return $existing_allele;
+        }
+      } else {
+        # try to merge with an existing allele that has no name
+        while (defined (my $existing_allele = $existing_rs->next())) {
+          my %props = _get_allele_props($existing_allele);
+
+          my $existing_description = undef;
+
+          if ($props{description}) {
+            $existing_description = $props{description}->value();
+          }
+
+          if (!defined $new_allele_description && !defined $existing_description ||
+              (defined $new_allele_description && defined $existing_description) &&
+              $new_allele_description eq $existing_description) {
+            $existing_allele->name($new_allele_name);
+            $existing_allele->update();
+            return $existing_allele;
+          }
         }
       }
     } else {
