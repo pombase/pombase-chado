@@ -479,9 +479,10 @@ method get_allele($allele_data)
             $existing_description = $props{description}->value();
           }
 
-          if (!defined $new_allele_description && !defined $existing_description ||
+          if ($props{allele_type}->value() eq $new_allele_type &&
+              (!defined $new_allele_description && !defined $existing_description ||
               (defined $new_allele_description && defined $existing_description) &&
-              $new_allele_description eq $existing_description) {
+              $new_allele_description eq $existing_description)) {
             $existing_allele->name($new_allele_name);
             $existing_allele->update();
             return $existing_allele;
