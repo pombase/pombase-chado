@@ -54,7 +54,8 @@ method _do_query_checks() {
 
   for my $check (@query_checks) {
     my $name = $check->{name};
-    my $query = $check->{query};
+    my $query = $check->{query} =~ s/;\s*$//r;
+
     # if true, show the result set content on failure:
     my $verbose_fail = $check->{verbose_fail} && $check->{verbose_fail} eq 'true';
     my $expected_conf = $check->{expected} //
