@@ -349,7 +349,7 @@ method get_allele($allele_data)
       }
     }
 
-    my $instance_of_cvterm = $self->get_cvterm('relationship', 'instance_of');
+    my $instance_of_cvterm = $self->get_cvterm('pombase_relations', 'instance_of');
     my $existing_rs = $gene->search_related('feature_relationship_objects')
                            ->search({ 'me.type_id' => $instance_of_cvterm->cvterm_id() },
                                     { prefetch => 'subject' })
