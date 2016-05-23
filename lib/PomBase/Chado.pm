@@ -52,7 +52,11 @@ use Bio::Chado::Schema;
 sub db_connect
 {
   my ($host, $database, $username, $password) = @_;
-  return Bio::Chado::Schema->connect("dbi:Pg:database=$database;host=$host",
+  my $connect_string = "dbi:Pg:database=$database";
+  if ($host) {
+    $connect_string .= ";host=$host"
+  }
+  return Bio::Chado::Schema->connect($connect_string,
                                      $username, $password,
                                      { auto_savepoint => 1,
                                        pg_enable_utf8 => 1 });
