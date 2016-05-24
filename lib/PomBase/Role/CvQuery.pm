@@ -56,6 +56,11 @@ method get_cv($cv_name)
 
 method get_cvterm($cv_name, $cvterm_name)
 {
+
+  if ($cvterm_name eq 'is_a') {
+    $cv_name = 'local';
+  }
+
   my $cv = $self->get_cv($cv_name);
 
   if (!defined $cv) {
@@ -115,6 +120,11 @@ method find_cvterm_by_name($cv, $term_name,%options) {
 
   if (!ref $cv) {
     my $cv_name = $cv;
+
+    if ($term_name eq 'is_a') {
+      $cv_name = 'local';
+    }
+
     $cv = $self->get_cv($cv_name);
 
     if (!defined $cv) {
