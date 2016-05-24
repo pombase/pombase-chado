@@ -39,12 +39,26 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
+use Carp;
+
 requires 'chado';
 
 method store_cvterm_rel($subject, $object, $rel)
 {
   warn "   storing ", $rel->name(), " relation from ", $subject->name(), ' to ',
     $object->name(), "\n" if $self->verbose();
+
+  if (!$subject) {
+    croak "no subject passed to store_cvterm_rel()";
+  }
+
+  if (!$object) {
+    croak "no object passed to store_cvterm_rel()";
+  }
+
+  if (!$rel) {
+    croak "no relation passed to store_cvterm_rel()";
+  }
 
   $self->chado()->resultset('Cv::CvtermRelationship')
     ->create({ subject_id => $subject->cvterm_id(),

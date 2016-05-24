@@ -158,7 +158,7 @@ INSERT INTO cvtermpath (subject_id, object_id, cv_id, pathdistance, type_id)
          (SELECT cvterm_id
             FROM cvterm t
             JOIN cv ON cv.cv_id = t.cv_id
-           WHERE t.name = 'is_a' and cv.name = 'relationship')
+           WHERE t.name = 'is_a' and cv.name = 'local')
          FROM cvterm WHERE cvterm.cv_id IN (SELECT cv_id FROM cvs));
 EOF
 
