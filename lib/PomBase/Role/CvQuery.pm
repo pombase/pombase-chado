@@ -58,7 +58,7 @@ method get_cvterm($cv_name, $cvterm_name)
 {
 
   if ($cvterm_name eq 'is_a') {
-    $cv_name = 'local';
+    $cv_name = 'relationship';
   }
 
   my $cv = $self->get_cv($cv_name);
@@ -122,7 +122,7 @@ method find_cvterm_by_name($cv, $term_name,%options) {
     my $cv_name = $cv;
 
     if ($term_name eq 'is_a') {
-      $cv_name = 'local';
+      $cv_name = 'relationship';
     }
 
     $cv = $self->get_cv($cv_name);
