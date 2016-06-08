@@ -43,6 +43,11 @@ my %new_cvterm_ids = ();
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::DbQuery';
 
+method get_formatted_id($db_name)
+{
+  return sprintf "%07d", $self->get_dbxref_id($db_name);
+}
+
 # return a new ID in the given db
 method get_dbxref_id($db_name) {
   if (!exists $new_cvterm_ids{$db_name}) {
@@ -63,10 +68,3 @@ method get_dbxref_id($db_name) {
 
   return $new_cvterm_ids{$db_name}++;
 }
-
-method get_formatted_id($db_name)
-{
-  return sprintf "%07d", $self->get_dbxref_id($db_name);
-}
-
-1;
