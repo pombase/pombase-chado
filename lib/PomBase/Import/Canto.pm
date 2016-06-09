@@ -78,8 +78,7 @@ has organism => (is => 'rw', init_arg => undef);
 # used to prefix identifiers in "with" fields before storing as proprieties
 has db_prefix => (is => 'rw', init_arg => undef);
 
-method _build_extension_processor
-{
+method _build_extension_processor {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -121,8 +120,7 @@ sub BUILD
   $self->db_prefix($db_prefix);
 }
 
-method _store_interaction_annotation
-{
+method _store_interaction_annotation {
   my %args = @_;
 
   my $annotation_type = $args{annotation_type};
@@ -213,8 +211,7 @@ sub _extensions_by_type
   return %by_type;
 }
 
-method _get_real_termid
-{
+method _get_real_termid {
   my $termid = shift;
 
   my $cvterm = $self->find_cvterm_by_term_id($termid);
@@ -233,8 +230,7 @@ method _get_real_termid
   return $real_termid;
 }
 
-method _store_ontology_annotation
-{
+method _store_ontology_annotation {
   my %args = @_;
 
   my $type = $args{type};
@@ -530,8 +526,7 @@ method _store_ontology_annotation
 
 # split any annotation with an extension with a vertical bar into multiple
 # annotations
-method _split_vert_bar($error_prefix, $annotation)
-{
+method _split_vert_bar($error_prefix, $annotation) {
   my $extension_text = $annotation->{annotation_extension};
 
   if (defined $extension_text) {
@@ -556,8 +551,7 @@ method _split_vert_bar($error_prefix, $annotation)
   }
 }
 
-method _process_feature
-{
+method _process_feature {
   my $annotation = clone(shift);
   my $session_metadata = shift;
   my $feature = shift;
@@ -666,8 +660,7 @@ method _process_feature
 
 }
 
-method _process_annotation($annotation, $session_genes, $session_genotypes, $session_metadata, $canto_session)
-{
+method _process_annotation($annotation, $session_genes, $session_genotypes, $session_metadata, $canto_session) {
   my $status = delete $annotation->{status};
 
   if ($status eq 'deleted') {
@@ -711,8 +704,7 @@ method _process_annotation($annotation, $session_genes, $session_genotypes, $ses
   }
 }
 
-method _query_genes($session_gene_data)
-{
+method _query_genes($session_gene_data) {
   my %ret = ();
 
   while (my ($key, $details) = each %$session_gene_data) {
@@ -722,8 +714,7 @@ method _query_genes($session_gene_data)
   return %ret;
 }
 
-method _get_alleles($canto_session, $session_genes, $session_allele_data)
-{
+method _get_alleles($canto_session, $session_genes, $session_allele_data) {
   my %ret = ();
 
   for my $key (sort keys %$session_allele_data) {
@@ -743,8 +734,7 @@ method _get_alleles($canto_session, $session_genes, $session_allele_data)
   return %ret;
 }
 
-method _get_genotypes($session_alleles, $session_genotype_data)
-{
+method _get_genotypes($session_alleles, $session_genotype_data) {
   confess "no alleles passed to _get_genotypes()" unless $session_alleles;
   my %ret = ();
 
@@ -771,8 +761,7 @@ method _get_genotypes($session_alleles, $session_genotype_data)
   return %ret;
 }
 
-method load($fh)
-{
+method load($fh) {
   my $decoder = JSON->new();
 
   my $json_text;
@@ -814,8 +803,7 @@ method load($fh)
   }
 }
 
-method results_summary($results)
-{
+method results_summary($results) {
   return '';
 }
 

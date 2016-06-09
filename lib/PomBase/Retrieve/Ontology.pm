@@ -56,8 +56,7 @@ has options => (is => 'ro', isa => 'ArrayRef');
 # constraint_type filter, even if the parent doesn't pass the filter
 has retrieve_parent_terms => (is => 'rw', default => 0, init_arg => undef);
 
-method BUILD
-{
+method BUILD {
   my $chado = $self->chado();
 
   my $dbh = $self->chado()->storage()->dbh();
@@ -179,8 +178,7 @@ SELECT t.name, cv.name, db.name, x.accession, obj.name, objdb.name, objdbxref.ac
   };
 }
 
-method header
-{
+method header {
   return <<"EOF";
 format-version: 1.2
 ontology: pombase
@@ -188,8 +186,7 @@ default-namespace: pombase
 EOF
 }
 
-method _parentid($data)
-{
+method _parentid($data) {
   my $parentname = $data->[4];
   if (defined $parentname) {
     return $data->[5] . ':' . $data->[6];
@@ -198,8 +195,7 @@ method _parentid($data)
   }
 }
 
-method format_result($data)
-{
+method format_result($data) {
   my $id = $data->[2] . ':' . $data->[3];
   my $name = $data->[0];
   my $namespace = $data->[1];

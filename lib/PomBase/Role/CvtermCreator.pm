@@ -45,8 +45,7 @@ requires 'find_or_create_dbxref';
 requires 'find_db_by_name';
 requires 'get_db';
 
-method create_cvterm($cv_name, $db_name, $id_counter, $term_name)
-{
+method create_cvterm($cv_name, $db_name, $id_counter, $term_name) {
   my $formatted_id = $id_counter->get_formatted_id($db_name);
 
   my $cv = $self->get_cv($cv_name);

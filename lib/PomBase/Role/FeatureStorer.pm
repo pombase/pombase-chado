@@ -46,8 +46,7 @@ with 'PomBase::Role::CvQuery';
 
 requires 'find_or_create_pub';
 
-method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
-{
+method store_feature($uniquename, $name, $synonyms, $so_type, $organism) {
   my $feature_type_term = $self->get_cvterm('sequence', $so_type);
 
   use Carp qw(cluck);
@@ -83,8 +82,7 @@ method store_feature($uniquename, $name, $synonyms, $so_type, $organism)
   return $new_feature;
 }
 
-method find_or_create_synonym($synonym_name, $type_name)
-{
+method find_or_create_synonym($synonym_name, $type_name) {
   my $type = $self->get_cvterm('synonym_type', $type_name);
 
   if (!defined $type) {
@@ -98,8 +96,7 @@ method find_or_create_synonym($synonym_name, $type_name)
   });
 }
 
-method store_feature_synonym($feature, $synonym_name, $type, $is_current)
-{
+method store_feature_synonym($feature, $synonym_name, $type, $is_current) {
   $is_current //= 1;
 
   my $synonym = $self->find_or_create_synonym($synonym_name, $type);
@@ -117,9 +114,7 @@ method store_feature_synonym($feature, $synonym_name, $type, $is_current)
   });
 }
 
-method store_feature_and_loc($feature, $chromosome, $so_type,
-                             $start_arg, $end_arg)
-{
+method store_feature_and_loc($feature, $chromosome, $so_type, $start_arg, $end_arg) {
   my $chado = $self->chado();
 
   my ($uniquename, $transcript_uniquename, $gene_uniquename) =
@@ -197,8 +192,7 @@ method store_feature_and_loc($feature, $chromosome, $so_type,
   return $chado_feature;
 }
 
-method store_featureprop($feature, $type_name, $value)
-{
+method store_featureprop($feature, $type_name, $value) {
   state $ranks = {};
 
   assert (defined $value, "no value passed to store_featureprop()");
@@ -228,8 +222,7 @@ method store_featureprop($feature, $type_name, $value)
   });
 }
 
-method get_new_uniquename($prefix, $first_suffix)
-{
+method get_new_uniquename($prefix, $first_suffix) {
   my $next_suffix = $first_suffix // 1;
   my $rs = $self->chado()->resultset('Sequence::Feature')
                 ->search({ uniquename => { -like => $prefix . '%' } });

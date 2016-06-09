@@ -63,8 +63,7 @@ has with_filter_values => (is => 'rw', isa => 'HashRef',
 has term_id_filter_values => (is => 'rw', isa => 'HashRef',
                               init_arg => undef);
 
-method _load_first_column($filename)
-{
+method _load_first_column($filename) {
   return unless $filename;
 
   my %ret_val = ();
@@ -86,8 +85,7 @@ method _load_first_column($filename)
   return %ret_val;
 }
 
-method BUILD
-{
+method BUILD {
   my $assigned_by_filter = '';
   my $taxon_filter = '';
   my $remove_existing = 0;
@@ -132,8 +130,7 @@ method BUILD
   $self->use_first_with_id($use_first_with_id);
 }
 
-method load($fh)
-{
+method load($fh) {
   my $chado = $self->chado();
   my $config = $self->config();
 
@@ -377,8 +374,7 @@ method load($fh)
   return \%deleted_counts;
 }
 
-method results_summary($results)
-{
+method results_summary($results) {
   my $ret_val = '';
 
   for my $assigned_by (sort keys %$results) {

@@ -131,8 +131,7 @@ sub BUILD
  Returns : nothing
 
 =cut
-method load($fh)
-{
+method load($fh) {
   my $chado = $self->chado();
   my $config = $self->config();
 
@@ -229,8 +228,7 @@ method load($fh)
   return $load_orthologs_count;
 }
 
-method results_summary($results)
-{
+method results_summary($results) {
   return '';
 }
 1;

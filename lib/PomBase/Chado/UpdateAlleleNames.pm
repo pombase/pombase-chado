@@ -59,8 +59,7 @@ with 'PomBase::Role::ConfigUser';
 
 =cut
 
-method process()
-{
+method process() {
   my $chado = $self->chado();
 
   my $dbh = $chado->storage()->dbh();

@@ -43,8 +43,7 @@ use YAML qw(LoadFile);
 has file_name => (is => 'ro');
 has hash => (is => 'ro');
 
-method BUILD
-{
+method BUILD {
   my %new_data;
 
   if (defined $self->file_name()) {

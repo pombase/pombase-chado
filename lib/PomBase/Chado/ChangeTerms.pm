@@ -50,8 +50,7 @@ has termid_map => (is => 'rw', init_arg => undef);
 # don't remap annotation for any feature_cvterms that have this property
 has exclude_by_fc_prop => (is => 'rw', init_arg => undef);
 
-method BUILD
-{
+method BUILD {
   my $mapping_file = undef;
   my $exclude_by_fc_prop = undef;
 
@@ -94,8 +93,7 @@ method BUILD
   close $mapping_fh or die "can't close mapping_file: $!\n";
 }
 
-method process()
-{
+method process() {
   my $chado = $self->chado();
   my $config = $self->config();
 

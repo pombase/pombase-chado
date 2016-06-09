@@ -81,8 +81,7 @@ sub _build_fypo_extension_termids
   return \%fypo_extension_termids
 }
 
-method _get_allele_gene_map
-{
+method _get_allele_gene_map {
   my %allele_gene_map = ();
 
   my $allele_gene_rs = $self->chado()->resultset('Sequence::FeatureRelationship')->
@@ -116,8 +115,7 @@ method _get_allele_gene_map
   return %allele_gene_map;
 }
 
-method _get_allele_props
-{
+method _get_allele_props {
   my %allele_props = ();
 
   my $allele_props_rs =
@@ -131,8 +129,7 @@ method _get_allele_props
   return %allele_props;
 }
 
-method _get_genotype_allele_props($genotype_allele_rs)
-{
+method _get_genotype_allele_props($genotype_allele_rs) {
   my %genotype_allele_props = ();
 
   my $genotype_allele_prop_rs = $self->chado()->resultset('Sequence::FeatureRelationshipprop')->
@@ -154,8 +151,7 @@ method _get_genotype_allele_props($genotype_allele_rs)
   return %genotype_allele_props;
 }
 
-method _get_genotype_details ($genotype_feature_rs)
-{
+method _get_genotype_details ($genotype_feature_rs) {
   my %allele_gene_map = $self->_get_allele_gene_map();
 
   my %allele_props = $self->_get_allele_props();
@@ -219,8 +215,7 @@ func _fix_date($date) {
   }
 }
 
-func _safe_join($expr, $array)
-{
+func _safe_join($expr, $array) {
   if (defined $array) {
     return join $expr, @{$array};
   } else {
@@ -457,8 +452,7 @@ method retrieve() {
   };
 }
 
-method header
-{
+method header {
   return (join "\t",
           ('#Database name',
            'Gene systematic ID',
@@ -483,8 +477,7 @@ method header
          )) . "\n";
 }
 
-method format_result($res)
-{
+method format_result($res) {
   my $line = (join "\t", @$res);
 
   die "dubious $line!" if $line =~ /dubious/;

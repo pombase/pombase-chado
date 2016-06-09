@@ -49,8 +49,7 @@ use Bio::Seq;
 
 =cut
 
-method translate($seq_str)
-{
+method translate($seq_str) {
   my $seq_obj = Bio::Seq->new(-seq => $seq_str,
                               -alphabet => 'dna');
 

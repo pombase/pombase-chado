@@ -43,8 +43,7 @@ use Carp;
 
 requires 'chado';
 
-method store_cvterm_rel($subject, $object, $rel)
-{
+method store_cvterm_rel($subject, $object, $rel) {
   warn "   storing ", $rel->name(), " relation from ", $subject->name(), ' to ',
     $object->name(), "\n" if $self->verbose();
 
@@ -67,8 +66,7 @@ method store_cvterm_rel($subject, $object, $rel)
              });
 }
 
-method get_cvterm_rel($subject, $object, $rel)
-{
+method get_cvterm_rel($subject, $object, $rel) {
   return $self->chado()->resultset('Cv::CvtermRelationship')
     ->search({ subject_id => $subject->cvterm_id(),
                object_id => $object->cvterm_id(),

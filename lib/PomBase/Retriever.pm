@@ -47,8 +47,7 @@ has verbose => (is => 'rw', default => 0);
 has organism_taxonid => (is => 'rw');
 has organism => (is => 'rw');
 
-method BUILD
-{
+method BUILD {
   my $chado = $self->chado();
 
   my $organism_taxonid = undef;

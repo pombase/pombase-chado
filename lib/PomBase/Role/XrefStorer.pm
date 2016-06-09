@@ -81,8 +81,7 @@ method find_db_by_name($db_name) {
   return $db;
 }
 
-method add_feature_dbxref($feature, $dbxref_value)
-{
+method add_feature_dbxref($feature, $dbxref_value) {
   if ($dbxref_value =~ /^((.*):(.*))/) {
     my $db_name = $2;
     my $accession = $3;

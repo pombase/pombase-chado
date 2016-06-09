@@ -127,13 +127,11 @@ select fc.feature_cvterm_id, gene.uniquename, gene.name, db.name || ':' || x.acc
   };
 }
 
-method header
-{
+method header {
   return '';
 }
 
-method format_result($res)
-{
+method format_result($res) {
   return (join "\t", @$res);
 }
 

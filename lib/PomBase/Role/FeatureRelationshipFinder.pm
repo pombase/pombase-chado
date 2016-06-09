@@ -53,8 +53,7 @@ requires 'chado';
 
 =cut
 
-method get_feature_relationship($feature_1, $feature_2, $pub, $evidence)
-{
+method get_feature_relationship($feature_1, $feature_2, $pub, $evidence) {
   my $chado = $self->chado();
 
   my $rs = $chado->resultset('Sequence::FeatureRelationship')

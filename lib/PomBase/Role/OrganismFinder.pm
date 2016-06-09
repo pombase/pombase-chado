@@ -41,14 +41,12 @@ use Moose::Role;
 requires 'chado';
 requires 'get_cvterm';
 
-method find_organism_by_common_name($common_name)
-{
+method find_organism_by_common_name($common_name) {
   return $self->chado()->resultset('Organism::Organism')
     ->find({ common_name => $common_name });
 }
 
-method find_organism_by_full_name($full_name)
-{
+method find_organism_by_full_name($full_name) {
   if (my ($genus, $species) = $full_name =~ /^\s*(\S+)\s+(.*?)\s*$/) {
     return $self->chado()->resultset('Organism::Organism')
       ->find({ genus => $genus, species => $species });
@@ -57,8 +55,7 @@ method find_organism_by_full_name($full_name)
   }
 }
 
-method find_organism_by_taxonid($taxonid)
-{
+method find_organism_by_taxonid($taxonid) {
   state $cache = {};
 
   if (exists $cache->{$taxonid}) {

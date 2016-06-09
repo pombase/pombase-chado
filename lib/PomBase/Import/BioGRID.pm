@@ -64,8 +64,7 @@ has organism_taxonid_filter => (is => 'rw', init_arg => undef);
 has evidence_code_filter => (is => 'rw', init_arg => undef, isa => 'ArrayRef');
 has interaction_note_filter => (is => 'rw', init_arg => undef);
 
-method BUILD
-{
+method BUILD {
   my $organism_taxonid_filter = undef;
   my $evidence_code_filter = undef;
   my $interaction_note_filter = undef;
@@ -92,8 +91,7 @@ method BUILD
   }
 }
 
-method load($fh)
-{
+method load($fh) {
   my $chado = $self->chado();
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
@@ -253,8 +251,7 @@ method load($fh)
   return undef;
 }
 
-method results_summary($results)
-{
+method results_summary($results) {
   return '';
 }
 

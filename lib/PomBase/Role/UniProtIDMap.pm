@@ -43,8 +43,7 @@ requires 'chado';
 has uniprot_id_map => (is => 'rw', init_arg => undef,
                        lazy_build => 1);
 
-method _build_uniprot_id_map ()
-{
+method _build_uniprot_id_map () {
   my $chado = $self->chado();
 
   my %id_map = ();
@@ -60,8 +59,7 @@ method _build_uniprot_id_map ()
   return \%id_map;
 }
 
-method lookup_uniprot_id($uniprot_id)
-{
+method lookup_uniprot_id($uniprot_id) {
   $uniprot_id =~ s/^UniProtKB://;
 
   my $local_id = $self->uniprot_id_map()->{$uniprot_id};

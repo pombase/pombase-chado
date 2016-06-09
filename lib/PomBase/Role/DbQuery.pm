@@ -40,8 +40,7 @@ use Moose::Role;
 
 requires 'chado';
 
-method get_db($db_name)
-{
+method get_db($db_name) {
   if (!defined $db_name) {
     croak "undefined value for db name";
   }
@@ -53,8 +52,7 @@ method get_db($db_name)
            $self->chado()->resultset('General::Db')->find({ name => $db_name }));
 }
 
-method get_dbxref($db_name, $dbxref_name)
-{
+method get_dbxref($db_name, $dbxref_name) {
   my $db = $self->get_db($db_name);
 
   if (!defined $db) {

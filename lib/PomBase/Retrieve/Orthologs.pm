@@ -166,13 +166,11 @@ SELECT o_un, string_agg(CASE WHEN s_name IS NULL THEN 'NONE' ELSE s_name END, '|
   };
 }
 
-method header
-{
+method header {
   return '';
 }
 
-method format_result($res)
-{
+method format_result($res) {
   return join "\t", @$res;
 }
 

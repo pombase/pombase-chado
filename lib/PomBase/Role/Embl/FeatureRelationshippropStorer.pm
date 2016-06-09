@@ -77,8 +77,7 @@ method _build_ranks() {
   return $ranks;
 }
 
-method store_feature_relationshipprop($feature_relationship, $type_name, $value)
-{
+method store_feature_relationshipprop($feature_relationship, $type_name, $value) {
   my $type_cvterm =
     $self->find_or_create_cvterm('feature_relationshipprop_type', $type_name);
 

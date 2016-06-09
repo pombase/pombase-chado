@@ -58,8 +58,7 @@ has options => (is => 'ro', isa => 'ArrayRef');
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
-method _build_extension_processor
-{
+method _build_extension_processor {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -67,8 +66,7 @@ method _build_extension_processor
   return $processor;
 }
 
-method load($fh)
-{
+method load($fh) {
   my $chado = $self->chado();
 
   my $rna_level_cvterm = $self->get_cvterm('gene_ex', 'RNA level');

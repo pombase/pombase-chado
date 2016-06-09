@@ -61,8 +61,7 @@ has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
 
 has gene_ex_qualifiers_array => (is => 'rw', init_arg => undef);
 
-method _build_gene_ex_qualifiers
-{
+method _build_gene_ex_qualifiers {
   my @gene_ex_qualifiers = @{$self->gene_ex_qualifiers_array()};
 
   my %gene_ex_qualifiers = map { ($_, 1) } @gene_ex_qualifiers;
@@ -71,8 +70,7 @@ method _build_gene_ex_qualifiers
 }
 has gene_ex_qualifiers => (is => 'rw', init_arg => undef, lazy_build => 1);
 
-method _build_extension_processor
-{
+method _build_extension_processor {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -80,8 +78,7 @@ method _build_extension_processor
   return $processor;
 }
 
-method BUILD
-{
+method BUILD {
   my $gene_ex_qualifiers_file = undef;
 
   my $gene_ex_qualifier_util = PomBase::Chado::GeneExQualifiersUtil->new();
@@ -106,8 +103,7 @@ method BUILD
   $self->gene_ex_qualifiers_array($gene_ex_qualifiers);
 }
 
-method load($fh)
-{
+method load($fh) {
   my $chado = $self->chado();
 
   my $tsv = Text::CSV->new({ sep_char => "\t" });

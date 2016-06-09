@@ -64,8 +64,7 @@ has options => (is => 'ro', isa => 'ArrayRef');
 
 has extension_processor => (is => 'ro', init_arg => undef, lazy_build => 1);
 
-method _build_extension_processor
-{
+method _build_extension_processor {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -75,8 +74,7 @@ method _build_extension_processor
 
 my $fypo_extensions_cv_name = 'fypo_extensions';
 
-method load($fh)
-{
+method load($fh) {
   my $chado = $self->chado();
   my $config = $self->config();
 
@@ -321,8 +319,7 @@ method load($fh)
   return undef;
 }
 
-method results_summary($results)
-{
+method results_summary($results) {
   return '';
 }
 

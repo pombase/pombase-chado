@@ -60,8 +60,7 @@ has organism => (is => 'rw', init_arg => undef);
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
-method _build_extension_processor
-{
+method _build_extension_processor {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -69,13 +68,11 @@ method _build_extension_processor
   return $processor;
 }
 
-method BUILD
-{
+method BUILD {
 
 }
 
-method load($fh)
-{
+method load($fh) {
   my $chado = $self->chado();
 
   my $tsv = Text::CSV->new({ sep_char => "\t" });

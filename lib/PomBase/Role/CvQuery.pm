@@ -41,8 +41,7 @@ use Moose::Role;
 requires 'chado';
 requires 'get_db';
 
-method get_cv($cv_name)
-{
+method get_cv($cv_name) {
   if (!defined $cv_name) {
     croak "undefined value for cv name";
   }
@@ -54,8 +53,7 @@ method get_cv($cv_name)
            $self->chado()->resultset('Cv::Cv')->find({ name => $cv_name }));
 }
 
-method get_cvterm($cv_name, $cvterm_name)
-{
+method get_cvterm($cv_name, $cvterm_name) {
 
   if ($cvterm_name eq 'is_a') {
     $cv_name = 'relationship';
@@ -219,8 +217,7 @@ method find_cvterm_by_name($cv, $term_name,%options) {
 
 }
 
-method find_cvterm_by_term_id($term_id, $options)
-{
+method find_cvterm_by_term_id($term_id, $options) {
   state $cache = {};
 
   $options //= {};

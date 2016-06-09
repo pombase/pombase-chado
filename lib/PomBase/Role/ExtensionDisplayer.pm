@@ -52,8 +52,7 @@ requires 'config';
            (GO) term, otherwise return an empty list.
 
 =cut
-method make_gaf_extension($feature_cvterm)
-{
+method make_gaf_extension($feature_cvterm) {
   my $extension_term = $feature_cvterm->cvterm();
 
   if ($extension_term->cv()->name() ne 'PomBase annotation extension terms') {

@@ -55,18 +55,15 @@ has physical_interaction_type => (is => 'ro', init_arg => undef,
 has symmetrical_interaction_evidence_codes => (is => 'rw', init_arg => undef,
                                                lazy_build => 1);
 
-method _build_genetic_interaction()
-{
+method _build_genetic_interaction() {
   return $self->get_cvterm('PomBase interaction types', 'interacts_genetically');
 }
 
-method _build_physical_interaction()
-{
+method _build_physical_interaction() {
   return $self->get_cvterm('PomBase interaction types', 'interacts_physically');
 }
 
-method _build_symmetrical_interaction_evidence_codes()
-{
+method _build_symmetrical_interaction_evidence_codes() {
   my @symmetrical_ev_codes = ();
 
   my %evidence_types = %{$self->config()->{evidence_types}};
@@ -84,8 +81,7 @@ method _build_symmetrical_interaction_evidence_codes()
   return [@symmetrical_ev_codes];
 }
 
-method _store_interaction_helper()
-{
+method _store_interaction_helper() {
   my %args = @_;
   my $feature_a = $args{feature_a};
   my $feature_b = $args{feature_b};
@@ -189,8 +185,7 @@ method _store_interaction_helper()
 
 =cut
 
-method store_interaction()
-{
+method store_interaction() {
   my %args = @_;
   $args{is_inferred} = 0;
 

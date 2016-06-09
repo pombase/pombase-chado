@@ -61,8 +61,7 @@ has isa_cvterm => (is => 'ro', init_arg => undef, lazy_build => 1);
 my $extension_cv_name = 'PomBase annotation extension terms';
 my $extension_rel_status = 'extension_relations_status';
 
-method _build_cache
-{
+method _build_cache {
   if ($self->pre_init_cache()) {
     my $extension_cv =
       $self->chado()->resultset('Cv::Cv')->find({ name => $extension_cv_name });
@@ -88,13 +87,11 @@ method _build_cache
   }
 }
 
-method _build_isa_cvterm
-{
+method _build_isa_cvterm {
   return $self->get_cvterm('relationship', 'is_a');
 }
 
-method store_extension($feature_cvterm, $extensions)
-{
+method store_extension($feature_cvterm, $extensions) {
   my $old_cvterm = $feature_cvterm->cvterm();
   my $old_cv_name = $old_cvterm->cv()->name();
 
@@ -308,8 +305,7 @@ method store_extension($feature_cvterm, $extensions)
   return $new_term;
 }
 
-method check_targets($target_is_quals, $target_of_quals)
-{
+method check_targets($target_is_quals, $target_of_quals) {
   my $organism = $self->find_organism_by_common_name('pombe');
 
   die unless defined $organism;
@@ -366,8 +362,7 @@ method check_targets($target_is_quals, $target_of_quals)
   }
 }
 
-method process($post_process_data, $target_is_quals, $target_of_quals)
-{
+method process($post_process_data, $target_is_quals, $target_of_quals) {
   $self->check_targets($target_is_quals, $target_of_quals);
 
   while (my ($feature_cvterm_id, $data_list) = each %{$post_process_data}) {
@@ -474,8 +469,7 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
     };
 }
 
-method process_one_annotation($featurecvterm, $extension_text, $extensions)
-{
+method process_one_annotation($featurecvterm, $extension_text, $extensions) {
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
 
   warn "processing annotation extension for $feature_uniquename <-> ",

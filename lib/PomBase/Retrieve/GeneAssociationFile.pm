@@ -79,8 +79,7 @@ sub BUILDARGS
   return \%args;
 }
 
-method _get_feature_details
-{
+method _get_feature_details {
   my %synonyms = ();
 
   my $syn_rs = $self->chado()->resultset('Sequence::FeatureSynonym')->
@@ -161,8 +160,7 @@ method _get_feature_details
   return %ret_map;
 }
 
-func _safe_join($expr, $array)
-{
+func _safe_join($expr, $array) {
   if (defined $array) {
     return join $expr, @{$array};
   } else {
@@ -170,8 +168,7 @@ func _safe_join($expr, $array)
   }
 }
 
-method _get_qualifier($fc, $fc_props)
-{
+method _get_qualifier($fc, $fc_props) {
   my @qual_bits;
 
   if (defined $fc_props->{qualifier}) {
@@ -189,8 +186,7 @@ method _get_qualifier($fc, $fc_props)
   join('|', @qual_bits);
 }
 
-func _fix_with($db_name, $with)
-{
+func _fix_with($db_name, $with) {
   if ($with =~ /:/) {
     if ($with =~ /GeneDB_Spombe/) {
       die qq("GeneDB_Spombe:" from "$with" is obsolete\n);
@@ -473,13 +469,11 @@ me.cvterm_id in
   };
 }
 
-method header
-{
+method header {
   return '';
 }
 
-method format_result($res)
-{
+method format_result($res) {
   my $line = (join "\t", @$res);
 
   die "dubious $line!" if $line =~ /dubious/;

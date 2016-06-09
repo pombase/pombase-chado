@@ -89,13 +89,11 @@ and f.organism_id = | . $self->organism()->organism_id();
   };
 }
 
-method header
-{
+method header {
   return '';
 }
 
-method format_result($res)
-{
+method format_result($res) {
   return (join "\t", @$res);
 }
 

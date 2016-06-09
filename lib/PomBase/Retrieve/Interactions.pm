@@ -213,12 +213,10 @@ SQL
 }
 
 
-method header
-{
+method header {
   return '';
 }
 
-method format_result($res)
-{
+method format_result($res) {
   return (join "\t", @$res);
 }

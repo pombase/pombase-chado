@@ -41,8 +41,7 @@ use Carp;
 
 use Moose::Role;
 
-method dump_feature($feature)
-{
+method dump_feature($feature) {
   my $loc = $feature->location();
 
   my $seq = $feature->entire_seq();

@@ -50,8 +50,7 @@ use Moose::Role;
 
 =cut
 
-method feature_subseq($feature, $start, $end)
-{
+method feature_subseq($feature, $start, $end) {
   if ($start <= 0) {
     die "start position $start is less than 1 in feature_subseq()";
   }

@@ -49,8 +49,7 @@ requires 'store_feature_relationshipprop';
 
 has allele_types => (is => 'rw', init_arg => undef, lazy_build => 1);
 
-method _build_allele_types
-{
+method _build_allele_types {
   my %allele_types = ();
 
   my $allele_types_rs =
@@ -75,8 +74,7 @@ method _build_allele_types
                 organism   - the full organism name like "Genus species"
 
 =cut
-method get_gene($gene_data)
-{
+method get_gene($gene_data) {
   if (!defined $gene_data) {
     croak 'no $gene_data passed to get_gene()';
   }
@@ -87,13 +85,11 @@ method get_gene($gene_data)
   return $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
 }
 
-method get_transcript($gene)
-{
+method get_transcript($gene) {
   return $self->find_chado_feature($gene->uniquename() . ".1", 1, 1, $gene->organism());
 }
 
-method get_genotype($genotype_identifier, $genotype_name, $genotype_background, $alleles)
-{
+method get_genotype($genotype_identifier, $genotype_name, $genotype_background, $alleles) {
   my $first_allele_data = $alleles->[0];
 
   if (!$first_allele_data->{allele}) {
@@ -123,8 +119,7 @@ method get_genotype($genotype_identifier, $genotype_name, $genotype_background, 
   return $genotype;
 }
 
-method _get_genotype_suffix_pg
-{
+method _get_genotype_suffix_pg {
   my $dbh = shift;
   my $prefix = shift;
 
@@ -140,8 +135,7 @@ method _get_genotype_suffix_pg
   return $data[0] // 1;
 }
 
-method _get_genotype_suffix_sqlite
-{
+method _get_genotype_suffix_sqlite {
   my $dbh = shift;
   my $prefix = shift;
 
@@ -163,8 +157,7 @@ method _get_genotype_suffix_sqlite
   return $max;
 }
 
-method _get_genotype_uniquename
-{
+method _get_genotype_uniquename {
   my $dbh = $self->chado()->storage()->dbh();
 
   my $database_name = $self->config()->{database_name};
@@ -181,8 +174,7 @@ method _get_genotype_uniquename
   return "$prefix$new_suffix";
 }
 
-method get_genotype_for_allele($allele_data, $expression)
-{
+method get_genotype_for_allele($allele_data, $expression) {
   my $allele = $self->get_allele($allele_data);
 
   my $genotype_identifier = $self->_get_genotype_uniquename();
@@ -203,8 +195,7 @@ func _get_allele_props($allele) {
   return %ret;
 }
 
-method fix_expression_allele($gene_name, $name, $description_ref, $expression_ref)
-{
+method fix_expression_allele($gene_name, $name, $description_ref, $expression_ref) {
   if ($$name eq 'noname' and
       grep /^$$description_ref$/, qw(overexpression endogenous knockdown)) {
     if (defined $$expression_ref) {
@@ -259,8 +250,7 @@ method make_allele_data($name, $description, $gene_feature) {
   return \%ret;
 }
 
-method _get_allele_session($allele)
-{
+method _get_allele_session($allele) {
   my $props_rs = $allele->search_featureprops('canto_session');
   my $prop = $props_rs->first();
 
@@ -288,8 +278,7 @@ method _get_allele_session($allele)
 
 =cut
 
-method get_allele($allele_data)
-{
+method get_allele($allele_data) {
   my $allele;
   my $gene;
 

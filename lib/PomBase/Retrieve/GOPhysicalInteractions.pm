@@ -53,8 +53,7 @@ with 'PomBase::Retriever';
 has gaf_retriever => (is => 'rw', init_arg => undef,
                      lazy_build => 1);
 
-method _build_gaf_retriever
-{
+method _build_gaf_retriever {
   my @options = @{$self->options()};
 
   push @options, '--filter-by-term=GO:0005515';
@@ -142,7 +141,6 @@ method header () {
   return '';
 }
 
-method format_result($res)
-{
+method format_result($res) {
   return (join "\t", @$res);
 }

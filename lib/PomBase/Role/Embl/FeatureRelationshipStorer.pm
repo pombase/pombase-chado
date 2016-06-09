@@ -71,8 +71,7 @@ method _build_ranks() {
 
 
 
-method store_feature_rel($subject, $object, $rel_type, $no_duplicates, $rank_arg)
-{
+method store_feature_rel($subject, $object, $rel_type, $no_duplicates, $rank_arg) {
   my $rel_cvterm;
 
   if (ref $rel_type) {

@@ -41,8 +41,7 @@ use Moose::Role;
 
 with 'PomBase::Role::ChadoUser';
 
-method store_feature_rel_pub($feature_rel, $pub)
-{
+method store_feature_rel_pub($feature_rel, $pub) {
   my %create_args = (
     feature_relationship_id => $feature_rel->feature_relationship_id(),
     pub_id => $pub->pub_id(),

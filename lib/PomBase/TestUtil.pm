@@ -55,50 +55,43 @@ with 'PomBase::Role::CvQuery';
 
 my $TEST_CONFIG_FILE = 't/test_config.yaml';
 
-method _make_test_db
-{
+method _make_test_db {
   my ($fh, $temp_db) = tempfile(UNLINK => 1);
   system "sqlite3 $temp_db < t/chado_schema.sql";
   return Bio::Chado::Schema->connect("dbi:SQLite:$temp_db");
 }
 
-method _load_cv($chado, $cv_conf)
-{
+method _load_cv($chado, $cv_conf) {
   for my $row (@$cv_conf) {
     $chado->resultset("Cv::Cv")->create($row);
   }
 }
 
-method _load_features($chado, $feature_conf)
-{
+method _load_features($chado, $feature_conf) {
   for my $row (@$feature_conf) {
     $chado->resultset("Sequence::Feature")->create($row);
   }
 }
 
-method _load_feature_cvterms($chado, $feature_cvterm_conf)
-{
+method _load_feature_cvterms($chado, $feature_cvterm_conf) {
   for my $row (@$feature_cvterm_conf) {
     $chado->resultset("Sequence::FeatureCvterm")->create($row);
   }
 }
 
-method _load_feature_relationships($chado, $feature_rel_conf)
-{
+method _load_feature_relationships($chado, $feature_rel_conf) {
   for my $row (@$feature_rel_conf) {
     $chado->resultset("Sequence::FeatureRelationship")->create($row);
   }
 }
 
-method _load_featurelocs($chado, $featurelocs_conf)
-{
+method _load_featurelocs($chado, $featurelocs_conf) {
   for my $row (@$featurelocs_conf) {
     $chado->resultset("Sequence::Featureloc")->create($row);
   }
 }
 
-method _load_cv_db($chado)
-{
+method _load_cv_db($chado) {
   my $test_data = $self->test_config()->{data};
 
   my $cv_conf = $test_data->{cv};
@@ -120,8 +113,7 @@ method _load_cv_db($chado)
   }
 }
 
-method _load_test_features($chado)
-{
+method _load_test_features($chado) {
   my $test_data = $self->test_config()->{data};
 
   $self->_load_cv($chado, $test_data->{extra_cvterm_terms});
@@ -238,8 +230,7 @@ method _load_test_features($chado)
   $self->_load_featurelocs($chado, $test_data->{featurelocs});
 }
 
-method BUILD
-{
+method BUILD {
   my ($fh, $temp_db) = tempfile();
 
   my $test_config = LoadFile($TEST_CONFIG_FILE);
