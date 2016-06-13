@@ -53,6 +53,15 @@ method get_cv($cv_name) {
            $self->chado()->resultset('Cv::Cv')->find({ name => $cv_name }));
 }
 
+sub id_of_cvterm
+{
+  my $cvterm = shift;
+
+  my $dbxref = $cvterm->dbxref();
+  return $dbxref->db()->name() . ':' . $dbxref->accession();
+}
+
+
 method get_relation_cvterm($cvterm_name) {
   state $cache = {};
 
@@ -60,9 +69,17 @@ method get_relation_cvterm($cvterm_name) {
     return $cache->{$cvterm_name};
   }
 
-  my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
-  my $cvterm = $cvterm_rs->find({ name => $cvterm_name,
-                                  is_relationshiptype => 1 });
+  my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm')
+    ->search({ name => $cvterm_name, is_relationshiptype => 1 });
+
+  my $cvterm = $cvterm_rs->next();
+
+  my $extra_cvterm = $cvterm_rs->next();
+
+  if (defined $extra_cvterm) {
+    warn "more the one relation cvterm returned for $cvterm_name:\n" .
+      "terms: " . id_of_cvterm($cvterm) . " and " . id_of_cvterm($extra_cvterm) . "\n";
+  }
 
   $cache->{$cvterm_name} = $cvterm;
 
