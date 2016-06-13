@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 use MooseX::QuietCarping;
 
 use PomBase::TestUtil;
