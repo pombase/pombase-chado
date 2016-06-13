@@ -77,7 +77,7 @@ method store_feature_rel($subject, $object, $rel_type, $no_duplicates, $rank_arg
   if (ref $rel_type) {
     $rel_cvterm = $rel_type;
   } else {
-    $rel_cvterm = $self->get_cvterm('relationship', $rel_type);
+    $rel_cvterm = $self->get_relation_cvterm($rel_type);
   }
 
   if (!defined $subject) {

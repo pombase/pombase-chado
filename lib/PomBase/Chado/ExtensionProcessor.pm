@@ -88,7 +88,7 @@ method _build_cache {
 }
 
 method _build_isa_cvterm {
-  return $self->get_cvterm('relationship', 'is_a');
+  return $self->get_relation_cvterm('is_a');
 }
 
 method store_extension($feature_cvterm, $extensions) {

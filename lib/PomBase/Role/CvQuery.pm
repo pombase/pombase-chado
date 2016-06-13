@@ -53,10 +53,26 @@ method get_cv($cv_name) {
            $self->chado()->resultset('Cv::Cv')->find({ name => $cv_name }));
 }
 
+method get_relation_cvterm($cvterm_name) {
+  state $cache = {};
+
+  if ($cache->{$cvterm_name}) {
+    return $cache->{$cvterm_name};
+  }
+
+  my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm');
+  my $cvterm = $cvterm_rs->find({ name => $cvterm_name,
+                                  is_relationshiptype => 1 });
+
+  $cache->{$cvterm_name} = $cvterm;
+
+  return $cvterm;
+}
+
 method get_cvterm($cv_name, $cvterm_name) {
 
   if ($cvterm_name eq 'is_a') {
-    $cv_name = 'relationship';
+    $cv_name = 'relations';
   }
 
   my $cv = $self->get_cv($cv_name);
@@ -120,7 +136,7 @@ method find_cvterm_by_name($cv, $term_name,%options) {
     my $cv_name = $cv;
 
     if ($term_name eq 'is_a') {
-      $cv_name = 'relationship';
+      $cv_name = 'relations';
     }
 
     $cv = $self->get_cv($cv_name);

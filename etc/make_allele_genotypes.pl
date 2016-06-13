@@ -128,7 +128,7 @@ while (defined (my $genotype = $genotype_rs->next())) {
 
 my $part_of = $chado->resultset('Cv::Cvterm')
   ->find({ 'me.name' => 'part_of',
-           'cv.name' => 'relationship',
+           'cv.name' => 'relations',
          },
          {
            join => 'cv',

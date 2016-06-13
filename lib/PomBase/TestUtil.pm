@@ -159,8 +159,8 @@ method _load_test_features($chado) {
   my $mrna_type = $self->get_cvterm('sequence', 'mRNA');
   my $allele_type = $self->get_cvterm('sequence', 'allele');
   my $genotype_type = $self->get_cvterm('sequence', 'genotype');
-  my $instance_of_cvterm = $self->get_cvterm('relationship', 'instance_of');
-  my $part_of_cvterm = $self->get_cvterm('relationship', 'part_of');
+  my $instance_of_cvterm = $self->get_relation_cvterm('instance_of');
+  my $part_of_cvterm = $self->get_relation_cvterm('part_of');
   my $expression_cvterm = $self->get_cvterm('feature_relationshipprop_type', 'expression');
 
   for my $gene_data (@{$self->test_config()->{test_genes}}) {

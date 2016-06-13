@@ -1,8 +1,9 @@
 data:
   cv:
-    - name: relationship
+    - name: relations
       cvterms:
         - name: is_a
+          is_relationshiptype: 1
           dbxref:
             accession: is_a
             db:
@@ -27,25 +28,31 @@ data:
                   db:
                     name: PBO
         - name: part_of
+          is_relationshiptype: 1
           dbxref:
             accession: part_of
             db:
               name: OBO_REL
         - name: derives_from
+          is_relationshiptype: 1
           dbxref:
             accession: derives_from
             db:
               name: OBO_REL
-        - name: instance_of
-          dbxref:
-            accession: instance_of
-            db:
-              name: OBO_REL
         - name: dependent_on
+          is_relationshiptype: 1
           dbxref:
             accession: dependent_on
             db:
               name: OBO_REL
+    - name: pombase_relations
+      cvterms:
+        - name: instance_of
+          is_relationshiptype: 1
+          dbxref:
+            accession: instance_of
+            db:
+              name: pombase
     - name: sequence
       cvterms:
         - name: gene
