@@ -39,7 +39,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
-use List::Gen 'iterate';
+use Iterator::Simple qw(iterator);
 
 use Getopt::Long qw(GetOptionsFromArray);
 
@@ -139,7 +139,7 @@ SELECT t.name, cv.name, db.name, x.accession, obj.name, objdb.name, objdbxref.ac
     $sth->execute($constraint_value)
       or die "Couldn't execute: " . $sth->errstr;
 
-    iterate {
+    iterator {
       my @data = ();
 
       if (defined $sth) {

@@ -38,7 +38,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
-use List::Gen 'iterate';
+use Iterator::Simple qw(iterator);
 
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
 
@@ -155,7 +155,7 @@ SELECT o_un, string_agg(CASE WHEN s_name IS NULL THEN 'NONE' ELSE s_name END, '|
     $sth = $dbh->prepare($query);
     $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
-    iterate {
+    iterator {
       my @data = $sth->fetchrow_array();
       if (@data) {
         return [@data];

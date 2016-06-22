@@ -40,7 +40,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
-use List::Gen 'iterate';
+use Iterator::Simple qw(iterator);
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
@@ -109,7 +109,7 @@ select fc.feature_cvterm_id, gene.uniquename, gene.name, db.name || ':' || x.acc
     $sth->execute()
       or die "Couldn't execute query: " . $sth->errstr();
 
-    iterate {
+    iterator {
       my ($feature_cvterm_id, $gene_uniquename, $gene_name, $psimodid,
           $evidence, $residue, $pmid, $date) = $sth->fetchrow_array();
       if (defined $feature_cvterm_id) {

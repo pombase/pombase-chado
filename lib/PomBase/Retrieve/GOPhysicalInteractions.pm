@@ -39,7 +39,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
-use List::Gen 'iterate';
+use Iterator::Simple qw(iterator);
 
 use PomBase::Retrieve::GeneAssociationFile;
 
@@ -75,7 +75,7 @@ method retrieve() {
   my $left_over_split_row = undef;
 
   my $it = do {
-    iterate {
+    iterator {
     ROW:
       {
         my $row = $left_over_split_row // $results->next();

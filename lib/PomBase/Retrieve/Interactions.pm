@@ -41,7 +41,7 @@ use Moose;
 
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
 
-use List::Gen 'iterate';
+use Iterator::Simple qw(iterator);
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
@@ -178,7 +178,7 @@ SQL
   my $db_name = $self->config()->{database_name};
 
   my $it = do {
-    iterate {
+    iterator {
     ROW: {
         my $row = $rel_rs->next();
 

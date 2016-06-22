@@ -39,7 +39,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
-use List::Gen 'iterate';
+use Iterator::Simple qw(iterator);
 
 use PomBase::Chado;
 
@@ -353,7 +353,7 @@ method retrieve() {
         },
       );
 
-    iterate {
+    iterator {
     ROW: {
       my $row = $results->next();
 

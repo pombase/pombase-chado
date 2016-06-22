@@ -38,7 +38,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
-use List::Gen 'iterate';
+use Iterator::Simple qw(iterator);
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
@@ -76,7 +76,7 @@ and f.organism_id = | . $self->organism()->organism_id();
     $sth->execute()
       or die "Couldn't execute query: " . $sth->errstr();
 
-    iterate {
+    iterator {
       my @data = $sth->fetchrow_array();
       if (@data) {
         # this is a hack - turn transcript IDs in gene IDs

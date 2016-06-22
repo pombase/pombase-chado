@@ -38,7 +38,7 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
-use List::Gen 'iterate';
+use Iterator::Simple qw(iterator);
 
 with 'PomBase::Retriever';
 
@@ -50,7 +50,7 @@ method retrieve() {
       $chado->resultset('Cv::Cv')->search({ 'me.name' => 'phenotype' })
         ->search_related('cvterms');
 
-    iterate {
+    iterator {
       my $row = $results->next();
       if (defined $row) {
         my $dbxref = $row->dbxref();
