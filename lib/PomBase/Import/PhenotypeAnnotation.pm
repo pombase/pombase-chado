@@ -130,6 +130,8 @@ method load($fh) {
     my $extension = $columns_ref->{"extension"};
     my $reference = $columns_ref->{"reference"};
     my $date = $columns_ref->{"date"};
+    $date =~ s/^\s*(\d\d\d\d)-?(\d\d)-?(\d\d)\s*$/$1-$2-$3/;
+
     my $taxonid = $columns_ref->{"taxon"};
 
     if (!defined $taxonid) {
