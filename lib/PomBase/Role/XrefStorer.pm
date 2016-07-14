@@ -65,6 +65,15 @@ method find_or_create_pub($identifier) {
   return $pub;
 }
 
+method create_pubprop($pub, $type_name, $value) {
+  my $type_term = $self->find_cvterm_by_name('pubprop_type', $type_name);
+
+  my $pubprop_rs = $self->chado()->resultset('Pub::Pubprop');
+  return $pubprop_rs->create({ pub_id = $pub->pub_id(),
+                               type_id => $type_term->cvterm_id(),
+                               value => $value });
+}
+
 method find_db_by_name($db_name) {
   die 'no $db_name' unless defined $db_name;
 

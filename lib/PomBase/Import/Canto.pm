@@ -761,6 +761,22 @@ method _get_genotypes($session_alleles, $session_genotype_data) {
   return %ret;
 }
 
+method _store_metadata($metadata) {
+  my $chado = $self->chado();
+
+
+  my $pub_uniquename = $metadata->{curation_pub_id};
+  my $pub = $self->find_or_create_pub($pub_uniquename);
+
+  $self->create_pubprop($pub, 'canto_session', $metadata->{canto_session});
+  $self->create_pubprop($pub, 'canto_approved_date', $metadata->{approved_timestamp});
+  $self->create_pubprop($pub, 'canto_approver_name', $metadata->{approver_name});
+  $self->create_pubprop($pub, 'canto_approver_email', $metadata->{approver_email});
+  $self->create_pubprop($pub, 'canto_curator_name', $metadata->{curator_name});
+  $self->create_pubprop($pub, 'canto_curator_email', $metadata->{curator_email});
+  $self->create_pubprop($pub, 'canto_message_for_curators', $metadata->{message_for_curators});
+}
+
 method load($fh) {
   my $decoder = JSON->new();
 
@@ -778,6 +794,9 @@ method load($fh) {
   for my $canto_session (keys %curation_sessions) {
     my %session_data = %{$curation_sessions{$canto_session}};
 
+    my $metadata = $session_data{metadata};
+    $self->_store_metadata($pub_uniquename);
+
     my %session_genes = $self->_query_genes($session_data{genes});
     my %session_alleles =
       $self->_get_alleles($canto_session, \%session_genes, $session_data{alleles});
@@ -793,7 +812,7 @@ method load($fh) {
     for my $annotation (@annotations) {
       try {
         $self->_process_annotation($annotation, \%session_genes, \%session_genotypes,
-                                   $session_data{metadata}, $canto_session);
+                                   $metadata, $canto_session);
       } catch {
         (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
         chomp $message;
