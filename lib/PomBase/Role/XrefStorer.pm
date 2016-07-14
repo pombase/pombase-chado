@@ -69,7 +69,7 @@ method create_pubprop($pub, $type_name, $value) {
   my $type_term = $self->find_cvterm_by_name('pubprop_type', $type_name);
 
   my $pubprop_rs = $self->chado()->resultset('Pub::Pubprop');
-  return $pubprop_rs->create({ pub_id = $pub->pub_id(),
+  return $pubprop_rs->create({ pub_id => $pub->pub_id(),
                                type_id => $type_term->cvterm_id(),
                                value => $value });
 }

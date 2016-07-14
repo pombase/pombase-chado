@@ -764,7 +764,6 @@ method _get_genotypes($session_alleles, $session_genotype_data) {
 method _store_metadata($metadata) {
   my $chado = $self->chado();
 
-
   my $pub_uniquename = $metadata->{curation_pub_id};
   my $pub = $self->find_or_create_pub($pub_uniquename);
 
@@ -795,7 +794,7 @@ method load($fh) {
     my %session_data = %{$curation_sessions{$canto_session}};
 
     my $metadata = $session_data{metadata};
-    $self->_store_metadata($pub_uniquename);
+    $self->_store_metadata($metadata);
 
     my %session_genes = $self->_query_genes($session_data{genes});
     my %session_alleles =
