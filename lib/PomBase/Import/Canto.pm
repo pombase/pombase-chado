@@ -773,7 +773,9 @@ method _store_metadata($metadata) {
   $self->create_pubprop($pub, 'canto_approver_email', $metadata->{approver_email});
   $self->create_pubprop($pub, 'canto_curator_name', $metadata->{curator_name});
   $self->create_pubprop($pub, 'canto_curator_email', $metadata->{curator_email});
-  $self->create_pubprop($pub, 'canto_message_for_curators', $metadata->{message_for_curators});
+  if ($metadata->{message_for_curators}) {
+    $self->create_pubprop($pub, 'canto_message_for_curators', $metadata->{message_for_curators});
+  }
 }
 
 method load($fh) {
