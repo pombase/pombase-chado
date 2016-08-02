@@ -782,22 +782,19 @@ method _store_metadata($metadata) {
   }
 }
 
-method load($fh) {
-  my $decoder = JSON->new();
+method _process_publications($publications) {
+  for my $pub_uniquename (keys %$publications) {
+    my $data = $publications->{$pub_uniquename};
 
-  my $json_text;
+    my $pub = $self->find_or_create_pub($pub_uniquename);
 
-  {
-    local $/ = undef;
-    $json_text = <$fh>;
+    $self->create_pubprop($pub, 'canto_triage_status', $data->{triage_status});
   }
+}
 
-  my $canto_data = $decoder->decode($json_text);
-
-  my %curation_sessions = %{$canto_data->{curation_sessions}};
-
-  for my $canto_session (keys %curation_sessions) {
-    my %session_data = %{$curation_sessions{$canto_session}};
+method _process_sessions($curation_sessions) {
+  for my $canto_session (keys %$curation_sessions) {
+    my %session_data = %{$curation_sessions->{$canto_session}};
 
     my $metadata = $session_data{metadata};
     $self->_store_metadata($metadata);
@@ -825,6 +822,28 @@ method load($fh) {
       }
     }
   }
+
+}
+
+method load($fh) {
+  my $decoder = JSON->new();
+
+  my $json_text;
+
+  {
+    local $/ = undef;
+    $json_text = <$fh>;
+  }
+
+  my $canto_data = $decoder->decode($json_text);
+
+  my %publications = %{$canto_data->{publications}};
+
+  $self->_process_publications(\%publications);
+
+  my %curation_sessions = %{$canto_data->{curation_sessions}};
+
+  $self->_process_sessions(\%curation_sessions);
 }
 
 method results_summary($results) {
