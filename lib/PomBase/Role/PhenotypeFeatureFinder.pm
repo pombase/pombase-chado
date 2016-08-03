@@ -462,6 +462,8 @@ method get_allele($allele_data) {
         while (defined (my $existing_allele = $existing_rs->next())) {
           next if $existing_allele->name();
 
+          next if $new_allele_type eq 'unknown';
+
           my %props = _get_allele_props($existing_allele);
 
           my $existing_description = undef;
@@ -472,7 +474,7 @@ method get_allele($allele_data) {
 
           if ($props{allele_type}->value() eq $new_allele_type &&
               (!defined $new_allele_description && !defined $existing_description ||
-              (defined $new_allele_description && defined $existing_description) &&
+               (defined $new_allele_description && defined $existing_description) &&
               $new_allele_description eq $existing_description)) {
             $existing_allele->name($new_allele_name);
             $existing_allele->update();
