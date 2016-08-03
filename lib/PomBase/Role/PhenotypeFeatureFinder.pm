@@ -460,6 +460,8 @@ method get_allele($allele_data) {
       } else {
         # try to merge with an existing allele that has no name
         while (defined (my $existing_allele = $existing_rs->next())) {
+          next if $existing_allele->name();
+
           my %props = _get_allele_props($existing_allele);
 
           my $existing_description = undef;
