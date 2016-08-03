@@ -837,9 +837,11 @@ method load($fh) {
 
   my $canto_data = $decoder->decode($json_text);
 
-  my %publications = %{$canto_data->{publications}};
+  my $publications = $canto_data->{publications};
 
-  $self->_process_publications(\%publications);
+  if ($publications) {
+    $self->_process_publications($publications);
+  }
 
   my %curation_sessions = %{$canto_data->{curation_sessions}};
 
