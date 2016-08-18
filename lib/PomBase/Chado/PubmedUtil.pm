@@ -53,7 +53,7 @@ with 'PomBase::Role::XrefStorer';
 
 has verbose => (is => 'rw');
 
-my $max_batch_size = 10;
+my $max_batch_size = 200;
 
 sub _get_url
 {
