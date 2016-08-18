@@ -407,8 +407,6 @@ sub add_missing_fields
     ],
     uniquename => { -like => 'PMID:%' },
    });
-  my $max_batch_size = 300;
-  my $count = 0;
 
   return $self->load_by_ids([map { $_->uniquename() } $rs->all()]);
 }
