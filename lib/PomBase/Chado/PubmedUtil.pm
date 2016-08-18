@@ -139,8 +139,6 @@ sub load_pubmed_xml
   my $self = shift;
   my $content = shift;
 
-  my %pub_type_cache = ();
-
   my $res_hash = XMLin($content,
                        ForceArray => ['AbstractText',
                                       'Author', 'PublicationType']);
