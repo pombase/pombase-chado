@@ -40,6 +40,7 @@ the Free Software Foundation, either version 3 of the License, or
 use Carp;
 use Moose;
 use feature ':5.10';
+use Storable qw(freeze thaw);
 
 use Text::CSV;
 use XML::Simple;
@@ -52,8 +53,9 @@ with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::XrefStorer';
 
 has verbose => (is => 'rw');
+has pubmed_cache => (is => 'rw', required => 1);
 
-my $max_batch_size = 200;
+my $max_batch_size = 100;
 
 sub _get_url
 {
@@ -124,17 +126,14 @@ sub get_pubmed_ids_by_query
 
 our $PUBMED_PREFIX = "PMID";
 
-=head2 load_pubmed_xml
+=head2 parse_pubmed_xml
 
- Usage   : my $count = PomBase::Chado::PubmedUtil::load_pubmed_xml($schema, $xml);
- Function: Load the given pubmed XML in the database
- Args    : $schema - the schema to load into
-           $xml - a string holding an XML fragment about containing some
-                  publications from pubmed
- Returns : the count of number of publications loaded
+ Usage   : $self->parse_pubmed_xml($xml);
+ Function: Parse the given pubmed XML and store in the cache
+ Args    : $xml - publication XML from pubmed
 
 =cut
-sub load_pubmed_xml
+sub parse_pubmed_xml
 {
   my $self = shift;
   my $content = shift;
@@ -143,14 +142,15 @@ sub load_pubmed_xml
                        ForceArray => ['AbstractText',
                                       'Author', 'PublicationType']);
 
-  my $count = 0;
   my @articles;
 
-  if (defined $res_hash->{PubmedArticle}) {
-    if (ref $res_hash->{PubmedArticle} eq 'ARRAY') {
-      @articles = @{$res_hash->{PubmedArticle}};
+  my $article_hash = $res_hash->{PubmedArticle};
+
+  if (defined $article_hash) {
+    if (ref $article_hash eq 'ARRAY') {
+      @articles = @{$article_hash};
     } else {
-      push @articles, $res_hash->{PubmedArticle};
+      push @articles, $article_hash;
     }
 
     for my $article (@articles) {
@@ -213,13 +213,13 @@ sub load_pubmed_xml
         $abstract = $abstract_text // '';
       }
 
-      my $pubmed_type;
+      my $pubmed_pub_type;
 
       my @publication_types =
         @{$article->{PublicationTypeList}->{PublicationType}};
 
-      for my $type (@publication_types) {
-        # warn "pub type: $pubmed_type\n";
+      if (@publication_types > 0) {
+        $pubmed_pub_type = $publication_types[0];
       }
 
       my $citation = '';
@@ -274,20 +274,16 @@ sub load_pubmed_xml
 
       my $pub = $self->chado()->resultset('Pub::Pub')->find({ uniquename => $uniquename });
 
-      $pub->title($title);
-
-      $self->create_pubprop($pub, 'pubmed_publication_date', $publication_date);
-      $self->create_pubprop($pub, 'pubmed_authors', $authors);
-      $self->create_pubprop($pub, 'pubmed_citation', $citation);
-      $self->create_pubprop($pub, 'pubmed_abstract', $abstract);
-
-      $pub->update();
-
-      $count++;
+      $self->pubmed_cache()->{$uniquename} = freeze({
+        title => $title,
+        publication_date => $publication_date,
+        authors => $authors,
+        pub_type => $pubmed_pub_type,
+        citation => $citation,
+        abstract => $abstract,
+      });
     }
   }
-
-  return $count;
 }
 
 sub _process_batch
@@ -297,22 +293,47 @@ sub _process_batch
   my $ids = shift;
   my @ids = @$ids;
 
+  my $content = $self->get_pubmed_xml_by_ids(@ids);
+  $self->parse_pubmed_xml($content);
+}
+
+sub _store_from_cache
+{
+  my $self = shift;
+  my $ids = shift;
+
+  my $cache = $self->pubmed_cache();
+
   my $count = 0;
 
-  my $content = $self->get_pubmed_xml_by_ids(@ids);
-  $count += $self->load_pubmed_xml($content);
+  for my $id (@$ids) {
+    my $uniquename = "$PUBMED_PREFIX:$id";
+    my $pub_details = thaw($cache->{$uniquename});
+
+    if ($pub_details) {
+      my $pub = $self->chado()->resultset('Pub::Pub')->find({ uniquename => $uniquename });
+
+      $pub->title($pub_details->{title});
+      $pub->update();
+
+      $self->create_pubprop($pub, 'pubmed_publication_date', $pub_details->{publication_date});
+      $self->create_pubprop($pub, 'pubmed_authors', $pub_details->{authors});
+      $self->create_pubprop($pub, 'pubmed_citation', $pub_details->{citation});
+      $self->create_pubprop($pub, 'pubmed_abstract', $pub_details->{abstract});
+
+      $count++;
+    }
+  }
 
   return $count;
 }
 
 =head2 load_by_ids
 
- Usage   : my $count = PomBase::Chado::PubmedUtil::load_by_ids(...)
- Function: Load the publications with the given ids into the track
+ Usage: my $count = PomBase::Chado::PubmedUtil::load_by_ids(...)
+ Function: Load the publications with the given ids into the
            database.
- Args    : $config - the config object
-           $schema - the TrackDB object
-           $ids - an array ref of ids of publications to load, with
+ Args    : $ids - an array ref of ids of publications to load, with
                   optional "PMID:" prefix
  Returns : a count of the number of publications found and loaded
 
@@ -322,25 +343,28 @@ sub load_by_ids
   my $self = shift;
   my $ids = shift;
 
-  my $count = 0;
+  my @raw_ids = map { s/^PMID://; $_; } @$ids;
 
-  while (@$ids) {
-    my @process_ids = map { s/^PMID://; $_; } splice(@$ids, 0, $max_batch_size);
+  my @ids_to_fetch =
+    grep {
+      !exists $self->pubmed_cache()->{"PMID:$_"};
+    } @raw_ids;
 
-    $count += $self->_process_batch([@process_ids]);
+  while (@ids_to_fetch) {
+    my @process_ids = splice(@ids_to_fetch, 0, $max_batch_size);
+
+    $self->_process_batch(\@process_ids);
   }
 
-  return $count;
+  return $self->_store_from_cache(\@raw_ids);
 }
 
 =head2 load_by_query
 
  Usage   : my $count = PomBase::Chado::PubmedUtil::load_by_query(...)
  Function: Send a query to PubMed and load the publications it returns
-           into the track database.
- Args    : $config - the config object
-           $schema - the TrackDB object
-           $query - a PubMed query string
+           into the database.
+ Args    : $query - a PubMed query string
  Returns : a count of the number of publications found and loaded
 
 =cut
@@ -352,8 +376,6 @@ sub load_by_query
   my $schema = $self->chado();
 
   my $query = shift;
-
-  my $count = 0;
 
   my $xml = $self->get_pubmed_ids_by_query($config, $query);
   my $res_hash = XMLin($xml);
@@ -377,10 +399,10 @@ sub load_by_query
   while (@ids) {
     my @process_ids = splice(@ids, 0, $max_batch_size);
 
-    $count += $self->_process_batch([@process_ids]);
+    $self->_process_batch(\@process_ids);
   }
 
-  return $count;
+  $self->_store_from_cache(\@ids);
 }
 
 
@@ -406,7 +428,11 @@ sub add_missing_fields
     uniquename => { -like => 'PMID:%' },
    });
 
-  return $self->load_by_ids([map { $_->uniquename() } $rs->all()]);
+  my $missing_count = $rs->count();
+
+  my $loaded_count = $self->load_by_ids([map { $_->uniquename() } $rs->all()]);
+
+  return ($missing_count, $loaded_count);
 }
 
 1;

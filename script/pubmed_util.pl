@@ -7,6 +7,7 @@ use Carp;
 use Getopt::Long;
 use File::Basename;
 use lib qw(lib);
+use GDBM_File;
 
 use PomBase::Config;
 use PomBase::Chado;
@@ -56,10 +57,14 @@ my $result = GetOptions ("add-missing-fields|f" => \$do_fields,
                          "help|h" => \$do_help);
 
 if ($do_fields) {
-  my $pubmed_util = PomBase::Chado::PubmedUtil->new(chado => $chado, config => $config);
-  my $count = $pubmed_util->add_missing_fields();
+  tie my %pubmed_cache, 'GDBM_File', 'pubmed_cache.gdbm', &GDBM_WRCREAT, 0640;
 
-  print "added missing fields to $count publications\n";
+  my $pubmed_util = PomBase::Chado::PubmedUtil->new(chado => $chado, config => $config,
+                                                    pubmed_cache => \%pubmed_cache);
+  my ($missing_count, $loaded_count) = $pubmed_util->add_missing_fields();
+
+  print "$missing_count publications have missing fields\n";
+  print "details added for $loaded_count publications\n";
 }
 
 $guard->commit() unless $dry_run;
