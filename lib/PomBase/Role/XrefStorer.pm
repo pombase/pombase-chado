@@ -67,6 +67,12 @@ method find_or_create_pub($identifier) {
 
 method create_pubprop($pub, $type_name, $value) {
   my $type_term = $self->find_cvterm_by_name('pubprop_type', $type_name);
+  if (!defined $type_term) {
+    croak "no pubprop_type term for: $type_name\n";
+  }
+  if (!defined $value) {
+    croak "can't store null value for $type_name\n";
+  }
 
   my $pubprop_rs = $self->chado()->resultset('Pub::Pubprop');
   return $pubprop_rs->create({ pub_id => $pub->pub_id(),
