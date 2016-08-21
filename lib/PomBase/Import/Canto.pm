@@ -778,6 +778,9 @@ method _store_metadata($metadata) {
   if ($metadata->{curation_accepted_date}) {
     $self->create_pubprop($pub, 'canto_session_accepted_date', $metadata->{curation_accepted_date});
   }
+  if ($metadata->{needs_approval_timestamp}) {
+    $self->create_pubprop($pub, 'canto_session_submitted_date', $metadata->{needs_approval_timestamp});
+  }
   if ($metadata->{message_for_curators}) {
     $self->create_pubprop($pub, 'canto_message_for_curators', $metadata->{message_for_curators});
   }
