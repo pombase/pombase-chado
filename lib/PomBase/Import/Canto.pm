@@ -245,7 +245,6 @@ method _store_ontology_annotation {
   my $extension_text = $args{extension_text};
   my $extensions = $args{extensions};
   my $curator = $args{curator};
-  my $approved_timestamp = $args{approved_timestamp};
   my $approver_email = $args{approver_email};
   my $canto_session = $args{canto_session};
   my $changed_by = $args{changed_by};
@@ -392,10 +391,6 @@ method _store_ontology_annotation {
                                   community_curated => ($curator->{community_curated} ? 'true' : 'false'));
     $self->add_feature_cvtermprop($feature_cvterm,
                                   canto_session => $canto_session);
-    if (defined $approved_timestamp) {
-      $self->add_feature_cvtermprop($feature_cvterm,
-                                    approved_timestamp => $approved_timestamp);
-    }
     if (defined $approver_email) {
       $self->add_feature_cvtermprop($feature_cvterm,
                                     approver_email => $approver_email);
