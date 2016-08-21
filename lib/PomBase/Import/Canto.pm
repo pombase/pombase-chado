@@ -768,9 +768,15 @@ method _store_metadata($metadata) {
   my $pub = $self->find_or_create_pub($pub_uniquename);
 
   $self->create_pubprop($pub, 'canto_session', $metadata->{canto_session});
-  $self->create_pubprop($pub, 'canto_approved_date', $metadata->{approved_timestamp});
-  $self->create_pubprop($pub, 'canto_approver_name', $metadata->{approver_name});
-  $self->create_pubprop($pub, 'canto_approver_email', $metadata->{approver_email});
+  if ($metadata->{approved_timestamp}) {
+    $self->create_pubprop($pub, 'canto_approved_date', $metadata->{approved_timestamp});
+  }
+  if ($metadata->{approver_name}) {
+    $self->create_pubprop($pub, 'canto_approver_name', $metadata->{approver_name});
+  }
+  if ($metadata->{approver_email}) {
+    $self->create_pubprop($pub, 'canto_approver_email', $metadata->{approver_email});
+  }
   $self->create_pubprop($pub, 'canto_curator_name', $metadata->{curator_name});
   $self->create_pubprop($pub, 'canto_curator_email', $metadata->{curator_email});
   $self->create_pubprop($pub, 'canto_curator_role', $metadata->{curator_role});
