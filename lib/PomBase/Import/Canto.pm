@@ -608,6 +608,7 @@ method _process_feature {
     }
 
     delete $annotation->{submitter_comment};
+    delete $annotation->{checked};
 
     if (keys %$annotation > 0) {
       my @keys = keys %$annotation;
