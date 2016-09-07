@@ -435,10 +435,10 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
       if ($identifier =~ /^(Pfam:PF\d+)$/) {
         $identifier = $1;
       } else {
-        if ($rel_name eq 'has_penetrance' &&
+        if (($rel_name eq 'has_penetrance' || $rel_name eq 'occupancy') &&
             ($identifier =~ /^[><]?(.*?)\%?$/ && $1->is_number() ||
              $identifier =~ /^\d+(?:\.\d+)?\%?-\d+(?:\.\d+)?\%?$/)) {
-          # the "identifier" is the percentage penetrance value
+          # the "identifier" is the percentage value
         } else {
           my $organism = $self->find_organism_by_common_name('pombe');
           my $ref_feature = undef;
