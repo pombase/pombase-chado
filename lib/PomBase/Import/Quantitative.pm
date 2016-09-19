@@ -199,6 +199,7 @@ method load($fh) {
                                   $long_evidence);
     $self->add_feature_cvtermprop($feature_cvterm, 'scale',
                                   $scale);
+    $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
 
     my @conditions = split /\s*,\s*/, $conditions;
     for (my $i = 0; $i < @conditions; $i++) {
