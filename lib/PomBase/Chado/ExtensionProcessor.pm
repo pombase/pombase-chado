@@ -439,6 +439,7 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
             ($identifier =~ /^[><]?(.*?)\%?$/ && $1->is_number() ||
              $identifier =~ /^\d+(?:\.\d+)?\%?-\d+(?:\.\d+)?\%?$/)) {
           # the "identifier" is the percentage value
+          $identifier =~ s/(\d+)\%/$1/g;
         } else {
           my $organism = $self->find_organism_by_common_name('pombe');
           my $ref_feature = undef;
