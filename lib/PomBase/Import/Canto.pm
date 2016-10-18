@@ -341,17 +341,23 @@ method _store_ontology_annotation {
       @$extensions =
         map {
           my @ret_val = ();
+          my $range_value = $_->{rangeValue};
           if ($_->{relation} eq 'residue') {
-            push @residues, $_->{rangeValue};
+            push @residues, $range_value;
           } else {
             if ($_->{relation} =~ /^col(?:umn)?(?:_)?17$/) {
-              push @column_17_values, $_->{rangeValue};
+              push @column_17_values, $range_value;
             } else {
               if ($_->{relation} eq 'has_qualifier') {
-                if ($_->{rangeValue} eq 'NOT') {
+                if ($range_value eq 'NOT') {
                   $is_not = 1;
                 } else {
-                  push @qualifiers, $_->{rangeValue};
+                  if ($range_value =~ /^(\w+):(\d+)$/) {
+                    my $range_value_term = $self->find_cvterm_by_term_id($range_value);
+                    push @qualifiers, $range_value_term->name();
+                  } else {
+                    push @qualifiers, $range_value;
+                  }
                 }
               } else {
                 @ret_val = ($_);
