@@ -223,10 +223,12 @@ sub parse_pubmed_xml
       }
 
       my $citation = '';
+      my $journal_title = undef;
       my $publication_date = '';
 
       if (defined $article->{Journal}) {
         my $journal = $article->{Journal};
+        $journal_title = $journal->{Title};
         $citation =
           $journal->{ISOAbbreviation} // $journal->{Title} //
           'Unknown journal';
@@ -280,6 +282,7 @@ sub parse_pubmed_xml
         authors => $authors,
         pub_type => $pubmed_pub_type,
         citation => $citation,
+        journal_title => $journal_title,
         abstract => $abstract,
       });
     }
