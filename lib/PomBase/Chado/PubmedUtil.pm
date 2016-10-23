@@ -314,6 +314,7 @@ sub _store_from_cache
       my $pub = $self->chado()->resultset('Pub::Pub')->find({ uniquename => $uniquename });
 
       $pub->title($pub_details->{title});
+      $pub->miniref($pub_details->{citation});
       $pub->update();
 
       $self->create_pubprop($pub, 'pubmed_publication_date', $pub_details->{publication_date});
@@ -424,6 +425,7 @@ sub add_missing_fields
   my $rs = $chado->resultset('Pub::Pub')->search({
     -or => [
       title => undef,
+      miniref => undef,
     ],
     uniquename => { -like => 'PMID:%' },
    });
