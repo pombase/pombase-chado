@@ -395,7 +395,7 @@ me.cvterm_id in
         my $gene = $details->{gene} // die "no gene for ", $feature->uniquename();
         my $gene_uniquename = $gene->uniquename();
         my @fixed_with_from= map { _fix_with($db_name, $_) } (@{$row_fc_props{with}}, @{$row_fc_props{from}});
-        my $with_from = _safe_join('|', [@fixed_with_from]);
+        my $with_from = _safe_join(',', [@fixed_with_from]);
         my $gene_name = $gene->name() // $gene_uniquename;
         my $synonyms_ref = $details->{synonyms} // [];
         my $synonyms = join '|', @{$synonyms_ref};
