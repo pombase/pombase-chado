@@ -221,6 +221,7 @@ method make_allele_data_from_display_name($gene_feature, $display_name, $express
     return $self->make_allele_data($name, $description, $gene_feature);
   } else {
     if ($display_name =~ /.*delta$/) {
+      $$expression_ref = undef;
       return $self->make_allele_data($display_name, "deletion", $gene_feature);
     } else {
       die qq|allele qualifier "$_" isn't in the form "name(description)"\n|;
