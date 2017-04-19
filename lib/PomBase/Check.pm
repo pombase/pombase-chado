@@ -52,6 +52,8 @@ method _do_query_checks() {
 
   my $dbh = $self->chado()->storage()->dbh();
 
+  my $seen_failure = 0;
+
   for my $check (@query_checks) {
     my $name = $check->{name};
     my $query = $check->{query} =~ s/;\s*$//r;
@@ -122,13 +124,18 @@ method _do_query_checks() {
           say "  @data";
         }
       }
+      $seen_failure = 1;
     } else {
       say "SUCCESS";
     }
   }
+
+  return $seen_failure;
 }
 
 method run() {
+  my $seen_failure = 0;
+
   my @check_modules = usesub PomBase::Check;
 
   for my $module (@check_modules) {
@@ -138,10 +145,13 @@ method run() {
 
     if (!$obj->check()) {
       warn "failed test: ", $obj->description(), "\n";
+      $seen_failure = 1;
     }
   }
 
-  $self->_do_query_checks();
+  $seen_failure ||= $self->_do_query_checks();
+
+  return $seen_failure;
 }
 
 1;

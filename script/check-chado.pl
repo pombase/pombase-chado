@@ -30,4 +30,4 @@ my $config = PomBase::Config->new(file_name => $config_file);
 
 my $check = PomBase::Check->new(chado => $chado, config => $config);
 
-$check->run();
+exit $check->run();
