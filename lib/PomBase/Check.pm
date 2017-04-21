@@ -57,6 +57,7 @@ method _do_query_checks() {
   for my $check (@query_checks) {
     my $name = $check->{name};
     my $query = $check->{query} =~ s/;\s*$//r;
+    my $warning_on_failure = $check->{warning_on_failure};
 
     # if true, show the result set content on failure:
     my $verbose_fail = $check->{verbose_fail} && $check->{verbose_fail} eq 'true';
@@ -115,7 +116,13 @@ method _do_query_checks() {
     }
 
     if ($failure) {
-      say "FAILURE: $failure";
+      if ($warning_on_failure) {
+        say "WARNING: $failure\n
+(this is a warning that won't cause the Chado checks to fail)";
+      } else {
+        say "CHECK FAILURE: $failure";
+        $seen_failure = 1;
+      }
       if ($verbose_fail) {
         my $sth = $dbh->prepare($query);
         $sth->execute() or die "Couldn't execute: " . $sth->errstr;
@@ -124,7 +131,6 @@ method _do_query_checks() {
           say "  @data";
         }
       }
-      $seen_failure = 1;
     } else {
       say "SUCCESS";
     }
