@@ -46,6 +46,7 @@ requires 'find_organism_by_full_name';
 requires 'store_feature_rel';
 requires 'config';
 requires 'store_feature_relationshipprop';
+requires 'genotype_cache';
 
 has allele_types => (is => 'rw', init_arg => undef, lazy_build => 1);
 
@@ -90,6 +91,13 @@ method get_transcript($gene) {
 }
 
 method get_genotype($genotype_identifier, $genotype_name, $genotype_background, $alleles) {
+  my $cached_genotype =
+    $self->genotype_cache()->get($genotype_name, $genotype_background, $alleles);
+
+  if ($cached_genotype) {
+    return $cached_genotype;
+  }
+
   my $first_allele_data = $alleles->[0];
 
   if (!$first_allele_data->{allele}) {
@@ -115,6 +123,8 @@ method get_genotype($genotype_identifier, $genotype_name, $genotype_background, 
       $self->store_feature_relationshipprop($rel, 'expression', $_->{expression});
     }
   } @$alleles;
+
+  $self->genotype_cache()->put($genotype_name, $genotype_background, $alleles, $genotype);
 
   return $genotype;
 }
@@ -146,15 +156,16 @@ method _get_genotype_suffix_sqlite {
   $sth->execute()
     or die "Couldn't execute query: " . $sth->errstr();
 
-  my $max = 1;
+  my $max = 0;
 
   while (my @data = $sth->fetchrow_array()) {
-    if ($data[0] > $max) {
-      $max = $data[0];
+    (my $id = $data[0]) =~ s/pombase.*-(\d+)$/$1/i;
+    if ($id > $max) {
+      $max = $id;
     }
   }
 
-  return $max;
+  return $max + 1;
 }
 
 method _get_genotype_uniquename {

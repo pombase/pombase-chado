@@ -1,6 +1,6 @@
 data:
   cv:
-    - name: relations
+    - name: relationship
       cvterms:
         - name: is_a
           is_relationshiptype: 1
@@ -511,6 +511,28 @@ data:
             db:
               name: FYPO_EXT
     - name: gene_ex_extension_relations
+    - name: pubprop_type
+      cvterms:
+        - name: canto_session
+          dbxref:
+            accession: 0731000000
+            db:
+              name: PBO
+        - name: canto_curator_name
+          dbxref:
+            accession: 0731000001
+            db:
+              name: PBO
+        - name: canto_curator_email
+          dbxref:
+            accession: 0731000002
+            db:
+              name: PBO
+        - name: canto_curator_role
+          dbxref:
+            accession: 0731000003
+            db:
+              name: PBO
   cvterm_relationships:
     - subject:
         name: microtubule motor activity

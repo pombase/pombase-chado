@@ -10,6 +10,7 @@ my $chado = $test_util->chado();
 my $config = $test_util->config();
 
 use PomBase::Import::Canto;
+use PomBase::Chado::GenotypeCache;
 
 my $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 7);
@@ -17,9 +18,11 @@ is($annotations->count(), 7);
 my $feature_rs = $chado->resultset('Sequence::Feature');
 is($feature_rs->count(), 24);
 
+my $genotype_cache = PomBase::Chado::GenotypeCache->new(chado => $chado);
 
 my $importer =
   PomBase::Import::Canto->new(chado => $chado, config => $config,
+                              genotype_cache => $genotype_cache,
                               options => [qw(--organism-taxonid=4896 --db-prefix=PomBase)]);
 
 open my $fh, '<', "data/canto_dump.json" or die;

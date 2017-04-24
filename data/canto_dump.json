@@ -28,6 +28,9 @@
             "annotation_status" : "CURATION_IN_PROGRESS",
             "annotation_status_datestamp" : "2012-02-15 13:45:00",
             "canto_session" : "aaaa0006",
+            "curator_email" : "test@test.pombase.org",
+            "curator_name" : "Test T. Curator",
+            "curator_role" : "community",
             "curation_in_progress_timestamp" : "2012-02-15 13:45:00",
             "curation_pub_id" : "PMID:18426916",
             "session_created_timestamp" : "2012-02-15 13:45:00",
@@ -119,10 +122,6 @@
                 {
                   "relation" : "residue",
                   "rangeValue" : "T586(T586,X123)"
-                },
-                {
-                  "relation" : "qualifier",
-                  "rangeValue" : "NOT"
                 }
                ],
                "creation_date" : "2010-01-02",
@@ -276,6 +275,9 @@
             "annotation_status" : "CURATION_IN_PROGRESS",
             "annotation_status_datestamp" : "2012-02-15 13:45:00",
             "canto_session" : "aaaa0007",
+            "curator_email" : "test_curator@test.pombase.org",
+            "curator_name" : "Test Z. Curator",
+            "curator_role" : "community",
             "curation_in_progress_timestamp" : "2012-02-15 13:45:00",
             "curation_pub_id" : "PMID:19756689",
             "session_created_timestamp" : "2012-02-15 13:45:00",

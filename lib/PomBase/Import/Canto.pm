@@ -49,6 +49,12 @@ use Getopt::Long qw(GetOptionsFromArray);
 
 use PomBase::Chado::ExtensionProcessor;
 
+use PomBase::Chado::GenotypeCache;
+
+has genotype_cache => (is => 'ro', required => 1,
+                       lazy_build => 1,
+                       isa => 'PomBase::Chado::GenotypeCache');
+
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::DbQuery';
@@ -84,6 +90,10 @@ method _build_extension_processor {
                                                           pre_init_cache => 1,
                                                           verbose => $self->verbose());
   return $processor;
+}
+
+method _build_genotype_cache {
+  return PomBase::Chado::GenotypeCache->new(chado => $self->chado());
 }
 
 sub BUILD

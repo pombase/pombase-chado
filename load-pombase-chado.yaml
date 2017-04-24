@@ -191,6 +191,13 @@ extension_restrictions:
   fission_yeast_phenotype:
     allowed:
       - is_bearer_of
+      - has_penetrance
+      - assayed_using
+      - has_expressivity
+      - occurs_in
+      - occurs_at
+      - assayed_enzyme
+      - assayed_substrate
   biological_process:
     allowed:
       - exists_during

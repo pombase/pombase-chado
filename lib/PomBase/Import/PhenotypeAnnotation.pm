@@ -43,6 +43,11 @@ use Text::CSV;
 use IO::Handle;
 
 use PomBase::Chado::ExtensionProcessor;
+use PomBase::Chado::GenotypeCache;
+
+has genotype_cache => (is => 'ro', init_arg => undef,
+                       lazy_build => 1,
+                       isa => 'PomBase::Chado::GenotypeCache');
 
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
@@ -70,6 +75,10 @@ method _build_extension_processor {
                                                           pre_init_cache => 1,
                                                           verbose => $self->verbose());
   return $processor;
+}
+
+method _build_genotype_cache {
+  return PomBase::Chado::GenotypeCache->new(chado => $self->chado());
 }
 
 my $fypo_extensions_cv_name = 'fypo_extensions';
@@ -116,13 +125,6 @@ method load($fh) {
     my $allele_name = $columns_ref->{"allele_name"};
     my $allele_synonym = $columns_ref->{"allele_synonym"};
     my $allele_type = $columns_ref->{"allele_type"};
-
-    if (!$allele_name) {
-      if (lc $allele_type eq 'deletion') {
-        $allele_name = ($gene_name || $gene_systemtic_id) . 'delta';
-      }
-    }
-
     my $evidence = $columns_ref->{"evidence"};
     my $conditions = $columns_ref->{"conditions"};
     my $penetrance = $columns_ref->{"penetrance"};
@@ -160,7 +162,6 @@ method load($fh) {
         warn "gene ($gene_systemtic_id) not found - skipping line ", $fh->input_line_number(), "\n";
         return;
       }
-
 
       if (!$allele_name) {
         if (lc $allele_type eq 'deletion') {
