@@ -265,6 +265,8 @@ method load($fh) {
         allele_type => $allele_type,
       };
 
+      $expression = undef if $expression && lc $expression eq 'null';
+
       my $genotype_feature = $self->get_genotype_for_allele($allele_data, $expression);
 
       my $feature_cvterm =
