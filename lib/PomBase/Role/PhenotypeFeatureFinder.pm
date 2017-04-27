@@ -190,6 +190,8 @@ method get_genotype_for_allele($allele_data, $expression) {
 
   my $genotype_identifier = $self->_get_genotype_uniquename();
 
+  $expression = undef if $expression && lc $expression eq 'null';
+
   return $self->get_genotype($genotype_identifier, undef, undef,
                              [{ allele => $allele, expression => $expression }]);
 }

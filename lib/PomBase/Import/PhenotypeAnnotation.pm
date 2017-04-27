@@ -255,6 +255,14 @@ method load($fh) {
           "at line ", $fh->input_line_number(), "\n";
       }
 
+      if (lc $allele_type eq 'deletion') {
+        $allele_name = $existing_gene_name . 'delta';
+      }
+
+      if (lc $allele_type =~ /wild_?type/) {
+        $allele_name = $existing_gene_name . '+';
+      }
+
       my $allele_data = {
         gene => {
           uniquename => $gene_uniquename,
