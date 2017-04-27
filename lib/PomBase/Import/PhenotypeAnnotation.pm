@@ -256,11 +256,11 @@ method load($fh) {
       }
 
       if (lc $allele_type eq 'deletion') {
-        $allele_name = $existing_gene_name . 'delta';
+        $allele_name = ($existing_gene_name || $gene_uniquename) . 'delta';
       }
 
       if (lc $allele_type =~ /wild_?type/) {
-        $allele_name = $existing_gene_name . '+';
+        $allele_name = ($existing_gene_name || $gene_uniquename) . '+';
       }
 
       my $allele_data = {
