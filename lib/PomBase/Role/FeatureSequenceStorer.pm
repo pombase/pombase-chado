@@ -52,7 +52,7 @@ method store_feature_sequence($feature, $chromosome, $strand, $start, $end, $pha
     return;
   }
 
-  my $sub_seq = substr $chr_sequence, $start - 1, $end;
+  my $sub_seq = substr $chr_sequence, $start - 1, $end - $start + 1;
 
   if ($strand == -1) {
     $sub_seq = reverse $sub_seq;
