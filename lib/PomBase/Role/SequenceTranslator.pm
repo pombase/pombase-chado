@@ -27,7 +27,7 @@ You can find documentation for this module with the perldoc command.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2013 Kim Rutherford, all rights reserved.
+Copyright 2017 Kim Rutherford, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -43,10 +43,10 @@ use Bio::Tools::SeqStats;
 
 use Moose::Role;
 
-method translate_sequence($residues, $phase) {
+method translate_sequence($residues, $phase, $is_mito) {
   my $seq = Bio::Seq->new(-seq => $residues, -alphabet => 'dna');
 
-  my $prot_seq = $seq->translate();
+  my $prot_seq = $seq->translate(undef, undef, $phase, $is_mito ? 4 : 1);
   my $seq_stats = Bio::Tools::SeqStats->new(-seq => $prot_seq);
   my $weight = $seq_stats->get_mol_wt();
 
