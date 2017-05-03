@@ -83,11 +83,65 @@ method _build_genotype_cache {
 
 my $fypo_extensions_cv_name = 'fypo_extensions';
 
+
+method _store_annotation($genotype_feature, $cvterm, $pub, $date, $extension, $penetrance, $expressivity, $long_evidence, $conditions) {
+  my @split_ext_parts = ("");
+
+  if ($extension) {
+    @split_ext_parts = sort split /(?<=\))\|/, $extension;
+  }
+
+  for my $split_ext (@split_ext_parts) {
+
+    my $feature_cvterm =
+      $self->create_feature_cvterm($genotype_feature, $cvterm, $pub, 0);
+
+    $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
+
+    my @extension_bits = ();
+
+    if (length $split_ext > 0) {
+      push @extension_bits, $split_ext;
+    }
+
+    if (length $penetrance > 0) {
+      push @extension_bits, "has_penetrance($penetrance)";
+    }
+    if (length $expressivity > 0) {
+      push @extension_bits, "has_expressivity($expressivity)";
+    }
+
+    $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
+                                  $long_evidence);
+
+    my @conditions = split /\s*,\s*/, $conditions;
+    for (my $i = 0; $i < @conditions; $i++) {
+      my $condition = $conditions[$i];
+      $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
+    }
+
+    if (@extension_bits > 0) {
+      my $extension_text = join ",", @extension_bits;
+
+      my ($out, $err) = capture {
+        my $processor = $self->extension_processor();
+
+        $processor->process_one_annotation($feature_cvterm, $extension_text);
+      };
+      if (length $out > 0) {
+        die $out;
+      }
+      if (length $err > 0) {
+        die $err;
+      }
+    }
+  }
+}
+
+
 method load($fh) {
   my $chado = $self->chado();
   my $config = $self->config();
-
-  my $processor = $self->extension_processor();
 
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
@@ -277,45 +331,9 @@ method load($fh) {
 
       my $genotype_feature = $self->get_genotype_for_allele($allele_data, $expression);
 
-      my $feature_cvterm =
-        $self->create_feature_cvterm($genotype_feature, $cvterm, $pub, 0);
-
-      $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
-
-      my @extension_bits = ();
-
-      if (length $extension > 0) {
-        push @extension_bits, $extension;
-      }
-
-      if (length $penetrance > 0) {
-        push @extension_bits, "has_penetrance($penetrance)";
-      }
-      if (length $expressivity > 0) {
-        push @extension_bits, "has_expressivity($expressivity)";
-      }
-
-      $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
-                                   $long_evidence);
-
-      my @conditions = split /\s*,\s*/, $conditions;
-      for (my $i = 0; $i < @conditions; $i++) {
-        my $condition = $conditions[$i];
-        $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
-      }
-
-      if (@extension_bits > 0) {
-        my $extension_text = join ",", @extension_bits;
-        my ($out, $err) = capture {
-          $processor->process_one_annotation($feature_cvterm, $extension_text);
-        };
-        if (length $out > 0) {
-          die $out;
-        }
-        if (length $err > 0) {
-          die $err;
-        }
-      }
+      $self->_store_annotation($genotype_feature, $cvterm, $pub, $date, $extension,
+                               $penetrance, $expressivity, $long_evidence,
+                               $conditions);
     };
 
     try {
