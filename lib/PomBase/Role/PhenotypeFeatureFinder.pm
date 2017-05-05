@@ -192,6 +192,8 @@ method get_genotype_for_allele($allele_data, $expression) {
 
   $expression = undef if $expression && lc $expression eq 'null';
 
+  $expression = 'Not assayed' if $expression && $lc $expression eq 'not specified';
+
   return $self->get_genotype($genotype_identifier, undef, undef,
                              [{ allele => $allele, expression => $expression }]);
 }
