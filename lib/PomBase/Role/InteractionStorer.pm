@@ -144,6 +144,9 @@ method _store_interaction_helper() {
   if (defined $curator) {
     $self->store_feature_relationshipprop($rel, curator_name => $curator->{name});
     $self->store_feature_relationshipprop($rel, curator_email => $curator->{email});
+
+    $self->store_feature_relationshipprop($rel, community_curated =>
+                                            $curator->{community_curated} ? 'true' : 'false');
   }
   if (defined $approved_timestamp) {
     $self->store_feature_relationshipprop($rel, approved_timestamp => $approved_timestamp);
