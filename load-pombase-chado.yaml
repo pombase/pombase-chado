@@ -166,6 +166,9 @@ evidence_types:
     name: mass spectrometry evidence
   'ECO:0000059':
     name: experimental phenotypic evidence
+  'ECO:0000279':
+    name: western blot evidence used in manual assertion
+
 
 phenotype_cv_name: fission_yeast_phenotype
 parental_strain:
