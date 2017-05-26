@@ -11,6 +11,7 @@ my $builder = Module::Build->new(
       perl                     => '5.12.0',
       'Bio::Chado::Schema'     => 0,
       'Bio::SeqIO'             => 0,
+      'Bio::Tools::CodonOptTable' => 0,
       'Carp::Assert'           => 0,
       'DBIx::Class'            => 0,
       'Digest::MD5'            => 0,
