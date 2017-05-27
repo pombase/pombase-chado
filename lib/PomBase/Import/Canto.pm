@@ -810,7 +810,9 @@ method _process_publications($publications) {
     my $pub = $self->find_or_create_pub($pub_uniquename);
 
     $self->create_pubprop($pub, 'canto_triage_status', $data->{triage_status});
-    $self->create_pubprop($pub, 'canto_added_date', $data->{added_date});
+    if ($data->{added_date}) {
+      $self->create_pubprop($pub, 'canto_added_date', $data->{added_date});
+    }
   }
 }
 
