@@ -41,6 +41,8 @@ use Moose;
 use Text::CSV;
 use Getopt::Long qw(GetOptionsFromArray);
 
+use PomBase::Chado::ExtensionProcessor;
+
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::DbQuery';
@@ -62,6 +64,16 @@ has with_filter_values => (is => 'rw', isa => 'HashRef',
                              init_arg => undef);
 has term_id_filter_values => (is => 'rw', isa => 'HashRef',
                               init_arg => undef);
+
+has extension_processor => (is => 'ro', init_arg => undef, lazy_build => 1);
+
+method _build_extension_processor {
+  my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
+                                                          config => $self->config(),
+                                                          pre_init_cache => 1,
+                                                          verbose => $self->verbose());
+  return $processor;
+}
 
 method _load_first_column($filename) {
   return unless $filename;
@@ -341,6 +353,22 @@ method load($fh) {
 
       my $feature_cvterm =
         $self->create_feature_cvterm($feature, $cvterm, $pub, $is_not);
+
+      my $extension_text = $columns{"Annotation_extension"};
+
+      if ($extension_text) {
+        my ($out, $err) = capture {
+          my $processor = $self->extension_processor();
+
+          $processor->process_one_annotation($feature_cvterm, $extension_text);
+        };
+        if (length $out > 0) {
+          die $out;
+        }
+        if (length $err > 0) {
+          die $err;
+        }
+      }
 
       $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by',
                                     $assigned_by);
