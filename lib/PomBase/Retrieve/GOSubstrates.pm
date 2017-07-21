@@ -65,7 +65,10 @@ join cv ext_term_cv on ext_term_cv.cv_id = ext_term.cv_id
 join cvtermprop ext_p on ext_term.cvterm_id = ext_p.cvterm_id
 join cvterm ext_p_type on ext_p.type_id = ext_p_type.cvterm_id
 where ext_term_cv.name = 'PomBase annotation extension terms'
-and ext_p_type.name = 'annotation_extension_relation-has_direct_input'
+and ext_p_type.name in
+('annotation_extension_relation-has_direct_input',
+'annotation_extension_relation-directly_negatively_regulates',
+'annotation_extension_relation-directly_positively_regulates')
 and f.organism_id = | . $self->organism()->organism_id();
 
   my $dbh = $chado->storage()->dbh();
