@@ -3,6 +3,7 @@
 config_dir=$1
 version=$2
 dump_dir=$3
+target=$4
 
 TEMP_DIR=/tmp
 
@@ -25,6 +26,6 @@ echo copying dump dir ...
 cp -r $dump_dir/* latest_dump_dir/
 
 echo building container ...
-docker build -f conf/Dockerfile-main -t=pombase/pombase-base:$version .
+docker build -f conf/Dockerfile-main --build-arg target=$target -t=pombase/pombase-base:$version .
 
 rm -rf $TEM_DIR/$docker_build_dir
