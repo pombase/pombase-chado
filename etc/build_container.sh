@@ -20,8 +20,11 @@ git clone https://github.com/pombase/website.git ng-website
 
 cp -r $config_dir/* conf/
 cp /var/pomcur/bin/* bin/
+
+echo copying dump dir ...
 cp -r $dump_dir/* latest_dump_dir/
 
+echo building container ...
 docker build -f conf/Dockerfile-main -t=pombase/pombase-base:$version .
 
 rm -rf $TEM_DIR/$docker_build_dir
