@@ -4,12 +4,14 @@ config_dir=$1
 version=$2
 dump_dir=$3
 
-cd /tmp/
+TEMP_DIR=/tmp
 
-tmp_dir=build_tmp.$$
+cd $TEMP_DIR
 
-mkdir $tmp_dir
-cd $tmp_dir
+docker_build_dir=pombase_docker_build_tmp.$$
+
+mkdir $docker_build_dir
+cd $docker_build_dir
 mkdir bin
 mkdir latest_dump_dir
 mkdir conf
@@ -22,6 +24,4 @@ cp -r $dump_dir/* latest_dump_dir/
 
 docker build -f conf/Dockerfile-main -t=pombase/pombase-base:$version .
 
-cd /tmp/
-
-#rm -rf $tmp_dir
+rm -rf $TEM_DIR/$docker_build_dir
