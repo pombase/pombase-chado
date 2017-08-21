@@ -1,0 +1,8 @@
+FROM debian:stretch
+MAINTAINER Kim Rutherford <kim@pombase.org>
+
+RUN yum -y update
+RUN yum -y install httpd curl java-1.8.0-openjdk-headless
+RUN curl -O http://www-us.apache.org/dist/lucene/solr/6.6.0/solr-6.6.0.tgz
+RUN tar xf solr-6.6.0.tgz
+

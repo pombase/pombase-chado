@@ -1,0 +1,29 @@
+FROM debian:stretch
+LABEL maintainer="Kim Rutherford <kim@pombase.org>"
+
+RUN mkdir /downloads
+WORKDIR /downloads
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -y update && apt-get -y dist-upgrade
+RUN apt-get -y install apt-utils curl gnupg2 git-core \
+  libterm-readline-gnu-perl
+RUN curl -O http://www-us.apache.org/dist/lucene/solr/6.6.0/solr-6.6.0.tgz
+
+RUN apt-get -y install apache2 openjdk-8-jdk-headless lsof
+RUN apt-get -y install --reinstall python-pkg-resources
+RUN apt-get -y install circus jq
+
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -; \
+  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -; \
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && apt-get -y install yarn nodejs
+RUN npm install --unsafe-perm -g @angular/cli
+
+RUN mkdir /pombase
+WORKDIR /pombase
+
+RUN tar xf /downloads/solr-6.6.0.tgz && rm -rf /downloads
+
+ENV DEBIAN_FRONTEND=interactive

@@ -1,0 +1,41 @@
+FROM pombase/pombase-base:v1
+ARG version
+
+LABEL maintainer="Kim Rutherford <kim@pombase.org>"
+
+#RUN chmod a+w /var/lock /var/run /var/log
+
+WORKDIR /pombase
+
+RUN mkdir bin; mkdir -p /var/www/html/api/v1/dataset/latest/
+COPY latest_dump_dir /pombase/latest_dump_dir
+RUN mv latest_dump_dir/web-json /var/www/html/api/v1/dataset/latest/data; \
+  (cd latest_dump_dir; ln -s /var/www/html/api/v1/dataset/latest/data web-json)
+
+COPY ng-website /pombase/ng-website
+
+RUN (cd ng-website/frontend; ln -s ../../latest_dump_dir/pombe-embl/website/pombase_v2_config.json .)
+RUN (cd ng-website/frontend && yarn install)
+RUN (cd ng-website/frontend && ./etc/build_app.sh prod ../latest_dump_dir/ && cp -r dist/* /var/www/html/)
+
+RUN cd ./solr-6.6.0/; ./bin/solr start -force -m 10g; \
+    ./bin/solr create_core -force -c terms -d basic_configs; \
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"idField","class":"solr.StrField"}}' http://localhost:8983/solr/terms/schema; \
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"textField","class":"solr.TextField","analyzer":{"type":"index","tokenizer":{"class":"solr.WhitespaceTokenizerFactory"},"filter":{"class":"solr.LowerCaseFilterFactory"}}, "analyzer":{"type":"query", "tokenizer":{"class":"solr.WhitespaceTokenizerFactory"},"filter":{"class":"solr.LowerCaseFilterFactory"}}}}' http://localhost:8983/solr/terms/schema; \
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"cv_name","type":"idField","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"name","type": "text_en","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"definition","type":"text_en","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
+    find /pombase/www-root/api/v1/dataset/latest/data/term/ -name '*.json' | xargs ./bin/post -c terms; \
+    ./bin/solr stop; \
+    echo $version > $HOME/pombase_version
+
+COPY conf/circus.ini circus.ini
+COPY conf/httpd.conf pombase-apache2.conf
+
+RUN a2enmod -q rewrite; a2enmod -q expires; a2enmod -q headers; \
+  a2enmod -q proxy; cp ./pombase-apache2.conf /etc/apache2/sites-enabled/
+
+CMD /usr/bin/circusd /pombase/circus.ini
+
+EXPOSE 80
+
