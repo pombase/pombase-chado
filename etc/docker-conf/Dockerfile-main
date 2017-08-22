@@ -36,9 +36,8 @@ COPY conf/circus.ini circus.ini
 COPY conf/httpd.conf pombase-apache2.conf
 
 RUN a2enmod -q rewrite; a2enmod -q expires; a2enmod -q headers; \
-  a2enmod -q proxy; cp ./pombase-apache2.conf /etc/apache2/sites-enabled/
-
-ENV ROCKET_PORT=8500
+  a2enmod -q proxy; a2enmod -q proxy_http; \
+  cp ./pombase-apache2.conf /etc/apache2/sites-enabled/
 
 CMD /usr/bin/circusd /pombase/circus.ini
 
