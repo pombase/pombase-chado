@@ -14,6 +14,7 @@ docker_build_dir=pombase_docker_build_tmp.$$
 mkdir $docker_build_dir
 cd $docker_build_dir
 mkdir bin
+cp /var/pomcur/bin/pombase-server bin/
 mkdir latest_dump_dir
 mkdir conf
 
