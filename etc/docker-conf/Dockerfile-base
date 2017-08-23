@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && apt-get -y dist-upgrade
 RUN apt-get -y install apt-utils curl gnupg2 git-core \
-  libterm-readline-gnu-perl
+  libterm-readline-gnu-perl gcc pkg-config libssl-dev
 RUN curl -O http://www-us.apache.org/dist/lucene/solr/6.6.0/solr-6.6.0.tgz
 
 RUN apt-get -y install apache2 openjdk-8-jdk-headless lsof
@@ -20,6 +20,10 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -; \
   echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get -y install yarn nodejs
 RUN npm install --unsafe-perm -g @angular/cli
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin/:${PATH}"
+RUN rustup default nightly
 
 RUN mkdir /pombase
 WORKDIR /pombase

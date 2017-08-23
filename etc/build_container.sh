@@ -19,6 +19,7 @@ mkdir latest_dump_dir
 mkdir conf
 
 git clone https://github.com/pombase/website.git ng-website
+git clone https://github.com/pombase/pombase-chado-json.git
 
 cp -r $config_dir/* conf/
 cp /var/pomcur/bin/* bin/
