@@ -5,22 +5,21 @@ LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
 ARG target
 
-#RUN chmod a+w /var/lock /var/run /var/log
-
 WORKDIR /pombase
 
 RUN mkdir bin; mkdir -p /var/www/html/api/v1/dataset/latest/
-COPY latest_dump_dir /var/www/html/latest_dump_dir
-RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/latest_dump_dir/web-json data)
 
 COPY ng-website /pombase/ng-website
 COPY pombase-chado-json /pombase/pombase-chado-json
 
+RUN (cd pombase-chado-json; cargo build --release && cp target/release/pombase-server /pombase/bin/)
+
+COPY latest_dump_dir /var/www/html/latest_dump_dir
+RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/latest_dump_dir/web-json data)
+
 RUN (cd ng-website/frontend; ln -s /var/www/html/latest_dump_dir/pombe-embl/website/pombase_v2_config.json .)
 RUN (cd ng-website/frontend && yarn install)
 RUN (cd ng-website/frontend && ./etc/build_app.sh $target ../latest_dump_dir/ && cp -r dist/* /var/www/html/)
-
-RUN (cd pombase-chado-json; cargo build --release && cp target/release/pombase-server /pombase/bin/)
 
 RUN cd ./solr-6.6.0/; ./bin/solr start -force -m 10g; \
     ./bin/solr create_core -force -c terms -d basic_configs; \
