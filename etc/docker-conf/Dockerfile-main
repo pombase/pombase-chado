@@ -22,10 +22,10 @@ RUN (cd ng-website/frontend && ./etc/build_app.sh $target ../latest_dump_dir/ &&
 RUN cd ./solr-6.6.0/; ./bin/solr start -force -m 10g; \
     ./bin/solr create_core -force -c terms -d basic_configs; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"idField","class":"solr.StrField"}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"textField","class":"solr.TextField","analyzer":{"type":"index","tokenizer":{"class":"solr.WhitespaceTokenizerFactory"},"filter":{"class":"solr.LowerCaseFilterFactory"}}, "analyzer":{"type":"query", "tokenizer":{"class":"solr.WhitespaceTokenizerFactory"},"filter":{"class":"solr.LowerCaseFilterFactory"}}}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"cv_name","type":"idField","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"name","type": "text_en","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"definition","type":"text_en","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"textField","class":"solr.TextField","analyzer":{"type":"index","tokenizer":{"class":"solr.LowerCaseTokenizerFactory"},"filter":{"class":"solr.EdgeNGramFilterFactory","minGramSize":"2", "maxGramSize":"50"}}, "analyzer":{"type":"query", "tokenizer":{"class":"solr.LowerCaseTokenizerFactory"}}}}' http://localhost:8983/solr/terms/schema; \
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"cv_name","type":"idField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"name","type": "textField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"definition","type":"textField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
     find /var/www/html/api/v1/dataset/latest/data/solr_data/terms -name '*.json' | xargs ./bin/post -c terms; \
     ./bin/solr stop; \
     echo $version > $HOME/pombase_version
