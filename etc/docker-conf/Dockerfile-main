@@ -46,3 +46,6 @@ CMD /usr/bin/circusd /pombase/circus.ini
 
 EXPOSE 80
 
+# for testing:
+EXPOSE 8983
+
