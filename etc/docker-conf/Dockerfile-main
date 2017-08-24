@@ -31,7 +31,7 @@ RUN cd ./solr-6.6.0/; ./bin/solr start -force -m 10g; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"distant_synonyms","type": "textField","multiValued":"true","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"interesting_parents","type": "textField","multiValued":"true","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"definition","type":"textField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
-    find /var/www/html/api/v1/dataset/latest/data/solr_data/terms -name '*.json' | xargs ./bin/post -c terms; \
+    find /var/www/html/api/v1/dataset/latest/data/solr_data/terms -name '*.json' | xargs ./bin/post -c terms > /dev/null; \
     ./bin/solr stop; \
     echo $version > $HOME/pombase_version
 
