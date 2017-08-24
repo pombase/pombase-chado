@@ -5,29 +5,18 @@ version=$2
 dump_dir=$3
 target=$4
 
-TEMP_DIR=/tmp
+TEMP_DIR=/var/pomcur/container_build
 
 cd $TEMP_DIR
 
-docker_build_dir=pombase_docker_build_tmp.$$
+(cd ng-website; git pull)
+(cd pombase-chado-json; git pull)
 
-mkdir $docker_build_dir
-cd $docker_build_dir
-mkdir bin
-cp /var/pomcur/bin/pombase-server bin/
-mkdir latest_dump_dir
-mkdir conf
-
-git clone https://github.com/pombase/website.git ng-website
-git clone https://github.com/pombase/pombase-chado-json.git
-
-cp -r $config_dir/* conf/
-cp /var/pomcur/bin/* bin/
+rsync -aL --delete-after $config_dir/* conf/
 
 echo copying dump dir ...
-cp -r $dump_dir/* latest_dump_dir/
+rsync -aL --delete-after $dump_dir/* latest_dump_dir/
 
 echo building container ...
 docker build -f conf/Dockerfile-main --build-arg target=$target -t=pombase/pombase-base:$version-$target .
 
-rm -rf $TEMP_DIR/$docker_build_dir
