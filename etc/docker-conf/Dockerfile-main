@@ -42,10 +42,8 @@ COPY conf/circus.ini circus.ini
 #  a2enmod -q proxy; a2enmod -q proxy_http; \
 #  cp ./pombase-apache2.conf /etc/apache2/sites-enabled/
 
-CMD /usr/bin/circusd /pombase/circus.ini
-
-EXPOSE 8400
-
 # for testing:
 EXPOSE 8983
+EXPOSE 8500
 
+CMD /usr/bin/circusd /pombase/circus.ini
