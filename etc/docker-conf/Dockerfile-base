@@ -1,3 +1,5 @@
+# recreate with:
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/pombase-base:v1 .
 FROM debian:stretch
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -11,9 +13,9 @@ RUN apt-get -y install apt-utils curl gnupg2 git-core \
   libterm-readline-gnu-perl gcc pkg-config libssl-dev
 RUN curl -O http://www-us.apache.org/dist/lucene/solr/6.6.0/solr-6.6.0.tgz
 
-RUN apt-get -y install apache2 openjdk-8-jdk-headless lsof
+RUN apt-get -y install openjdk-8-jre-headless lsof
 RUN apt-get -y install --reinstall python-pkg-resources
-RUN apt-get -y install circus jq
+RUN apt-get -y install circus jq procps
 
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -; \
   curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -; \

@@ -13,6 +13,7 @@ COPY ng-website /pombase/ng-website
 COPY pombase-chado-json /pombase/pombase-chado-json
 
 RUN (cd pombase-chado-json; cargo build --release && cp target/release/pombase-server /pombase/bin/)
+RUN rm -r /root/.rustup
 
 COPY latest_dump_dir /var/www/html/latest_dump_dir
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/latest_dump_dir/web-json data)
@@ -35,12 +36,12 @@ RUN cd ./solr-6.6.0/; ./bin/solr start -force -m 10g; \
     ./bin/solr stop; \
     echo $version > $HOME/pombase_version
 
-COPY conf/circus.ini circus.ini
-#COPY conf/httpd.conf pombase-apache2.conf
+RUN rm -r /var/www/html/api/v1/dataset/latest/data/solr_data
 
-#RUN a2enmod -q rewrite; a2enmod -q expires; a2enmod -q headers; \
-#  a2enmod -q proxy; a2enmod -q proxy_http; \
-#  cp ./pombase-apache2.conf /etc/apache2/sites-enabled/
+RUN apt remove nodejs gcc-6 git gnupg yarn manpages-dev manpages; \
+  apt autoremove
+
+COPY conf/circus.ini circus.ini
 
 # for testing:
 EXPOSE 8983
