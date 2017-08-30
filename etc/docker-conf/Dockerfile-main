@@ -38,8 +38,8 @@ RUN cd ./solr-6.6.0/; ./bin/solr start -force -m 10g; \
 
 RUN rm -r /var/www/html/api/v1/dataset/latest/data/solr_data
 
-RUN apt remove nodejs gcc-6 git gnupg yarn manpages-dev manpages; \
-  apt autoremove
+RUN apt remove -y nodejs gcc-6 git gnupg yarn manpages-dev manpages; \
+  apt autoremove -y
 
 COPY conf/circus.ini circus.ini
 
