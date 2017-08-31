@@ -23,10 +23,6 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -; \
 RUN apt-get update && apt-get -y install yarn nodejs
 RUN npm install --unsafe-perm -g @angular/cli
 
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin/:${PATH}"
-RUN rustup default nightly
-
 RUN mkdir /pombase
 WORKDIR /pombase
 
