@@ -18,5 +18,5 @@ echo copying dump dir ...
 rsync -aL --delete-after $dump_dir/* latest_dump_dir/
 
 echo building container ...
-docker build -f conf/Dockerfile-main --build-arg target=$target -t=pombase/pombase-base:$version-$target .
+docker build -f conf/Dockerfile-main --build-arg target=$target -t=pombase/web:$version-$target .
 
