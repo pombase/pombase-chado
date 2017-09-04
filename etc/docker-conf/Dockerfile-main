@@ -22,7 +22,7 @@ RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/latest_dump_dir
 COPY ng-website /pombase/ng-website
 RUN (cd ng-website/frontend; ln -s /var/www/html/latest_dump_dir/pombe-embl/website/pombase_v2_config.json .; \
      npm install; \
-     ./etc/build_app.sh $target ../latest_dump_dir/ && cp -r dist/* /var/www/html/); \
+     ./etc/build_app.sh $target ../latest_dump_dir/ && cp -r dist/* /var/www/html/) && \
      rm -rf /pombase/ng-website /usr/lib/node_modules
 
 RUN cd ./solr-6.6.0/; ./bin/solr start -force -m 10g; \
