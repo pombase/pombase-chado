@@ -1,31 +1,29 @@
 # recreate with:
 #   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v1 .
-FROM debian:stretch
+FROM debian:jessie
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
-RUN mkdir /downloads
-WORKDIR /downloads
+RUN mkdir /downloads /pombase
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get -y update && apt-get -y dist-upgrade
+RUN echo "deb http://http.debian.net/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list
+RUN apt-get -y update && apt-get -y dist-upgrade && apt-get clean
 RUN apt-get -y install apt-utils curl gnupg2 git-core \
-  libterm-readline-gnu-perl gcc pkg-config libssl-dev
-RUN curl -O http://www-us.apache.org/dist/lucene/solr/6.6.0/solr-6.6.0.tgz
+  libterm-readline-gnu-perl pkg-config libssl-dev && apt-get clean
+RUN cd /pombase && curl http://www-us.apache.org/dist/lucene/solr/6.6.0/solr-6.6.0.tgz | tar xzf -
 
-RUN apt-get -y install openjdk-8-jre-headless lsof
-RUN apt-get -y install --reinstall python-pkg-resources
-RUN apt-get -y install circus jq procps
+RUN apt-get -y install lsof daemon chkconfig jq procps gcc g++ && apt-get clean
+RUN apt-get -y install --reinstall python-pkg-resources && apt-get clean
+RUN apt-get -y install python3-pip && apt-get clean
+RUN apt-get -y install -t jessie-backports openjdk-8-jre-headless && apt-get clean
+RUN apt-get -y install python3-zmq && apt-get clean
+RUN pip3 install circus
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -; \
-  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -; \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update && apt-get -y install yarn nodejs
-RUN npm install --unsafe-perm -g @angular/cli
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get update && apt-get -y install nodejs && apt-get clean
+RUN npm install --silent --unsafe-perm -g @angular/cli
 
-RUN mkdir /pombase
 WORKDIR /pombase
-
-RUN tar xf /downloads/solr-6.6.0.tgz && rm -rf /downloads
 
 ENV DEBIAN_FRONTEND=interactive
