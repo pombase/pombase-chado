@@ -11,7 +11,7 @@ RUN echo "deb http://http.debian.net/debian jessie-backports main" > /etc/apt/so
 RUN apt-get -y update && apt-get -y dist-upgrade && apt-get clean
 RUN apt-get -y install apt-utils curl gnupg2 git-core \
   libterm-readline-gnu-perl pkg-config libssl-dev && apt-get clean
-RUN cd /pombase && curl http://www-us.apache.org/dist/lucene/solr/6.6.1/solr-6.6.1.tgz | tar xzf -
+RUN cd /pombase && curl https://www-eu.apache.org/dist/lucene/solr/6.6.1/solr-6.6.1.tgz | tar xzf -
 
 RUN apt-get -y install lsof daemon chkconfig jq procps gcc g++ && apt-get clean
 RUN apt-get -y install --reinstall python-pkg-resources && apt-get clean
