@@ -25,7 +25,7 @@ RUN (cd ng-website/frontend; ln -s /var/www/html/latest_dump_dir/pombe-embl/webs
      ./etc/build_app.sh $target ../latest_dump_dir/ && cp -r dist/* /var/www/html/) && \
      rm -rf /pombase/ng-website /usr/lib/node_modules
 
-RUN cd ./solr-6.6.0/; ./bin/solr start -force -m 10g; \
+RUN cd ./solr-6.6.1/; ./bin/solr start -force -m 10g; \
     ./bin/solr create_core -force -c terms -d basic_configs; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"idField","class":"solr.StrField"}}' http://localhost:8983/solr/terms/schema; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"textField","class":"solr.TextField","analyzer":{"type":"index","tokenizer":{"class":"solr.LowerCaseTokenizerFactory"},"filter":{"class":"solr.EdgeNGramFilterFactory","minGramSize":"2", "maxGramSize":"50"}}, "analyzer":{"type":"query", "tokenizer":{"class":"solr.LowerCaseTokenizerFactory"}}}}' http://localhost:8983/solr/terms/schema; \
