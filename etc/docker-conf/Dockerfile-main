@@ -19,12 +19,6 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly; \
 COPY latest_dump_dir /var/www/html/latest_dump_dir
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/latest_dump_dir/web-json data)
 
-COPY ng-website /pombase/ng-website
-RUN (cd ng-website/frontend; ln -s /var/www/html/latest_dump_dir/pombe-embl/website/pombase_v2_config.json .; \
-     npm install; \
-     ./etc/build_app.sh $target ../latest_dump_dir/ && cp -r dist/* /var/www/html/) && \
-     rm -rf /pombase/ng-website /usr/lib/node_modules
-
 RUN cd ./solr-6.6.1/; ./bin/solr start -force -m 10g; \
     ./bin/solr create_core -force -c terms -d basic_configs; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"idField","class":"solr.StrField"}}' http://localhost:8983/solr/terms/schema; \
@@ -37,11 +31,16 @@ RUN cd ./solr-6.6.1/; ./bin/solr start -force -m 10g; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"definition","type":"textField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
     find /var/www/html/api/v1/dataset/latest/data/solr_data/terms -name '*.json' | xargs ./bin/post -c terms > /dev/null; \
     ./bin/solr stop; \
-    echo $version > $HOME/pombase_version
+    rm -r /var/www/html/api/v1/dataset/latest/data/solr_data
 
-RUN rm -r /var/www/html/api/v1/dataset/latest/data/solr_data
+COPY ng-website /pombase/ng-website
+RUN (cd ng-website/frontend; ln -s /var/www/html/latest_dump_dir/pombe-embl/website/pombase_v2_config.json .; \
+     npm install; \
+     ./etc/build_app.sh $target ../latest_dump_dir/ && cp -r dist/* /var/www/html/) && \
+     rm -rf /pombase/ng-website /usr/lib/node_modules
 
 COPY conf/circus.ini circus.ini
+RUN echo $version > $HOME/pombase_version
 
 # for testing:
 EXPOSE 8983
