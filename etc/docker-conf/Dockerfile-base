@@ -1,6 +1,6 @@
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v1 .
-FROM debian:jessie
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v3 .
+FROM bitnami/minideb:jessie
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
 RUN mkdir /downloads /pombase
