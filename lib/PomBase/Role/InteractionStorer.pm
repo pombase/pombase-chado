@@ -92,6 +92,7 @@ method _store_interaction_helper() {
   my $creation_date = $args{creation_date};
   my $curator = $args{curator};
   my $approver_email = $args{approver_email};
+  my $first_approved_timestamp = $args{first_approved_timestamp};
   my $approved_timestamp = $args{approved_timestamp};
   my $canto_session = $args{canto_session};
   my $notes = $args{notes} // [];
@@ -148,6 +149,9 @@ method _store_interaction_helper() {
     $self->store_feature_relationshipprop($rel, community_curated =>
                                             $curator->{community_curated} ? 'true' : 'false');
   }
+  if (defined $first_approved_timestamp) {
+    $self->store_feature_relationshipprop($rel, first_approved_timestamp => $first_approved_timestamp);
+  }
   if (defined $approved_timestamp) {
     $self->store_feature_relationshipprop($rel, approved_timestamp => $approved_timestamp);
   }
@@ -180,6 +184,7 @@ method _store_interaction_helper() {
   creation_date
   curator - { name => '...', email => '...' }
   approver_email
+  first_approved_timestamp
   approved_timestamp
   canto_session
   notes - list of strings

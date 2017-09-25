@@ -588,7 +588,7 @@ method _process_feature {
   my %useful_session_data =
     map {
       ($_, $session_metadata->{$_});
-    } qw(approver_email approved_timestamp);
+    } qw(approver_email first_approved_timestamp approved_timestamp);
 
   my $long_evidence;
 
@@ -780,6 +780,9 @@ method _store_metadata($metadata) {
   my $pub = $self->find_or_create_pub($pub_uniquename);
 
   $self->create_pubprop($pub, 'canto_session', $metadata->{canto_session});
+  if ($metadata->{first_approved_timestamp}) {
+    $self->create_pubprop($pub, 'canto_first_approved_date', $metadata->{first_approved_timestamp});
+  }
   if ($metadata->{approved_timestamp}) {
     $self->create_pubprop($pub, 'canto_approved_date', $metadata->{approved_timestamp});
   }
