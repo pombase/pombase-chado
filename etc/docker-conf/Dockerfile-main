@@ -4,6 +4,7 @@ ARG version
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
 ARG target
+ENV ANALYTICS_ID=UNSET
 
 WORKDIR /pombase
 
@@ -34,12 +35,14 @@ RUN cd ./solr-6.6.1/; ./bin/solr start -force -m 10g; \
     rm -r /var/www/html/api/v1/dataset/latest/data/solr_data
 
 COPY ng-website /pombase/ng-website
-RUN (cd ng-website/frontend; ln -s /var/www/html/latest_dump_dir/pombe-embl/website/pombase_v2_config.json .; \
+RUN (cd ng-website/frontend; ln -fs /var/www/html/latest_dump_dir/pombe-embl/website/pombase_v2_config.json .; \
+     cp etc/update_analytics_id.sh /pombase/ && \
      npm install; \
-     ./etc/build_app.sh $target ../latest_dump_dir/ && cp -r dist/* /var/www/html/) && \
+     ./etc/build_app.sh $target && cp -r dist/* /var/www/html/) && \
      rm -rf /pombase/ng-website /usr/lib/node_modules
 
 COPY conf/circus.ini circus.ini
+COPY conf/start_all.sh start_all.sh
 RUN echo $version > $HOME/pombase_version
 
 # for testing:
@@ -49,4 +52,5 @@ EXPOSE 8500
 HEALTHCHECK --start-period=30s --interval=30s --timeout=30s --retries=5 \
   CMD curl -f http://localhost:8500/ && curl -f http://localhost:8983/ || exit 1
 
-CMD /usr/local/bin/circusd /pombase/circus.ini
+CMD ./start_all.sh
+
