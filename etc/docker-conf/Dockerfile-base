@@ -1,5 +1,5 @@
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v5 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v6 .
 FROM bitnami/minideb:jessie
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -9,9 +9,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN echo "deb http://http.debian.net/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list
 RUN apt-get -y update && apt-get -y dist-upgrade && apt-get clean
-RUN apt-get -y install apt-utils curl gnupg2 git-core \
+RUN apt-get -y install apt-utils curl gnupg2 git-core xz-utils \
   libterm-readline-gnu-perl pkg-config libssl-dev && apt-get clean
-RUN cd /pombase && curl https://www-eu.apache.org/dist/lucene/solr/6.6.1/solr-6.6.1.tgz | tar xzf -
+RUN cd /pombase && curl https://curation.pombase.org/software/solr-7.1.0.tar.xz | tar -x --xz -f - && \
+    (cd /pombase/solr-7.1.0/; rm -rf example contrib licenses *.txt docs)
 
 RUN apt-get -y install lsof jq gcc && apt-get clean
 RUN apt-get -y install --reinstall python-pkg-resources && apt-get clean

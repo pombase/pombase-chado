@@ -1,4 +1,4 @@
-FROM pombase/web-base:v5
+FROM pombase/web-base:v6
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -20,8 +20,9 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly; \
 COPY latest_dump_dir /var/www/html/latest_dump_dir
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/latest_dump_dir/web-json data)
 
-RUN cd ./solr-6.6.1/; ./bin/solr start -force -m 10g; \
-    ./bin/solr create_core -force -c terms -d basic_configs; \
+RUN cd ./solr-7.1.0/; ./bin/solr start -force -m 10g; \
+    ./bin/solr create_core -force -c terms; \
+    curl http://localhost:8983/solr/terms/config -d '{"set-user-property": {"update.autoCreateFields":"false"}}'; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"idField","class":"solr.StrField"}}' http://localhost:8983/solr/terms/schema; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"textField","class":"solr.TextField","analyzer":{"type":"index","tokenizer":{"class":"solr.LowerCaseTokenizerFactory"},"filter":{"class":"solr.EdgeNGramFilterFactory","minGramSize":"2", "maxGramSize":"50"}}, "analyzer":{"type":"query", "tokenizer":{"class":"solr.LowerCaseTokenizerFactory"}}}}' http://localhost:8983/solr/terms/schema; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"cv_name","type":"idField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
@@ -31,7 +32,7 @@ RUN cd ./solr-6.6.1/; ./bin/solr start -force -m 10g; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"interesting_parents","type": "textField","multiValued":"true","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
     curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"definition","type":"textField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
     find /var/www/html/api/v1/dataset/latest/data/solr_data/terms -name '*.json' | xargs ./bin/post -c terms > /dev/null; \
-    ./bin/solr stop; rm -f /pombase/solr-6.6.1/server/logs/*; \
+    ./bin/solr stop; rm -f /pombase/solr-7.1.0/server/logs/*; \
     rm -r /var/www/html/api/v1/dataset/latest/data/solr_data
 
 COPY ng-website /pombase/ng-website
