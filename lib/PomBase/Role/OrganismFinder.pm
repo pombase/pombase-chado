@@ -62,8 +62,7 @@ method find_organism_by_taxonid($taxonid) {
     return $cache->{$taxonid};
   }
 
-  my $taxonid_term = $self->get_cvterm('PomBase organism property types',
-                                       'taxon_id');
+  my $taxonid_term = $self->get_cvterm('organism property types', 'taxon_id');
   my $organism_rs = $self->chado()->resultset('Organism::Organismprop')
     ->search({ type_id => $taxonid_term->cvterm_id(), value => $taxonid })
     ->search_related('organism');

@@ -79,8 +79,7 @@ method _organism_taxonid($organism) {
   my $organism_id = $organism->organism_id();
 
   if (!exists $cache->{$organism_id}) {
-    my $taxonid_term = $self->get_cvterm('PomBase organism property types',
-                                         'taxon_id');
+    my $taxonid_term = $self->get_cvterm('organism property types', 'taxon_id');
 
     my $prop_rs = $organism->organismprops()->search({ type_id => $taxonid_term->cvterm_id() });
     $cache->{$organism_id} = $prop_rs->first()->value();

@@ -140,7 +140,7 @@ method _load_test_features($chado) {
       type => {
         name => 'taxon_id',
         cv => {
-          name => 'PomBase organism property types',
+          name => 'organism property types',
         }
       },
       organism_id => $organism->organism_id(),

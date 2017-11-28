@@ -357,7 +357,7 @@ data:
             accession: 011000010
             db:
               name: PBO
-    - name: PomBase organism property types
+    - name: organism property types
       cvterms:
         - name: taxon_id
           dbxref:

@@ -15,6 +15,8 @@ if (!GetOptions("dry-run|d" => \$dry_run,
 }
 
 my %input_types = (
+  organisms => 'PomBase::Import::Organisms',
+  features => 'PomBase::Import::Features',
   biogrid => 'PomBase::Import::BioGRID',
   gaf => 'PomBase::Import::GeneAssociationFile',
   'canto-json' => 'PomBase::Import::Canto',
@@ -85,7 +87,7 @@ my $config_file = shift;
 my $import_type = shift;
 
 my @options = ();
-while ($ARGV[0] =~ /^-/) {
+while (@ARGV && $ARGV[0] =~ /^-/) {
   push @options, shift;
 }
 
