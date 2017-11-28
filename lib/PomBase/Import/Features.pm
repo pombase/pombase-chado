@@ -54,7 +54,7 @@ has organism => (is => 'rw', init_arg => undef);
 has feature_type => (is => 'rw', init_arg => undef);
 has uniquename_column => (is => 'rw', init_arg => undef);
 has name_column => (is => 'rw', init_arg => undef);
-has ignore_first_line => (is => 'rw', init_arg => undef);
+has ignore_lines_matching => (is => 'rw', init_arg => undef);
 has ignore_short_lines => (is => 'rw', init_arg => undef);
 has column_filters => (is => 'rw', init_arg => undef);
 
@@ -66,7 +66,7 @@ sub BUILD
   my $uniquename_column = undef;
   my $name_column = undef;
   my $feature_type = undef;
-  my $ignore_first_line = 0;
+  my $ignore_lines_matching = '';
   my $ignore_short_lines = 0;
   my @column_filters = ();
 
@@ -75,7 +75,7 @@ sub BUILD
                     "column-filter=s" => \@column_filters,
                     "uniquename-column=s" => \$uniquename_column,
                     "name-column=s" => \$name_column,
-                    "ignore-first_line" => \$ignore_first_line,
+                    "ignore-lines-matching=s" => \$ignore_lines_matching,
                     "ignore-short-lines" => \$ignore_short_lines,
                   );
 
@@ -113,7 +113,7 @@ sub BUILD
 
   $self->feature_type($feature_type);
 
-  $self->ignore_first_line($ignore_first_line);
+  $self->ignore_lines_matching($ignore_lines_matching);
   $self->ignore_short_lines($ignore_short_lines);
   $self->column_filters(\@column_filters);
 }
@@ -124,10 +124,8 @@ method load($fh) {
   my $feature_type_name = $self->feature_type();
   my $organism = $self->organism();
   my $ignore_short_lines = $self->ignore_short_lines();
+  my $ignore_lines_matching_string = $self->ignore_lines_matching();
 
-  if ($self->ignore_first_line()) {
-    <$fh>
-  }
 
   my %filter_conf = ();
 
@@ -142,6 +140,8 @@ method load($fh) {
  LINE:
   while (<$fh>) {
     next if /^#|^!/;
+
+    next if $ignore_lines_matching_string && /$ignore_lines_matching_string/;
 
     chomp $_;
 
