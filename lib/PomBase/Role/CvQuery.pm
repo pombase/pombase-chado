@@ -89,7 +89,7 @@ method get_relation_cvterm($cvterm_name) {
 method get_cvterm($cv_name, $cvterm_name) {
 
   if ($cvterm_name eq 'is_a') {
-    $cv_name = 'relations';
+    $cv_name = 'autocreated';
   }
 
   my $cv = $self->get_cv($cv_name);
