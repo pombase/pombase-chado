@@ -49,6 +49,7 @@ method load($fh) {
   my $org_load = PomBase::Chado::LoadOrganism->new(chado => $self->chado);
 
   while(<$fh>) {
+    next if /^#/;
     chomp $_;
     my ($genus, $species, $common_name, $abbreviation, $taxon_id) = split /\t/, $_;
     $org_load->load_organism($genus, $species, $common_name, $abbreviation, $taxon_id);
