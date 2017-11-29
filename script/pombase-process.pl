@@ -28,6 +28,8 @@ sub usage
                         "abcdelta" if the gene now has a name
                     - "change-terms": change terms in annotations based on a
                            mapping file
+                    - "add-reciprocal-ipi-annotations": add missing reciprocal
+                           protein binding IPI annotations
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
@@ -61,7 +63,7 @@ if (!defined $password) {
 }
 
 if (@ARGV > 0) {
-  die "$0: not many arguments";
+  die "$0: no arguments";
   usage();
 }
 
@@ -79,6 +81,7 @@ my %process_modules = (
   'update-allele-names' => 'PomBase::Chado::UpdateAlleleNames',
   'change-terms' => 'PomBase::Chado::ChangeTerms',
   'uniprot-ids-to-local' => 'PomBase::Chado::UniProtIDsToLocal',
+  'add-reciprocal-ipi-annotations' => 'PomBase::Chado::AddReciprocalIPI',
 );
 
 my $process_module = $process_modules{$process_type};
