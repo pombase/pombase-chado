@@ -46,6 +46,9 @@ with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::FeatureFinder';
+with 'PomBase::Role::Embl::FeatureRelationshipStorer';
+with 'PomBase::Role::XrefStorer';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
@@ -54,6 +57,10 @@ has organism => (is => 'rw', init_arg => undef);
 has feature_type => (is => 'rw', init_arg => undef);
 has uniquename_column => (is => 'rw', init_arg => undef);
 has name_column => (is => 'rw', init_arg => undef);
+has reference_column => (is => 'rw', init_arg => undef);
+has date_column => (is => 'rw', init_arg => undef);
+has parent_feature_id_column => (is => 'rw', init_arg => undef);
+has parent_feature_rel_column => (is => 'rw', init_arg => undef);
 has ignore_lines_matching => (is => 'rw', init_arg => undef);
 has ignore_short_lines => (is => 'rw', init_arg => undef);
 has column_filters => (is => 'rw', init_arg => undef);
@@ -65,6 +72,10 @@ sub BUILD
   my $organism_taxonid = undef;
   my $uniquename_column = undef;
   my $name_column = undef;
+  my $reference_column = undef;
+  my $date_column = undef;
+  my $parent_feature_id_column = undef;
+  my $parent_feature_rel_column = undef;
   my $feature_type = undef;
   my $ignore_lines_matching = '';
   my $ignore_short_lines = 0;
@@ -75,6 +86,10 @@ sub BUILD
                     "column-filter=s" => \@column_filters,
                     "uniquename-column=s" => \$uniquename_column,
                     "name-column=s" => \$name_column,
+                    "reference-column=s" => \$reference_column,
+                    "date-column=s" => \$date_column,
+                    "parent-feature-id-column=s" => \$parent_feature_id_column,
+                    "parent-feature-rel-column=s" => \$parent_feature_rel_column,
                     "ignore-lines-matching=s" => \$ignore_lines_matching,
                     "ignore-short-lines" => \$ignore_short_lines,
                   );
@@ -116,6 +131,29 @@ sub BUILD
   $self->ignore_lines_matching($ignore_lines_matching);
   $self->ignore_short_lines($ignore_short_lines);
   $self->column_filters(\@column_filters);
+
+  if ($reference_column) {
+    $self->reference_column($reference_column - 1);
+  }
+  if ($date_column) {
+    $self->date_column($date_column - 1);
+  }
+
+  if ($parent_feature_id_column && !$parent_feature_rel_column) {
+    die "--parent-feature-rel-column is required if " .
+      "--parent-feature-id-column is supplied\n";
+  }
+  if ($parent_feature_rel_column && !$parent_feature_id_column) {
+    die "--parent-feature-id-column is required if " .
+      "--parent-feature-rel-column is supplied\n";
+  }
+
+  if ($parent_feature_id_column) {
+    $self->parent_feature_id_column($parent_feature_id_column - 1);
+  }
+  if ($parent_feature_rel_column) {
+    $self->parent_feature_rel_column($parent_feature_rel_column - 1);
+  }
 }
 
 method load($fh) {
@@ -125,7 +163,10 @@ method load($fh) {
   my $organism = $self->organism();
   my $ignore_short_lines = $self->ignore_short_lines();
   my $ignore_lines_matching_string = $self->ignore_lines_matching();
-
+  my $date_column = $self->date_column();
+  my $reference_column = $self->reference_column();
+  my $parent_feature_id_column = $self->parent_feature_id_column();
+  my $parent_feature_rel_column = $self->parent_feature_rel_column();
 
   my %filter_conf = ();
 
@@ -165,7 +206,24 @@ method load($fh) {
     my $uniquename = $columns[$uniquename_column];
     my $name = $columns[$name_column] || undef;
 
-    $self->store_feature($uniquename, $name, [], $feature_type_name, $organism);
+    my $feat = $self->store_feature($uniquename, $name, [], $feature_type_name, $organism);
+
+    if ($reference_column) {
+      my $reference_uniquename = $columns[$reference_column];
+      my $pub = $self->find_or_create_pub($reference_uniquename);
+      $self->create_feature_pub($feat, $pub);
+    }
+
+    if ($parent_feature_id_column && $parent_feature_rel_column) {
+      my $parent_feature_rel_name = $columns[$parent_feature_rel_column];
+      my $parent_feature_id = $columns[$parent_feature_id_column];
+      my $rel_cvterm = $self->get_cvterm('SO_feature_relations', $parent_feature_rel_name);
+
+      my $parent_feature =
+        $self->find_chado_feature($parent_feature_id, 0, 0, $organism);
+
+      $self->store_feature_rel($feat, $parent_feature, $parent_feature_rel_name);
+    }
   }
 }
 
