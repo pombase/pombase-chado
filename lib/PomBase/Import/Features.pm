@@ -178,6 +178,8 @@ method load($fh) {
     }
   }
 
+  my $feature_count = 0;
+
  LINE:
   while (<$fh>) {
     next if /^#|^!/;
@@ -208,6 +210,12 @@ method load($fh) {
 
     my $feat = $self->store_feature($uniquename, $name, [], $feature_type_name, $organism);
 
+    if (!defined $feat) {
+      die "failed to store feature: $uniquename, type $feature_type_name";
+    }
+
+    $feature_count++;
+
     if ($reference_column) {
       my $reference_uniquename = $columns[$reference_column];
       my $pub = $self->find_or_create_pub($reference_uniquename);
@@ -225,6 +233,8 @@ method load($fh) {
       $self->store_feature_rel($feat, $parent_feature, $parent_feature_rel_name);
     }
   }
+
+  print "loaded $feature_count features of type $feature_type_name\n";
 }
 
 1;
