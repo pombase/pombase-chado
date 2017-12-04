@@ -172,7 +172,7 @@ method load($fh) {
 
   for my $filter_config (@{$self->column_filters()}) {
     if ($filter_config =~ /^(\d)=(.*)/) {
-      $filter_conf{$1 - 1} = $2;
+      $filter_conf{$1 - 1} = [split /,/, $2];
     } else {
       die qq|unknown format for --filter-config: "$filter_config"|;
     }
@@ -198,15 +198,23 @@ method load($fh) {
     }
 
     for my $filter_column (keys %filter_conf) {
-      my $filter_value = $filter_conf{$filter_column};
+      my @filter_values = @{$filter_conf{$filter_column}};
 
-      if ($columns[$filter_column] ne $filter_value) {
-        next LINE;
+      my $found_match = 0;
+
+      for my $filter_value (@filter_values) {
+        if ($columns[$filter_column] eq $filter_value) {
+          $found_match = 1;
+        }
       }
+
+      next LINE unless $found_match;
     }
 
     my $uniquename = $columns[$uniquename_column];
     my $name = $columns[$name_column] || undef;
+
+    print "storing $uniquename ", ($name || 'NONE'), " $feature_type_name\n";
 
     my $feat = $self->store_feature($uniquename, $name, [], $feature_type_name, $organism);
 
