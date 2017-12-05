@@ -77,9 +77,17 @@ method BUILD {
       $self->{evidence_types}->{$code} = $details;
     }
     my $ev_name = $details->{name};
+    (my $short_name = $ev_name) =~ s/\s+evidence$//;
     $self->{evidence_name_to_code}->{$ev_name} = $code;
     $self->{evidence_name_to_code}->{lc $ev_name} = $code;
+    $self->{evidence_name_to_code}->{$short_name} = $code;
+    $self->{evidence_name_to_code}->{lc $short_name} = $code;
     $self->{evidence_types}->{lc $code} = $details;
+    $self->{evidence_types}->{lc $code} = $details;
+    $self->{evidence_types}->{$short_name . ' evidence'} = $details;
+    $self->{evidence_types}->{lc $short_name . ' evidence'} = $details;
+    $self->{evidence_types}->{$short_name} = $details;
+    $self->{evidence_types}->{lc $short_name} = $details;
   }
 }
 
