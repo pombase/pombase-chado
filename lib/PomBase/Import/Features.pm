@@ -222,6 +222,13 @@ method load($fh) {
       die "failed to store feature: $uniquename, type $feature_type_name";
     }
 
+    if ($date_column) {
+      my $date = $columns[$date_column];
+      if ($date) {
+        $self->store_featureprop($feat, 'annotation_date', $date)
+      }
+    }
+
     $feature_count++;
 
     if ($reference_column) {
