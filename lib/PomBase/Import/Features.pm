@@ -41,6 +41,7 @@ use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 
 with 'PomBase::Role::ChadoUser';
+with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::OrganismFinder';
@@ -49,6 +50,8 @@ with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::XrefStorer';
+with 'PomBase::Role::CvtermCreator';
+with 'PomBase::Role::FeatureCvtermCreator';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
@@ -58,12 +61,14 @@ has feature_type => (is => 'rw', init_arg => undef);
 has uniquename_column => (is => 'rw', init_arg => undef);
 has name_column => (is => 'rw', init_arg => undef);
 has reference_column => (is => 'rw', init_arg => undef);
+has product_column => (is => 'rw', init_arg => undef);
 has date_column => (is => 'rw', init_arg => undef);
 has parent_feature_id_column => (is => 'rw', init_arg => undef);
 has parent_feature_rel_column => (is => 'rw', init_arg => undef);
 has ignore_lines_matching => (is => 'rw', init_arg => undef);
 has ignore_short_lines => (is => 'rw', init_arg => undef);
 has column_filters => (is => 'rw', init_arg => undef);
+has null_pub => (is => 'rw', init_arg => undef);
 
 sub BUILD
 {
@@ -73,6 +78,7 @@ sub BUILD
   my $uniquename_column = undef;
   my $name_column = undef;
   my $reference_column = undef;
+  my $product_column = undef;
   my $date_column = undef;
   my $parent_feature_id_column = undef;
   my $parent_feature_rel_column = undef;
@@ -87,6 +93,7 @@ sub BUILD
                     "uniquename-column=s" => \$uniquename_column,
                     "name-column=s" => \$name_column,
                     "reference-column=s" => \$reference_column,
+                    "product-column=s" => \$product_column,
                     "date-column=s" => \$date_column,
                     "parent-feature-id-column=s" => \$parent_feature_id_column,
                     "parent-feature-rel-column=s" => \$parent_feature_rel_column,
@@ -135,6 +142,9 @@ sub BUILD
   if ($reference_column) {
     $self->reference_column($reference_column - 1);
   }
+  if ($product_column) {
+    $self->product_column($product_column - 1);
+  }
   if ($date_column) {
     $self->date_column($date_column - 1);
   }
@@ -154,6 +164,10 @@ sub BUILD
   if ($parent_feature_rel_column) {
     $self->parent_feature_rel_column($parent_feature_rel_column - 1);
   }
+
+  my $null_pub = $self->find_or_create_pub('null');
+
+  $self->null_pub($null_pub);
 }
 
 method load($fh) {
@@ -163,6 +177,7 @@ method load($fh) {
   my $organism = $self->organism();
   my $ignore_short_lines = $self->ignore_short_lines();
   my $ignore_lines_matching_string = $self->ignore_lines_matching();
+  my $product_column = $self->product_column();
   my $date_column = $self->date_column();
   my $reference_column = $self->reference_column();
   my $parent_feature_id_column = $self->parent_feature_id_column();
@@ -214,8 +229,6 @@ method load($fh) {
     my $uniquename = $columns[$uniquename_column];
     my $name = $columns[$name_column] || undef;
 
-    print "storing $uniquename ", ($name || 'NONE'), " $feature_type_name\n";
-
     my $feat = $self->store_feature($uniquename, $name, [], $feature_type_name, $organism);
 
     if (!defined $feat) {
@@ -226,6 +239,16 @@ method load($fh) {
       my $date = $columns[$date_column];
       if ($date) {
         $self->store_featureprop($feat, 'annotation_date', $date)
+      }
+    }
+
+    if ($product_column) {
+      my $product = $columns[$product_column];
+      if ($product) {
+        my $product_cvterm =
+          $self->find_or_create_cvterm('PomBase gene products', $product);
+
+        $self->create_feature_cvterm($feat, $product_cvterm, $self->null_pub(), 0);
       }
     }
 
