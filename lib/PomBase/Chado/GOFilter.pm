@@ -62,7 +62,9 @@ method process() {
 CREATE TEMP TABLE go_cvterms AS
 SELECT t.* FROM cvterm t
   JOIN pombase_feature_cvterm_ext_resolved_terms res ON t.cvterm_id = res.cvterm_id
- WHERE res.base_cv_name IN ('biological_process', 'cellular_component', 'molecular_function');
+  JOIN feature_cvterm base_fc on res.feature_cvterm_id = base_fc.feature_cvterm_id
+ WHERE res.base_cv_name IN ('biological_process', 'cellular_component', 'molecular_function')
+   AND NOT base_fc.is_not;
 
 CREATE INDEX go_cvterms_cvterm_id_idx on go_cvterms(cvterm_id);
 EOQ
@@ -82,6 +84,8 @@ AND
   prop_type.name = 'evidence'
 AND
   prop.type_id = prop_type.cvterm_id
+AND
+  NOT feature_cvterm.is_not
 AND
   lower(prop.value) in ('inferred from electronic annotation',
    'inferred from expression pattern','non-traceable author statement',
@@ -111,6 +115,7 @@ WHERE
       FROM cvtermpath path, feature_cvterm fc2
      WHERE subject_id = fc2.cvterm_id
        AND fc2.feature_id = poor_evidence_fcs.feature_id
+       AND NOT fc2.is_not
        AND pathdistance > 0
     )
 OR  -- check for child term + extension via cvtermpath
@@ -123,6 +128,7 @@ OR  -- check for child term + extension via cvtermpath
        AND extension_rel.type_id =
            (select cvterm_id from cvterm where name = 'is_a')
        AND fc2.feature_id = poor_evidence_fcs.feature_id
+       AND NOT fc2.is_not
        AND path.subject_id = extension_rel.object_id
        AND pathdistance > 0
     )
@@ -133,6 +139,7 @@ OR  -- check for child term + extension with direct parent
            cvterm_relationship extension_rel
      WHERE extension_term.cvterm_id = fc2.cvterm_id
        AND extension_term.cvterm_id = extension_rel.subject_id
+       AND NOT fc2.is_not
        AND extension_rel.type_id =
            (select cvterm_id from cvterm where name = 'is_a')
        AND fc2.feature_id = poor_evidence_fcs.feature_id
@@ -144,6 +151,7 @@ OR
      WHERE fc1.feature_cvterm_id <> poor_evidence_fcs.feature_cvterm_id
        AND fc1.cvterm_id = poor_evidence_fcs.cvterm_id
        AND fc1.feature_id = poor_evidence_fcs.feature_id
+       AND NOT fc1.is_not
        AND fc1.feature_cvterm_id NOT IN (
          SELECT pefcs.feature_cvterm_id
            FROM poor_evidence_fcs pefcs))
@@ -152,6 +160,7 @@ OR
     SELECT fc1.feature_cvterm_id
       FROM feature_cvterm fc1
      WHERE fc1.feature_cvterm_id > poor_evidence_fcs.feature_cvterm_id
+       AND NOT fc1.is_not
        AND fc1.cvterm_id = poor_evidence_fcs.cvterm_id
        AND fc1.feature_id = poor_evidence_fcs.feature_id);
 EOQ
