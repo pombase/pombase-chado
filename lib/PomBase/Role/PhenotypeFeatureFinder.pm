@@ -336,6 +336,13 @@ method get_allele($allele_data) {
 
     $new_allele_type =~ s/\s+/_/g;
 
+    if ($new_allele_type eq 'deletion') {
+      # There is nothing to describe if the allele is a deletion.  This method
+      # is sometimes called with a description of "deletion" which is preventing
+      # alleles from being merged.
+      $new_allele_description = undef;
+    }
+
     my $gene_uniquename = $gene->uniquename();
     my $gene_name = $gene->name();
 
