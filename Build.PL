@@ -28,6 +28,7 @@ my $builder = Module::Build->new(
       'YAML'                   => 0,
       'YAML::Any'              => 0,
       'Clone'                  => 0,
+      'Bio::Tools::CodonOptTable' => 0,
       'perl5i::2'              => 0,
     },
     test_requires => {
