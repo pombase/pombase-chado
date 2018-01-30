@@ -1,4 +1,4 @@
-FROM pombase/web-base:v6
+FROM pombase/web-base:v7
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -8,7 +8,7 @@ ENV ANALYTICS_ID=UNSET
 
 WORKDIR /pombase
 
-RUN mkdir bin; mkdir -p /var/www/html/api/v1/dataset/latest/
+RUN mkdir bin; mkdir -p /var/www/html/api/v1/dataset/latest/; mkdir -p /var/www/html/latest_dump_dir
 
 COPY pombase-chado-json /pombase/pombase-chado-json
 ENV PATH="/root/.cargo/bin/:${PATH}"
@@ -17,7 +17,8 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly; \
   (cd pombase-chado-json; cargo build --release && cp target/release/pombase-server /pombase/bin/); \
   rm -r /root/.rustup /pombase/pombase-chado-json
 
-COPY latest_dump_dir /var/www/html/latest_dump_dir
+COPY latest_dump_dir/web-json /var/www/html/latest_dump_dir/web-json
+COPY latest_dump_dir/pombe-embl/website/pombase_v2_config.json /pombase/pombase_v2_config.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/latest_dump_dir/web-json data)
 
 RUN cd ./solr-7.1.0/; ./bin/solr start -force -m 10g; \
@@ -36,7 +37,7 @@ RUN cd ./solr-7.1.0/; ./bin/solr start -force -m 10g; \
     rm -r /var/www/html/api/v1/dataset/latest/data/solr_data
 
 COPY ng-website /pombase/ng-website
-RUN (cd ng-website/frontend; ln -fs /var/www/html/latest_dump_dir/pombe-embl/website/pombase_v2_config.json .; \
+RUN (cd ng-website/frontend; ln -fs /pombase/pombase_v2_config.json .; \
      cp etc/update_analytics_id.sh /pombase/ && \
      npm install; \
      ./etc/build_app.sh $target && cp -r dist/* /var/www/html/) && \
