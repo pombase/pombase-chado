@@ -1,4 +1,4 @@
-FROM pombase/web-base:v7
+FROM pombase/web-base:v8
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -9,6 +9,7 @@ ENV ANALYTICS_ID=UNSET
 WORKDIR /pombase
 
 RUN mkdir bin; mkdir -p /var/www/html/api/v1/dataset/latest/; mkdir -p /var/www/html/latest_dump_dir
+RUN ln -s /pombase/jbrowse-1.12.3-release /var/www/html/jbrowse
 
 COPY pombase-chado-json /pombase/pombase-chado-json
 ENV PATH="/root/.cargo/bin/:${PATH}"
@@ -18,6 +19,8 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly; \
   rm -r /root/.rustup /pombase/pombase-chado-json
 
 COPY latest_dump_dir/web-json /var/www/html/latest_dump_dir/web-json
+COPY latest_dump_dir/gff /var/www/html/latest_dump_dir/gff
+COPY latest_dump_dir/fasta/chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz /var/www/html/latest_dump_dir/Schizosaccharomyces_pombe_all_chromosomes.fa.gz
 COPY latest_dump_dir/pombe-embl/website/pombase_v2_config.json /pombase/pombase_v2_config.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/latest_dump_dir/web-json data)
 
@@ -42,6 +45,10 @@ RUN (cd ng-website/frontend; ln -fs /pombase/pombase_v2_config.json .; \
      npm install; \
      ./etc/build_app.sh $target && cp -r dist/* /var/www/html/) && \
      rm -rf /pombase/ng-website /usr/lib/node_modules
+
+RUN (cd /var/www/html/jbrowse; \
+    ./bin/prepare-refseqs.pl --fasta /var/www/html/latest_dump_dir/Schizosaccharomyces_pombe_all_chromosomes.fa.gz; \
+    ./bin/flatfile-to-json.pl --gff /var/www/html/latest_dump_dir/gff/all_chromosomes.gff3 --trackType CanvasFeatures --trackLabel 'PomBase features')
 
 COPY conf/circus.ini circus.ini
 COPY conf/start_all.sh start_all.sh
