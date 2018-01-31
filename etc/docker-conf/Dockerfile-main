@@ -48,10 +48,12 @@ RUN (cd ng-website/frontend; ln -fs /pombase/pombase_v2_config.json .; \
 
 RUN (cd /var/www/html/jbrowse; \
     ./bin/prepare-refseqs.pl --fasta /var/www/html/latest_dump_dir/Schizosaccharomyces_pombe_all_chromosomes.fa.gz; \
-    ./bin/flatfile-to-json.pl --gff /var/www/html/latest_dump_dir/gff/all_chromosomes.gff3 --trackType CanvasFeatures --trackLabel 'PomBase features')
+    ./bin/flatfile-to-json.pl --gff /var/www/html/latest_dump_dir/gff/all_chromosomes.gff3 \
+      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'PomBase features')
 
 COPY conf/circus.ini circus.ini
 COPY conf/start_all.sh start_all.sh
+COPY conf/trackList.json /var/www/html/jbrowse/data/trackList.json
 RUN echo $version > $HOME/pombase_version
 
 # for testing:
