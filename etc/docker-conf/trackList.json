@@ -1,0 +1,28 @@
+{
+  "tracks" : [
+    {
+      "urlTemplate" : "seq/{refseq_dirpath}/{refseq}-",
+      "type" : "SequenceTrack",
+      "label" : "DNA",
+      "chunkSize" : 20000,
+      "key" : "Reference sequence",
+      "seqType" : "dna",
+      "storeClass" : "JBrowse/Store/Sequence/StaticChunked",
+      "category" : "Reference sequence"
+    },
+    {
+      "trackType" : "CanvasFeatures",
+      "key" : "PomBase features",
+      "label" : "PomBase features",
+      "type" : "CanvasFeatures",
+      "urlTemplate" : "tracks/PomBase features/{refseq}/trackData.json",
+      "style" : {
+        "className" : "feature"
+      },
+      "compress" : 0,
+      "storeClass" : "JBrowse/Store/SeqFeature/NCList",
+      "fmtDetailValue_Name" : "function(name, feature) {if(feature.get('type')=='gene') {return '<a href=\"http://www.pombase.org/gene/'+feature.get('Id');>'+name+'</a>';} else { return name;}}"
+    }
+  ],
+  "formatVersion" : 1
+}
