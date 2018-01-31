@@ -21,7 +21,7 @@
       },
       "compress" : 0,
       "storeClass" : "JBrowse/Store/SeqFeature/NCList",
-      "fmtDetailValue_Name" : "function(name, feature) {if(feature.get('type')=='gene') {return '<a href=\"http://www.pombase.org/gene/'+feature.get('Id');>'+name+'</a>';} else { return name;}}"
+      "fmtDetailValue_Name" : "function(name, feature) {if(feature.get('type')=='gene') {return '<a href=\"http://www.pombase.org/gene/'+feature.get('Id')+'\">'+name+'</a>';} else { return name;}}"
     }
   ],
   "formatVersion" : 1
