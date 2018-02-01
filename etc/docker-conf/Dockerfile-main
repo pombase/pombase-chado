@@ -54,6 +54,8 @@ RUN (cd /var/www/html/jbrowse; \
 COPY conf/circus.ini circus.ini
 COPY conf/start_all.sh start_all.sh
 COPY conf/trackList.json /var/www/html/jbrowse/data/trackList.json
+RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
+
 RUN echo $version > $HOME/pombase_version
 
 # for testing:
