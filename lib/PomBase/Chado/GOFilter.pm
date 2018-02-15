@@ -40,20 +40,7 @@ use Moose;
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 
-=head2 process
-
- Usage   : my $filter = PomBase::Chado::GOFilter->new(config => $config,
-                                                      chado => $chado);
-           $filter->process();
- Function: Remove redundant GO annotation by removing feature_cvterms where
-           there is a more specific annotation or an annotation with a better
-           evidence code.
- Args    : $chado - a schema object of the Chado database
- Return  : nothing, dies on error
-
-=cut
-
-method process() {
+method process_one_evidence_code($code) {
   my $chado = $self->chado();
 
   my $dbh = $chado->storage()->dbh();
@@ -72,7 +59,7 @@ EOQ
   my $sth = $dbh->prepare($go_cvterms_query);
   $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
-  my $poor_ev_query = <<'EOQ';
+  my $poor_ev_query = <<"EOQ";
 CREATE TEMP TABLE poor_evidence_fcs AS
 SELECT feature_cvterm.* FROM feature_cvterm, feature_cvtermprop prop,
        cvterm prop_type
@@ -87,12 +74,7 @@ AND
 AND
   NOT feature_cvterm.is_not
 AND
-  lower(prop.value) in ('inferred from electronic annotation',
-   'inferred from expression pattern','non-traceable author statement',
-   'inferred from reviewed computational analysis',
-   'traceable author statement',
-   'inferred from sequence model'
-)
+  lower(prop.value) = '$code'
 EOQ
 
   $sth = $dbh->prepare($poor_ev_query);
@@ -100,6 +82,7 @@ EOQ
 
   my $poor_ev_index = <<'EOQ';
 CREATE INDEX poor_evidence_fsc_id on poor_evidence_fcs(cvterm_id);
+DROP table go_cvterms;
 EOQ
 
   $sth = $dbh->prepare($poor_ev_index);
@@ -163,18 +146,54 @@ OR
        AND NOT fc1.is_not
        AND fc1.cvterm_id = poor_evidence_fcs.cvterm_id
        AND fc1.feature_id = poor_evidence_fcs.feature_id);
+
+DROP TABLE poor_evidence_fcs;
 EOQ
 
   $sth = $dbh->prepare($fc_to_delete_query);
   $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
   my $delete_query = <<'EOD';
-delete from feature_cvterm
-  where feature_cvterm.feature_cvterm_id in (select * from fc_to_delete);
+DELETE FROM feature_cvterm
+  WHERE feature_cvterm.feature_cvterm_id IN (SELECT * FROM fc_to_delete);
+DROP TABLE fc_to_delete;
 EOD
 
   $sth = $dbh->prepare($delete_query);
   $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+}
+
+=head2 process
+
+ Usage   : my $filter = PomBase::Chado::GOFilter->new(config => $config,
+                                                      chado => $chado);
+           $filter->process();
+ Function: Remove redundant GO annotation by removing feature_cvterms where
+           there is a more specific annotation or an annotation with a better
+           evidence code.
+ Args    : $chado - a schema object of the Chado database
+ Return  : nothing, dies on error
+
+=cut
+
+method process() {
+  my @codes = (
+    'inferred from biological aspect of descendant',
+    'inferred from biological aspect of ancestor',
+    'inferred from electronic annotation',
+    'non-traceable author statement',
+    'traceable author statement',
+    'inferred from sequence model',
+    'inferred from sequence or structural similarity',
+    'inferred from sequence orthology',
+#    'inferred from expression pattern',
+#    'inferred from reviewed computational analysis',
+    'inferred by curator',
+  );
+
+  for my $code (@codes) {
+    $self->process_one_evidence_code($code);
+  }
 }
 
 1;
