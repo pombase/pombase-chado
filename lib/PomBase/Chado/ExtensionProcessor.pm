@@ -424,7 +424,8 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
       my $organism = $self->find_organism_by_common_name('pombe');
       try {
         my $ref_feature =
-          $self->find_chado_feature($identifier, 1, 1, $organism, ['gene', 'pseudogene']);
+          $self->find_chado_feature($identifier, 1, 1, $organism,
+                                    ['gene', 'pseudogene', 'promoter']);
         $identifier = $ref_feature->uniquename();
       } catch {
         chomp (my $message = $_);
