@@ -14,10 +14,10 @@ cd $TEMP_DIR
 (cd ng-website; git pull)
 (cd pombase-chado-json; git pull)
 
-rsync -aL --delete-after $SCRIPT_PATH/docker-conf/* conf/
+rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
 echo copying dump dir ...
-rsync -aL --delete-after $dump_dir/* latest_dump_dir/
+rsync -aL --delete-after --exclude '*~' $dump_dir/* latest_dump_dir/
 
 echo building container ...
 docker build -f conf/Dockerfile-main --build-arg target=$target -t=pombase/web:$version-$target .
