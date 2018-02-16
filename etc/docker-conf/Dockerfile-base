@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && apt-get -y dist-upgrade && apt-get clean
 RUN apt-get -y install apt-utils curl gnupg2 git-core procps xz-utils \
-  libterm-readline-gnu-perl pkg-config libssl-dev && apt-get clean
+  libterm-readline-gnu-perl pkg-config libssl-dev unzip && apt-get clean
 RUN cd /pombase && curl https://curation.pombase.org/software/solr-7.1.0.tar.xz | tar -x --xz -f - && \
     (cd /pombase/solr-7.1.0/; rm -rf example contrib licenses *.txt docs)
 
@@ -25,9 +25,10 @@ RUN apt-get update && apt-get -y install nodejs && apt-get clean
 RUN npm install --silent --unsafe-perm -g @angular/cli
 RUN apt-get -y install libperlio-gzip-perl libgd-perl
 
-ENV JBROWSE_VERSION=1.12.3-release
-RUN (cd /pombase; curl -L https://github.com/GMOD/jbrowse/archive/$JBROWSE_VERSION.tar.gz | tar xzf -)
-RUN (cd /pombase/jbrowse-$JBROWSE_VERSION; npm install --silent --unsafe-perm; ./setup.sh)
+ENV JBROWSE_VERSION=1.12.4
+
+RUN (cd /pombase; JBROWSE_ZIP=JBrowse-$JBROWSE_VERSION.zip; curl -L https://github.com/GMOD/jbrowse/releases/download/$JBROWSE_VERSION-release/$JBROWSE_ZIP > /tmp/$JBROWSE_ZIP; unzip /tmp/$JBROWSE_ZIP; rm /tmp/$JBROWSE_ZIP)
+RUN (cd /pombase/JBrowse-$JBROWSE_VERSION; npm install --silent --unsafe-perm; ./setup.sh)
 
 WORKDIR /pombase
 
