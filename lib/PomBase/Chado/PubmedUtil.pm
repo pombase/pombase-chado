@@ -138,6 +138,10 @@ sub parse_pubmed_xml
   my $self = shift;
   my $content = shift;
 
+  # awful hack to remove italics in titles and abstracts to prevent parsing
+  # problems, see: https://github.com/pombase/pombase-chado/issues/663
+  $content =~ s|<[ib]>([^<>]+)</[ib]>| $1|g;
+
   my $res_hash = XMLin($content,
                        ForceArray => ['AbstractText',
                                       'Author', 'PublicationType']);
