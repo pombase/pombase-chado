@@ -126,6 +126,12 @@ sub get_pubmed_ids_by_query
 
 our $PUBMED_PREFIX = "PMID";
 
+sub _remove_tag {
+  my $text = shift;
+  $text =~ s/<[^>]+>/ /g;
+  return $text;
+}
+
 =head2 parse_pubmed_xml
 
  Usage   : $self->parse_pubmed_xml($xml);
@@ -138,9 +144,12 @@ sub parse_pubmed_xml
   my $self = shift;
   my $content = shift;
 
-  # awful hack to remove italics in titles and abstracts to prevent parsing
-  # problems, see: https://github.com/pombase/pombase-chado/issues/663
-  $content =~ s%<(?:i|b|sup)>([^<>]+)</(?:i|b|sup)>% $1%g;
+  # Awful hack to remove italics and other tags in titles and abstracts.
+  # This prevents parsing problems, see:
+  # https://github.com/pombase/pombase-chado/issues/663
+  for my $tag_name ('ArticleTitle', 'AbstractText') {
+    $content =~ s|<$tag_name>(.+?)</$tag_name>|"<$tag_name>" . _remove_tag($1) . "</$tag_name>"|egs;
+  }
 
   my $res_hash = XMLin($content,
                        ForceArray => ['AbstractText',
