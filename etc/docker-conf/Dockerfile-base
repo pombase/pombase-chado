@@ -29,7 +29,8 @@ ENV JBROWSE_VERSION=1.12.4
 
 RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-min.tar.gz; \
     curl -L http://oliver1.sysbiol.private.cam.ac.uk/software/$JBROWSE_TAR | tar xzf -; \
-    mv JBrowse-$JBROWSE_VERSION-min jbrowse)
+    mv JBrowse-$JBROWSE_VERSION-min jbrowse; \
+    cd /pombase/jbrowse; ./setup.sh; rm -rf node_modules docs sample_data)
 
 WORKDIR /pombase
 
