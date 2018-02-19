@@ -27,7 +27,7 @@ RUN apt-get -y install libperlio-gzip-perl libgd-perl
 
 ENV JBROWSE_VERSION=1.12.4
 
-RUN (cd /pombase; JBROWSE_ZIP=JBrowse-$JBROWSE_VERSION.zip; curl -L https://github.com/GMOD/jbrowse/releases/download/$JBROWSE_VERSION-release/$JBROWSE_ZIP > /tmp/$JBROWSE_ZIP; unzip /tmp/$JBROWSE_ZIP; rm /tmp/$JBROWSE_ZIP)
+RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-min.tar.gz; curl -L http://oliver1.sysbiol.private.cam.ac.uk/software/$JBROWSE_TAR | tar xzf -)
 RUN (cd /pombase/JBrowse-$JBROWSE_VERSION; npm install --silent --unsafe-perm; ./setup.sh)
 
 WORKDIR /pombase
