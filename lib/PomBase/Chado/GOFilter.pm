@@ -178,16 +178,16 @@ EOD
 
 method process() {
   my @codes = (
+    'inferred from reviewed computational analysis',
+    'inferred from electronic annotation',
+    'inferred from expression pattern',
     'inferred from biological aspect of descendant',
     'inferred from biological aspect of ancestor',
-    'inferred from electronic annotation',
     'non-traceable author statement',
     'traceable author statement',
     'inferred from sequence model',
     'inferred from sequence or structural similarity',
     'inferred from sequence orthology',
-#    'inferred from expression pattern',
-#    'inferred from reviewed computational analysis',
     'inferred by curator',
   );
 
