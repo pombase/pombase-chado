@@ -191,8 +191,6 @@ method process() {
     'inferred by curator',
   );
 
-  my $count = sub
-
   for my $code (@codes) {
     $self->process_one_evidence_code($code);
   }
