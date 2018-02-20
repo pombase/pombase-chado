@@ -178,11 +178,11 @@ EOD
 
 method process() {
   my @codes = (
+    'inferred from biological aspect of descendant',
+    'inferred from biological aspect of ancestor',
     'inferred from reviewed computational analysis',
     'inferred from electronic annotation',
     'inferred from expression pattern',
-    'inferred from biological aspect of descendant',
-    'inferred from biological aspect of ancestor',
     'non-traceable author statement',
     'traceable author statement',
     'inferred from sequence model',
@@ -190,6 +190,8 @@ method process() {
     'inferred from sequence orthology',
     'inferred by curator',
   );
+
+  my $count = sub
 
   for my $code (@codes) {
     $self->process_one_evidence_code($code);
