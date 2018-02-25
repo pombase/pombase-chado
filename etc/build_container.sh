@@ -7,9 +7,9 @@ version=$1
 dump_dir=$2
 target=$3
 
-TEMP_DIR=/var/pomcur/container_build
+CONTAINER_DIR=/var/pomcur/container_build
 
-cd $TEMP_DIR
+cd $CONTAINER_DIR
 
 (cd ng-website; git pull)
 (cd pombase-chado-json; git pull)
@@ -17,7 +17,15 @@ cd $TEMP_DIR
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
 echo copying dump dir ...
-rsync -aL --delete-after --exclude '*~' $dump_dir/* latest_dump_dir/
+for dir in web-json gff chromosome_fasta website_config
+do
+  rm -rf $CONTAINER_DIR/$dir
+done
+
+cp -r $dump_dir/web-json $CONTAINER_DIR/
+cp -r $dump_dir/gff $CONTAINER_DIR/
+cp -r $dump_dir/fasta/chromosomes $CONTAINER_DIR/chromosome_fasta
+cp -r $dump_dir/pombe-embl/website $CONTAINER_DIR/website_config
 
 echo building container ...
 docker build -f conf/Dockerfile-main --build-arg target=$target -t=pombase/web:$version-$target .
