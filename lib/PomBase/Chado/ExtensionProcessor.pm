@@ -437,8 +437,8 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
         $identifier = $1;
       } else {
         if (($rel_name eq 'has_penetrance' || $rel_name eq 'occupancy') &&
-            ($identifier =~ /^[~><]?(.*?)\%?$/ && $1->is_number() ||
-             $identifier =~ /^\d+(?:\.\d+)?\%?-\d+(?:\.\d+)?\%?$/)) {
+            ($identifier =~ /^[><]?~?(.*?)\%?$/ && $1->is_number() ||
+             $identifier =~ /^~?\d+(?:\.\d+)?\%?-~?\d+(?:\.\d+)?\%?$/)) {
           # the "identifier" is the percentage value
           $identifier =~ s/(\d+)\%/$1/g;
         } else {
