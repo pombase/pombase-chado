@@ -310,6 +310,14 @@ method get_allele($allele_data) {
 
   my $canto_session = $allele_data->{canto_session};
 
+  my $add_canto_session = sub {
+    if (defined $canto_session) {
+      my $allele = shift;
+      $self->store_featureprop($allele, 'canto_session', $canto_session);
+    }
+  };
+
+
   if (exists $allele_data->{primary_identifier} &&
       $allele_data->{primary_identifier} !~ /:($canto_session)-\d+$/) {
     $allele = $self->chado()->resultset('Sequence::Feature')
@@ -346,19 +354,19 @@ method get_allele($allele_data) {
     my $gene_uniquename = $gene->uniquename();
     my $gene_name = $gene->name();
 
-    if (!defined $new_allele_name && !defined $new_allele_description) {
-      if ($new_allele_type eq 'wild_type') {
-        $new_allele_name = ($gene_name || $gene_uniquename) . '+';
-      } else {
-        if ($new_allele_type eq 'deletion') {
-          $new_allele_name = ($gene_name || $gene_uniquename) . 'delta';
-        } else {
-          use Data::Dumper;
-          $Data::Dumper::Maxdepth = 3;
-          warn Dumper([$allele_data]);
-          croak "internal error - no name or description passed to get_allele()";
-        }
-      }
+    if ($new_allele_type ne 'wild_type' && $new_allele_type ne 'deletion' &&
+          !defined $new_allele_name && !defined $new_allele_description) {
+      use Data::Dumper;
+      $Data::Dumper::Maxdepth = 3;
+      croak "internal error - no name or description passed to get_allele(): " .
+        Dumper([$allele_data]);
+    }
+
+    if ($new_allele_type eq 'wild_type') {
+      $new_allele_name = ($gene_name || $gene_uniquename) . '+';
+    }
+    if($new_allele_type eq 'deletion') {
+      $new_allele_name = ($gene_name || $gene_uniquename) . 'delta';
     }
 
     my $instance_of_cvterm = $self->get_cvterm('pombase_relations', 'instance_of');
@@ -478,6 +486,8 @@ method get_allele($allele_data) {
             }
           }
 
+          $add_canto_session->($existing_allele);
+
           return $existing_allele;
         }
       } else {
@@ -550,11 +560,7 @@ method get_allele($allele_data) {
       $self->store_featureprop($allele, 'description', $new_allele_description);
     }
 
-    my $canto_session = $allele_data->{canto_session};
-
-    if (defined $canto_session) {
-      $self->store_featureprop($allele, 'canto_session', $canto_session);
-    }
+    $add_canto_session->($allele);
 
     if (defined $new_allele_type && length $new_allele_type > 0) {
       if (!exists $self->allele_types()->{$new_allele_type}) {
