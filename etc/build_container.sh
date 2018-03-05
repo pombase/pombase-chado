@@ -27,6 +27,8 @@ cp -r $dump_dir/gff $CONTAINER_DIR/
 cp -r $dump_dir/fasta/chromosomes $CONTAINER_DIR/chromosome_fasta
 cp -r $dump_dir/pombe-embl/website $CONTAINER_DIR/website_config
 
+$SCRIPT_PATH/create_jbrowse_track_list.pl $CONTAINER_DIR/website_config/trackListTemplate.json $CONTAINER_DIR/website_config/pombase_jbrowse_track_metadata.csv > $CONTAINER_DIR/trackList.json
+
 echo building container ...
 docker build -f conf/Dockerfile-main --build-arg target=$target -t=pombase/web:$version-$target .
 
