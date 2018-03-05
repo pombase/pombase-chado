@@ -1,5 +1,8 @@
 #!/bin/bash -
 
+set -eu
+set -o pipefail
+
 SCRIPT=$(readlink -f "$0")
 SCRIPT_PATH=$(dirname "$SCRIPT")
 
