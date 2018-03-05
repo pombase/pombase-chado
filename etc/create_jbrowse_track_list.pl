@@ -7,6 +7,10 @@ use Text::CSV;
 use JSON;
 
 my $track_json_filename = shift;
+my $track_metadata_csv = shift;
+my $output_track_json_filename = shift;
+my $output_track_metadata_csv = shift;
+
 open my $track_json_fh, '<', $track_json_filename or die;
 
 my $track_json_text = '';
@@ -19,14 +23,27 @@ my $track_json_text = '';
 
 my $track_json = decode_json($track_json_text);
 
-my $track_metadata_csv = shift;
-
 my $csv = Text::CSV->new ();
+$csv->eol ("\n");
 
 my @new_tracks = ();
 
 open my $fh, "<", $track_metadata_csv;
 $csv->header ($fh);
+
+my @column_names_to_filter =
+  qw(display_in_jbrowse ensembl_source_name short_description data_file_type);
+
+my @output_column_names =
+  grep {
+    my $column_name = $_;
+    !grep { $_ eq $column_name } @column_names_to_filter;
+  } $csv->column_names();
+
+open my $out_csv_fh, '>', $output_track_metadata_csv or die;
+
+$csv->print($out_csv_fh, \@output_column_names);
+
 while (my $row = $csv->getline_hr ($fh)) {
   next unless $row->{display_in_jbrowse} =~ /^y/i;
 
@@ -53,10 +70,18 @@ while (my $row = $csv->getline_hr ($fh)) {
     use Data::Dumper;
     die 'unknown storage class for: ', Dumper([$row]);
   }
+
+  my @out_row = map {
+    $row->{$_};
+  } @output_column_names;
+
+  $csv->print($out_csv_fh, \@out_row);
 }
 
 push @{$track_json->{tracks}}, sort { $a->{key} cmp $b->{key} } @new_tracks;
 
 my $json = JSON->new()->allow_nonref();
 
-print $json->pretty()->encode($track_json);
+open my $out_json_fh, '>', $output_track_json_filename or die;
+
+print $out_json_fh $json->pretty()->encode($track_json);

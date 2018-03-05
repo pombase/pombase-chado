@@ -48,7 +48,7 @@ RUN (cd ng-website/frontend; ln -fs /pombase/pombase_v2_config.json .; \
      rm -rf /pombase/ng-website /usr/lib/node_modules
 
 COPY trackList.json /pombase/jbrowse/data/trackList.json
-COPY website_config/pombase_jbrowse_track_metadata.csv /pombase/jbrowse/data/pombase_jbrowse_track_metadata.csv
+COPY pombase_jbrowse_track_metadata.csv /pombase/jbrowse/data/pombase_jbrowse_track_metadata.csv
 
 RUN (cd /var/www/html/jbrowse; \
     ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/Schizosaccharomyces_pombe_all_chromosomes.fa.gz; \
