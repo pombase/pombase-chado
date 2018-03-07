@@ -52,8 +52,10 @@ COPY pombase_jbrowse_track_metadata.csv /pombase/jbrowse/data/pombase_jbrowse_tr
 
 RUN (cd /var/www/html/jbrowse; \
     ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/Schizosaccharomyces_pombe_all_chromosomes.fa.gz; \
-    ./bin/flatfile-to-json.pl --gff /pombase/gff/all_chromosomes.gff3 \
-      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'PomBase features')
+    ./bin/flatfile-to-json.pl --gff /pombase/gff/all_chromosomes_forward_strand.gff3 \
+      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'PomBase forward strand features'; \
+    ./bin/flatfile-to-json.pl --gff /pombase/gff/all_chromosomes_reverse_strand.gff3 \
+      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'PomBase reverse strand features')
 
 COPY conf/circus.ini circus.ini
 COPY conf/start_all.sh start_all.sh
