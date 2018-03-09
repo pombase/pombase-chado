@@ -5,6 +5,7 @@ LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
 ARG target
 ENV ANALYTICS_ID=UNSET
+ENV APP_DEPLOY_CONFIG="{ mode: 'prod' }"
 
 WORKDIR /pombase
 
