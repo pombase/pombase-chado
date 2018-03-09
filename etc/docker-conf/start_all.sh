@@ -1,6 +1,6 @@
 #!/bin/bash -
 
-if [ x$APP_DEPLOY_CONFIG = x ]
+if [ "x$APP_DEPLOY_CONFIG" = x ]
 then
     APP_DEPLOY_CONFIG="{ mode: 'prod' }"
 fi
