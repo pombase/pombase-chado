@@ -10,6 +10,6 @@ then
   echo "ANALYTICS_ID is not set - container won't start"
   exit 1
 else
-  /pombase/update_envs.sh $ANALYTICS_ID "$APP_DEPLOY_CONFIG" /var/www/html/index.html &&
+  /pombase/update_vars.sh $ANALYTICS_ID "$APP_DEPLOY_CONFIG" /var/www/html/index.html &&
   exec /usr/local/bin/circusd /pombase/circus.ini
 fi
