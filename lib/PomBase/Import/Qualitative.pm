@@ -174,7 +174,7 @@ method load($fh) {
     my $type_cvterm = $self->find_cvterm_by_name('gene_ex', $type_cvterm_name);
 
     if (!defined $type_cvterm) {
-      die qq(can't find gene expression term "$type level" in the database\n);
+      die qq(can't find gene expression term "$type_cvterm_name" in the database\n);
     }
 
     my $feature_cvterm =
