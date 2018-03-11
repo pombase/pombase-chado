@@ -126,7 +126,7 @@ method load($fh) {
     if (!defined $type) {
       die qq(mandatory column value for feature type missing at line $.\n);
     }
-    if (!grep { $_ eq $type } qw(RNA protein)) {
+    if (!grep { $_ eq $type } qw(RNA protein translation)) {
       die qq(the type column must be either "RNA" or "protein", not "$type"\n);
     }
     if (!defined $evidence_code) {
@@ -164,7 +164,14 @@ method load($fh) {
     }
     my $pub = $self->find_or_create_pub($pubmedid);
 
-    my $type_cvterm = $self->find_cvterm_by_name('gene_ex', "$type level");
+    my $type_cvterm_name;
+    if ($type eq 'DNA' || $type eq 'protein') {
+      $type_cvterm_name = "$type level";
+    } else {
+      $type_cvterm_name = $type;
+    }
+
+    my $type_cvterm = $self->find_cvterm_by_name('gene_ex', $type_cvterm_name);
 
     if (!defined $type_cvterm) {
       die qq(can't find gene expression term "$type level" in the database\n);
