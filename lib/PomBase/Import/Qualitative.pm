@@ -165,7 +165,7 @@ method load($fh) {
     my $pub = $self->find_or_create_pub($pubmedid);
 
     my $type_cvterm_name;
-    if ($type eq 'DNA' || $type eq 'protein') {
+    if ($type eq 'RNA' || $type eq 'protein') {
       $type_cvterm_name = "$type level";
     } else {
       $type_cvterm_name = $type;
