@@ -128,7 +128,7 @@ method _do_query_checks() {
         $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
         while (my @data = map { $_ // '[null]' } $sth->fetchrow_array()) {
-          say "  @data";
+          say "  " . (join "\t", @data);
         }
       }
     } else {
