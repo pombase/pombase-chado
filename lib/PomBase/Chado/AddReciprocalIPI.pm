@@ -121,6 +121,7 @@ method process() {
   my $ipi_annotation_sql = <<'EOQ';
 select gene.uniquename as subject_uniquename,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'with')) as object_uniquename,
+fc.cvterm_name as term_name,
 pub.uniquename as pub_uniquename,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'community_curated')) as community_curated_value,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'assigned_by')) as assigned_by_value,
@@ -129,7 +130,7 @@ pub.uniquename as pub_uniquename,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'canto_session')) as canto_session_value,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'approver_email')) as approver_email_value,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'date')) as date_value
-from feature_cvterm fc
+from pombase_feature_cvterm_ext_resolved_terms fc
 join pub on fc.pub_id = pub.pub_id
 join feature mrna on mrna.feature_id = fc.feature_id
 join feature_relationship frel on frel.subject_id = mrna.feature_id
@@ -137,7 +138,7 @@ join cvterm frel_type on frel_type.cvterm_id = frel.type_id
 join feature gene on frel.object_id = gene.feature_id
 join feature_cvtermprop fcp on fcp.feature_cvterm_id = fc.feature_cvterm_id
 where fcp.type_id in (select cvterm_id from cvterm where name = 'evidence')
-and fc.cvterm_id = (select cvterm_id from cvterm where name = 'protein binding')
+and fc.base_cvterm_name = 'protein binding'
 and frel_type.name = 'part_of'
 and fcp.value = 'Inferred from Physical Interaction' order by pub.uniquename;
 EOQ
@@ -151,9 +152,10 @@ EOQ
     my $subject_uniquename = $results->{subject_uniquename};
     $results->{object_uniquename} =~ s/.*://;
     my $object_uniquename = $results->{object_uniquename};
+    my $term_name = $results->{term_name};
     my $pub_uniquename = $results->{pub_uniquename};
 
-    my $key = _make_key($subject_uniquename, $object_uniquename, $pub_uniquename);
+    my $key = _make_key($subject_uniquename, $object_uniquename, $term_name, $pub_uniquename);
 
     $chado_ipi_annotation{$key} = $results;
   }
@@ -168,12 +170,18 @@ EOQ
 
     my $subject_uniquename = $key_results->{subject_uniquename};
     my $object_uniquename = $key_results->{object_uniquename};
+    my $term_name = $key_results->{term_name};
     my $pub_uniquename = $key_results->{pub_uniquename};
 
-    my $reciprocal_key = _make_key($object_uniquename, $subject_uniquename, $pub_uniquename);
+    my $reciprocal_key = _make_key($object_uniquename, $subject_uniquename, $term_name, $pub_uniquename);
 
     if (!exists $chado_ipi_annotation{$reciprocal_key}) {
-      $self->_add_new_ipi($protein_binding_term, $key_results);
+      my $term = $protein_binding_term;
+      if ($term_name ne 'protein binding') {
+        $term = $self->find_cvterm_by_name('PomBase annotation extension terms', $term_name);
+      }
+      $self->_add_new_ipi($term, $key_results);
+      warn "added: $reciprocal_key\n";
       $missing_count++;
     }
   }
