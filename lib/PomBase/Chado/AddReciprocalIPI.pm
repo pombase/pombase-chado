@@ -181,7 +181,6 @@ EOQ
         $term = $self->find_cvterm_by_name('PomBase annotation extension terms', $term_name);
       }
       $self->_add_new_ipi($term, $key_results);
-      warn "added: $reciprocal_key\n";
       $missing_count++;
     }
   }
