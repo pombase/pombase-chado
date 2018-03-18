@@ -26,17 +26,15 @@ COPY chromosome_fasta /pombase/chromosome_fasta
 COPY website_config/pombase_v2_config.json /pombase/pombase_v2_config.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/web-json data)
 
+COPY conf/solr-schema-commands.txt /pombase/solr-schema-commands.txt
+
 RUN cd ./solr-7.1.0/; ./bin/solr start -force -m 10g; \
     ./bin/solr create_core -force -c terms; \
     curl http://localhost:8983/solr/terms/config -d '{"set-user-property": {"update.autoCreateFields":"false"}}'; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"idField","class":"solr.StrField"}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field-type":{"name":"textField","class":"solr.TextField","analyzer":{"type":"index","tokenizer":{"class":"solr.LowerCaseTokenizerFactory"},"filter":{"class":"solr.EdgeNGramFilterFactory","minGramSize":"2", "maxGramSize":"50"}}, "analyzer":{"type":"query", "tokenizer":{"class":"solr.LowerCaseTokenizerFactory"}}}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"cv_name","type":"idField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"name","type": "textField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"close_synonyms","type":"textField","multiValued":"true","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"distant_synonyms","type": "textField","multiValued":"true","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"interesting_parents","type": "textField","multiValued":"true","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
-    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field":{"name":"definition","type":"textField","indexed":"true","stored":"true"}}' http://localhost:8983/solr/terms/schema; \
+    while read command
+    do
+        curl -X POST -H 'Content-type:application/json' -d "$command" http://localhost:8983/solr/terms/schema
+    done < /pombase/solr-schema-commands.txt
     gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/terms.json.gz | ./bin/post -c terms -type application/json -d && \
     ./bin/solr stop && \
     rm -rf /var/www/html/api/v1/dataset/latest/data/solr_data

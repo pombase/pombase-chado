@@ -1,0 +1,10 @@
+{"add-field-type":{"name":"idField","class":"solr.StrField"}}
+{"add-field-type":{"name":"textField","class":"solr.TextField","analyzer":{"type":"index","tokenizer":{"class":"solr.LowerCaseTokenizerFactory"},"filter":{"class":"solr.EdgeNGramFilterFactory","minGramSize":"2", "maxGramSize":"50"}}, "analyzer":{"type":"query", "tokenizer":{"class":"solr.LowerCaseTokenizerFactory"}}}}
+{"add-field":{"name":"cv_name","type":"idField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"name","type": "textField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"close_synonyms","type":"textField","multiValued":"true","indexed":"false","stored":"true"}}
+{"add-field":{"name":"close_synonym_words","type":"textField","multiValued":"false","indexed":"true","stored":"true"}}
+{"add-field":{"name":"distant_synonyms","type": "textField","multiValued":"true","indexed":"false","stored":"true"}}
+{"add-field":{"name":"distant_synonym_words","type": "textField","multiValued":"false","indexed":"true","stored":"true"}}
+{"add-field":{"name":"interesting_parents","type": "textField","multiValued":"true","indexed":"true","stored":"true"}}
+{"add-field":{"name":"definition","type":"textField","indexed":"true","stored":"true"}}
