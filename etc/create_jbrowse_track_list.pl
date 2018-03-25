@@ -5,6 +5,7 @@ use strict;
 
 use Text::CSV;
 use JSON;
+use Data::Dumper;
 
 my $track_json_filename = shift;
 my $track_metadata_csv = shift;
@@ -54,6 +55,11 @@ while (my $row = $csv->getline_hr ($fh)) {
   } else {
     if (lc $row->{data_file_type} eq 'rnaseq') {
       $store_class = "JBrowse/Store/SeqFeature/BAM";
+    } else {
+      if (lc $row->{data_file_type} eq 'bed') {
+        warn "skipping BED file config - not handled yet: ", Dumper([$row]);
+        next;
+      }
     }
   }
 
@@ -67,7 +73,6 @@ while (my $row = $csv->getline_hr ($fh)) {
       autoscale => 'local',
     };
   } else {
-    use Data::Dumper;
     die 'unknown storage class for: ', Dumper([$row]);
   }
 
