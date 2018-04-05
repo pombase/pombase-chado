@@ -64,7 +64,7 @@ while (my $row = $csv->getline_hr ($fh)) {
   }
 
   if ($store_class) {
-    push @new_tracks, {
+    my $new_track = {
       key => $row->{label},
       label => $row->{label},
       urlTemplate => $row->{source_url},
@@ -72,6 +72,20 @@ while (my $row = $csv->getline_hr ($fh)) {
       storeClass => $store_class,
       autoscale => 'local',
     };
+
+    if ($row->{strand}) {
+      if ($row->{strand} eq 'forward') {
+        $new_track->{style} = {
+          pos_color => '#B00',
+        };
+      } else {
+        $new_track->{style} = {
+          pos_color => '#00B',
+        };
+      }
+    }
+
+    push @new_tracks, $new_track;
   } else {
     die 'unknown storage class for: ', Dumper([$row]);
   }
