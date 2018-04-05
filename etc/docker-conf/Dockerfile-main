@@ -11,13 +11,13 @@ WORKDIR /pombase
 
 COPY pombase-chado-json /pombase/pombase-chado-json
 ENV PATH="/root/.cargo/bin/:${PATH}"
+RUN mkdir bin
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly; \
   rustup default nightly; \
   (cd pombase-chado-json; cargo build --release && cp target/release/pombase-server /pombase/bin/); \
   rm -r /root/.rustup /pombase/pombase-chado-json
 
-RUN mkdir bin; mkdir -p /var/www/html/api/v1/dataset/latest/
-RUN ln -s /pombase/jbrowse /var/www/html/jbrowse
+RUN mkdir -p /var/www/html/api/v1/dataset/latest/; ln -s /pombase/jbrowse /var/www/html/jbrowse
 
 COPY web-json /var/www/html/web-json
 COPY gff /pombase/gff
