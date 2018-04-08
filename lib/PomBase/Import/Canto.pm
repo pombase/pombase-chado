@@ -359,7 +359,7 @@ method _store_ontology_annotation {
               push @column_17_values, $range_value;
             } else {
               if ($_->{relation} eq 'has_qualifier') {
-                if ($range_value eq 'NOT') {
+                if ($range_value eq 'NOT' || $range_value eq 'PBHQ:002') {
                   $is_not = 1;
                 } else {
                   if ($range_value =~ /^(\w+):(\d+)$/) {
