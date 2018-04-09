@@ -76,11 +76,11 @@ while (my $row = $csv->getline_hr ($fh)) {
     if ($row->{strand}) {
       if ($row->{strand} =~ /forward/) {
         $new_track->{style} = {
-          pos_color => '#B00',
+          pos_color => '#00B',
         };
       } else {
         $new_track->{style} = {
-          pos_color => '#00B',
+          pos_color => '#B00',
         };
       }
     }
