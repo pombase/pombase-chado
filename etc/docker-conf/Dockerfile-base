@@ -1,5 +1,5 @@
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v16 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v17 .
 FROM bitnami/minideb:stretch
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -15,7 +15,7 @@ RUN apt-get -y install --reinstall python-pkg-resources && apt-get clean
 RUN apt-get -y install python3-pip && apt-get clean
 RUN apt-get -y install openjdk-8-jre-headless && apt-get clean
 RUN apt-get -y install python3-zmq && apt-get clean
-RUN pip3 install circus
+RUN pip3 install 'tornado<5'; pip3 install circus
 
 RUN cd /pombase && curl http://oliver1.sysbiol.private.cam.ac.uk/software/solr-7.1.0.tar.xz | tar -x --xz -f - && \
     (cd /pombase/solr-7.1.0/; rm -rf example contrib licenses *.txt docs)
