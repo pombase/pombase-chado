@@ -1,5 +1,5 @@
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v15 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v16 .
 FROM bitnami/minideb:stretch
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -30,7 +30,7 @@ ENV JBROWSE_VERSION=1.12.4
 RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-pombase.tar.gz; \
     curl -L http://oliver1.sysbiol.private.cam.ac.uk/software/$JBROWSE_TAR | tar xzf -; \
     mv JBrowse-$JBROWSE_VERSION-pombase jbrowse; \
-    cd /pombase/jbrowse; ./setup.sh; rm -rf node_modules docs sample_data; \
+    cd /pombase/jbrowse; ./setup.sh; rm -rf node_modules sample_data; \
     rm -rf /root/.cpan*)
 
 WORKDIR /pombase
