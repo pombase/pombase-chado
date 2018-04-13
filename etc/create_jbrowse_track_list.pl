@@ -47,6 +47,7 @@ $csv->print($out_csv_fh, \@output_column_names);
 
 while (my $row = $csv->getline_hr ($fh)) {
   next unless $row->{display_in_jbrowse} =~ /^y/i;
+  next if $row->{data_type} eq 'PomBase track';
 
   my $store_class = undef;
 
