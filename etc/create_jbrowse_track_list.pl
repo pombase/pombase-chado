@@ -47,6 +47,13 @@ $csv->print($out_csv_fh, \@output_column_names);
 
 while (my $row = $csv->getline_hr ($fh)) {
   next unless $row->{display_in_jbrowse} =~ /^y/i;
+
+  my @out_row = map {
+    $row->{$_};
+  } @output_column_names;
+
+  $csv->print($out_csv_fh, \@out_row);
+
   next if $row->{data_type} eq 'PomBase track';
 
   my $store_class = undef;
@@ -90,12 +97,6 @@ while (my $row = $csv->getline_hr ($fh)) {
   } else {
     die 'unknown storage class for: ', Dumper([$row]);
   }
-
-  my @out_row = map {
-    $row->{$_};
-  } @output_column_names;
-
-  $csv->print($out_csv_fh, \@out_row);
 }
 
 push @{$track_json->{tracks}}, sort { $a->{key} cmp $b->{key} } @new_tracks;
