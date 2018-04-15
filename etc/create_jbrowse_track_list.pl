@@ -54,7 +54,8 @@ while (my $row = $csv->getline_hr ($fh)) {
 
   $csv->print($out_csv_fh, \@out_row);
 
-  next if $row->{data_type} eq 'PomBase track';
+  next if $row->{data_type} eq 'PomBase track' or
+    $row->{data_type} eq 'Genome sequence and features';
 
   my $store_class = undef;
 
