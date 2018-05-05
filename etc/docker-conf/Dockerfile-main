@@ -39,7 +39,8 @@ RUN cd ./solr-7.1.0/; ./bin/solr start -force -m 10g; \
 COPY ng-website /pombase/ng-website
 RUN (cd ng-website/frontend; ln -fs /pombase/pombase_v2_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
-     npm install; \
+     npm install -g yarn; \
+     yarn; \
      ./etc/build_app.sh $target && cp -r dist/* /var/www/html/) && \
      rm -rf /pombase/ng-website /usr/lib/node_modules
 
