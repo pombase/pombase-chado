@@ -66,18 +66,32 @@ while (my $row = $csv->getline_hr ($fh)) {
       $store_class = "JBrowse/Store/SeqFeature/BAM";
     } else {
       if (lc $row->{data_file_type} eq 'bed') {
-        warn "skipping BED file config - not handled yet: ", Dumper([$row]);
+        $store_class = "JBrowse/Store/SeqFeature/BEDTabix"
+      } else {
+        warn "skipping file config - not handled yet: ", Dumper([$row]);
         next;
       }
     }
   }
 
   if ($store_class) {
+    my $track_type;
+
+    if ($row->{data_file_type} eq 'bigWig') {
+      $track_type = "JBrowse/View/Track/Wiggle/XYPlot";
+    } else {
+      if ($row->{data_file_type} eq 'bed') {
+        $track_type = "JBrowse/View/Track/CanvasFeatures";
+      } else {
+        $track_type = "Alignments2";
+      }
+    }
+
     my $new_track = {
       key => $row->{label},
       label => $row->{label},
       urlTemplate => $row->{source_url},
-      type => $row->{data_file_type} eq 'bigWig' ? "JBrowse/View/Track/Wiggle/XYPlot" : "Alignments2",
+      type => $track_type,
       storeClass => $store_class,
       autoscale => 'local',
     };
