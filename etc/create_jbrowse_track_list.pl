@@ -94,7 +94,7 @@ while (my $row = $csv->getline_hr ($fh)) {
         $track_type = "JBrowse/View/Track/HTMLFeatures";
         $style{featureCss} = "background-color: #666; height: 1.5em; border: 2px solid #666;";
         $style{arrowheadClass} = undef;
-        $style{label} = "";
+        $style{label} = "_NOLABEL_";
       } else {
         $track_type = "Alignments2";
       }
