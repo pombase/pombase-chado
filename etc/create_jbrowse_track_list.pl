@@ -92,7 +92,7 @@ while (my $row = $csv->getline_hr ($fh)) {
     } else {
       if ($row->{data_file_type} eq 'bed') {
         $track_type = "JBrowse/View/Track/HTMLFeatures";
-        $style{featureCss} = "background-color: #666; height: 12; border: 2px solid #666;";
+        $style{featureCss} = "background-color: #666; height: 1.5em; border: 2px solid #666;";
         $style{arrowheadClass} = undef;
         $style{label} = "";
       } else {
