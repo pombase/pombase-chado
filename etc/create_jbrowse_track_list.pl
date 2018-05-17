@@ -77,11 +77,23 @@ while (my $row = $csv->getline_hr ($fh)) {
   if ($store_class) {
     my $track_type;
 
+    my %style = ();
+
+    if ($row->{strand}) {
+      if ($row->{strand} =~ /forward/) {
+        $style{pos_color} = '#00B';
+      } else {
+        $style{pos_color} = '#B00',
+      }
+    }
+
     if ($row->{data_file_type} eq 'bigWig') {
       $track_type = "JBrowse/View/Track/Wiggle/XYPlot";
     } else {
       if ($row->{data_file_type} eq 'bed') {
-        $track_type = "JBrowse/View/Track/CanvasFeatures";
+        $track_type = "JBrowse/View/Track/HTMLFeatures";
+        $style{featureCss} = "background-color: #666; height: 12; border: 2px solid #666;";
+        $style{arrowheadClass} = undef;
       } else {
         $track_type = "Alignments2";
       }
@@ -96,16 +108,8 @@ while (my $row = $csv->getline_hr ($fh)) {
       autoscale => 'local',
     };
 
-    if ($row->{strand}) {
-      if ($row->{strand} =~ /forward/) {
-        $new_track->{style} = {
-          pos_color => '#00B',
-        };
-      } else {
-        $new_track->{style} = {
-          pos_color => '#B00',
-        };
-      }
+    if (scalar keys %style > 0) {
+      $new_track->{style} = \%style;
     }
 
     push @new_tracks, $new_track;
