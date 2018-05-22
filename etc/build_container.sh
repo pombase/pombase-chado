@@ -19,12 +19,6 @@ cd $CONTAINER_DIR
 
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
-echo copying dump dir ...
-for dir in web-json gff chromosome_fasta website_config
-do
-  rm -rf $CONTAINER_DIR/$dir
-done
-
 rsync -acHS --delete-after $dump_dir/web-json $CONTAINER_DIR/
 rsync -acHS --delete-after $dump_dir/gff $CONTAINER_DIR/
 rsync -acHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromosome_fasta/
