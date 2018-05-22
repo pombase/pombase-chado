@@ -19,10 +19,10 @@ cd $CONTAINER_DIR
 
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
-rsync -acHS --delete-after $dump_dir/web-json $CONTAINER_DIR/
-rsync -acHS --delete-after $dump_dir/gff $CONTAINER_DIR/
-rsync -acHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromosome_fasta/
-rsync -acHS --delete-after $dump_dir/pombe-embl/website/ $CONTAINER_DIR/website_config/
+rsync -acvPHS --delete-after $dump_dir/web-json $CONTAINER_DIR/
+rsync -acvPHS --delete-after $dump_dir/gff $CONTAINER_DIR/
+rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromosome_fasta/
+rsync -acvPHS --delete-after $dump_dir/pombe-embl/website/ $CONTAINER_DIR/website_config/
 
 $SCRIPT_PATH/create_jbrowse_track_list.pl $CONTAINER_DIR/website_config/trackListTemplate.json $CONTAINER_DIR/website_config/pombase_jbrowse_track_metadata.csv \
    $CONTAINER_DIR/trackList.json $CONTAINER_DIR/pombase_jbrowse_track_metadata.csv
