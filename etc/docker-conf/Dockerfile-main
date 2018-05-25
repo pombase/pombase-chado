@@ -12,8 +12,8 @@ WORKDIR /pombase
 COPY pombase-chado-json /pombase/pombase-chado-json
 ENV PATH="/root/.cargo/bin/:${PATH}"
 RUN mkdir bin
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly-2018-04-01 && \
-  rustup default nightly-2018-05-14 && \
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly && \
+  rustup default nightly && \
   (cd pombase-chado-json; cargo build --release && cp target/release/pombase-server /pombase/bin/) && \
   rm -r /root/.rustup /pombase/pombase-chado-json
 
