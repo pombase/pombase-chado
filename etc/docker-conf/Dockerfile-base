@@ -1,11 +1,12 @@
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v19 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v20 .
 FROM bitnami/minideb:stretch
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
-RUN mkdir /downloads; \
-  adduser pombase --gecos 'PomBase User,,,' --disabled-password; \
-  ln -s /home/pombase /
+RUN mkdir /downloads; mkdir /pombase
+RUN groupadd -g 1000 pombase && \
+  useradd -d /pombase -r -u 1000 -g pombase pombase
+RUN chown -R pombase:pombase /pombase
 
 ENV DEBIAN_FRONTEND=noninteractive
 
