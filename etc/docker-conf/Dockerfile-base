@@ -40,8 +40,7 @@ ENV JBROWSE_VERSION=1.12.4
 RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-pombase.tar.gz; \
     curl -L https://www.pombase.org/software/$JBROWSE_TAR | tar xzf -; \
     mv JBrowse-$JBROWSE_VERSION-pombase jbrowse; \
-    cd /pombase/jbrowse; ./setup.sh; rm -rf node_modules sample_data; \
-    rm -rf /root/.cpan*)
+    cd /pombase/jbrowse; ./setup.sh; rm -rf node_modules sample_data)
 
 WORKDIR /pombase
 
