@@ -48,7 +48,7 @@ $csv->print($out_csv_fh, \@output_column_names);
 while (my $row = $csv->getline_hr ($fh)) {
   next unless $row->{display_in_jbrowse} =~ /^y/i;
 
-  my $hide_feature_label = $row->{hide_feature_label};
+  my $show_feature_label = $row->{show_feature_label};
 
   my @out_row = map {
     $row->{$_};
@@ -100,7 +100,7 @@ while (my $row = $csv->getline_hr ($fh)) {
       }
     }
 
-    if ($hide_feature_label =~ /^y/i) {
+    if ($show_feature_label =~ /^n/i) {
       $style{label} = "_NOLABEL_";
     }
 

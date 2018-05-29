@@ -1,9 +1,11 @@
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v18 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v19 .
 FROM bitnami/minideb:stretch
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
-RUN mkdir /downloads /pombase
+RUN mkdir /downloads; \
+  adduser pombase --gecos 'PomBase User,,,' --disabled-password; \
+  ln -s /home/pombase /
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -17,13 +19,15 @@ RUN apt-get -y install openjdk-8-jre-headless && apt-get clean
 RUN apt-get -y install python3-zmq && apt-get clean
 RUN pip3 install 'tornado<5'; pip3 install circus
 
-RUN cd /pombase && curl http://oliver1.sysbiol.private.cam.ac.uk/software/solr-7.1.0.tar.xz | tar -x --xz -f - && \
-    (cd /pombase/solr-7.1.0/; rm -rf example contrib licenses *.txt docs)
-
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get update && apt-get -y install nodejs && apt-get clean
 RUN npm install --silent --unsafe-perm -g @angular/cli
 RUN apt-get -y install libperlio-gzip-perl libgd-perl
+
+RUN cd /pombase && curl http://oliver1.sysbiol.private.cam.ac.uk/software/solr-7.1.0.tar.xz | tar -x --xz -f - && \
+    (cd /pombase/solr-7.1.0/; rm -rf example contrib licenses *.txt docs)
+
+USER pombase
 
 ENV JBROWSE_VERSION=1.12.4
 
