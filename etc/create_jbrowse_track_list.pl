@@ -48,6 +48,8 @@ $csv->print($out_csv_fh, \@output_column_names);
 while (my $row = $csv->getline_hr ($fh)) {
   next unless $row->{display_in_jbrowse} =~ /^y/i;
 
+  my $hide_feature_label = $row->{hide_feature_label};
+
   my @out_row = map {
     $row->{$_};
   } @output_column_names;
@@ -93,10 +95,13 @@ while (my $row = $csv->getline_hr ($fh)) {
         $track_type = "JBrowse/View/Track/HTMLFeatures";
         $style{featureCss} = "background-color: #666; height: 1.5em; border: 2px solid #666;";
         $style{arrowheadClass} = undef;
-        $style{label} = "_NOLABEL_";
       } else {
         $track_type = "Alignments2";
       }
+    }
+
+    if ($hide_feature_label =~ /^y/i) {
+      $style{label} = "_NOLABEL_";
     }
 
     my $new_track = {
