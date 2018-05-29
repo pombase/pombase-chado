@@ -1,4 +1,4 @@
-FROM pombase/web-base:v18
+FROM pombase/web-base:v19
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -6,6 +6,8 @@ LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 ARG target
 ENV ANALYTICS_ID=UNSET
 ENV APP_DEPLOY_CONFIG="{ mode: 'prod' }"
+
+USER pombase
 
 WORKDIR /pombase
 

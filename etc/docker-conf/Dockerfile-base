@@ -10,9 +10,18 @@ RUN mkdir /downloads; \
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && apt-get -y dist-upgrade && apt-get clean
-RUN apt-get -y install apt-utils curl gnupg2 git-core procps xz-utils \
-  libterm-readline-gnu-perl pkg-config libssl-dev unzip && apt-get clean
-RUN apt-get -y install lsof jq gcc && apt-get clean
+RUN apt-get -y install apt-utils curl && apt-get clean
+
+USER pombase
+
+RUN cd /pombase && curl https://archive.apache.org/dist/lucene/solr/7.1.0/solr-7.1.0.tgz | tar -x --gzip -f - && \
+    (cd /pombase/solr-7.1.0/; rm -rf example contrib licenses *.txt docs)
+
+USER root
+
+RUN apt-get -y install gnupg2 git-core procps xz-utils \
+  libterm-readline-gnu-perl pkg-config libssl-dev unzip \
+  lsof jq gcc && apt-get clean
 RUN apt-get -y install --reinstall python-pkg-resources && apt-get clean
 RUN apt-get -y install python3-pip && apt-get clean
 RUN apt-get -y install openjdk-8-jre-headless && apt-get clean
@@ -24,15 +33,12 @@ RUN apt-get update && apt-get -y install nodejs && apt-get clean
 RUN npm install --silent --unsafe-perm -g @angular/cli
 RUN apt-get -y install libperlio-gzip-perl libgd-perl
 
-RUN cd /pombase && curl http://oliver1.sysbiol.private.cam.ac.uk/software/solr-7.1.0.tar.xz | tar -x --xz -f - && \
-    (cd /pombase/solr-7.1.0/; rm -rf example contrib licenses *.txt docs)
-
 USER pombase
 
 ENV JBROWSE_VERSION=1.12.4
 
 RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-pombase.tar.gz; \
-    curl -L http://oliver1.sysbiol.private.cam.ac.uk/software/$JBROWSE_TAR | tar xzf -; \
+    curl -L https://www.pombase.org/software/$JBROWSE_TAR | tar xzf -; \
     mv JBrowse-$JBROWSE_VERSION-pombase jbrowse; \
     cd /pombase/jbrowse; ./setup.sh; rm -rf node_modules sample_data; \
     rm -rf /root/.cpan*)
