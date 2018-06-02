@@ -94,7 +94,10 @@ while (my $row = $csv->getline_hr ($fh)) {
       if ($row->{data_file_type} eq 'bed') {
         $track_type = "JBrowse/View/Track/HTMLFeatures";
         $style{featureCss} = "background-color: #666; height: 1.5em; border: 2px solid #666;";
-        $style{arrowheadClass} = undef;
+
+        # enable arrows for now, see:
+        # https://github.com/pombase/website/issues/792#issuecomment-393875208
+        # $style{arrowheadClass} = undef;
       } else {
         $track_type = "Alignments2";
       }
