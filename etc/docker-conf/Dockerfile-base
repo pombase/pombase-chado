@@ -36,7 +36,7 @@ RUN apt-get -y install libperlio-gzip-perl libgd-perl
 
 USER pombase
 
-ENV JBROWSE_VERSION=1.12.4
+ENV JBROWSE_VERSION=1.14.2
 
 RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-pombase.tar.gz; \
     curl -L https://www.pombase.org/software/$JBROWSE_TAR | tar xzf -; \
