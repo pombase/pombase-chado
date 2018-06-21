@@ -69,8 +69,13 @@ while (my $row = $csv->getline_hr ($fh)) {
       if (lc $row->{data_file_type} eq 'bed') {
         $store_class = "JBrowse/Store/SeqFeature/BEDTabix"
       } else {
-        warn "skipping file config - not handled yet: ", Dumper([$row]);
-        next;
+        if (lc $row->{data_file_type} eq 'vcf') {
+          $store_class = "JBrowse/Store/SeqFeature/VCFTabix"
+        } else {
+
+          warn "skipping file config - not handled yet: ", Dumper([$row]);
+          next;
+        }
       }
     }
   }
@@ -99,7 +104,11 @@ while (my $row = $csv->getline_hr ($fh)) {
         # https://github.com/pombase/website/issues/792#issuecomment-393875208
         # $style{arrowheadClass} = undef;
       } else {
-        $track_type = "Alignments2";
+        if ($row->{data_file_type} eq 'vcf') {
+          $track_type = 'CanvasVariants';
+        } else {
+          $track_type = "Alignments2";
+        }
       }
     }
 
