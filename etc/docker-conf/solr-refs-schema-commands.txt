@@ -2,13 +2,13 @@
 {"add-field-type":{"name":"textField","class":"solr.TextField","analyzer":{"type":"index","tokenizer":{"class":"solr.LowerCaseTokenizerFactory"},"filter":{"class":"solr.EdgeNGramFilterFactory","minGramSize":"2", "maxGramSize":"50"}}, "analyzer":{"type":"query", "tokenizer":{"class":"solr.LowerCaseTokenizerFactory"}}}}
 {"add-field-type":{"name":"intField","class":"solr.TrieIntField"}}
 {"add-field":{"name":"uniquename","type":"strField","indexed":"true","stored":"true"}}
-{"add-field":{"name":"citation","type":"strField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"citation","type":"textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"title","type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"pubmed_abstract","type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"authors","type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"authors_abbrev", "type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"pubmed_publication_date", "type": "textField","indexed":"true","stored":"true"}}
-{"add-field":{"name":"publication_year", "type": "intField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"publication_year", "type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"approved_date", "type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"gene_count", "type": "intField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"genotype_count", "type": "intField","indexed":"true","stored":"true"}}
