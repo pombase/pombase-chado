@@ -1,5 +1,5 @@
 {"add-field-type":{"name":"idField","class":"solr.StrField"}}
-{"add-field-type":{"name":"textField","class":"solr.TextField","analyzer":{"type":"index","tokenizer":{"class":"solr.LowerCaseTokenizerFactory"},"filter":{"class":"solr.EdgeNGramFilterFactory","minGramSize":"2", "maxGramSize":"50"}}, "analyzer":{"type":"query", "tokenizer":{"class":"solr.LowerCaseTokenizerFactory"}}}}
+{"add-field-type": {"name": "textField", "class": "solr.TextField", "indexAnalyzer": {"tokenizer": {"class": "solr.WhitespaceTokenizerFactory"}, "filter": {"class":"WordDelimiterGraphFilterFactory", "splitOnNumerics": 0}}, "queryAnalyzer":{"tokenizer":{"class":"solr.WhitespaceTokenizerFactory"}, "filter": {"class":"solr.WordDelimiterGraphFilterFactory", "splitOnNumerics": 0}}}}
 {"add-field":{"name":"cv_name","type":"idField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"name","type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"close_synonyms","type":"textField","multiValued":"true","indexed":"false","stored":"true"}}
