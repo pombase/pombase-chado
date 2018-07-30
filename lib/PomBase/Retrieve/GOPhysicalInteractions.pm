@@ -127,7 +127,11 @@ method retrieve() {
 
           $seen_rows->{$key} = 1;
 
-          return [$gene_identifier, $with_identifier, $pub_uniquename];
+          if ($gene_identifier eq $with_identifier) {
+            goto ROW;
+          } else {
+            return [$gene_identifier, $with_identifier, $pub_uniquename]
+          }
         } else {
           return undef;
         }
