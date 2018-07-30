@@ -42,6 +42,7 @@ use Moose;
 use Iterator::Simple qw(iterator);
 
 use PomBase::Retrieve::GeneAssociationFile;
+use PomBase::Retrieve::GOSubstrates;
 
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
@@ -64,7 +65,32 @@ method _build_gaf_retriever {
                                                 options => \@options);
 }
 
+has substrates_retriever => (is => 'rw', init_arg => undef,
+                     lazy_build => 1);
+
+method _build_substrates_retriever {
+  my @options = @{$self->options()};
+
+  return
+    PomBase::Retrieve::GOSubstrates->new(chado => $self->chado(),
+                                         config => $self->config(),
+                                         options => \@options);
+}
+
+func _make_key() {
+  return join '-|-', @_;
+}
+
 method retrieve() {
+  my $substrates_iter = $self->substrates_retriever()->retrieve();
+
+  my %seen_substrates = ();
+
+  while (my $data = $substrates_iter->next()) {
+    $seen_substrates{_make_key($data->[0], $data->[1])} = 1;
+    $seen_substrates{_make_key($data->[1], $data->[0])} = 1;
+  }
+
   my $retriever = $self->gaf_retriever();
   my $results = $retriever->retrieve();
 
@@ -119,9 +145,13 @@ method retrieve() {
 
           $with_identifier =~ s/^$database_name://;
 
-          my $key = "$gene_identifier - $with_identifier - $pub_uniquename";
+          my $key = _make_key($gene_identifier, $with_identifier, $pub_uniquename);
 
           if ($seen_rows->{$key}) {
+            goto ROW;
+          }
+
+          if ($seen_substrates{_make_key($gene_identifier, $with_identifier)}) {
             goto ROW;
           }
 
