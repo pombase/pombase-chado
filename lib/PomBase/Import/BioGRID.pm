@@ -126,7 +126,11 @@ method load($fh) {
     my $experimental_system = $columns_ref->{"Experimental System"};
     my $experimental_system_type = $columns_ref->{"Experimental System Type"};
 
-    my $pubmed_id = 'PMID:' . $columns_ref->{"Pubmed ID"};
+    my $pubmedid = $columns_ref->{"Pubmed ID"};
+
+    if ($pubmedid =~ /^\d+$/) {
+      $pubmedid = "PMID:$pubmedid";
+    }
 
     my $organism_interactor = "Organism Interactor";
 
@@ -223,7 +227,7 @@ method load($fh) {
     };
     next unless defined $feature_b;
 
-    my $pub = $self->find_or_create_pub($pubmed_id);
+    my $pub = $self->find_or_create_pub($pubmedid);
 
     my $rel_type_name;
 
