@@ -91,6 +91,10 @@ method _build_isa_cvterm {
   return $self->get_relation_cvterm('is_a');
 }
 
+method _store_residue($feature_cvterm, $residue) {
+  $self->add_feature_cvtermprop($feature_cvterm, residue => $residue, 0);
+}
+
 method store_extension($feature_cvterm, $extensions) {
   my $old_cvterm = $feature_cvterm->cvterm();
   my $old_cv_name = $old_cvterm->cv()->name();
@@ -487,8 +491,14 @@ method process_one_annotation($featurecvterm, $extension_text, $extensions) {
       my $rel_name = $1;
       my $detail = $2;
 
-      map {
-        $self->_process_identifier($feature_uniquename, $rel_name, $_) } split /\|/, $detail;
+      if ($rel_name eq 'residue') {
+        $self->_store_residue($featurecvterm, $detail);
+        ();
+      } else {
+        map {
+          $self->_process_identifier($feature_uniquename, $rel_name, $_);
+        } split /\|/, $detail;
+      }
     } else {
       die "annotation extension qualifier on $feature_uniquename not understood: $_\n";
     }
