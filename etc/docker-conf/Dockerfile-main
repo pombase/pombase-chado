@@ -36,7 +36,7 @@ COPY --chown=pombase:pombase conf/solr-refs-schema-commands.txt /pombase/solr-re
 
 USER pombase
 
-RUN cd ./solr-7.1.0/; ./bin/solr start -force -m 10g; \
+RUN cd ./solr-7.1.0/; ./bin/solr start -force -m 4g; \
     ./bin/solr create_core -force -c terms; \
     ./bin/solr create_core -force -c refs; \
     curl http://localhost:8983/solr/terms/config -d '{"set-user-property": {"update.autoCreateFields":"false"}}'; \
