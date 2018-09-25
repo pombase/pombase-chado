@@ -120,6 +120,9 @@ method load($fh) {
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $biogrid_id = $columns_ref->{"#BioGRID Interaction ID"};;
 
+    # ignore empty lines
+    next unless grep $_, values %$columns_ref;
+
     my $uniquename_a = $columns_ref->{"Systematic Name Interactor A"};
     my $uniquename_b = $columns_ref->{"Systematic Name Interactor B"};
 
