@@ -56,6 +56,7 @@ with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 with 'PomBase::Role::InteractionStorer';
+with 'PomBase::Role::FeatureStorer';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
@@ -116,6 +117,26 @@ method load($fh) {
   my @evidence_code_filter = @{$self->evidence_code_filter() // []};
   my $interaction_note_filter = $self->interaction_note_filter();
 
+  my %stored_interactor_ids = ();
+
+  my $maybe_store_interactor_id = sub {
+    my $feature = shift;
+    my $biogrid_interactor_id = shift;
+
+    my $uniquename = $feature->uniquename();
+
+    if ($stored_interactor_ids{$uniquename}) {
+      return;
+    }
+
+    if ($biogrid_interactor_id && length $biogrid_interactor_id > 0 &&
+        $biogrid_interactor_id ne '-') {
+      $self->store_featureprop($feature, 'biogrid_interactor_id',
+                               $biogrid_interactor_id);
+      $stored_interactor_ids{$uniquename} = 1;
+    }
+  };
+
   ROW:
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $biogrid_id = $columns_ref->{"#BioGRID Interaction ID"};;
@@ -125,6 +146,9 @@ method load($fh) {
 
     my $uniquename_a = $columns_ref->{"Systematic Name Interactor A"};
     my $uniquename_b = $columns_ref->{"Systematic Name Interactor B"};
+
+    my $biogrid_interactor_id_a = $columns_ref->{"BioGRID ID Interactor A"};
+    my $biogrid_interactor_id_b = $columns_ref->{"BioGRID ID Interactor B"};
 
     my $experimental_system = $columns_ref->{"Experimental System"};
     my $experimental_system_type = $columns_ref->{"Experimental System Type"};
@@ -229,6 +253,9 @@ method load($fh) {
       warn "skipping BioGRID ID $biogrid_id: $_";
     };
     next unless defined $feature_b;
+
+    $maybe_store_interactor_id->($feature_a, $biogrid_interactor_id_a);
+    $maybe_store_interactor_id->($feature_b, $biogrid_interactor_id_b);
 
     my $pub = $self->find_or_create_pub($pubmedid);
 
