@@ -74,11 +74,23 @@ method get_relation_cvterm($cvterm_name) {
 
   my $cvterm = $cvterm_rs->next();
 
-  my $extra_cvterm = $cvterm_rs->next();
+  my @extra_cvterms = $cvterm_rs->all();
 
-  if (defined $extra_cvterm) {
-    warn "more the one relation cvterm returned for $cvterm_name:\n" .
-      "terms: " . id_of_cvterm($cvterm) . " and " . id_of_cvterm($extra_cvterm) . "\n";
+  if (@extra_cvterms > 0) {
+    my $internal_term = undef;
+
+    for my $possible_term ($cvterm, @extra_cvterms) {
+      if ($possible_term->dbxref()->db()->name() eq 'internal') {
+        $internal_term = $possible_term;
+      }
+    }
+
+    if ($internal_term) {
+      $cvterm = $internal_term;
+    } else {
+      warn "more the one relation cvterm returned for $cvterm_name:\n" .
+        "terms: " . id_of_cvterm($cvterm) . " and " . id_of_cvterm($extra_cvterms[0]) . "\n";
+    }
   }
 
   $cache->{$cvterm_name} = $cvterm;
