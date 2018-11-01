@@ -49,6 +49,7 @@ with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
+with 'PomBase::Role::CvtermpropStorer';
 with 'PomBase::Role::FeatureCvtermCreator';
 
 has verbose => (is => 'ro');
@@ -143,14 +144,6 @@ method load($fh) {
         next;
       }
 
-      if (!exists $details_by_do_id{$do_id}) {
-        $details_by_do_id{$do_id} = {
-          malacards_disease_name => $malacards_disease_name,
-          malacards_displayed_disease_name => $malacards_displayed_disease_name,
-          malacards_disease_slug => $malacards_disease_slug,
-        };
-      }
-
       my $cvterm = $self->find_cvterm_by_term_id($do_id);
 
       if (!defined $cvterm) {
@@ -158,10 +151,27 @@ method load($fh) {
         next;
       }
 
+      if (!exists $details_by_do_id{$do_id}) {
+        $details_by_do_id{$do_id} = {
+          malacards_disease_name => $malacards_disease_name,
+          malacards_displayed_disease_name => $malacards_displayed_disease_name,
+          malacards_disease_slug => $malacards_disease_slug,
+          cvterm => $cvterm,
+        };
+      }
+
       my $feature_cvterm =
         $self->create_feature_cvterm($dest_gene, $cvterm, $pub, 0);
     }
   }
+
+  while (my ($do_id, $details) = each %details_by_do_id) {
+    my $cvterm = $details->{cvterm};
+    for my $prop_name (qw(malacards_disease_name malacards_displayed_disease_name malacards_disease_slug)) {
+      $self->store_cvtermprop($cvterm, $prop_name, $details->{$prop_name});
+    }
+  }
+
 }
 
 1;
