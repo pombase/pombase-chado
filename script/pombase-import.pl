@@ -24,6 +24,7 @@ my %input_types = (
   quantitative => 'PomBase::Import::Quantitative',
   qualitative => 'PomBase::Import::Qualitative',
   modification => 'PomBase::Import::Modification',
+  malacards => 'PomBase::Import::MalaCards',
   'phenotype-annotation' => 'PomBase::Import::PhenotypeAnnotation',
 );
 
