@@ -26,6 +26,7 @@ RUN mkdir -p /var/www/html/api/v1/dataset/latest/; ln -s /pombase/jbrowse /var/w
 COPY --chown=pombase:pombase web-json /var/www/html/web-json
 COPY --chown=pombase:pombase gff /pombase/gff
 COPY --chown=pombase:pombase chromosome_fasta /pombase/chromosome_fasta
+COPY --chown=pombase:pombase Rocket.toml /pombase/
 
 COPY --chown=pombase:pombase website_config/pombase_v2_config.json /pombase/pombase_v2_config.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/web-json data)
