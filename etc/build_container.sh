@@ -19,6 +19,8 @@ cd $CONTAINER_DIR
 
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
+rsync -acvPHS --delete-after pombase-chado-json/Rocket.toml $CONTAINER_DIR/
+
 rsync -acvPHS --delete-after $dump_dir/web-json $CONTAINER_DIR/
 rsync -acvPHS --delete-after $dump_dir/gff $CONTAINER_DIR/
 rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromosome_fasta/
