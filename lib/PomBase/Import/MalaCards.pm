@@ -127,6 +127,8 @@ method load($fh) {
 
   my $pub = $self->find_or_create_pub('PMID:27899610');
 
+  my %seen_annotations = ();
+
   while (my $columns_ref = $tsv->getline($fh)) {
     if (@$columns_ref == 1 && $columns_ref->[0]->trim()->length() == 0) {
       next;
@@ -160,8 +162,14 @@ method load($fh) {
         };
       }
 
-      my $feature_cvterm =
+      my $key = "$do_id -> " . $dest_gene->uniquename();
+
+      if (!$seen_annotations{$key}) {
         $self->create_feature_cvterm($dest_gene, $cvterm, $pub, 0);
+        $seen_annotations{$key} = 1;
+      } else {
+        warn "seen: $key\n";
+      }
     }
   }
 
