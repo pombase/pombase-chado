@@ -69,6 +69,8 @@ has ignore_lines_matching => (is => 'rw', init_arg => undef);
 has ignore_short_lines => (is => 'rw', init_arg => undef);
 has column_filters => (is => 'rw', init_arg => undef);
 has null_pub => (is => 'rw', init_arg => undef);
+has transcript_so_name => (is => 'rw', init_arg => undef);
+has transcript_rel_cvterm => (is => 'rw', init_arg => undef);
 
 sub BUILD
 {
@@ -85,6 +87,7 @@ sub BUILD
   my $feature_type = undef;
   my $ignore_lines_matching = '';
   my $ignore_short_lines = 0;
+  my $transcript_so_name = undef;
   my @column_filters = ();
 
   my @opt_config = ("organism-taxonid=s" => \$organism_taxonid,
@@ -99,6 +102,7 @@ sub BUILD
                     "parent-feature-rel-column=s" => \$parent_feature_rel_column,
                     "ignore-lines-matching=s" => \$ignore_lines_matching,
                     "ignore-short-lines" => \$ignore_short_lines,
+                    "transcript-so-name=s" => \$transcript_so_name,
                   );
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
@@ -168,6 +172,14 @@ sub BUILD
   my $null_pub = $self->find_or_create_pub('null');
 
   $self->null_pub($null_pub);
+
+  if ($transcript_so_name) {
+    $self->transcript_so_name($transcript_so_name);
+
+    my $transcript_rel_cvterm = $self->get_cvterm('relationship', 'part_of');
+
+    $self->transcript_rel_cvterm($transcript_rel_cvterm);
+  }
 }
 
 method load($fh) {
@@ -269,6 +281,17 @@ method load($fh) {
         $self->find_chado_feature($parent_feature_id, 0, 0, $organism);
 
       $self->store_feature_rel($feat, $parent_feature, $parent_feature_rel_name);
+    }
+
+    my $transcript_so_name = $self->transcript_so_name();
+
+    if ($transcript_so_name) {
+      my $transcript_feature =
+        $self->store_feature("$uniquename.1", undef, [], $transcript_so_name, $organism);
+
+      my $transcript_rel_cvterm = $self->transcript_rel_cvterm();
+
+      $self->store_feature_rel($transcript_feature, $feat, $transcript_rel_cvterm);
     }
   }
 
