@@ -54,6 +54,7 @@ with 'PomBase::Role::FeatureCvtermCreator';
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
+has organism_taxonid => (is => 'rw', init_arg => undef);
 has organism => (is => 'rw', init_arg => undef);
 
 
@@ -82,6 +83,7 @@ method BUILD {
     die "can't find organism with taxon ID: $organism_taxonid\n";
   }
 
+  $self->organism_taxonid($organism_taxonid);
   $self->organism($organism);
 }
 
@@ -118,7 +120,7 @@ method process() {
 
   my $dbh = $chado->storage()->dbh();
 
-  my $ipi_annotation_sql = <<'EOQ';
+  my $ipi_annotation_sql = <<"EOQ";
 select gene.uniquename as subject_uniquename,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'with')) as object_uniquename,
 fc.cvterm_name as term_name,
@@ -137,14 +139,19 @@ join feature_relationship frel on frel.subject_id = mrna.feature_id
 join cvterm frel_type on frel_type.cvterm_id = frel.type_id
 join feature gene on frel.object_id = gene.feature_id
 join feature_cvtermprop fcp on fcp.feature_cvterm_id = fc.feature_cvterm_id
+join organismprop op on gene.organism_id = op.organism_id
+join cvterm opt on op.type_id = opt.cvterm_id
 where fcp.type_id in (select cvterm_id from cvterm where name = 'evidence')
 and fc.base_cvterm_name = 'protein binding'
 and frel_type.name = 'part_of'
-and fcp.value = 'Inferred from Physical Interaction' order by pub.uniquename;
+and fcp.value = 'Inferred from Physical Interaction'
+and opt.name = 'taxon_id'
+and op.value = ?
+order by pub.uniquename
 EOQ
 
   my $sth = $dbh->prepare($ipi_annotation_sql);
-  $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+  $sth->execute('' . $self->organism_taxonid()) or die "Couldn't execute: " . $sth->errstr;
 
   my %chado_ipi_annotation = ();
 
