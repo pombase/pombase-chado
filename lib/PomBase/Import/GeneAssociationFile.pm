@@ -249,7 +249,7 @@ method load($fh) {
       next;
     }
 
-    my $db_reference = $columns{"DB_reference"};
+    my $db_references = $columns{"DB_reference"};
 
     my $evidence_code = $columns{"Evidence_code"};
     my $long_evidence =
@@ -341,9 +341,16 @@ method load($fh) {
       next;
     }
 
-    my $proc = sub {
-      my $pub = $self->find_or_create_pub($db_reference);
+    my @pubs = map {
+      my $db_reference = $_;
+      $self->find_or_create_pub($db_reference);
+    } split /\|/, $db_references;
 
+    map {
+      my $pub = $_;
+    } @pubs;
+
+    my $proc = sub {
       my $cvterm = $self->find_cvterm_by_term_id($go_id);
 
       if (!defined $cvterm) {
@@ -352,7 +359,11 @@ method load($fh) {
       }
 
       my $feature_cvterm =
-        $self->create_feature_cvterm($feature, $cvterm, $pub, $is_not);
+        $self->create_feature_cvterm($feature, $cvterm, $pubs[0], $is_not);
+
+      if (@pubs > 1) {
+        warn "ignored ", (@pubs - 1), " extra refs for ", $feature->uniquename(), "\n";
+      }
 
       my $extension_text = $columns{"Annotation_extension"};
 
