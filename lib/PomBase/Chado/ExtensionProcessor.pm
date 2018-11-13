@@ -437,7 +437,7 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
           "feature with identifier: $identifier - $message\n";
       };
     } else {
-      if ($identifier =~ /^(Pfam:PF\d+)$/) {
+      if ($identifier =~ /^(UniProtKB:.*|SGD:S\d+|Pfam:PF\d+)$/) {
         $identifier = $1;
       } else {
         if (($rel_name eq 'has_penetrance' || $rel_name eq 'occupancy') &&
