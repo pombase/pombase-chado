@@ -7,6 +7,9 @@ use Text::CSV;
 use JSON;
 use Data::Dumper;
 
+use autodie;
+use open ':encoding(UTF-8)';
+
 my $track_json_filename = shift;
 my $track_metadata_csv = shift;
 my $output_track_json_filename = shift;
