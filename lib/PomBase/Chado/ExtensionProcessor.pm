@@ -165,12 +165,16 @@ method store_extension($feature_cvterm, $extensions) {
     if (defined $cv_restrictions_conf) {
       if (exists $cv_restrictions_conf->{allowed}) {
         if (!grep { $_ eq $rel_name } @{$cv_restrictions_conf->{allowed}}) {
-          die "$rel_name() not allowed for $old_cv_name\n";
+          die "$rel_name() not allowed for $old_cv_name, annotation: ",
+            $feature_cvterm->feature()->uniquename(), " <-> ",
+            $old_cvterm->name() ,"\n";
         }
       }
       if (exists $cv_restrictions_conf->{not_allowed}) {
         if (grep { $_ eq $rel_name } @{$cv_restrictions_conf->{not_allowed}}) {
-          die "$rel_name() not allowed for $old_cv_name\n";
+          die "$rel_name() not allowed for $old_cv_name, annotation: ",
+            $feature_cvterm->feature()->uniquename(), " <-> ",
+            $old_cvterm->name() ,"\n";
         }
       }
     } else {
@@ -181,7 +185,9 @@ method store_extension($feature_cvterm, $extensions) {
 
     if (defined $all_not_allowed_rels) {
       if (grep { $_ eq $rel_name } @$all_not_allowed_rels) {
-        die "$rel_name() not allowed in extension\n";
+        die "$rel_name() not allowed in extension, annotation: ",
+            $feature_cvterm->feature()->uniquename(), " <-> ",
+            $old_cvterm->name() ,"\n";
       }
     }
   }
