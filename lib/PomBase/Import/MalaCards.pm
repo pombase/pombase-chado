@@ -167,8 +167,6 @@ method load($fh) {
       if (!$seen_annotations{$key}) {
         $self->create_feature_cvterm($dest_gene, $cvterm, $pub, 0);
         $seen_annotations{$key} = 1;
-      } else {
-        warn "seen: $key\n";
       }
     }
   }
