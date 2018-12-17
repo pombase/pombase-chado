@@ -27,6 +27,7 @@ my %input_types = (
   modification => 'PomBase::Import::Modification',
   malacards => 'PomBase::Import::MalaCards',
   'phenotype-annotation' => 'PomBase::Import::PhenotypeAnnotation',
+  'references-file' => 'PomBase::Import::ReferencesFile',
 );
 
 sub usage
