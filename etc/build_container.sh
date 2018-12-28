@@ -16,6 +16,7 @@ cd $CONTAINER_DIR
 
 (cd ng-website; git pull)
 (cd pombase-chado-json; git pull)
+(cd pombase-python-web; git pull)
 
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 

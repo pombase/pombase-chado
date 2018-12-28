@@ -1,4 +1,4 @@
-FROM pombase/web-base:v27
+FROM pombase/web-base:v28
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -27,6 +27,8 @@ COPY --chown=pombase:pombase web-json /var/www/html/web-json
 COPY --chown=pombase:pombase gff /pombase/gff
 COPY --chown=pombase:pombase chromosome_fasta /pombase/chromosome_fasta
 COPY --chown=pombase:pombase Rocket.toml /pombase/
+
+COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
 
 COPY --chown=pombase:pombase website_config/pombase_v2_config.json /pombase/pombase_v2_config.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/web-json data)
@@ -81,6 +83,7 @@ RUN echo $version > $HOME/pombase_version
 # for testing:
 EXPOSE 8983
 EXPOSE 8500
+EXPOSE 8999
 
 HEALTHCHECK --start-period=10s --interval=10s --timeout=20s --retries=10 \
   CMD curl -f http://localhost:8500/ && curl -f http://localhost:8983/ || exit 1
