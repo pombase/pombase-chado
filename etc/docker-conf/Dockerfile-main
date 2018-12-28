@@ -76,6 +76,8 @@ RUN (cd /var/www/html/jbrowse; \
 
 COPY --chown=pombase:pombase conf/circus.ini circus.ini
 COPY --chown=pombase:pombase conf/start_all.sh start_all.sh
+COPY --chown=pombase:pombase conf/docker-healthcheck docker-healthcheck
+
 RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
 
 RUN echo $version > $HOME/pombase_version
@@ -86,7 +88,7 @@ EXPOSE 8500
 EXPOSE 8999
 
 HEALTHCHECK --start-period=10s --interval=10s --timeout=20s --retries=10 \
-  CMD curl -f http://localhost:8500/ && curl -f http://localhost:8983/ || exit 1
+  CMD /pombase/docker-healthcheck
 
 CMD ./start_all.sh
 

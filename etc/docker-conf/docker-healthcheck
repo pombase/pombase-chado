@@ -1,0 +1,5 @@
+#!/bin/sh -
+
+
+curl -f http://localhost:8500/ && curl -f http://localhost:8983/ && \
+      curl -f http://localhost:8999/motifsearch/ || exit 1
