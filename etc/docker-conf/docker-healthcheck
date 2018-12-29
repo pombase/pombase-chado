@@ -1,5 +1,11 @@
 #!/bin/sh -
 
-
-curl -f http://localhost:8500/ && curl -f http://localhost:8983/ && \
-      curl -f http://localhost:8999/motifsearch/ || exit 1
+(curl -s -f http://localhost:8500/ && \
+ curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/ref/enzyme' \
+   -H 'accept: application/json, text/plain, */*' | jq . | grep -i histidine && \
+ curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/term/(molecular_function%20OR%20cellular_component)/enzyme' \
+   -H 'accept: application/json, text/plain, */*' | jq . | grep -i ubiquitin && \
+ curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/term/disease_ontology/inherited' \
+   -H 'accept: application/json, text/plain, */*' | jq . | grep -i disorder && \
+ curl -s -f http://localhost:8983/ && \
+ curl -s -f http://localhost:8999/motifsearch/ || exit 1) > /dev/null
