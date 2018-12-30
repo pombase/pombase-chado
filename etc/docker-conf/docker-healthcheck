@@ -2,7 +2,7 @@
 
 (curl -s -f http://localhost:8500/ && \
  curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/ref/enzyme' \
-   -H 'accept: application/json, text/plain, */*' | jq . | grep -i histidine && \
+   -H 'accept: application/json, text/plain, */*' | jq . | grep -i pombe && \
  curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/term/(molecular_function%20OR%20cellular_component)/enzyme' \
    -H 'accept: application/json, text/plain, */*' | jq . | grep -i ubiquitin && \
  curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/term/disease_ontology/inherited' \
