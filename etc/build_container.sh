@@ -25,6 +25,10 @@ rsync -acvPHS --delete-after pombase-chado-json/Rocket.toml $CONTAINER_DIR/
 rsync -acvPHS --delete-after $dump_dir/web-json $CONTAINER_DIR/
 rsync -acvPHS --delete-after $dump_dir/gff $CONTAINER_DIR/
 rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromosome_fasta/
+
+mkdir -p $CONTAINER_DIR/feature_sequences
+rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa $CONTAINER_DIR/feature_sequences/peptide.fa
+
 rsync -acvPHS --delete-after $dump_dir/pombe-embl/website/ $CONTAINER_DIR/website_config/
 
 $SCRIPT_PATH/create_jbrowse_track_list.pl $CONTAINER_DIR/website_config/trackListTemplate.json $CONTAINER_DIR/website_config/pombase_jbrowse_track_metadata.csv \
