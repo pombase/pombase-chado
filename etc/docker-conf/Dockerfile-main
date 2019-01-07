@@ -27,6 +27,8 @@ COPY --chown=pombase:pombase web-json /var/www/html/web-json
 COPY --chown=pombase:pombase gff /pombase/gff
 COPY --chown=pombase:pombase chromosome_fasta /pombase/chromosome_fasta
 COPY --chown=pombase:pombase feature_sequences /pombase/feature_sequences
+RUN gzip -d /pombase/feature_sequences/*.gz
+
 COPY --chown=pombase:pombase Rocket.toml /pombase/
 
 COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web

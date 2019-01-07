@@ -27,7 +27,7 @@ rsync -acvPHS --delete-after $dump_dir/gff $CONTAINER_DIR/
 rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromosome_fasta/
 
 mkdir -p $CONTAINER_DIR/feature_sequences
-rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa $CONTAINER_DIR/feature_sequences/peptide.fa
+rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $CONTAINER_DIR/feature_sequences/peptide.fa.gz
 
 rsync -acvPHS --delete-after $dump_dir/pombe-embl/website/ $CONTAINER_DIR/website_config/
 
