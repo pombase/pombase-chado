@@ -8,4 +8,4 @@
  curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/term/disease_ontology/inherited' \
    -H 'accept: application/json, text/plain, */*' | jq . | grep -i disorder && \
  curl -s -f http://localhost:8983/ && \
- curl -s -f http://localhost:8999/motifsearch/ || exit 1) > /dev/null
+ curl -s -f http://localhost:8999/motifsearch/ping/ || exit 1) > /dev/null
