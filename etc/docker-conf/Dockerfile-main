@@ -1,4 +1,4 @@
-FROM pombase/web-base:v28
+FROM pombase/web-base:v29
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
