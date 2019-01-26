@@ -32,7 +32,7 @@ my $dbh = DBI->connect("dbi:Pg:db=$database_name;host=$host", $user, $pass,
 my $temp_table_name = "owltools_closure_temp";
 
 my @column_defs =
-  ([qw|subj_db_id INTEGER REFERENCES db(db_id)|], [qw(subj_accession text)], [qw(rel_name text)],
+  ([qw|subj_db_id INTEGER REFERENCES db(db_id)|], [qw(subj_accession text)], [qw(rel_termid text)],
    [qw(pathdistance integer)],
    [qw|obj_db_id INTEGER REFERENCES db(db_id)|], [qw(obj_accession text)]);
 
@@ -59,6 +59,8 @@ $dbh->do("TRUNCATE cvtermpath");
 
 $dbh->do("CREATE TEMPORARY TABLE $temp_table_name ($column_defs_sql)");
 
+$dbh->do("CREATE TEMPORARY TABLE ${temp_table_name}_termids AS (select t.name as term_name, db.name || ':' || x.accession as termid from cvterm t join dbxref x on t.dbxref_id = x.dbxref_id join db on x.db_id = db.db_id)");
+
 for my $filename (@filenames) {
   my $column_name_sql = join ", ", @column_names;
 
@@ -75,9 +77,13 @@ for my $filename (@filenames) {
 
   while (defined (my $line = <$owltools_out>)) {
     chomp $line;
-    my ($subjectid, $rel_name, $pathdistance, $objectid) = split /\t/, $line;
+    my ($subjectid, $rel_termid, $pathdistance, $objectid) = split /\t/, $line;
 
-    $rel_name =~ s/^OBO_REL://;
+    if ($rel_termid eq 'OBO_REL:is_a') {
+      $rel_termid = 'internal:is_a';
+    }
+
+    print "$rel_termid\n";
 
     my ($subj_db_name, $subj_accession) = split /:/, $subjectid;
 
@@ -105,7 +111,7 @@ for my $filename (@filenames) {
 
     my $row =
       (join "\t",
-       ($subj_db_id, $subj_accession, $rel_name, $pathdistance,
+       ($subj_db_id, $subj_accession, $rel_termid, $pathdistance,
         $obj_db_id, $obj_accession)) . "\n";
 
     if (!$dbh->pg_putcopydata($row)) {
@@ -139,7 +145,8 @@ INSERT INTO cvtermpath ($column_names)
           JOIN dbxref obj_x ON closure.obj_db_id = obj_x.db_id
                AND closure.obj_accession = obj_x.accession
           JOIN cvterm object ON object.dbxref_id = obj_x.dbxref_id
-          JOIN cvterm rel_type ON closure.rel_name = rel_type.name);
+          JOIN ${temp_table_name}_termids ON closure.rel_termid = ${temp_table_name}_termids.termid
+          JOIN cvterm rel_type ON ${temp_table_name}_termids.term_name = rel_type.name);
 SQL
 
     $dbh->do($fill_path_sql);
