@@ -59,7 +59,7 @@ RUN mkdir /pombase/.npm-global; npm config set prefix "/pombase/.npm-global"
 
 ENV PATH="/pombase/.npm-global/bin:$PATH"
 
-RUN (cd ng-website/frontend; ln -fs /pombase/pombase_v2_config.json .; \
+RUN (cd ng-website; ln -fs /pombase/pombase_v2_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
      npm install -g yarn; \
      yarn; \
