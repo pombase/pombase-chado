@@ -14,6 +14,7 @@ CONTAINER_DIR=/var/pomcur/container_build
 
 cd $CONTAINER_DIR
 
+(cd pombase-config; git pull)
 (cd ng-website; git pull)
 (cd pombase-chado-json; git pull)
 (cd pombase-python-web; git pull)
@@ -29,9 +30,7 @@ rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromos
 mkdir -p $CONTAINER_DIR/feature_sequences
 rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $CONTAINER_DIR/feature_sequences/peptide.fa.gz
 
-rsync -acvPHS --delete-after $dump_dir/pombe-embl/website/ $CONTAINER_DIR/website_config/
-
-$SCRIPT_PATH/create_jbrowse_track_list.pl $CONTAINER_DIR/website_config/trackListTemplate.json $CONTAINER_DIR/website_config/pombase_jbrowse_track_metadata.csv \
+$SCRIPT_PATH/create_jbrowse_track_list.pl $CONTAINER_DIR/pombase-config/website/trackListTemplate.json $CONTAINER_DIR/website_config/pombase_jbrowse_track_metadata.csv \
    $CONTAINER_DIR/trackList.json $CONTAINER_DIR/pombase_jbrowse_track_metadata.csv
 
 echo building container ...

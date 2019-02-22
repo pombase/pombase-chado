@@ -33,7 +33,7 @@ COPY --chown=pombase:pombase Rocket.toml /pombase/
 
 COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
 
-COPY --chown=pombase:pombase website_config/pombase_v2_config.json /pombase/pombase_v2_config.json
+COPY --chown=pombase:pombase pombase-config/website/pombase_v2_config.json /pombase/pombase_v2_config.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/web-json data)
 RUN chown -R pombase:pombase /var/www/html
 
