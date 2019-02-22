@@ -190,6 +190,9 @@ method load($fh) {
     $self->add_feature_cvtermprop($feature_cvterm, 'quant_gene_ex_copies_per_cell',
                                   $range // 'ND');
 
+    $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
+                                  'high throughput');
+
     my $long_evidence =
       $self->config()->{evidence_types}->{$evidence_code}->{name};
     if (!defined $long_evidence) {

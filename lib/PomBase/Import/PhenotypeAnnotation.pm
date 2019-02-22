@@ -98,6 +98,9 @@ method _store_annotation($genotype_feature, $cvterm, $pub, $date, $extension, $p
 
     $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
 
+    $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
+                                  'high throughput');
+
     my @extension_bits = ();
 
     if (length $split_ext > 0) {
