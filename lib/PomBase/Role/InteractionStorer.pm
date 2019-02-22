@@ -95,6 +95,7 @@ method _store_interaction_helper() {
   my $first_approved_timestamp = $args{first_approved_timestamp};
   my $approved_timestamp = $args{approved_timestamp};
   my $canto_session = $args{canto_session};
+  my $annotation_throughput_type = $args{annotation_throughput_type};
   my $notes = $args{notes} // [];
   my $is_inferred = $args{is_inferred};
   my @notes = @$notes;
@@ -160,6 +161,9 @@ method _store_interaction_helper() {
   }
   if (defined $canto_session) {
     $self->store_feature_relationshipprop($rel, canto_session => $canto_session);
+  }
+  if (defined $annotation_throughput_type) {
+    $self->store_feature_relationshipprop($rel, annotation_throughput_type => $annotation_throughput_type);
   }
   if (@notes) {
     for my $note (@notes) {

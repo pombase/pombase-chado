@@ -153,6 +153,18 @@ method load($fh) {
     my $experimental_system = $columns_ref->{"Experimental System"};
     my $experimental_system_type = $columns_ref->{"Experimental System Type"};
 
+    my $throughput = $columns_ref->{"Throughput"};
+
+    if (lc $throughput eq "low throughput") {
+      $throughput = "low throughput";
+    } else {
+      if (lc $throughput eq "high throughput") {
+        $throughput = "high throughput";
+      } else {
+        $throughput = undef;
+      }
+    }
+
     my $pubmedid = $columns_ref->{"Pubmed ID"};
 
     if ($pubmedid =~ /^\d+$/) {
@@ -278,6 +290,7 @@ method load($fh) {
       evidence_type => $experimental_system,
       source_db => $source_db,
       pub => $pub,
+      annotation_throughput_type = $throughput,
       notes => \@qualifications,
     );
   }
