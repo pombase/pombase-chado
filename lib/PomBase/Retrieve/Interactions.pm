@@ -198,11 +198,16 @@ SQL
           my $evidence_code = $props{$row->feature_relationship_id()}{evidence};
           my $pubmedid = $pubs{$row->feature_relationship_id()};
           my $date = $props{$row->feature_relationship_id()}{date};
+          my $comment_string = "annotation_date: $date";
+          my $source = $props{$row->feature_relationship_id()}{source_database};
+          if ($source) {
+            $comment_string .= " source: $source";
+          }
 
           return [$gene_a_uniquename, $gene_b_uniquename,
                   $org_a_taxonid, $org_b_taxonid,
                   $evidence_code, $pubmedid, '',
-                  '', '', "annotation_date: $date"];
+                  '', '', $comment_string];
         } else {
           return undef;
         }
