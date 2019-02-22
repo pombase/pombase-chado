@@ -30,7 +30,8 @@ rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromos
 mkdir -p $CONTAINER_DIR/feature_sequences
 rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $CONTAINER_DIR/feature_sequences/peptide.fa.gz
 
-$SCRIPT_PATH/create_jbrowse_track_list.pl $CONTAINER_DIR/pombase-config/website/trackListTemplate.json $CONTAINER_DIR/website_config/pombase_jbrowse_track_metadata.csv \
+$SCRIPT_PATH/create_jbrowse_track_list.pl $CONTAINER_DIR/pombase-config/website/trackListTemplate.json \
+   $CONTAINER_DIR/pombase-config/website/pombase_jbrowse_track_metadata.csv \
    $CONTAINER_DIR/trackList.json $CONTAINER_DIR/pombase_jbrowse_track_metadata.csv
 
 echo building container ...
