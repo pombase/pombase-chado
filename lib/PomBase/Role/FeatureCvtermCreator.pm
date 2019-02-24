@@ -110,6 +110,25 @@ method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
   return $rs->create($create_args);
 }
 
+my $current_year = 1900 + (localtime(time))[5];
+
+func _fix_date($date) {
+  if ($date =~ /(\d\d\d\d)-?(\d\d)-?(\d\d)/) {
+    if ($1 > $current_year) {
+      warn "date is in the future: $date\n";
+    } else {
+      if ($2 < 1 || $2 > 12) {
+        warn "month ($2) not in range 1..12\n";
+      }
+      if ($3 < 1 || $3 > 31) {
+        warn "day ($3) not in range 1..31\n";
+      }
+    }
+    return "$1-$2-$3";
+  } else {
+    die qq|problem with date format of "$date", should be ISO ie. YYYY-MM-DD|;
+  }
+}
 
 method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
   if (!defined $name) {
@@ -127,6 +146,10 @@ method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
 
   if (!defined $rank) {
     $rank = 0;
+  }
+
+  if ($name eq 'date') {
+    $value = _fix_date($value);
   }
 
   if (ref $value eq 'ARRAY') {
