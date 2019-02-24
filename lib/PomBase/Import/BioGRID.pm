@@ -63,15 +63,18 @@ has options => (is => 'ro', isa => 'ArrayRef');
 
 has organism_taxonid_filter => (is => 'rw', init_arg => undef);
 has evidence_code_filter => (is => 'rw', init_arg => undef, isa => 'ArrayRef');
+has source_database_filter => (is => 'rw', init_arg => undef, isa => 'ArrayRef');
 has interaction_note_filter => (is => 'rw', init_arg => undef);
 
 method BUILD {
   my $organism_taxonid_filter = undef;
   my $evidence_code_filter = undef;
+  my $source_database_filter = undef;
   my $interaction_note_filter = undef;
 
   my @opt_config = ('organism-taxonid-filter=s' => \$organism_taxonid_filter,
                     'evidence-code-filter=s' => \$evidence_code_filter,
+                    'source-database-filter=s' => \$source_database_filter,
                     'interaction-note-filter=s' => \$interaction_note_filter);
 
   my @options_copy = @{$self->options()};
@@ -84,6 +87,9 @@ method BUILD {
 
   if (defined $evidence_code_filter) {
     $self->evidence_code_filter([split(/,/, $evidence_code_filter)]);
+  }
+  if (defined $source_database_filter) {
+    $self->source_database_filter([map { lc } split(/,/, $source_database_filter)]);
   }
   if (defined $interaction_note_filter) {
     my %note_hash = ();
@@ -115,6 +121,9 @@ method load($fh) {
   }
 
   my @evidence_code_filter = @{$self->evidence_code_filter() // []};
+
+  my @source_database_filter = @{$self->source_database_filter() // []};
+
   my $interaction_note_filter = $self->interaction_note_filter();
 
   my %stored_interactor_ids = ();
@@ -199,6 +208,13 @@ method load($fh) {
     my $tags = $columns_ref->{"Tags"};
 
     my $source_db = $columns_ref->{"Source Database"};
+
+    if ($self->source_database_filter() &&
+        grep { $_ eq lc $source_db } @{$self->source_database_filter()}) {
+      warn "ignoring interaction of $uniquename_a " .
+        "<-> $uniquename_b because of database_source ($source_db)\n";
+      next;
+    }
 
     if (@evidence_code_filter) {
       if (grep { $_ eq $experimental_system } @evidence_code_filter) {
