@@ -260,7 +260,11 @@ method load($fh) {
         my $product_cvterm =
           $self->find_or_create_cvterm('PomBase gene products', $product);
 
-        $self->create_feature_cvterm($feat, $product_cvterm, $self->null_pub(), 0);
+        my $product_feature_cvterm =
+          $self->create_feature_cvterm($feat, $product_cvterm, $self->null_pub(), 0);
+
+        $self->add_feature_cvtermprop($product_feature_cvterm, 'annotation_throughput_type',
+                                      'non-experimental');
       }
     }
 
