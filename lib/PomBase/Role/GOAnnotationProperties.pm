@@ -57,7 +57,7 @@ method _build_throughput_type_hash() {
 }
 
 method annotation_throughput_type($annotation_type, $evidence_code) {
-  return $self->throughput_type_hash($evidence_code);
+  return $self->throughput_type_hash()->{$evidence_code};
 }
 
 1;
