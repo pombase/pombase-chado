@@ -83,8 +83,6 @@ for my $filename (@filenames) {
       $rel_termid = 'internal:is_a';
     }
 
-    print "$rel_termid\n";
-
     my ($subj_db_name, $subj_accession) = split /:/, $subjectid;
 
     if (!defined $subj_accession) {
