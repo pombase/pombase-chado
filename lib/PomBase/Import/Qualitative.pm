@@ -185,6 +185,9 @@ method load($fh) {
     }
     $self->add_feature_cvtermprop($feature_cvterm, 'qualifier', $level);
 
+    $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
+                                  'high throughput');
+
     my $evidence_config = $self->config()->{evidence_types}->{$evidence_code};
     if (!defined $evidence_config) {
       die qq(unknown evidence code "$evidence_code"\n);
