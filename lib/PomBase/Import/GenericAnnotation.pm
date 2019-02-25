@@ -146,7 +146,7 @@ method load($fh) {
         warn "ignored ", (@pubs - 1), " extra refs for ", $feature->uniquename(), "\n";
       }
 
-      $self->add_feature_cvtermprop($product_feature_cvterm, 'annotation_throughput_type',
+      $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
                                     'non-experimental');
 
       if ($long_evidence) {
