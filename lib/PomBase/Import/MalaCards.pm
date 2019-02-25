@@ -165,7 +165,9 @@ method load($fh) {
       my $key = "$do_id -> " . $dest_gene->uniquename();
 
       if (!$seen_annotations{$key}) {
-        $self->create_feature_cvterm($dest_gene, $cvterm, $pub, 0);
+        my $feature_cvterm = $self->create_feature_cvterm($dest_gene, $cvterm, $pub, 0);
+        $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
+                                      'non-experimental');
         $seen_annotations{$key} = 1;
       }
     }
