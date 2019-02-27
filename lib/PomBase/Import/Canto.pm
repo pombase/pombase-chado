@@ -143,6 +143,7 @@ method _store_interaction_annotation {
   my $feature_a = $args{feature};
   my $canto_session = $args{canto_session};
   my $session_genes = $args{session_genes};
+  my $annotation_throughput_type = $args{annotation_throughput_type};
 
   my $organism = $feature_a->organism();
 
@@ -158,6 +159,7 @@ method _store_interaction_annotation {
         feature_b => $feature_b,
         rel_type_name => $annotation_type,
         evidence_type => $long_evidence,
+        annotation_throughput_type => $annotation_throughput_type,
         source_db => $config->{database_name},
         pub => $publication,
         creation_date => $creation_date,
@@ -658,6 +660,7 @@ method _process_feature {
                                              interacting_genes => $annotation->{interacting_genes},
                                              publication => $publication,
                                              long_evidence => $long_evidence,
+                                             annotation_throughput_type => 'low throughput',
                                              feature => $feature,
                                              canto_session => $canto_session,
                                              curator => $curator,
