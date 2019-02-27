@@ -53,6 +53,7 @@ with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::UniProtIDMap';
+with 'PomBase::Role::GOAnnotationProperties';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
@@ -386,6 +387,12 @@ method load($fh) {
       $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                     $long_evidence);
+
+      my $annotation_throughput_type = $self->annotation_throughput_type($evidence_code);
+      if ($annotation_throughput_type) {
+        $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
+                                      $annotation_throughput_type);
+      }
 
       for (my $i = 0; $i < @withs_and_froms; $i++) {
         my $with_or_from = $withs_and_froms[$i];
