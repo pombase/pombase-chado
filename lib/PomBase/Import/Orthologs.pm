@@ -49,8 +49,10 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
+with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
@@ -207,6 +209,9 @@ method load($fh) {
         } else {
           $feature_rel = $self->store_feature_rel($org1_feature, $org2_feature, $orthologous_to_term, 1);
         }
+
+        $self->store_feature_relationshipprop($feature_rel,
+                                              annotation_throughput_type => 'non-experimental');
 
         $load_orthologs_count++;
 
