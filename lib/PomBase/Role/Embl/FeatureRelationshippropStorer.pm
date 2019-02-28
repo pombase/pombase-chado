@@ -42,7 +42,7 @@ use Moose::Role;
 requires 'chado';
 requires 'get_cvterm';
 
-has ranks => (is => 'ro', lazy_build => 1);
+has feature_rel_prop_ranks => (is => 'ro', lazy_build => 1);
 
 sub _make_key
 {
@@ -53,7 +53,7 @@ sub _make_key
 }
 
 # preinitialise the hash of ranks of the existing feature_relationshipprop
-method _build_ranks() {
+method _build_feature_rel_prop_ranks() {
   my $chado = $self->chado();
 
   my $rs = $chado->resultset('Sequence::FeatureRelationshipprop');
@@ -95,10 +95,10 @@ method store_feature_relationshipprop($feature_relationship, $type_name, $value)
 
   my $rank = 0;
 
-  if (exists $self->ranks()->{$key}) {
-    $rank = ++$self->ranks()->{$key};
+  if (exists $self->feature_rel_prop_ranks()->{$key}) {
+    $rank = ++$self->feature_rel_prop_ranks()->{$key};
   } else {
-    $self->ranks()->{$key} = 0;
+    $self->feature_rel_prop_ranks()->{$key} = 0;
   }
 
   return $self->chado()->resultset('Sequence::FeatureRelationshipprop')
