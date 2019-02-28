@@ -65,17 +65,20 @@ has organism_taxonid_filter => (is => 'rw', init_arg => undef);
 has evidence_code_filter => (is => 'rw', init_arg => undef, isa => 'ArrayRef');
 has source_database_filter => (is => 'rw', init_arg => undef, isa => 'ArrayRef');
 has interaction_note_filter => (is => 'rw', init_arg => undef);
+has annotation_date => (is => 'rw', init_arg => undef);
 
 method BUILD {
   my $organism_taxonid_filter = undef;
   my $evidence_code_filter = undef;
   my $source_database_filter = undef;
   my $interaction_note_filter = undef;
+  my $annotation_date = undef;
 
   my @opt_config = ('organism-taxonid-filter=s' => \$organism_taxonid_filter,
                     'evidence-code-filter=s' => \$evidence_code_filter,
                     'source-database-filter=s' => \$source_database_filter,
-                    'interaction-note-filter=s' => \$interaction_note_filter);
+                    'interaction-note-filter=s' => \$interaction_note_filter,
+                    'annotation-date=s' => \$annotation_date);
 
   my @options_copy = @{$self->options()};
 
@@ -95,6 +98,10 @@ method BUILD {
     my %note_hash = ();
     map { $note_hash{$_} = 1; } split(/\|/, $interaction_note_filter);
     $self->interaction_note_filter(\%note_hash);
+  }
+
+  if (defined $annotation_date) {
+    $self->annotation_date($annotation_date);
   }
 }
 
@@ -307,6 +314,7 @@ method load($fh) {
       source_db => $source_db,
       pub => $pub,
       annotation_throughput_type => $throughput,
+      annotation_date => $self->annotation_date(),
       notes => \@qualifications,
     );
   }

@@ -96,6 +96,7 @@ method _store_interaction_helper() {
   my $approved_timestamp = $args{approved_timestamp};
   my $canto_session = $args{canto_session};
   my $annotation_throughput_type = $args{annotation_throughput_type};
+  my $annotation_date = $args{annotation_date};
   my $notes = $args{notes} // [];
   my $is_inferred = $args{is_inferred};
   my @notes = @$notes;
@@ -164,6 +165,9 @@ method _store_interaction_helper() {
   }
   if (defined $annotation_throughput_type) {
     $self->store_feature_relationshipprop($rel, annotation_throughput_type => $annotation_throughput_type);
+  }
+  if (defined $annotation_date) {
+    $self->store_feature_relationshipprop($rel, date => $annotation_date);
   }
   if (@notes) {
     for my $note (@notes) {
