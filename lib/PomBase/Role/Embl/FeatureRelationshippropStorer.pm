@@ -88,7 +88,7 @@ method store_feature_relationshipprop($feature_relationship, $type_name, $value)
 
   if (!defined $value) {
     die "undef value in store_feature_relationshipprop(",
-      $feature_relationship->feature_relationship_id(), "$type_name, undef)";
+      $feature_relationship->feature_relationship_id(), ", $type_name, undef)";
   }
 
   if (ref $value) {
