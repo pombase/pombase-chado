@@ -314,7 +314,7 @@ method load($fh) {
       source_db => $source_db,
       pub => $pub,
       annotation_throughput_type => $throughput,
-      annotation_date => $self->annotation_date(),
+      creation_date => $self->annotation_date(),
       notes => \@qualifications,
     );
   }

@@ -140,7 +140,9 @@ method _store_interaction_helper() {
   if (!$existing_rel) {
     # only store for new interactions
     $self->store_feature_relationshipprop($rel, source_database => $source_db);
-    $self->store_feature_relationshipprop($rel, date => $creation_date);
+    if (defined $creation_date) {
+      $self->store_feature_relationshipprop($rel, date => $creation_date);
+    }
     $self->store_feature_relationshipprop($rel, is_inferred => ($is_inferred ? 'yes' : 'no'));
   }
 
@@ -165,9 +167,6 @@ method _store_interaction_helper() {
   }
   if (defined $annotation_throughput_type) {
     $self->store_feature_relationshipprop($rel, annotation_throughput_type => $annotation_throughput_type);
-  }
-  if (defined $annotation_date) {
-    $self->store_feature_relationshipprop($rel, date => $annotation_date);
   }
   if (@notes) {
     for my $note (@notes) {
