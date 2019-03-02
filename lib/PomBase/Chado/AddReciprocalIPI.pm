@@ -104,9 +104,6 @@ method _add_new_ipi($protein_binding_term, $results) {
   $self->add_feature_cvtermprop($feature_cvterm, 'with',
                                 $self->config()->{database_name} . ':' . $new_object);
 
-  $self->add_feature_cvtermprop($feature_cvterm, 'with',
-                                $self->config()->{database_name} . ':' . $new_object);
-
   $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
                                 'low throughput');
 
