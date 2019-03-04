@@ -50,6 +50,7 @@ with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::FeatureStorer';
 with 'PomBase::Role::CvtermCreator';
+with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
@@ -186,10 +187,12 @@ method load($fh) {
       my $add_term_rs = $org1_feature->search_related('feature_cvterms')
                            ->search({ cvterm_id => $organism_1_term->cvterm_id() });
       if ($add_term_rs->count() == 0) {
-        $chado->resultset('Sequence::FeatureCvterm')
-              ->create({ feature_id => $org1_feature->feature_id(),
-                         cvterm_id => $organism_1_term->cvterm_id(),
-                         pub_id => $null_pub->pub_id() });
+        my $feature_cvterm =
+          $self->create_feature_cvterm($org1_feature, $organism_1_term, $null_pub, 0);
+
+        $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
+                                      'non-experimental');
+
       }
     }
     for my $org2_identifier (@org2_identifiers) {
