@@ -788,6 +788,10 @@ method _store_metadata($metadata) {
   if ($metadata->{first_approved_timestamp}) {
     $self->create_pubprop($pub, 'canto_first_approved_date', $metadata->{first_approved_timestamp});
   }
+  if ($metadata->{first_sent_to_curator_date}) {
+    $self->create_pubprop($pub, 'canto_first_sent_to_curator_date',
+                          $metadata->{first_sent_to_curator_date});
+  }
   if ($metadata->{approved_timestamp}) {
     $self->create_pubprop($pub, 'canto_approved_date', $metadata->{approved_timestamp});
   }
