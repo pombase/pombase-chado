@@ -795,6 +795,9 @@ method _store_metadata($metadata) {
   if ($metadata->{approved_timestamp}) {
     $self->create_pubprop($pub, 'canto_approved_date', $metadata->{approved_timestamp});
   }
+  if ($metadata->{annotation_status}) {
+    $self->create_pubprop($pub, 'canto_annotation_status', $metadata->{approved_timestamp});
+  }
   if ($metadata->{approver_name}) {
     $self->create_pubprop($pub, 'canto_approver_name', $metadata->{approver_name});
   }
