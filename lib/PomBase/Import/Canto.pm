@@ -844,20 +844,22 @@ method _process_sessions($curation_sessions) {
     my %session_genotypes =
       $self->_get_genotypes(\%session_alleles, $session_data{genotypes});
 
-    my @annotations = @{$session_data{annotations}};
+    if (defined $session_data{annotations}) {
+      my @annotations = @{$session_data{annotations}};
 
-    my $error_prefix = "warning in $canto_session: ";
+      my $error_prefix = "warning in $canto_session: ";
 
-    @annotations = map { $self->_split_vert_bar($error_prefix, $_); } @annotations;
+      @annotations = map { $self->_split_vert_bar($error_prefix, $_); } @annotations;
 
-    for my $annotation (@annotations) {
-      try {
-        $self->_process_annotation($annotation, \%session_genes, \%session_genotypes,
-                                   $metadata, $canto_session);
-      } catch {
-        (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
-        chomp $message;
-        warn $error_prefix . "$message\n";
+      for my $annotation (@annotations) {
+        try {
+          $self->_process_annotation($annotation, \%session_genes, \%session_genotypes,
+                                     $metadata, $canto_session);
+        } catch {
+          (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;
+          chomp $message;
+          warn $error_prefix . "$message\n";
+        }
       }
     }
   }
