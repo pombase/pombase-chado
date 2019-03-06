@@ -804,9 +804,15 @@ method _store_metadata($metadata) {
   if ($metadata->{approver_email}) {
     $self->create_pubprop($pub, 'canto_approver_email', $metadata->{approver_email});
   }
-  $self->create_pubprop($pub, 'canto_curator_name', $metadata->{curator_name});
-  $self->create_pubprop($pub, 'canto_curator_email', $metadata->{curator_email});
-  $self->create_pubprop($pub, 'canto_curator_role', $metadata->{curator_role});
+  if ($metadata->{curator_name}) {
+    $self->create_pubprop($pub, 'canto_curator_name', $metadata->{curator_name});
+  }
+  if ($metadata->{curator_email}) {
+    $self->create_pubprop($pub, 'canto_curator_email', $metadata->{curator_email});
+  }
+  if ($metadata->{curator_role}) {
+    $self->create_pubprop($pub, 'canto_curator_role', $metadata->{curator_role});
+  }
   if ($metadata->{curation_accepted_date}) {
     $self->create_pubprop($pub, 'canto_session_accepted_date', $metadata->{curation_accepted_date});
   }
