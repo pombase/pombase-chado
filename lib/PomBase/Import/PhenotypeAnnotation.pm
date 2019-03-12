@@ -45,6 +45,8 @@ use IO::Handle;
 use PomBase::Chado::ExtensionProcessor;
 use PomBase::Chado::GenotypeCache;
 
+use Getopt::Long qw(GetOptionsFromArray);
+
 has genotype_cache => (is => 'ro', init_arg => undef,
                        lazy_build => 1,
                        isa => 'PomBase::Chado::GenotypeCache');
@@ -68,6 +70,32 @@ has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 
 has extension_processor => (is => 'ro', init_arg => undef, lazy_build => 1);
+
+has throughput_type => (is => 'rw', init_arg => undef);
+
+sub BUILD
+{
+  my $self = shift;
+
+  my $throughput_type = undef;
+
+  my @opt_config = ("throughput-type=s" => \$throughput_type);
+
+  if (!GetOptionsFromArray($self->options(), @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  if (defined $throughput_type) {
+    if ($throughput_type ne 'high throughput' && $throughput_type ne 'low throughput') {
+      die "unknown --throughput-type argument: $throughput_type";
+    }
+  } else {
+    warn "no --throughput-type passed to importer, assuming high-throughput\n";
+    $throughput_type = 'high throughput';
+  }
+
+  $self->throughput_type($throughput_type);
+}
 
 method _build_extension_processor {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
@@ -99,7 +127,7 @@ method _store_annotation($genotype_feature, $cvterm, $pub, $date, $extension, $p
     $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
 
     $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
-                                  'high throughput');
+                                  $self->throughput_type());
 
     my @extension_bits = ();
 
