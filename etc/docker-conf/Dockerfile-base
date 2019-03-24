@@ -34,7 +34,7 @@ RUN npm install --silent --unsafe-perm -g @angular/cli
 RUN apt-get -y install libperlio-gzip-perl libgd-perl
 
 RUN pip3 install 'tornado<5'; pip3 install circus; pip3 install pipenv
-RUN pip3 install django gunicorn # biopython pandas numpy Twisted
+RUN pip3 install django django-allauth gunicorn
 
 USER pombase
 
