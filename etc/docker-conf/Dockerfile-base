@@ -1,5 +1,5 @@
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v30 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v32 .
 FROM bitnami/minideb:stretch
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -17,6 +17,10 @@ USER pombase
 
 RUN cd /pombase && curl https://archive.apache.org/dist/lucene/solr/7.1.0/solr-7.1.0.tgz | tar -x --gzip -f - && \
     (cd /pombase/solr-7.1.0/; rm -rf example contrib licenses *.txt docs)
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
+ENV PATH="/pombase/.cargo/bin/:${PATH}"
+RUN rustup default nightly
 
 USER root
 

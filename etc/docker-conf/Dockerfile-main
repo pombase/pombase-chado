@@ -1,4 +1,4 @@
-FROM pombase/web-base:v30
+FROM pombase/web-base:v32
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -12,12 +12,9 @@ USER pombase
 WORKDIR /pombase
 
 COPY --chown=pombase:pombase pombase-chado-json /pombase/pombase-chado-json
-ENV PATH="/pombase/.cargo/bin/:${PATH}"
 RUN mkdir bin
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly && \
-  rustup default nightly && \
-  (cd pombase-chado-json; cargo build --release && cp target/release/pombase-server /pombase/bin/) && \
-  rm -r /pombase/.rustup /pombase/pombase-chado-json
+RUN (cd pombase-chado-json; cargo build --release && cp target/release/pombase-server /pombase/bin/) && \
+  rm -r /pombase/pombase-chado-json
 
 USER root
 
