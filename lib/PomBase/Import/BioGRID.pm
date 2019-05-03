@@ -174,7 +174,9 @@ method load($fh) {
     if (lc $throughput eq "low throughput") {
       $throughput = "low throughput";
     } else {
-      if (lc $throughput eq "high throughput") {
+      if ($throughput =~ /high throughput/i) {
+        # if the annotation is high and low throughput, treat it as HTP
+        # see: https://github.com/pombase/pombase-chado/issues/724
         $throughput = "high throughput";
       } else {
         $throughput = undef;
