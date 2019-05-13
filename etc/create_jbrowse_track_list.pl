@@ -14,6 +14,7 @@ my $track_json_filename = shift;
 my $track_metadata_csv = shift;
 my $output_track_json_filename = shift;
 my $output_track_metadata_csv = shift;
+my $small_track_list_json_filename = shift;
 
 open my $track_json_fh, '<', $track_json_filename or die;
 
@@ -24,6 +25,8 @@ my $track_json_text = '';
 
   $track_json_text = <$track_json_fh>;
 }
+
+my @small_track_list_json = ();
 
 my $track_json = decode_json($track_json_text);
 
@@ -119,6 +122,15 @@ while (my $row = $csv->getline_hr ($fh)) {
       $style{label} = "_NOLABEL_";
     }
 
+    my $pmed_id = $row->{pmed_id};
+
+    if ($pmed_id) {
+      push @small_track_list_json, {
+        pmed_id => $pmed_id,
+        label => $row->{label},
+      };
+    }
+
     my $new_track = {
       key => $row->{label},
       label => $row->{label},
@@ -144,4 +156,13 @@ my $json = JSON->new()->allow_nonref();
 
 open my $out_json_fh, '>', $output_track_json_filename or die;
 
-print $out_json_fh $json->pretty()->encode($track_json);
+print $out_json_fh $json->encode($track_json);
+
+close $out_json_fh;
+
+open my $out_small_json_fh, '>', $small_track_list_json_filename or die;
+
+print $out_small_json_fh $json->encode(\@small_track_list_json);
+
+close $out_small_json_fh;
+

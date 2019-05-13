@@ -57,15 +57,16 @@ RUN mkdir /pombase/.npm-global; npm config set prefix "/pombase/.npm-global"
 
 ENV PATH="/pombase/.npm-global/bin:$PATH"
 
+COPY --chown=pombase:pombase trackList.json /pombase/jbrowse/data/trackList.json
+COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/ng-website/minimal_jbrowse_track_list.json
+COPY --chown=pombase:pombase pombase_jbrowse_track_metadata.csv /pombase/jbrowse/data/pombase_jbrowse_track_metadata.csv
+
 RUN (cd ng-website; ln -fs /pombase/pombase_v2_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
      npm install -g yarn; \
      yarn; \
      ./etc/build_app.sh $target && cp -r dist/* /var/www/html/) && \
      rm -rf /pombase/ng-website /pombe/.npm-global
-
-COPY --chown=pombase:pombase trackList.json /pombase/jbrowse/data/trackList.json
-COPY --chown=pombase:pombase pombase_jbrowse_track_metadata.csv /pombase/jbrowse/data/pombase_jbrowse_track_metadata.csv
 
 RUN (cd /var/www/html/jbrowse; \
     ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/Schizosaccharomyces_pombe_all_chromosomes.fa.gz \
