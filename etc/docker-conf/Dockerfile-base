@@ -1,3 +1,4 @@
+# -*- dockerfile -*-
 # recreate with:
 #   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v33 .
 FROM bitnami/minideb:stretch

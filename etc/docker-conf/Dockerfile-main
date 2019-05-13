@@ -1,3 +1,4 @@
+# -*- dockerfile -*-
 FROM pombase/web-base:v33
 ARG version
 
