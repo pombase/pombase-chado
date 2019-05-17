@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v33 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v34 .
 FROM bitnami/minideb:stretch
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -43,7 +43,7 @@ RUN pip3 install django django-allauth gunicorn
 
 USER pombase
 
-ENV JBROWSE_VERSION=1.15.4
+ENV JBROWSE_VERSION=1.16.4
 
 RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-pombase.tar.gz; \
     curl -L https://www.pombase.org/software/$JBROWSE_TAR | tar xzf -; \
