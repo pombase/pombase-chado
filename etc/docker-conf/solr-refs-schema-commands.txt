@@ -12,3 +12,4 @@
 {"add-field":{"name":"approved_date", "type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"gene_count", "type": "intField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"genotype_count", "type": "intField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"annotation_count", "type": "intField","indexed":"true","stored":"true"}}
