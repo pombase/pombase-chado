@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v34 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v35 .
 FROM bitnami/minideb:stretch
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -36,7 +36,10 @@ RUN apt-get -y install python3-zmq && apt-get clean
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get update && apt-get -y install nodejs && apt-get clean
 RUN npm install --silent --unsafe-perm -g @angular/cli
-RUN apt-get -y install libperlio-gzip-perl libgd-perl
+
+RUN apt-get -y install libperlio-gzip-perl libgd-perl pandoc libjson-perl && apt-get clean
+RUN curl -L http://cpanmin.us | perl - --self-upgrade
+RUN cpanm Pandoc
 
 RUN pip3 install 'tornado<5'; pip3 install circus; pip3 install pipenv
 RUN pip3 install django django-allauth gunicorn
