@@ -9,6 +9,7 @@ SCRIPT_PATH=$(dirname "$SCRIPT")
 version=$1
 dump_dir=$2
 target=$3
+go_xrf_abbs=$4
 
 CONTAINER_DIR=/var/pomcur/container_build
 
@@ -26,6 +27,8 @@ rsync -acvPHS --delete-after pombase-chado-json/Rocket.toml $CONTAINER_DIR/
 rsync -acvPHS --delete-after $dump_dir/web-json $CONTAINER_DIR/
 rsync -acvPHS --delete-after $dump_dir/gff $CONTAINER_DIR/
 rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromosome_fasta/
+
+cp $go_xrf_abbs $CONTAINER_DIR/
 
 mkdir -p $CONTAINER_DIR/feature_sequences
 rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $CONTAINER_DIR/feature_sequences/peptide.fa.gz
