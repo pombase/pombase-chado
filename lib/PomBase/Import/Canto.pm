@@ -739,7 +739,25 @@ method _get_alleles($canto_session, $session_genes, $session_allele_data) {
     $allele_data->{canto_session} = $canto_session;
     $allele_data->{gene} = $session_genes->{$allele_data->{gene}};
     my ($out, $err) = capture {
-      $ret{$key} = $self->get_allele($allele_data);
+      my $allele = $self->get_allele($allele_data);
+      $ret{$key} = $allele;
+      if ($allele_data->{synonyms}) {
+        my $chado = $self->chado();
+
+        my @existing_synonyms = $chado->resultset('Sequence::FeatureSynonym')
+          ->search({ feature_id => $allele->feature_id() },
+                   { prefetch => 'synonym' })->all();
+
+        my @existing_names = map {
+          $_->name();
+        } @existing_synonyms;
+
+        for my $new_synonym (@{$allele_data->{synonyms}}) {
+          if (!grep { $_ eq $new_synonym } @existing_names) {
+            $self->store_feature_synonym($allele, $new_synonym, 'exact', 1);
+          }
+        }
+      }
     };
 
     if ($err) {
