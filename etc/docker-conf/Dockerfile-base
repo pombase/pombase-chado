@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v37 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v38 .
 FROM bitnami/minideb:unstable
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -49,9 +49,9 @@ USER pombase
 
 ENV JBROWSE_VERSION=1.16.4
 
-RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-pombase.tar.gz; \
+RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-pombase-2.tar.gz; \
     curl -L https://www.pombase.org/software/$JBROWSE_TAR | tar xzf -; \
-    mv JBrowse-$JBROWSE_VERSION-pombase jbrowse; \
+    mv JBrowse-$JBROWSE_VERSION-pombase-2 jbrowse; \
     cd /pombase/jbrowse; ./setup.sh)
 
 WORKDIR /pombase
