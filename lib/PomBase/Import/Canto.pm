@@ -749,7 +749,7 @@ method _get_alleles($canto_session, $session_genes, $session_allele_data) {
                    { prefetch => 'synonym' })->all();
 
         my @existing_names = map {
-          $_->name();
+          $_->synonym()->name();
         } @existing_synonyms;
 
         for my $new_synonym (@{$allele_data->{synonyms}}) {
