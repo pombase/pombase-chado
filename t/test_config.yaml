@@ -533,6 +533,11 @@ data:
             accession: 0731000003
             db:
               name: PBO
+        - name: canto_annotation_status
+          dbxref:
+            accession: 0731000004
+            db:
+              name: PBO
   cvterm_relationships:
     - subject:
         name: microtubule motor activity

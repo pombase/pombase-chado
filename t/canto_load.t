@@ -30,7 +30,7 @@ $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 14);
+is($annotations->count(), 13);
 
 my $test_term_count = 0;
 
@@ -70,6 +70,7 @@ while (defined (my $fc = $annotations->next())) {
                  'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
                  'canto_session' => 'aaaa0007',
+                 'annotation_throughput_type' => 'low throughput',
                });
   }
 
