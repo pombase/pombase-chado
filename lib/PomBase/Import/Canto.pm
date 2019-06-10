@@ -631,7 +631,10 @@ method _process_feature {
     delete $annotation->{checked};
 
     if (keys %$annotation > 0) {
-      my @keys = keys %$annotation;
+      my @keys =
+        grep {
+          $_ ne 'organism';
+        } keys %$annotation;
 
       warn "warning in $canto_session: some data from annotation isn't used: @keys\n";
     }
