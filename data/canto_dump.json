@@ -251,22 +251,26 @@
          },
          "genotypes" : {
             "aaaa0007-genotype-test-1" : {
-               "alleles" : [
+               "loci" : [
+                 [
                   {
                      "id" : "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-1"
                   },
                   {
                      "id" : "Schizosaccharomyces pombe SPCC63.05:aaaa0007-1"
                   }
+                 ]
                ],
                "name" : "h+ SPCC63.05delta ssm4KE"
             },
             "aaaa0007-genotype-test-2" : {
-               "alleles" : [
+               "loci" : [
+                 [
                   {
                      "expression" : "Knockdown",
                      "id" : "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-3"
                   }
+                 ]
                ]
             }
          },

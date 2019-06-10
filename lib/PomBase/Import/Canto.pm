@@ -777,12 +777,14 @@ method _get_genotypes($session_alleles, $session_genotype_data) {
 
   while (my ($genotype_identifier, $details) = each %$session_genotype_data) {
     my @alleles = map {
-      my $allele_key = $_->{id};
-      {
-        expression => $_->{expression},
-        allele => $session_alleles->{$allele_key},
-      };
-    } @{$details->{alleles}};
+      map {
+        my $allele_key = $_->{id};
+        {
+          expression => $_->{expression},
+          allele => $session_alleles->{$allele_key},
+        };
+      } @{$_};
+    } @{$details->{loci}};
 
     if (@alleles) {
       $ret{$genotype_identifier} =
