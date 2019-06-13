@@ -636,7 +636,9 @@ method _process_feature {
           $_ ne 'organism';
         } keys %$annotation;
 
-      warn "warning in $canto_session: some data from annotation isn't used: @keys\n";
+      if (@keys) {
+        warn "warning in $canto_session: some data from annotation isn't used: @keys\n";
+      }
     }
 
     $self->_store_ontology_annotation(type => $annotation_type,
