@@ -55,7 +55,7 @@ cmp_deeply(\%genotype_details,
                                      ],
            });
 
-is_string ($exporter->header(), "#Database name\tGene systematic ID\tFYPO ID\tAllele description\tExpression\tParental strain\tStrain name (background)\tGenotype description\tGene name\tAllele name\tAllele synonym\tAllele type\tEvidence\tCondition\tPenetrance\tExpressivity\tExtension\tReference\tTaxon\tDate\n");
+is_string ($exporter->header(), "#Database name\tGene systematic ID\tFYPO ID\tAllele description\tExpression\tParental strain\tStrain name (background)\tGenotype description\tGene name\tAllele name\tAllele synonym\tAllele type\tEvidence\tCondition\tPenetrance\tSeverity\tExtension\tReference\tTaxon\tDate\n");
 
 my $results = $exporter->retrieve();
 

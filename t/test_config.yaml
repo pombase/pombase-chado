@@ -478,9 +478,9 @@ data:
             accession: has_penetrance
             db:
               name: fypo_extension_relations
-        - name: has_expressivity
+        - name: has_severity
           dbxref:
-            accession: has_expressivity
+            accession: has_severity
             db:
               name: fypo_extension_relations
         - name: assayed_using

@@ -45,7 +45,7 @@ while (defined (my $fc = $feature_cvterm_rs->next())) {
   if ($feature->uniquename() eq 'PomBase-genotype-2') {
     $found_PomBase_genotype_2 = 1;
 
-    is ($cvterm->name(), "T-shaped cells [has_expressivity] low [has_penetrance] high");
+    is ($cvterm->name(), "T-shaped cells [has_severity] low [has_penetrance] high");
 
     my %prop_hash = ();
     my @all_props = $fc->feature_cvtermprops()->all();

@@ -112,7 +112,7 @@ method _build_genotype_cache {
 my $fypo_extensions_cv_name = 'fypo_extensions';
 
 
-method _store_annotation($genotype_feature, $cvterm, $pub, $date, $extension, $penetrance, $expressivity, $long_evidence, $conditions) {
+method _store_annotation($genotype_feature, $cvterm, $pub, $date, $extension, $penetrance, $severity, $long_evidence, $conditions) {
   my @split_ext_parts = ("");
 
   if ($extension) {
@@ -138,8 +138,8 @@ method _store_annotation($genotype_feature, $cvterm, $pub, $date, $extension, $p
     if (length $penetrance > 0) {
       push @extension_bits, "has_penetrance($penetrance)";
     }
-    if (length $expressivity > 0) {
-      push @extension_bits, "has_expressivity($expressivity)";
+    if (length $severity > 0) {
+      push @extension_bits, "has_severity($severity)";
     }
 
     $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
@@ -179,7 +179,7 @@ method load($fh) {
   $csv->column_names(qw(gene_systemtic_id fypo_id allele_description expression
                         parental_strain strain_background genotype_description
                         gene_name allele_name allele_synonym allele_type
-                        evidence conditions penetrance expressivity extension
+                        evidence conditions penetrance severity extension
                         reference taxon date illegal_extra_column));
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
@@ -213,7 +213,7 @@ method load($fh) {
     my $evidence = $columns_ref->{"evidence"};
     my $conditions = $columns_ref->{"conditions"};
     my $penetrance = $columns_ref->{"penetrance"};
-    my $expressivity = $columns_ref->{"expressivity"};
+    my $severity = $columns_ref->{"severity"};
     my $extension = $columns_ref->{"extension"};
     my $reference = $columns_ref->{"reference"};
     my $date = $columns_ref->{"date"};
@@ -293,17 +293,17 @@ method load($fh) {
         }
       }
 
-      if (length $expressivity > 0) {
-        my $expressivity_cvterm = $self->find_cvterm_by_term_id($expressivity);
+      if (length $severity > 0) {
+        my $severity_cvterm = $self->find_cvterm_by_term_id($severity);
 
-        if (defined $expressivity_cvterm) {
-          if ($expressivity_cvterm->cv()->name() ne $fypo_extensions_cv_name) {
-            warn "can't load annotation, '$expressivity' is not from the ",
+        if (defined $severity_cvterm) {
+          if ($severity_cvterm->cv()->name() ne $fypo_extensions_cv_name) {
+            warn "can't load annotation, '$severity' is not from the ",
               "$fypo_extensions_cv_name CV at line ", $fh->input_line_number(), "\n";
             return;
           }
         } else {
-          warn "can't load annotation, $expressivity not found at line ",
+          warn "can't load annotation, $severity not found at line ",
             $fh->input_line_number(), " of PHAF file\n";
           return;
         }
@@ -363,7 +363,7 @@ method load($fh) {
       my $genotype_feature = $self->get_genotype_for_allele($allele_data, $expression);
 
       $self->_store_annotation($genotype_feature, $cvterm, $pub, $date, $extension,
-                               $penetrance, $expressivity, $long_evidence,
+                               $penetrance, $severity, $long_evidence,
                                $conditions);
     };
 

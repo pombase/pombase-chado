@@ -270,7 +270,7 @@ method retrieve() {
         },
         -or => [
           'type.name' => 'has_penetrance',
-          'type.name' => 'has_expressivity',
+          'type.name' => 'has_severity',
           ],
       },
       {
@@ -280,10 +280,10 @@ method retrieve() {
 
   while (defined (my $ext_parent = $ext_parents_rs->next())) {
     for my $ext_rel ($ext_parent->cvterm_relationship_subjects()) {
-      # we need has_expressivity or has_penetrance
+      # we need has_severity or has_penetrance
       my $rel_name = $ext_rel->type()->name();
 
-      next unless $rel_name eq 'has_expressivity' or $rel_name eq 'has_penetrance';
+      next unless $rel_name eq 'has_severity' or $rel_name eq 'has_penetrance';
 
       # "high", "low", ...
       my $ext_name = $ext_rel->object()->name();
@@ -291,7 +291,7 @@ method retrieve() {
       my $value = $fypo_extension_termids{$ext_name};
 
       if (!defined $value) {
-        warn "'$ext_name' is not a valid penetrance/expressivity in term: ",
+        warn "'$ext_name' is not a valid penetrance/severity in term: ",
           $ext_parent->name(), "\n";
       } else {
         $ext_parent_values{$ext_parent->cvterm_id()}{$rel_name}{$value} = 1;
@@ -307,7 +307,7 @@ method retrieve() {
         },
         -or => [
           'type.name' => 'annotation_extension_relation-has_penetrance',
-          'type.name' => 'annotation_extension_relation-has_expressivity',
+          'type.name' => 'annotation_extension_relation-has_severity',
         ],
       },
       {
@@ -362,7 +362,7 @@ method retrieve() {
 
         # we have separate columns for these:
         if ($extensions) {
-          $extensions =~ s/(has_penetrance|has_expressivity)\([^\)]+\),?//g;
+          $extensions =~ s/(has_penetrance|has_severity)\([^\)]+\),?//g;
         }
 
         my $fc_id = $row->feature_cvterm_id();
@@ -426,7 +426,7 @@ method retrieve() {
         my $condition = _safe_join(',', $row_fc_props{condition});
 
         my $penetrance = _safe_join(',', [keys %{$ext_parent_values{$row->cvterm_id()}{has_penetrance}}]);
-        my $expressivity = _safe_join(',', [keys %{$ext_parent_values{$row->cvterm_id()}{has_expressivity}}]);
+        my $severity = _safe_join(',', [keys %{$ext_parent_values{$row->cvterm_id()}{has_severity}}]);
 
         my $expression = $first_allele->{expression} // '';
 
@@ -442,7 +442,7 @@ method retrieve() {
           '',
           $allele_type,
           $evidence_code, $condition,
-          $penetrance, $expressivity,
+          $penetrance, $severity,
           $extensions // '', $pub->uniquename(),
           $taxon, $date,
         ]
@@ -469,7 +469,7 @@ method header {
            'Evidence',
            'Condition',
            'Penetrance',
-           'Expressivity',
+           'Severity',
            'Extension',
            'Reference',
            'Taxon',

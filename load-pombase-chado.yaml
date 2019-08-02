@@ -200,7 +200,7 @@ extension_restrictions:
       - is_bearer_of
       - has_penetrance
       - assayed_using
-      - has_expressivity
+      - has_severity
       - occurs_in
       - occurs_at
       - assayed_enzyme

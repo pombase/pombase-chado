@@ -1,4 +1,4 @@
-Gene systematic ID	FYPO ID	allele description	Expression	Parental strain	Strain name (background)	Genotype description	gene name	allele name	allele synonym	allele type	evidence	condition	penetrance	expressivity	extension	Reference	taxon	date
+Gene systematic ID	FYPO ID	allele description	Expression	Parental strain	Strain name (background)	Genotype description	gene name	allele name	allele synonym	allele type	evidence	condition	penetrance	severity	extension	Reference	taxon	date
 SPAC2F7.03c	FYPO:0000013	deletion	Null		972 h-	Genotype description				deletion	ECO:0000000	PECO:0000005,PECO:0000081		FYPO_EXT:0000003		PMID:23697806	taxon:4896	20130101
 SPAC2F7.03c	FYPO:0000013	A10T	Null		972 h-	Genotype description		pom1-c1		amino_acid_mutation	ECO:0000049	PECO:0000005,PECO:0000081	FYPO_EXT:0000001	FYPO_EXT:0000003		PMID:23697806	taxon:4896	20130101
 SPBC2F12.13	FYPO:0000013	deletion	Null		972 h-	Genotype description				deletion	ECO:0000106	PECO:0000005,PECO:0000081				PMID:23697806	taxon:4896	20130101
