@@ -42,3 +42,4 @@ $SCRIPT_PATH/create_jbrowse_track_list.pl $CONTAINER_DIR/pombase-config/website/
 echo building container ...
 docker build -f conf/Dockerfile-main --build-arg target=$target -t=pombase/web:$version-$target .
 
+echo "ssh pombase-admin@149.155.131.177 /home/pombase-admin/bin/reload_apache" | at 6am
