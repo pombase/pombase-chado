@@ -78,9 +78,12 @@ while (my $row = $csv->getline_hr ($fh)) {
         if (lc $row->{data_file_type} eq 'vcf') {
           $store_class = "JBrowse/Store/SeqFeature/VCFTabix"
         } else {
-
-          warn "skipping file config - not handled yet: ", Dumper([$row]);
-          next;
+          if (lc $row->{data_file_type} =~ /^gff[23]?$/i) {
+            $store_class = "JBrowse/Store/SeqFeature/GFF3Tabix";
+          } else {
+            warn "skipping file config - not handled yet: ", Dumper([$row]);
+            next;
+          }
         }
       }
     }
@@ -113,7 +116,11 @@ while (my $row = $csv->getline_hr ($fh)) {
         if ($row->{data_file_type} eq 'vcf') {
           $track_type = 'CanvasVariants';
         } else {
-          $track_type = "Alignments2";
+          if ($row->{data_file_type} =~ /^gff[23]?/i) {
+            $track_type = 'CanvasFeatures';
+          } else {
+            $track_type = "Alignments2";
+          }
         }
       }
     }
@@ -160,7 +167,8 @@ print $out_json_fh $json->encode($track_json);
 
 close $out_json_fh;
 
-open my $out_small_json_fh, '>', $small_track_list_json_filename or die;
+open my $out_small_json_fh, '>', $small_track_list_json_filename
+  or die "can't write $small_track_list_json_filename";
 
 print $out_small_json_fh $json->encode(\@small_track_list_json);
 
