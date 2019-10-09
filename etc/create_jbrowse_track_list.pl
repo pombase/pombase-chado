@@ -135,6 +135,14 @@ while (my $row = $csv->getline_hr ($fh)) {
       push @small_track_list_json, {
         pmed_id => $pmed_id,
         label => $row->{label},
+        growth_phase_or_response => $row->{growth_phase_or_response},
+        assayed_gene_product => $row->{assayed_gene_product},
+        background => $row->{background},
+        mating_type => $row->{mating_type},
+        conditions => $row->{conditions},
+        assay_type => $row->{assay_type},
+        study_id => $row->{study_id},
+        sample_id => $row->{sample_id},
       };
     }
 
