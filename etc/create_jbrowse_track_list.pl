@@ -143,6 +143,8 @@ while (my $row = $csv->getline_hr ($fh)) {
         assay_type => $row->{assay_type},
         study_id => $row->{study_id},
         sample_id => $row->{sample_id},
+        comment => $row->{comment},
+        source_url => $row->{source_url},
       };
     }
 
