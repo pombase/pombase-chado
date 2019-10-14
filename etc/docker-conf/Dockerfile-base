@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v39 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v40 .
 FROM bitnami/minideb:unstable
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -26,7 +26,7 @@ RUN rustup default nightly
 USER root
 
 RUN apt-get -y install gnupg2 git-core procps xz-utils \
-  libterm-readline-gnu-perl pkg-config libssl-dev unzip \
+  libterm-readline-gnu-perl pkg-config libssl-dev unzip ipip \
   lsof jq gcc && apt-get clean
 RUN apt-get -y install --reinstall python-pkg-resources && apt-get clean
 RUN apt-get -y install python3-pip && apt-get clean
@@ -34,9 +34,11 @@ RUN echo "deb http://deb.debian.org/debian stable main" >> /etc/apt/sources.list
 RUN apt-get -y install openjdk-8-jre-headless && apt-get clean
 RUN apt-get -y install python3-zmq && apt-get clean
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get update && apt-get -y install nodejs npm && apt-get clean
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get update && apt-get -y install nodejs && apt-get clean
 RUN npm install --silent --unsafe-perm -g @angular/cli
+
+
 
 RUN apt-get -y install libperlio-gzip-perl libgd-perl libjson-perl pandoc && apt-get clean
 RUN curl -L http://cpanmin.us | perl - --self-upgrade
