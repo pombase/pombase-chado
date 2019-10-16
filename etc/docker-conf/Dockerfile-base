@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v40 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v41 .
 FROM bitnami/minideb:unstable
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -27,7 +27,7 @@ USER root
 
 RUN apt-get -y install gnupg2 git-core procps xz-utils \
   libterm-readline-gnu-perl pkg-config libssl-dev unzip ipip \
-  lsof jq gcc && apt-get clean
+  lsof jq gcc net-tools && apt-get clean
 RUN apt-get -y install --reinstall python-pkg-resources && apt-get clean
 RUN apt-get -y install python3-pip && apt-get clean
 RUN echo "deb http://deb.debian.org/debian stable main" >> /etc/apt/sources.list; apt update
