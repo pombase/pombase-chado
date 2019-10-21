@@ -193,6 +193,7 @@ cvs:
     - name: unknown
       description: An allele whose type has not been established.
     - name: other
+    - name: unspecified
 
 extension_restrictions:
   fission_yeast_phenotype:

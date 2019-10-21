@@ -55,8 +55,8 @@ with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
-with 'PomBase::Role::InteractionStorer';
 with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::InteractionStorer';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');

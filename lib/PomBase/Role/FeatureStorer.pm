@@ -47,16 +47,23 @@ with 'PomBase::Role::CvQuery';
 requires 'find_or_create_pub';
 
 method store_feature($uniquename, $name, $synonyms, $so_type, $organism) {
-  my $feature_type_term = $self->get_cvterm('sequence', $so_type);
+  my $feature_type_term;
 
-  use Carp qw(cluck);
+  if (ref $so_type) {
+    $feature_type_term = $so_type;
+  } else {
+    $feature_type_term = $self->get_cvterm('sequence', $so_type);
+  }
+
+  use Carp qw(cluck croak);
 
   cluck "not enough arguments for store_feature()" unless defined $organism;
 
+  croak "can't find SO cvterm for $so_type\n" unless defined $feature_type_term;
+  die "can't find SO cvterm for $so_type\n" unless defined $feature_type_term;
+
   warn "  storing $uniquename/", ($name ? $name : 'no_name'),
     " ($so_type)\n" if $self->verbose();
-
-  die "can't find SO cvterm for $so_type\n" unless defined $feature_type_term;
 
   my %create_args = (
     type_id => $feature_type_term->cvterm_id(),

@@ -69,11 +69,12 @@ with 'PomBase::Role::FeatureRelationshipFinder';
 with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
+with 'PomBase::Role::MetagenotypeStorer';
 with 'PomBase::Role::InteractionStorer';
 with 'PomBase::Role::LegacyAlleleHandler';
 with 'PomBase::Role::PhenotypeFeatureFinder';
 
-has verbose => (is => 'ro');
+has verbose => (is => 'rw');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
@@ -128,48 +129,6 @@ sub BUILD
   }
 
   $self->db_prefix($db_prefix);
-}
-
-method _store_interaction_annotation {
-  my %args = @_;
-
-  my $annotation_type = $args{annotation_type};
-  my $creation_date = $args{creation_date};
-  my $interacting_genes = $args{interacting_genes};
-  my $publication = $args{publication};
-  my $long_evidence = $args{long_evidence};
-  my $gene_uniquename = $args{gene_uniquename};
-  my $curator = $args{curator};
-  my $feature_a = $args{feature};
-  my $canto_session = $args{canto_session};
-  my $session_genes = $args{session_genes};
-  my $annotation_throughput_type = $args{annotation_throughput_type};
-
-  my $organism = $feature_a->organism();
-
-  my $chado = $self->chado();
-  my $config = $self->config();
-
-  my $proc = sub {
-    for my $feature_b_key (@$interacting_genes) {
-      my $feature_b = $session_genes->{$feature_b_key};
-      # this will store the reciprocal annotation for symmetrical interactions
-      $self->store_interaction(
-        feature_a => $feature_a,
-        feature_b => $feature_b,
-        rel_type_name => $annotation_type,
-        evidence_type => $long_evidence,
-        annotation_throughput_type => $annotation_throughput_type,
-        source_db => $config->{database_name},
-        pub => $publication,
-        creation_date => $creation_date,
-        curator => $curator,
-        canto_session => $canto_session,
-      );
-    }
-  };
-
-  $chado->txn_do($proc);
 }
 
 my $comma_substitute = "<<COMMA>>";
@@ -568,10 +527,11 @@ method _split_vert_bar($error_prefix, $annotation) {
 
 method _process_feature {
   my $annotation = clone(shift);
+
   my $session_metadata = shift;
   my $feature = shift;
   my $canto_session = shift;
-  my $session_genes = shift;
+  my $session_genotypes = shift;
 
   my $annotation_type = delete $annotation->{type};
   my $creation_date = delete $annotation->{creation_date};
@@ -609,26 +569,26 @@ method _process_feature {
     }
   }
 
+  my $termid = delete $annotation->{term};
+  my $extension_text = delete $annotation->{annotation_extension};
+  my $extensions = delete $annotation->{extension};
+  my $expression = delete $annotation->{expression};
+  my $conditions = delete $annotation->{conditions};
+  my $term_suggestion = delete $annotation->{term_suggestion};
+  if (defined $term_suggestion &&
+        ($term_suggestion->{name} || $term_suggestion->{definition})) {
+    die "annotation with term suggestion not loaded\n";
+  }
+
+  delete $annotation->{submitter_comment};
+  delete $annotation->{checked};
+
   if ($annotation_type eq 'biological_process' or
       $annotation_type eq 'molecular_function' or
       $annotation_type eq 'cellular_component' or
       $annotation_type eq 'phenotype' or
       $annotation_type eq 'post_translational_modification') {
-    my $termid = delete $annotation->{term};
     my $with_gene = delete $annotation->{with_gene};
-    my $extension_text = delete $annotation->{annotation_extension};
-    my $extensions = delete $annotation->{extension};
-    my $expression = delete $annotation->{expression};
-    my $conditions = delete $annotation->{conditions};
-
-    my $term_suggestion = delete $annotation->{term_suggestion};
-    if (defined $term_suggestion &&
-        ($term_suggestion->{name} || $term_suggestion->{definition})) {
-      die "annotation with term suggestion not loaded\n";
-    }
-
-    delete $annotation->{submitter_comment};
-    delete $annotation->{checked};
 
     if (keys %$annotation > 0) {
       my @keys =
@@ -659,30 +619,61 @@ method _process_feature {
   } else {
     if ($annotation_type eq 'genetic_interaction' or
         $annotation_type eq 'physical_interaction') {
-      if (defined $annotation->{interacting_genes}) {
-        $self->_store_interaction_annotation(annotation_type => $annotation_type,
-                                             creation_date => $creation_date,
-                                             interacting_genes => $annotation->{interacting_genes},
-                                             publication => $publication,
-                                             long_evidence => $long_evidence,
-                                             annotation_throughput_type => 'low throughput',
-                                             feature => $feature,
-                                             canto_session => $canto_session,
-                                             curator => $curator,
-                                             changed_by => $changed_by_json,
-                                             session_genes => $session_genes,
-                                             %useful_session_data);
-      } else {
-        die "no interacting_genes data found in interaction annotation\n";
+      my $metagenotype_details = $feature;
+      my $genotype_a_uniquename = $metagenotype_details->{genotype_a};
+      my $genotype_b_uniquename = $metagenotype_details->{genotype_b};
+      my $genotype_a = $session_genotypes->{$genotype_a_uniquename};
+
+      if (!defined $genotype_a) {
+        die "genotype missing from JSON file: $genotype_a_uniquename";
+      }
+
+      my $genotype_b = $session_genotypes->{$genotype_b_uniquename};
+
+      if (!defined $genotype_b) {
+        die "genotype missing from JSON file: $genotype_a_uniquename";
+      }
+
+      if ($genotype_a->organism_id() != $genotype_b->organism_id()) {
+        die "organisms don't match for $genotype_a_uniquename and $genotype_b_uniquename";
+      }
+
+      my $metagenotype =
+        $self->store_interaction_feature(rel_type_name => $annotation_type,
+                                         genotype_a => $genotype_a,
+                                         genotype_b => $genotype_b,
+                                         creation_date => $creation_date,
+                                         publication => $publication,
+                                         evidence_type => $long_evidence,
+                                         annotation_throughput_type => 'low throughput',
+                                         canto_session => $canto_session,
+                                         curator => $curator,
+                                         source_db => $config->{database_name},
+                                         %useful_session_data);
+
+      if ($termid) {
+        $self->_store_ontology_annotation(type => $annotation_type,
+                                          creation_date => $creation_date,
+                                          termid => $termid,
+                                          publication => $publication,
+                                          long_evidence => $long_evidence,
+                                          feature => $metagenotype,
+                                          expression => $expression,
+                                          conditions => $conditions,
+                                          extension_text => $extension_text,
+                                          extensions => $extensions,
+                                          canto_session => $canto_session,
+                                          curator => $curator,
+                                          changed_by => $changed_by_json,
+                                          %useful_session_data);
       }
     } else {
       warn "can't handle data of type $annotation_type\n";
     }
   }
-
 }
 
-method _process_annotation($annotation, $session_genes, $session_genotypes, $session_metadata, $canto_session) {
+method _process_annotation($annotation, $session_genes, $session_genotypes, $session_metagenotype_details, $session_metadata, $canto_session) {
   my $status = delete $annotation->{status};
 
   if ($status eq 'deleted') {
@@ -703,9 +694,8 @@ method _process_annotation($annotation, $session_genes, $session_genotypes, $ses
     }
 
     my $feature;
-    if ($annotation->{type} eq 'phenotype' or
-        $annotation->{type} eq 'genetic_interaction' or
-        $annotation->{type} eq 'physical_interaction') {
+    if ($annotation->{type} eq 'phenotype') {
+die;
       $feature = $gene;
     } else {
       $feature = $self->get_transcript($gene);
@@ -724,12 +714,18 @@ method _process_annotation($annotation, $session_genes, $session_genotypes, $ses
       warn "can't store annotation for missing genotype: $genotype_key\n";
     }
   }
+
+  if (exists $annotation->{metagenotype}) {
+    my $metagenotype_details = $session_metagenotype_details->{$annotation->{metagenotype}};
+    $self->_process_feature($annotation, $session_metadata, $metagenotype_details,
+                            $canto_session, $session_genotypes);
+  }
 }
 
 method _query_genes($session_gene_data) {
   my %ret = ();
 
-  while (my ($key, $details) = each %$session_gene_data) {
+  while (my($key, $details) = each %$session_gene_data) {
     $ret{$key} = $self->get_gene($details);
   }
 
@@ -778,7 +774,7 @@ method _get_genotypes($session_alleles, $session_genotype_data) {
   confess "no alleles passed to _get_genotypes()" unless $session_alleles;
   my %ret = ();
 
-  return %ret if !$session_alleles;
+  return %ret if !$session_genotype_data;
 
   while (my ($genotype_identifier, $details) = each %$session_genotype_data) {
     my @alleles = map {
@@ -885,6 +881,7 @@ method _process_sessions($curation_sessions) {
       for my $annotation (@annotations) {
         try {
           $self->_process_annotation($annotation, \%session_genes, \%session_genotypes,
+                                     $session_data{metagenotypes} // {},
                                      $metadata, $canto_session);
         } catch {
           (my $message = $_) =~ s/.*txn_do\(\): (.*) at lib.*/$1/;

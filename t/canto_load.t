@@ -1,6 +1,6 @@
 use perl5i::2;
 
-use Test::More tests => 12;
+use Test::More tests => 22;
 use Test::Deep;
 
 use PomBase::TestUtil;
@@ -16,7 +16,7 @@ my $annotations = $chado->resultset('Sequence::FeatureCvterm');
 is($annotations->count(), 7);
 
 my $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 24);
+is($feature_rs->count(), 27);
 
 my $genotype_cache = PomBase::Chado::GenotypeCache->new(chado => $chado);
 
@@ -30,7 +30,8 @@ $importer->load($fh);
 close $fh;
 
 $annotations = $chado->resultset('Sequence::FeatureCvterm');
-is($annotations->count(), 13);
+
+is($annotations->count(), 15);
 
 my $test_term_count = 0;
 
@@ -38,24 +39,21 @@ while (defined (my $fc = $annotations->next())) {
   my @props = $fc->feature_cvtermprops()->all();
   my %prop_hash = map { ($_->type()->name(), $_->value()); } @props;
 
-  if ($fc->feature->uniquename() eq 'SPBC14F5.07.1:allele-1' &&
+  if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
       $fc->cvterm->name() eq
-      'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c [requires_feature] Pfam:PF00564') {
+      'negative regulation of transmembrane transport [exists_during] interphase of mitotic cell cycle [has_substrate] SPBC1105.11c') {
     $test_term_count++;
     cmp_deeply(\%prop_hash,
                {
-                 'date' => '2010-01-02',
-                 'curator_email' => 'some.testperson@pombase.org',
+                 'date' => '2010-01-04',
+                 'curator_email' => 'some.testperson@3926fef56bb23eb871ee91dc2e3fdd7c46ef1385.org',
                  'curator_name' => 'Some Testperson',
                  'community_curated' => 'false',
-                 'residue' => 'T586(T586,X123)',
                  'evidence' => 'Inferred from Physical Interaction',
                  'assigned_by' => 'PomBase',
-                 'with' => 'PomBase:SPCC576.16c',
-                 'condition' => 'PECO:0000012',
+                 'with' => 'PomBase:SPBC1826.01c',
                  'canto_session' => 'aaaa0007',
-                 'approved_timestamp' => '2014-10-07 02:51:14',
-                 'approver_email' => 'val@sanger.ac.uk',
+                 'annotation_throughput_type' => 'low throughput',
                });
   }
   if ($fc->feature->uniquename() eq 'SPBC14F5.07.1' &&
@@ -63,9 +61,9 @@ while (defined (my $fc = $annotations->next())) {
     $test_term_count++;
     cmp_deeply(\%prop_hash,
                {
-                 'date' => '2010-01-02',
+                 'date' => '2010-01-05',
                  'evidence' => 'Inferred from Direct Assay',
-                 'curator_email' => 'some.testperson@pombase.org',
+                 'curator_email' => 'some.testperson@3926fef56bb23eb871ee91dc2e3fdd7c46ef1385.org',
                  'curator_name' => 'Some Testperson',
                  'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
@@ -79,22 +77,23 @@ while (defined (my $fc = $annotations->next())) {
     $test_term_count++;
     cmp_deeply(\%prop_hash,
                {
-                 'date' => '2010-01-02',
+                 'date' => '2010-01-04',
                  'evidence' => 'Inferred from Physical Interaction',
-                 'curator_email' => 'some.testperson@pombase.org',
+                 'curator_email' => 'some.testperson@3926fef56bb23eb871ee91dc2e3fdd7c46ef1385.org',
                  'curator_name' => 'Some Testperson',
                  'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
-                 'with' => 'PomBase:SPCC576.16c',
+                 'with' => 'PomBase:SPBC1826.01c',
                  'canto_session' => 'aaaa0007',
+                 'annotation_throughput_type' => 'low throughput',
                });
   }
 }
 
-is($test_term_count, 1);
+is($test_term_count, 3);
 
 $feature_rs = $chado->resultset('Sequence::Feature');
-is($feature_rs->count(), 31);
+is($feature_rs->count(), 41);
 
 my $genotype_1 = $chado->resultset('Sequence::Feature')
   ->find({ uniquename => 'aaaa0007-genotype-test-1' });
@@ -125,10 +124,59 @@ cmp_deeply(
     }
   ]);
 
-my $interaction_gene = $chado->resultset('Sequence::Feature')->find({ uniquename => 'SPCC63.05' });
-my $feature_rel_rs = $chado->resultset('Sequence::FeatureRelationship')
-                           ->search({ subject_id => $interaction_gene->feature_id() });
-is($feature_rel_rs->count(), 2);
-cmp_deeply([sort map { $_->object()->uniquename() } $feature_rel_rs->all()],
-           ['SPAC27D7.13c', 'SPBC14F5.07']);
+
+
+my $genetic_interaction =
+  $chado->resultset('Sequence::Feature')->find({ uniquename => 'aaaa0007-genetic_interaction-metagenotype-1' });
+
+is($genetic_interaction->type()->name(), 'genetic_interaction');
+
+my $genetic_interaction_fc_rs = $genetic_interaction->feature_cvterms();
+
+is ($genetic_interaction_fc_rs->count(), 1);
+
+my $genetic_interaction_fc = $genetic_interaction_fc_rs->first();
+is ($genetic_interaction_fc->cvterm()->name(), "elongated cells");
+
+my $gi_fc_props_rs = $genetic_interaction_fc->feature_cvtermprops();
+
+my %gi_props = ();
+
+while (defined (my $prop = $gi_fc_props_rs->next())) {
+  $gi_props{$prop->type()->name()} = $prop->value();
+}
+
+cmp_deeply(\%gi_props,
+           {
+             annotation_throughput_type => "low throughput",
+             assigned_by => "PomBase",
+             evidence => "Synthetic Haploinsufficiency",
+             curator_name => "Some Testperson",
+             curator_email => "some.testperson@3926fef56bb23eb871ee91dc2e3fdd7c46ef1385.org",
+             community_curated => "false",
+             canto_session => "aaaa0007",
+             date => "2010-01-09",
+           });
+
+
+my $physical_interaction =
+  $chado->resultset('Sequence::Feature')->find({ uniquename => 'aaaa0007-physical_interaction-metagenotype-2' });
+
+is($physical_interaction->type()->name(), 'physical_interaction');
+
+my $physical_interaction_fc_rs = $physical_interaction->feature_cvterms();
+is ($physical_interaction_fc_rs->count(), 0);
+
+
+my $genetic_rel_rs = $chado->resultset('Sequence::FeatureRelationship')
+                           ->search({ object_id => $genetic_interaction->feature_id() });
+is($genetic_rel_rs->count(), 2);
+cmp_deeply([sort map { $_->subject()->uniquename() } $genetic_rel_rs->all()],
+           ['aaaa0007-genotype-3', 'aaaa0007-genotype-4']);
+
+my $physical_rel_rs = $chado->resultset('Sequence::FeatureRelationship')
+                           ->search({ object_id => $physical_interaction->feature_id() });
+is($physical_rel_rs->count(), 2);
+cmp_deeply([sort map { $_->subject()->uniquename() } $physical_rel_rs->all()],
+           ['aaaa0007-genotype-5', 'aaaa0007-genotype-6']);
 

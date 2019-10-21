@@ -263,12 +263,12 @@ data:
               name: PBO
     - name: PomBase interaction types
       cvterms:
-        - name: interacts_physically
+        - name: physical_interaction
           dbxref:
             accession: 111000001
             db:
               name: PBO
-        - name: interacts_genetically
+        - name: genetic_interaction
           dbxref:
             accession: 111000002
             db:
@@ -447,6 +447,41 @@ data:
             accession: 0030005
             db:
               name: PBO
+        - name: evidence
+          dbxref:
+            accession: 0030006
+            db:
+              name: PBO
+        - name: source_database
+          dbxref:
+            accession: 0030007
+            db:
+              name: PBO
+        - name: date
+          dbxref:
+            accession: 0030008
+            db:
+              name: PBO
+        - name: curator_email
+          dbxref:
+            accession: 0030009
+            db:
+              name: PBO
+        - name: curator_name
+          dbxref:
+            accession: 0030010
+            db:
+              name: PBO
+        - name: community_curated
+          dbxref:
+            accession: 0030011
+            db:
+              name: PBO
+        - name: annotation_throughput_type
+          dbxref:
+            accession: 0030012
+            db:
+              name: PBO
     - name: species_dist
       cvterms:
         - name: 'predominantly single copy (one to one)'
@@ -536,6 +571,11 @@ data:
         - name: canto_annotation_status
           dbxref:
             accession: 0731000004
+            db:
+              name: PBO
+        - name: canto_session_accepted_date
+          dbxref:
+            accession: 0731000005
             db:
               name: PBO
   cvterm_relationships:
@@ -660,6 +700,25 @@ data:
       organism:
         genus: Schizosaccharomyces
         species: pombe
+    - uniquename: SPBC1826.01c
+      name: mot1
+      type:
+        name: gene
+      organism:
+        genus: Schizosaccharomyces
+        species: pombe
+    - uniquename: SPBC1826.01c.1
+      type:
+        name: mRNA
+      organism:
+        genus: Schizosaccharomyces
+        species: pombe
+    - uniquename: SPBC1826.01c:exon:1
+      type:
+        name: exon
+      organism:
+        genus: Schizosaccharomyces
+        species: pombe
     - uniquename: ENSG00000124562
       type:
         name: gene
@@ -748,32 +807,6 @@ data:
           name: relationship
       object:
         uniquename: SPAC2F7.03c
-    - subject:
-        uniquename: SPCC63.05
-      type:
-        name: interacts_genetically
-        cv:
-          name: PomBase interaction types
-      object:
-        uniquename: SPBC14F5.07
-      feature_relationshipprops:
-        - type:
-            name: evidence
-            cv:
-              name: feature_relationshipprop_type
-          value: Synthetic Haploinsufficiency
-        - type:
-            name: source_database
-            cv:
-              name: feature_relationshipprop_type
-          value: BioGRID
-      feature_relationship_pubs:
-        - pub:
-            type:
-              name: paper
-              cv:
-                name: PomBase publication types
-            uniquename: PMID:19756689
   feature_cvterm:
     - feature:
         uniquename: SPBC2F12.13.1
@@ -1037,3 +1070,4 @@ cvs:
     - name: unknown
       description: An allele whose type has not been established.
     - name: other
+    - name: unspecified
