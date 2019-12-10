@@ -85,6 +85,8 @@ for my $filename (@filenames) {
 
     my ($subj_db_name, $subj_accession) = split /:/, $subjectid;
 
+    next if $subj_db_name eq 'http' or $subj_db_name eq 'NCBITaxon';
+
     if (!defined $subj_accession) {
       die "$subjectid isn't in the form DB_NAME:ACCESSION\n";
     }
@@ -96,6 +98,8 @@ for my $filename (@filenames) {
     }
 
     my ($obj_db_name, $obj_accession) = split /:/, $objectid;
+
+    next if $obj_db_name eq 'http' or $obj_db_name eq 'NCBITaxon';
 
     if (!defined $obj_accession) {
       die "$objectid isn't in the form DB_NAME:ACCESSION\n";
