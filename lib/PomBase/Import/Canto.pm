@@ -84,9 +84,6 @@ has organism => (is => 'rw', init_arg => undef);
 # used to prefix identifiers in "with" fields before storing as proprieties
 has db_prefix => (is => 'rw', init_arg => undef);
 
-has seen_binding_annotations => (is => 'rw', init_arg => undef, default => sub { {} });
-has possible_reciprocal_binding_annotations => (is => 'rw', init_arg => undef, default => sub { [] });
-
 method _build_extension_processor {
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
@@ -245,10 +242,6 @@ method _get_real_termid {
   return $real_termid;
 }
 
-func _make_binding_key($gene_uniquename, $with_uniquename, $termid, $pub_uniquename) {
-  return "$gene_uniquename-:-$with_uniquename-:-$termid-:-$pub_uniquename";
-}
-
 method _store_ontology_annotation {
   my %args = @_;
 
@@ -267,13 +260,6 @@ method _store_ontology_annotation {
   my $approver_email = $args{approver_email};
   my $canto_session = $args{canto_session};
   my $changed_by = $args{changed_by};
-
-  if ($with_gene && $termid eq 'GO:0005515') {
-    my $seen_key = _make_binding_key($feature->uniquename(), $with_gene,
-                                     $termid, $publication->uniquename());
-
-    $self->seen_binding_annotations()->{$seen_key} = 1;
-  }
 
   if (defined $extension_text && $extension_text =~ /\|/) {
     die qq(not loading annotation with '|' in extension: "$extension_text"\n);
@@ -670,46 +656,6 @@ method _process_feature {
                                       curator => $curator,
                                       changed_by => $changed_by_json,
                                       %useful_session_data);
-
-    if ($with_gene && $evidence_code eq 'IPI' && $termid eq 'GO:0005515') {
-      # create a reciprocal annotation that will be stored later if a matching
-      # manual annotation isn't seen
-
-      my $with_gene_key =
-        $feature->organism->genus() . ' ' . $feature->organism->species() . ' ' . $with_gene;
-      my $with_feature = $session_genes->{$with_gene_key};
-
-      my $with_feature_transcript = $self->get_transcript($with_feature);
-
-      if (!defined $with_feature) {
-        die "internal error: no gene found for $with_feature";
-      }
-
-      my @reciprocal_extensions =
-        grep {
-          $_->{relation} =~ /during/;
-        } @{$extensions || []};
-
-      my %reciprocal_details = (
-        type => $annotation_type,
-        creation_date => $creation_date,
-        termid => $termid,
-        publication => $publication,
-        long_evidence => $long_evidence,
-        feature => $with_feature_transcript,
-        expression => $expression,
-        conditions => $conditions,
-        with_gene => $feature->uniquename() =~ s/\.1$//r,
-        extension_text => undef,
-        extensions => \@reciprocal_extensions,
-        canto_session => $canto_session,
-        curator => $curator,
-        changed_by => $changed_by_json,
-        %useful_session_data
-      );
-
-      push @{$self->possible_reciprocal_binding_annotations()}, \%reciprocal_details;
-    }
   } else {
     if ($annotation_type eq 'genetic_interaction' or
         $annotation_type eq 'physical_interaction') {
@@ -947,23 +893,8 @@ method _process_sessions($curation_sessions) {
         }
       }
     }
-
-    for my $possible_annotation (@{$self->possible_reciprocal_binding_annotations()}) {
-
-      my $key = _make_binding_key($possible_annotation->{feature}->uniquename(),
-                                  $possible_annotation->{with_gene},
-                                  $possible_annotation->{termid},
-                                  $possible_annotation->{publication}->uniquename());
-
-      if (!$self->seen_binding_annotations()->{$key}) {
-        $self->_store_ontology_annotation(%$possible_annotation);
-      }
-    }
-
-    # reset for next session:
-    $self->seen_binding_annotations({});
-    $self->possible_reciprocal_binding_annotations([]);
   }
+
 }
 
 method load($fh) {
