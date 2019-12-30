@@ -152,7 +152,7 @@ sub parse_pubmed_xml
   }
 
   my $res_hash = XMLin($content,
-                       ForceArray => ['AbstractText',
+                       ForceArray => ['AbstractText', 'ELocationID',
                                       'Author', 'PublicationType']);
 
   my @articles;
@@ -291,6 +291,21 @@ sub parse_pubmed_xml
         }
       }
 
+      my $doi = undef;
+
+      my $elocationids = $article->{ELocationID};
+
+      if ($elocationids) {
+        my @doi_ids =
+          grep {
+            $_->{EIdType} eq 'doi' && uc $_->{ValidYN} eq 'Y';
+          } @{$elocationids};
+
+        if (@doi_ids > 0) {
+          $doi = $doi_ids[0]->{content};
+        }
+      }
+
       my $pub = $self->chado()->resultset('Pub::Pub')->find({ uniquename => $uniquename });
 
       $self->pubmed_cache()->{$uniquename} = freeze({
@@ -301,6 +316,7 @@ sub parse_pubmed_xml
         citation => $citation,
         journal_title => $journal_title,
         abstract => $abstract,
+        doi => $doi,
       });
     }
   }
@@ -341,6 +357,10 @@ sub _store_from_cache
       $self->create_pubprop($pub, 'pubmed_authors', $pub_details->{authors});
       $self->create_pubprop($pub, 'pubmed_citation', $pub_details->{citation});
       $self->create_pubprop($pub, 'pubmed_abstract', $pub_details->{abstract});
+
+      if (defined $pub_details->{doi}) {
+        $self->create_pubprop($pub, 'pubmed_doi', $pub_details->{doi});
+      }
 
       $count++;
     }
