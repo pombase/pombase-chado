@@ -39,7 +39,10 @@ if (!GetOptions("dry-run|d" => \$dry_run,
 
 sub usage
 {
-  die "$0: needs one argument:
+  die "$0: needs six arguments:
+   <config_file> <host> <database> <user> <password> --add-missing-fields
+
+options:
   --add-missing-fields (or -f): access pubmed to add missing title, abstract,
           authors, etc. to publications in the publications table (pub)
 ";
