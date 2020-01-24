@@ -149,7 +149,11 @@ method load($fh) {
     $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
 
     if (defined $extension) {
-      $self->extension_processor()->process_one_annotation($feature_cvterm, $extension);
+      try {
+        $self->extension_processor()->process_one_annotation($feature_cvterm, $extension);
+      } catch {
+        warn "failed to load line $.:\n$_";
+      }
     }
   }
 }
