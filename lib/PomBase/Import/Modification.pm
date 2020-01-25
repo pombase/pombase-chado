@@ -95,6 +95,7 @@ method load($fh) {
     if (!defined $pubmedid) {
       die qq(mandatory column value for reference missing at line $.\n);
     }
+    $pubmedid =~ s/ //g;
     if (!defined $taxonid) {
       die qq(mandatory column value for taxon missing at line $.\n);
     }
@@ -102,12 +103,15 @@ method load($fh) {
       die qq(mandatory column value for date missing at line $.\n);
     }
 
+    my $mod_cvterm;
 
-    my $mod_cvterm = $self->find_cvterm_by_term_id($psi_mod_term_id);
+    try {
+      $mod_cvterm = $self->find_cvterm_by_term_id($psi_mod_term_id);
+    } catch {
+      warn qq(can't find modification term "$psi_mod_term_id" in Chado, skipping line $.\n);
+    };
 
-    if (!defined $mod_cvterm) {
-      die qq(can't find term "$psi_mod_term_id" in the database\n);
-    }
+    next unless defined $mod_cvterm;
 
     my $organism = $self->find_organism_by_taxonid($taxonid);
 
