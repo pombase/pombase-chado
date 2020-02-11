@@ -67,6 +67,7 @@ has parent_feature_id_column => (is => 'rw', init_arg => undef);
 has parent_feature_rel_column => (is => 'rw', init_arg => undef);
 has ignore_lines_matching => (is => 'rw', init_arg => undef);
 has ignore_short_lines => (is => 'rw', init_arg => undef);
+has ignore_duplicate_uniquenames => (is => 'rw', init_arg => undef);
 has column_filters => (is => 'rw', init_arg => undef);
 has null_pub => (is => 'rw', init_arg => undef);
 has transcript_so_name => (is => 'rw', init_arg => undef);
@@ -87,6 +88,7 @@ sub BUILD
   my $feature_type = undef;
   my $ignore_lines_matching = '';
   my $ignore_short_lines = 0;
+  my $ignore_duplicate_uniquenames = 0;
   my $transcript_so_name = undef;
   my @column_filters = ();
 
@@ -102,6 +104,7 @@ sub BUILD
                     "parent-feature-rel-column=s" => \$parent_feature_rel_column,
                     "ignore-lines-matching=s" => \$ignore_lines_matching,
                     "ignore-short-lines" => \$ignore_short_lines,
+                    "ignore-duplicate-uniquenames" => \$ignore_duplicate_uniquenames,
                     "transcript-so-name=s" => \$transcript_so_name,
                   );
 
@@ -141,6 +144,7 @@ sub BUILD
 
   $self->ignore_lines_matching($ignore_lines_matching);
   $self->ignore_short_lines($ignore_short_lines);
+  $self->ignore_duplicate_uniquenames($ignore_duplicate_uniquenames);
   $self->column_filters(\@column_filters);
 
   if ($reference_column) {
@@ -188,6 +192,7 @@ method load($fh) {
   my $feature_type_name = $self->feature_type();
   my $organism = $self->organism();
   my $ignore_short_lines = $self->ignore_short_lines();
+  my $ignore_duplicate_uniquenames = $self->ignore_duplicate_uniquenames();
   my $ignore_lines_matching_string = $self->ignore_lines_matching();
   my $product_column = $self->product_column();
   my $date_column = $self->date_column();
@@ -206,6 +211,8 @@ method load($fh) {
   }
 
   my $feature_count = 0;
+
+  my %seen_uniquenames = ();
 
  LINE:
   while (<$fh>) {
@@ -239,6 +246,18 @@ method load($fh) {
     }
 
     my $uniquename = $columns[$uniquename_column];
+
+    if (!$uniquename) {
+      warn "empty uniquename: $_\n";
+      next LINE;
+    }
+
+    if ($seen_uniquenames{$uniquename} && $ignore_duplicate_uniquenames) {
+      next LINE;
+    }
+
+    $seen_uniquenames{$uniquename} = 1;
+
     my $name = $columns[$name_column] || undef;
 
     my $feat = $self->store_feature($uniquename, $name, [], $feature_type_name, $organism);
