@@ -222,7 +222,7 @@ method load($fh) {
 
     chomp $_;
 
-    my @columns = split /\t/, $_;
+    my @columns = split /\t/, $_, -1;
 
     if (!$ignore_short_lines && $uniquename_column >= @columns) {
       die "not enough columns for --uniquename-column at: $_\n";
