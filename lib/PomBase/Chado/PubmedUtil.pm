@@ -377,7 +377,7 @@ sub _store_from_cache
       $pub->update();
 
       $self->create_pubprop($pub, 'pubmed_publication_date', $pub_details->{publication_date});
-      if ($pub_details->{epub_date) {
+      if ($pub_details->{epub_date}) {
         $self->create_pubprop($pub, 'pubmed_electronic_publication_date', $pub_details->{epub_date});
       }
       $self->create_pubprop($pub, 'pubmed_authors', $pub_details->{authors});
