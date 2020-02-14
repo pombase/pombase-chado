@@ -55,7 +55,7 @@ with 'PomBase::Role::XrefStorer';
 has verbose => (is => 'rw');
 has pubmed_cache => (is => 'rw', required => 1);
 
-my $max_batch_size = 100;
+my $max_batch_size = 200;
 
 sub _get_url
 {
@@ -283,6 +283,28 @@ sub parse_pubmed_xml
         }
       }
 
+      my $epub_date = undef;
+
+      my $article_date = $article->{ArticleDate};
+
+      if ($article_date && defined $article_date->{DateType} &&
+            lc $article_date->{DateType} eq 'electronic') {
+
+        my $art_year = $article_date->{Year};
+        my $art_month = $article_date->{Month};
+        my $art_day = $article_date->{Day};
+
+        if ($art_day) {
+          $epub_date = "$art_year-$art_month-$art_day";
+        } else {
+          if ($art_month) {
+            $epub_date = "$art_year-$art_month";
+          } else {
+            $epub_date = $art_year;
+          }
+        }
+      }
+
       if (defined $article->{Pagination}) {
         my $pagination = $article->{Pagination};
         if (defined $pagination->{MedlinePgn} &&
@@ -311,6 +333,7 @@ sub parse_pubmed_xml
       $self->pubmed_cache()->{$uniquename} = freeze({
         title => $title,
         publication_date => $publication_date,
+        epub_date => $epub_date,
         authors => $authors,
         pub_type => $pubmed_pub_type,
         citation => $citation,
@@ -354,6 +377,9 @@ sub _store_from_cache
       $pub->update();
 
       $self->create_pubprop($pub, 'pubmed_publication_date', $pub_details->{publication_date});
+      if ($pub_details->{epub_date) {
+        $self->create_pubprop($pub, 'pubmed_electronic_publication_date', $pub_details->{epub_date});
+      }
       $self->create_pubprop($pub, 'pubmed_authors', $pub_details->{authors});
       $self->create_pubprop($pub, 'pubmed_citation', $pub_details->{citation});
       $self->create_pubprop($pub, 'pubmed_abstract', $pub_details->{abstract});

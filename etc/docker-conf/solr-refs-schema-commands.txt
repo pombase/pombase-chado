@@ -8,6 +8,7 @@
 {"add-field":{"name":"authors","type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"authors_abbrev", "type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"pubmed_publication_date", "type": "textField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"pubmed_electronic_publication_date", "type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"publication_year", "type": "intField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"approved_date", "type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"gene_count", "type": "intField","indexed":"true","stored":"true"}}
