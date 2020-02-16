@@ -7,4 +7,5 @@
 {"add-field":{"name":"distant_synonyms","type": "textField","multiValued":"true","indexed":"false","stored":"true"}}
 {"add-field":{"name":"distant_synonym_words","type": "textField","multiValued":"false","indexed":"true","stored":"true"}}
 {"add-field":{"name":"interesting_parents","type": "textField","multiValued":"true","indexed":"true","stored":"true"}}
+{"add-field":{"name":"secondary_identifiers","type":"idField","indexed":"true","stored":"true", "multiValued": "true"}}
 {"add-field":{"name":"definition","type":"textField","indexed":"true","stored":"true"}}
