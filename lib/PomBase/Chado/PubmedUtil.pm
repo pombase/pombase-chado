@@ -174,6 +174,8 @@ sub parse_pubmed_xml
         die "PubMed ID not found in XML\n";
       }
 
+      my $pubmed_data = $article->{PubmedData};
+
       my $article = $medline_citation->{Article};
       my $title = $article->{ArticleTitle};
 
@@ -328,12 +330,29 @@ sub parse_pubmed_xml
         }
       }
 
+      my $pubmed_entrez_date = undef;
+
+      if ($pubmed_data && $pubmed_data->{History} &&
+            $pubmed_data->{History}->{PubMedPubDate}) {
+        for my $pubmed_pub_date (@{$pubmed_data->{History}->{PubMedPubDate}}) {
+          if ($pubmed_pub_date->{PubStatus} && $pubmed_pub_date->{PubStatus} eq 'entrez') {
+            if (defined $pubmed_pub_date->{Year} && defined $pubmed_pub_date->{Month} &&
+                  defined $pubmed_pub_date->{Day}) {
+              $pubmed_entrez_date =
+                $pubmed_pub_date->{Year} . '-' . $pubmed_pub_date->{Month} . '-' .
+                $pubmed_pub_date->{Day};
+            }
+          }
+        }
+      }
+
       my $pub = $self->chado()->resultset('Pub::Pub')->find({ uniquename => $uniquename });
 
       $self->pubmed_cache()->{$uniquename} = freeze({
         title => $title,
         publication_date => $publication_date,
         epub_date => $epub_date,
+        pubmed_entrez_date => $pubmed_entrez_date,
         authors => $authors,
         pub_type => $pubmed_pub_type,
         citation => $citation,
@@ -379,6 +398,9 @@ sub _store_from_cache
       $self->create_pubprop($pub, 'pubmed_publication_date', $pub_details->{publication_date});
       if ($pub_details->{epub_date}) {
         $self->create_pubprop($pub, 'pubmed_electronic_publication_date', $pub_details->{epub_date});
+      }
+      if ($pub_details->{pubmed_entrez_date}) {
+        $self->create_pubprop($pub, 'pubmed_entrez_date', $pub_details->{pubmed_entrez_date});
       }
       $self->create_pubprop($pub, 'pubmed_authors', $pub_details->{authors});
       $self->create_pubprop($pub, 'pubmed_citation', $pub_details->{citation});
