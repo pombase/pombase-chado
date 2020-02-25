@@ -890,6 +890,12 @@ method _store_metadata($metadata) {
   if ($metadata->{approver_email}) {
     $self->create_pubprop($pub, 'canto_approver_email', $metadata->{approver_email});
   }
+  if ($metadata->{initial_curator_name}) {
+    $self->create_pubprop($pub, 'canto_initial_curator_name', $metadata->{initial_curator_name});
+  }
+  if ($metadata->{initial_curator_email}) {
+    $self->create_pubprop($pub, 'canto_initial_curator_email', $metadata->{initial_curator_email});
+  }
   if ($metadata->{curator_name}) {
     $self->create_pubprop($pub, 'canto_curator_name', $metadata->{curator_name});
   }
