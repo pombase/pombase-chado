@@ -338,9 +338,8 @@ sub parse_pubmed_xml
           if ($pubmed_pub_date->{PubStatus} && $pubmed_pub_date->{PubStatus} eq 'entrez') {
             if (defined $pubmed_pub_date->{Year} && defined $pubmed_pub_date->{Month} &&
                   defined $pubmed_pub_date->{Day}) {
-              $pubmed_entrez_date =
-                $pubmed_pub_date->{Year} . '-' . $pubmed_pub_date->{Month} . '-' .
-                $pubmed_pub_date->{Day};
+              $pubmed_entrez_date = sprintf "%04s-%02s-%02s",
+                $pubmed_pub_date->{Year}, $pubmed_pub_date->{Month}, $pubmed_pub_date->{Day};
             }
           }
         }
