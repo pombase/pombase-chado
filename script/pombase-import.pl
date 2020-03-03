@@ -28,6 +28,7 @@ my %input_types = (
   malacards => 'PomBase::Import::MalaCards',
   'phenotype-annotation' => 'PomBase::Import::PhenotypeAnnotation',
   'references-file' => 'PomBase::Import::ReferencesFile',
+  'kegg-pathway' => 'PomBase::Import::KEGGMapping',
 );
 
 sub usage
