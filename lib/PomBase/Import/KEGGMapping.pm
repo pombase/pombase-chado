@@ -48,7 +48,6 @@ with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::XrefStorer';
-with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::CvtermpropStorer';
 with 'PomBase::Role::FeatureStorer';
 
@@ -59,33 +58,17 @@ has options => (is => 'ro', isa => 'ArrayRef');
 # "spo:SPAC1002.09c  path:spo00010"
 has organism_prefix => (is => 'rw', init_arg => undef);
 
-has organism => (is => 'rw', init_arg => undef);
-
 
 method BUILD {
-  my $organism_taxonid = undef;
   my $organism_prefix = undef;
 
-  my @opt_config = ('organism-taxonid=s' => \$organism_taxonid,
-                    'organism-prefix=s' => \$organism_prefix);
+  my @opt_config = ('organism-prefix=s' => \$organism_prefix);
 
   my @options_copy = @{$self->options()};
 
   if (!GetOptionsFromArray(\@options_copy, @opt_config)) {
     croak "option parsing failed";
   }
-
-  if (!defined $organism_taxonid || length $organism_taxonid == 0) {
-    die "no --organism-taxonid passed to the Features loader\n";
-  }
-
-  my $organism = $self->find_organism_by_taxonid($organism_taxonid);
-
-  if (!defined $organism) {
-    die "can't find organism with taxon ID: $organism_taxonid\n";
-  }
-
-  $self->organism($organism);
 
   if (!defined $organism_prefix) {
     die "the --organism-prefix argument is required\n";
@@ -112,7 +95,7 @@ method load($fh) {
     my $gene = undef;
 
     try {
-      $gene = $self->find_chado_feature($gene_id, 1, 1, $self->organism());
+      $gene = $self->find_chado_feature($gene_id);
     } catch {
       warn "$_\n";
     };
