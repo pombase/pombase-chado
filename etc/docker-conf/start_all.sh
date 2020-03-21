@@ -13,5 +13,5 @@ else
   export HOST_IP_ADDRESS=$(route | grep '^default' | awk '{print $2}')
 
   /pombase/update_vars.sh $ANALYTICS_ID "$APP_DEPLOY_CONFIG" /var/www/html/index.html &&
-  exec /usr/local/bin/circusd /pombase/circus.ini
+  exec /usr/local/bin/circusd --log-level debug /pombase/circus.ini
 fi
