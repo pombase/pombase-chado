@@ -1,0 +1,10 @@
+{"add-field-type": {"name": "idField", "class":"solr.StrField"}}
+{"add-field-type": {"name": "numField", "class":"solr.LongPointField"}}
+{"add-field-type": {"name": "textField", "class": "solr.TextField", "indexAnalyzer": {"tokenizer": {"class": "solr.StandardTokenizerFactory"}, "filters": [{"class": "solr.LowerCaseFilterFactory"}, {"class": "solr.WordDelimiterGraphFilterFactory", "splitOnNumerics": 0}]}, "queryAnalyzer": {"tokenizer": {"class": "solr.StandardTokenizerFactory"}, "filters": [{"class": "solr.LowerCaseFilterFactory"}, {"class": "solr.WordDelimiterGraphFilterFactory", "splitOnNumerics": 0}]}}}
+{"add-field":{"name":"uniquename","type":"idField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"uniprot_identifier","type":"idField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"feature_type","type":"idField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"name", "type": "textField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"taxonid", "type": "numField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"product", "type": "textField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"synonyms", "type":"textField","multiValued":"true","indexed":"false","stored":"true"}}
