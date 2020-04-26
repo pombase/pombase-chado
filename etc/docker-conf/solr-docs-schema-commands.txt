@@ -1,0 +1,4 @@
+{"add-field-type":{"name":"idField","class":"solr.StrField"}}
+{"add-field-type": {"name": "textField", "class": "solr.TextField", "indexAnalyzer": {"tokenizer": {"class": "solr.StandardTokenizerFactory"}, "filters": [{"class": "solr.LowerCaseFilterFactory"}, {"class": "solr.WordDelimiterGraphFilterFactory", "splitOnNumerics": 0}]}, "queryAnalyzer": {"tokenizer": {"class": "solr.StandardTokenizerFactory"}, "filters": [{"class": "solr.LowerCaseFilterFactory"}, {"class": "solr.WordDelimiterGraphFilterFactory", "splitOnNumerics": 0}]}}}
+{"add-field":{"name": "heading","type": "textField", "indexed":"true", "stored":"true"}}
+{"add-field":{"name": "content","type": "textField", "indexed":"true", "stored":"true"}}
