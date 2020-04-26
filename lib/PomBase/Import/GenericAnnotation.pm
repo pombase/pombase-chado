@@ -160,6 +160,8 @@ method load($fh) {
     try {
       $chado->txn_do($proc);
     } catch {
+      use Data::Dumper;
+      warn 'current row: ', Dumper([\%columns]);
       warn "Failed to load row: $_\n";
     }
 
