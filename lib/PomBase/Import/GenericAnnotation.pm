@@ -129,6 +129,8 @@ method load($fh) {
       push @pubs, $null_pub;
     }
 
+    next unless $systematic_id;
+
     my $proc = sub {
       my $feature = $self->find_chado_feature("$systematic_id", 1, 1, $self->organism());
 
@@ -160,11 +162,8 @@ method load($fh) {
     try {
       $chado->txn_do($proc);
     } catch {
-      use Data::Dumper;
-      warn 'current row: ', Dumper([\%columns]);
       warn "Failed to load row: $_\n";
     }
-
   }
 
   if (!$csv->eof()){
