@@ -141,15 +141,21 @@ method load($fh) {
 
     if (defined $dest_gene) {
       if (!defined $do_id) {
-        warn "no DO ID for $malacards_disease_slug -> $human_gene_name " .
+        warn "no MONDO ID for $malacards_disease_slug -> $human_gene_name " .
           "(", $dest_gene->uniquename(), ")\n";
+        next;
+      }
+
+      if ($do_id !~ /^MONDO:/) {
+        warn qq|"$do_id" doesn't look like a MONDO ID - skipping\n|;
         next;
       }
 
       my $cvterm = $self->find_cvterm_by_term_id($do_id);
 
       if (!defined $cvterm) {
-        warn "could not create cvterm for $do_id, skipping $malacards_disease_slug\n";
+        warn "could not find cvterm for $do_id - maybe obsolete?  Skipping annotation for ",
+          $dest_gene->uniquename(), " / $malacards_disease_slug\n";
         next;
       }
 
