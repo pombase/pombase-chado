@@ -101,12 +101,12 @@ method load($fh) {
 
     @columns{ $csv->column_names() } = $csv->fields();
 
-    my $systematic_id = $columns{"systematic_id"};
-    my $feature_name = $columns{"feature_name"};
-    my $term_id = $columns{"term_id"};
-    my $evidence_code = $columns{"evidence_code"};
-    my $publication_id = $columns{"publication_id"};
-    my $date = $columns{"date"};
+    my $systematic_id = $columns{"systematic_id"}->trim();
+    my $feature_name = $columns{"feature_name"}->trim();
+    my $term_id = $columns{"term_id"}->trim();
+    my $evidence_code = $columns{"evidence_code"}->trim();
+    my $publication_id = $columns{"publication_id"}->trim();
+    my $date = $columns{"date"}->trim();
 
     my $long_evidence = undef;
     if ($evidence_code) {
