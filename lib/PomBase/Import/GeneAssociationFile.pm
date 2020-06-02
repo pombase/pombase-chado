@@ -61,6 +61,7 @@ has assigned_by_filter => (is => 'rw', init_arg => undef);
 has taxon_filter => (is => 'rw', init_arg => undef);
 has remove_existing => (is => 'rw', init_arg => undef);
 has use_first_with_id => (is => 'rw', init_arg => undef);
+has with_prefix_filter => (is => 'rw', init_arg => undef);
 has with_filter_values => (is => 'rw', isa => 'HashRef',
                              init_arg => undef);
 has term_id_filter_values => (is => 'rw', isa => 'HashRef',
@@ -104,6 +105,7 @@ method BUILD {
   my $remove_existing = 0;
   my $with_filter_filename = undef;
   my $term_id_filter_filename = undef;
+  my $with_prefix_filter = undef;
 
   # if true only the first ID from a with field will be stored
   my $use_first_with_id = 0;
@@ -115,6 +117,7 @@ method BUILD {
                       \$with_filter_filename,
                     'term-id-filter-filename=s' =>
                       \$term_id_filter_filename,
+                    'with-prefix-filter' => \$with_prefix_filter,
                     'use-only-first-with-id' => \$use_first_with_id);
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
@@ -141,6 +144,8 @@ method BUILD {
   $self->term_id_filter_values({%term_id_filter_values});
 
   $self->use_first_with_id($use_first_with_id);
+
+  $self->with_prefix_filter($with_prefix_filter);
 }
 
 method load($fh) {
@@ -182,6 +187,8 @@ method load($fh) {
   my %term_id_filter = %{$self->term_id_filter_values()};
 
   my $use_first_with_id = $self->use_first_with_id();
+
+  my $with_prefix_filter = $self->with_prefix_filter();
 
  LINE:
   while (defined (my $line = $fh->getline())) {
@@ -261,6 +268,10 @@ method load($fh) {
 
     if (length $with_or_from_column > 0) {
       @withs_and_froms = split (/\|/, $with_or_from_column);
+    }
+
+    if (defined $with_prefix_filter) {
+      @withs_and_froms = grep { /^$with_prefix_filter/ } @withs_and_froms;
     }
 
     for (my $i = 0; $i < @withs_and_froms; $i++) {
