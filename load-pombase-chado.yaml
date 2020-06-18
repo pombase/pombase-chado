@@ -172,7 +172,9 @@ evidence_types:
     name: northern assay evidence used in manual assertion
   'ECO:0007087':
     name: ribosome profiling evidence
-    
+  'ECO:0007183':
+    name: protein expression level evidence based on western blot used in manual assertion
+
 
 phenotype_cv_name: fission_yeast_phenotype
 parental_strain:
