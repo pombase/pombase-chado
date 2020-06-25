@@ -170,6 +170,8 @@ evidence_types:
     name: western blot evidence used in manual assertion
   'ECO:0005653':
     name: northern assay evidence used in manual assertion
+  'ECO:0005660':
+    name: quantitative polymerase chain reaction evidence used in manual assertion
   'ECO:0007087':
     name: ribosome profiling evidence
   'ECO:0007183':
