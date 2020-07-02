@@ -269,7 +269,6 @@ method _store_ontology_annotation {
   my $extension_text = $args{extension_text};
   my $extensions = $args{extensions};
   my $curator = $args{curator};
-  my $approver_email = $args{approver_email};
   my $canto_session = $args{canto_session};
   my $changed_by = $args{changed_by};
 
@@ -426,15 +425,9 @@ method _store_ontology_annotation {
     $self->add_feature_cvtermprop($feature_cvterm,
                                   curator_name => $curator->{name});
     $self->add_feature_cvtermprop($feature_cvterm,
-                                  curator_email => $curator->{email});
-    $self->add_feature_cvtermprop($feature_cvterm,
                                   community_curated => ($curator->{community_curated} ? 'true' : 'false'));
     $self->add_feature_cvtermprop($feature_cvterm,
                                   canto_session => $canto_session);
-    if (defined $approver_email) {
-      $self->add_feature_cvtermprop($feature_cvterm,
-                                    approver_email => $approver_email);
-    }
     if (defined $changed_by) {
       $self->add_feature_cvtermprop($feature_cvterm,
                                     changed_by => $changed_by);
@@ -612,7 +605,7 @@ method _process_feature {
   my %useful_session_data =
     map {
       ($_, $session_metadata->{$_});
-    } qw(approver_email first_approved_timestamp approved_timestamp);
+    } qw(first_approved_timestamp approved_timestamp);
 
   my $long_evidence;
 
@@ -887,20 +880,11 @@ method _store_metadata($metadata) {
   if ($metadata->{approver_name}) {
     $self->create_pubprop($pub, 'canto_approver_name', $metadata->{approver_name});
   }
-  if ($metadata->{approver_email}) {
-    $self->create_pubprop($pub, 'canto_approver_email', $metadata->{approver_email});
-  }
   if ($metadata->{initial_curator_name}) {
     $self->create_pubprop($pub, 'canto_initial_curator_name', $metadata->{initial_curator_name});
   }
-  if ($metadata->{initial_curator_email}) {
-    $self->create_pubprop($pub, 'canto_initial_curator_email', $metadata->{initial_curator_email});
-  }
   if ($metadata->{curator_name}) {
     $self->create_pubprop($pub, 'canto_curator_name', $metadata->{curator_name});
-  }
-  if ($metadata->{curator_email}) {
-    $self->create_pubprop($pub, 'canto_curator_email', $metadata->{curator_email});
   }
   if ($metadata->{curator_role}) {
     $self->create_pubprop($pub, 'canto_curator_role', $metadata->{curator_role});
