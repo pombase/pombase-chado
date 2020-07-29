@@ -65,7 +65,6 @@ while (defined (my $fc = $annotations->next())) {
                {
                  'date' => '2010-01-02',
                  'evidence' => 'Inferred from Direct Assay',
-                 'curator_email' => 'some.testperson@pombase.org',
                  'curator_name' => 'Some Testperson',
                  'community_curated' => 'false',
                  'assigned_by' => 'PomBase',
