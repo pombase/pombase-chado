@@ -323,7 +323,7 @@ method find_cvterm_by_term_id($term_id, $options) {
       }
     }
   } else {
-    die "database ID ($term_id) doesn't contain a colon\n";
+    die qq|database ID "$term_id" doesn't contain a colon\n|;
   }
 }
 
