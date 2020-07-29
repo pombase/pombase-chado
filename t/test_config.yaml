@@ -538,6 +538,16 @@ data:
             accession: 0731000004
             db:
               name: PBO
+        - name: canto_session_accepted_date
+          dbxref:
+            accession: 0731000005
+            db:
+              name: PBO
+        - name: canto_initial_curator_name
+          dbxref:
+            accession: 0731000006
+            db:
+              name: PBO
   cvterm_relationships:
     - subject:
         name: microtubule motor activity
@@ -660,6 +670,25 @@ data:
       organism:
         genus: Schizosaccharomyces
         species: pombe
+    - uniquename: SPBC1826.01c
+      name: mot1
+      type:
+        name: gene
+      organism:
+        genus: Schizosaccharomyces
+        species: pombe
+    - uniquename: SPBC1826.01c.1
+      type:
+        name: mRNA
+      organism:
+        genus: Schizosaccharomyces
+        species: pombe
+    - uniquename: SPBC1826.01c:exon:1
+      type:
+        name: exon
+      organism:
+        genus: Schizosaccharomyces
+        species: pombe
     - uniquename: ENSG00000124562
       type:
         name: gene
@@ -748,32 +777,6 @@ data:
           name: relationship
       object:
         uniquename: SPAC2F7.03c
-    - subject:
-        uniquename: SPCC63.05
-      type:
-        name: interacts_genetically
-        cv:
-          name: PomBase interaction types
-      object:
-        uniquename: SPBC14F5.07
-      feature_relationshipprops:
-        - type:
-            name: evidence
-            cv:
-              name: feature_relationshipprop_type
-          value: Synthetic Haploinsufficiency
-        - type:
-            name: source_database
-            cv:
-              name: feature_relationshipprop_type
-          value: BioGRID
-      feature_relationship_pubs:
-        - pub:
-            type:
-              name: paper
-              cv:
-                name: PomBase publication types
-            uniquename: PMID:19756689
   feature_cvterm:
     - feature:
         uniquename: SPBC2F12.13.1
@@ -1037,3 +1040,4 @@ cvs:
     - name: unknown
       description: An allele whose type has not been established.
     - name: other
+    - name: unspecified

@@ -6,11 +6,10 @@
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
-                  "email" : "other.tester@pombase.org",
                   "name" : "Other Tester"
                },
                "evidence_code" : "IMP",
-               "gene" : "Schizosaccharomyces pombe SPCC576.16c",
+               "gene" : "Schizosaccharomyces pombe SPBC1826.01c",
                "publication" : "PMID:18426916",
                "status" : "new",
                "term" : "GO:0055085",
@@ -18,9 +17,9 @@
             }
          ],
          "genes" : {
-            "Schizosaccharomyces pombe SPCC576.16c" : {
+            "Schizosaccharomyces pombe SPBC1826.01c" : {
                "organism" : "Schizosaccharomyces pombe",
-               "uniquename" : "SPCC576.16c"
+               "uniquename" : "SPBC1826.01c"
             }
          },
          "metadata" : {
@@ -28,11 +27,12 @@
             "annotation_status" : "CURATION_IN_PROGRESS",
             "annotation_status_datestamp" : "2012-02-15 13:45:00",
             "canto_session" : "aaaa0006",
-            "curator_email" : "test@test.pombase.org",
-            "curator_name" : "Test T. Curator",
-            "curator_role" : "community",
+            "curation_accepted_date" : "2012-02-15 13:45:00",
             "curation_in_progress_timestamp" : "2012-02-15 13:45:00",
             "curation_pub_id" : "PMID:18426916",
+            "curator_name" : "Other Tester",
+            "curator_role" : "community",
+            "initial_curator_name" : "Other Tester",
             "session_created_timestamp" : "2012-02-15 13:45:00",
             "session_genes_count" : "1",
             "session_term_suggestions_count" : "0",
@@ -51,39 +51,48 @@
       },
       "aaaa0007" : {
          "alleles" : {
-            "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-1" : {
+            "SPAC27D7.13c:aaaa0007-1" : {
                "allele_type" : "deletion",
                "description" : "deletion",
                "gene" : "Schizosaccharomyces pombe SPAC27D7.13c",
                "name" : "ssm4delta",
-               "primary_identifier" : "SPAC27D7.13c:aaaa0007-1"
+               "primary_identifier" : "SPAC27D7.13c:aaaa0007-1",
+               "synonyms" : []
             },
-            "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-2" : {
+            "SPAC27D7.13c:aaaa0007-2" : {
                "allele_type" : "amino_acid_mutation",
                "description" : "G40A,K43E",
                "gene" : "Schizosaccharomyces pombe SPAC27D7.13c",
                "name" : "ssm4KE",
-               "primary_identifier" : "SPAC27D7.13c:aaaa0007-2"
+               "primary_identifier" : "SPAC27D7.13c:aaaa0007-2",
+               "synonyms" : [
+                  "ssm4KE-a1"
+               ]
             },
-            "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-3" : {
+            "SPAC27D7.13c:aaaa0007-3" : {
                "allele_type" : "partial_nucleotide_deletion",
                "description" : "del_100-200",
                "gene" : "Schizosaccharomyces pombe SPAC27D7.13c",
                "name" : "ssm4-D4",
-               "primary_identifier" : "SPAC27D7.13c:aaaa0007-3"
+               "primary_identifier" : "SPAC27D7.13c:aaaa0007-3",
+               "synonyms" : [
+                  "ssm4-c1"
+               ]
             },
-            "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-4" : {
+            "SPAC27D7.13c:aaaa0007-4" : {
                "allele_type" : "partial_nucleotide_deletion",
                "description" : "del_200-300",
                "gene" : "Schizosaccharomyces pombe SPAC27D7.13c",
-               "primary_identifier" : "SPAC27D7.13c:aaaa0007-4"
+               "primary_identifier" : "SPAC27D7.13c:aaaa0007-4",
+               "synonyms" : []
             },
-            "Schizosaccharomyces pombe SPCC63.05:aaaa0007-1" : {
+            "SPCC63.05:aaaa0007-1" : {
                "allele_type" : "deletion",
                "description" : "deletion",
                "gene" : "Schizosaccharomyces pombe SPCC63.05",
                "name" : "SPCC63.05delta",
-               "primary_identifier" : "SPCC63.05:aaaa0007-1"
+               "primary_identifier" : "SPCC63.05:aaaa0007-1",
+               "synonyms" : []
             }
          },
          "annotations" : [
@@ -91,7 +100,6 @@
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
-                  "email" : "some.testperson@pombase.org",
                   "name" : "Some Testperson"
                },
                "evidence_code" : "IMP",
@@ -99,50 +107,73 @@
                "publication" : "PMID:19756689",
                "status" : "new",
                "term" : "GO:0055085",
+               "term_suggestion" : {
+                  "definition" : "The process in which miscellaneous stuff is transported from one side of a membrane to the other.",
+                  "name" : "miscellaneous transmembrane transport"
+               },
                "type" : "biological_process"
             },
             {
-              "extension" : [
-                {
-                  "relation" : "exists_during",
-                  "rangeValue" : "GO:0051329"
-                },
-                {
-                  "relation" : "has_substrate",
-                  "rangeValue" : "PomBase:SPBC1105.11c"
-                },
-                {
-                  "relation" : "requires_feature",
-                  "rangeValue" : "Pfam:PF00564"
-                },
-                {
-                  "relation" : "residue",
-                  "rangeValue" : "T31"
-                },
-                {
-                  "relation" : "residue",
-                  "rangeValue" : "T586(T586,X123)"
-                }
-               ],
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
-                  "email" : "some.testperson@pombase.org",
                   "name" : "Some Testperson"
                },
                "evidence_code" : "IPI",
+               "extension" : [
+                  {
+                     "rangeType" : "Ontology",
+                     "rangeValue" : "GO:0051329",
+                     "relation" : "exists_during"
+                  },
+                  {
+                     "rangeType" : "Gene",
+                     "rangeValue" : "PomBase:SPBC1105.11c",
+                     "relation" : "has_substrate"
+                  },
+                  {
+                     "rangeType" : "Gene",
+                     "rangeValue" : "Pfam:PF00564",
+                     "relation" : "requires_feature"
+                  }
+               ],
                "gene" : "Schizosaccharomyces pombe SPBC14F5.07",
                "publication" : "PMID:19756689",
                "status" : "new",
                "term" : "GO:0034763",
                "type" : "biological_process",
-               "with_gene" : "SPCC576.16c"
+               "with_gene" : "SPBC1826.01c"
             },
             {
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
-                  "email" : "some.testperson@pombase.org",
+                  "name" : "Some Testperson"
+               },
+               "evidence_code" : "IPI",
+               "extension" : [
+                  {
+                     "rangeType" : "Ontology",
+                     "rangeValue" : "GO:0051329",
+                     "relation" : "exists_during"
+                  },
+                  {
+                     "rangeType" : "Gene",
+                     "rangeValue" : "PomBase:SPBC1105.11c",
+                     "relation" : "has_substrate"
+                  }
+               ],
+               "gene" : "Schizosaccharomyces pombe SPBC14F5.07",
+               "publication" : "PMID:19756689",
+               "status" : "new",
+               "term" : "GO:0034763",
+               "type" : "biological_process",
+               "with_gene" : "SPBC1826.01c"
+            },
+            {
+               "creation_date" : "2010-01-02",
+               "curator" : {
+                  "community_curated" : false,
                   "name" : "Some Testperson"
                },
                "evidence_code" : "IDA",
@@ -153,26 +184,40 @@
                "type" : "molecular_function"
             },
             {
+               "conditions" : [
+                  "PECO:0000137"
+               ],
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
-                  "email" : "some.testperson@pombase.org",
                   "name" : "Some Testperson"
                },
                "evidence_code" : "Synthetic Haploinsufficiency",
-               "gene" : "Schizosaccharomyces pombe SPCC63.05",
-               "interacting_genes" : [
-                  "Schizosaccharomyces pombe SPBC14F5.07"
-               ],
+               "metagenotype" : "test-metagenotype-1",
                "publication" : "PMID:19756689",
                "status" : "new",
+               "term" : "FYPO:0000114",
+               "type" : "genetic_interaction"
+            },
+            {
+               "conditions" : [
+               ],
+               "creation_date" : "2010-01-07",
+               "curator" : {
+                  "community_curated" : false,
+                  "name" : "Some Testperson"
+               },
+               "evidence_code" : "Synthetic Haploinsufficiency",
+               "metagenotype" : "test-metagenotype-2",
+               "publication" : "PMID:19756689",
+               "status" : "new",
+               "term" : "FYPO:0000114",
                "type" : "genetic_interaction"
             },
             {
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
-                  "email" : "some.testperson@pombase.org",
                   "name" : "Some Testperson"
                },
                "evidence_code" : "Far Western",
@@ -182,7 +227,7 @@
                ],
                "publication" : "PMID:19756689",
                "status" : "new",
-               "type" : "genetic_interaction"
+               "type" : "physical_interaction"
             },
             {
                "conditions" : [
@@ -192,7 +237,6 @@
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
-                  "email" : "some.testperson@pombase.org",
                   "name" : "Some Testperson"
                },
                "evidence_code" : "Epitope-tagged protein immunolocalization experiment data",
@@ -206,7 +250,6 @@
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : false,
-                  "email" : "some.testperson@pombase.org",
                   "name" : "Some Testperson"
                },
                "evidence_code" : "Co-immunoprecipitation experiment",
@@ -220,7 +263,6 @@
                "creation_date" : "2010-01-02",
                "curator" : {
                   "community_curated" : true,
-                  "email" : "a.n.other.testperson@pombase.org",
                   "name" : "Another Testperson"
                },
                "evidence_code" : "ISS",
@@ -240,9 +282,9 @@
                "organism" : "Schizosaccharomyces pombe",
                "uniquename" : "SPBC14F5.07"
             },
-            "Schizosaccharomyces pombe SPCC576.16c" : {
+            "Schizosaccharomyces pombe SPBC1826.01c" : {
                "organism" : "Schizosaccharomyces pombe",
-               "uniquename" : "SPCC576.16c"
+               "uniquename" : "SPBC1826.01c"
             },
             "Schizosaccharomyces pombe SPCC63.05" : {
                "organism" : "Schizosaccharomyces pombe",
@@ -251,27 +293,32 @@
          },
          "genotypes" : {
             "aaaa0007-genotype-test-1" : {
+               "background" : "h+",
                "loci" : [
-                 [
-                  {
-                     "id" : "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-1"
-                  },
-                  {
-                     "id" : "Schizosaccharomyces pombe SPCC63.05:aaaa0007-1"
-                  }
-                 ]
+                  [
+                     {
+                        "id" : "SPAC27D7.13c:aaaa0007-1"
+                     }
+                  ],
+                  [
+                     {
+                        "id" : "SPCC63.05:aaaa0007-1"
+                     }
+                  ]
                ],
-               "name" : "h+ SPCC63.05delta ssm4KE"
+               "name" : "SPCC63.05delta ssm4KE",
+               "organism_taxonid" : 4896
             },
             "aaaa0007-genotype-test-2" : {
                "loci" : [
-                 [
-                  {
-                     "expression" : "Knockdown",
-                     "id" : "Schizosaccharomyces pombe SPAC27D7.13c:aaaa0007-3"
-                  }
-                 ]
-               ]
+                  [
+                     {
+                        "expression" : "Knockdown",
+                        "id" : "SPAC27D7.13c:aaaa0007-3"
+                     }
+                  ]
+               ],
+               "organism_taxonid" : 4896
             }
          },
          "metadata" : {
@@ -279,17 +326,30 @@
             "annotation_status" : "CURATION_IN_PROGRESS",
             "annotation_status_datestamp" : "2012-02-15 13:45:00",
             "canto_session" : "aaaa0007",
-            "curator_email" : "test_curator@test.pombase.org",
-            "curator_name" : "Test Z. Curator",
-            "curator_role" : "community",
+            "curation_accepted_date" : "2012-02-15 13:45:00",
             "curation_in_progress_timestamp" : "2012-02-15 13:45:00",
             "curation_pub_id" : "PMID:19756689",
+            "curator_name" : "Some Testperson",
+            "curator_role" : "community",
+            "initial_curator_name" : "Some Testperson",
             "session_created_timestamp" : "2012-02-15 13:45:00",
             "session_genes_count" : "4",
-            "session_term_suggestions_count" : "0",
-            "session_unknown_conditions_count" : "0",
+            "session_term_suggestions_count" : "1",
+            "session_unknown_conditions_count" : "1",
             "term_suggestion_count" : "1",
             "unknown_conditions_count" : "1"
+         },
+         "metagenotypes" : {
+            "test-metagenotype-1" : {
+               "genotype_a" : "aaaa0007-genotype-test-1",
+               "genotype_b" : "aaaa0007-genotype-test-2",
+               "type" : "interaction"
+            },
+            "test-metagenotype-2" : {
+               "genotype_a" : "aaaa0007-genotype-test-2",
+               "genotype_b" : "aaaa0007-genotype-test-2",
+               "type" : "interaction"
+            }
          },
          "organisms" : {
             "4896" : {
@@ -300,6 +360,7 @@
             "PMID:19756689" : {}
          }
       }
-   }
+   },
+   "schema_version" : 1
 }
 

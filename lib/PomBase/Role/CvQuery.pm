@@ -65,6 +65,10 @@ sub id_of_cvterm
 method get_relation_cvterm($cvterm_name) {
   state $cache = {};
 
+  if (!$cvterm_name) {
+    die "no term passed to get_relation_cvterm()";
+  }
+
   if ($cache->{$cvterm_name}) {
     return $cache->{$cvterm_name};
   }
