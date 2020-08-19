@@ -1,7 +1,7 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v44 .
-FROM bitnami/minideb:unstable
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v45 .
+FROM bitnami/minideb:latest
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
 RUN mkdir /downloads; mkdir /pombase
@@ -16,8 +16,8 @@ RUN apt-get -y install apt-utils curl && apt-get clean
 
 USER pombase
 
-RUN cd /pombase && curl https://archive.apache.org/dist/lucene/solr/7.1.0/solr-7.1.0.tgz | tar -x --gzip -f - && \
-    (cd /pombase/solr-7.1.0/; rm -rf example contrib licenses *.txt docs)
+RUN cd /pombase && curl https://archive.apache.org/dist/lucene/solr/8.6.1/solr-8.6.1.tgz | tar -x --gzip -f - && \
+    (cd /pombase/solr-8.6.1/; rm -rf example contrib licenses *.txt docs)
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
 ENV PATH="/pombase/.cargo/bin/:${PATH}"
@@ -31,10 +31,10 @@ RUN apt-get -y install gnupg2 git-core procps xz-utils \
 RUN apt-get -y install --reinstall python-pkg-resources && apt-get clean
 RUN apt-get -y install python3-pip && apt-get clean
 RUN echo "deb http://deb.debian.org/debian stable main" >> /etc/apt/sources.list; apt update
-RUN apt-get -y install openjdk-8-jre-headless && apt-get clean
+RUN apt-get -y install openjdk-11-jre-headless && apt-get clean
 RUN apt-get -y install python3-zmq && apt-get clean
 
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get update && apt-get -y install nodejs && apt-get clean
 RUN npm install --silent --unsafe-perm -g @angular/cli
 
@@ -49,11 +49,11 @@ RUN pip3 install django django-allauth gunicorn
 
 USER pombase
 
-ENV JBROWSE_VERSION=1.16.4
+ENV JBROWSE_VERSION=1.16.9-pombase
 
-RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-pombase-2.tar.gz; \
+RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION.tar.gz; \
     curl -L https://www.pombase.org/software/$JBROWSE_TAR | tar xzf -; \
-    mv JBrowse-$JBROWSE_VERSION-pombase-2 jbrowse; \
+    mv JBrowse-$JBROWSE_VERSION jbrowse; \
     cd /pombase/jbrowse; ./setup.sh)
 
 WORKDIR /pombase
