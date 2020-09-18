@@ -20,6 +20,7 @@ my %input_types = (
   biogrid => 'PomBase::Import::BioGRID',
   gaf => 'PomBase::Import::GeneAssociationFile',
   'generic-annotation' => 'PomBase::Import::GenericAnnotation',
+  'generic-property' => 'PomBase::Import::GenericProperty',
   'canto-json' => 'PomBase::Import::Canto',
   orthologs => 'PomBase::Import::Orthologs',
   quantitative => 'PomBase::Import::Quantitative',
