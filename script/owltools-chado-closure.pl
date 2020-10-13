@@ -6,6 +6,9 @@ use strict;
 use File::Temp qw/ tempfile /;
 use DBI;
 
+use Cwd qw(cwd);
+my $cwd = cwd;
+
 if (@ARGV < 4) {
   die <<"EOF";
 $0: ERROR: needs four or more arguments
@@ -28,6 +31,15 @@ my $dbh = DBI->connect("dbi:Pg:db=$database_name;host=$host", $user, $pass,
                        { AutoCommit => 0, PrintError => 1,
                          RaiseError => 1 })
   or die "Cannot connect to $database_name on $host: $DBI::errstr\n";
+
+my $PURL_PREFIX = 'http://purl.obolibrary.org/obo';
+my $line_re = qr|
+  <\Q$PURL_PREFIX\E/([^/]+)>
+  \s+
+  <http://\S+[/#](.*)>
+  \s+
+  <\Q$PURL_PREFIX\E/([^/]+)>
+|x;
 
 my $temp_table_name = "owltools_closure_temp";
 
@@ -61,6 +73,16 @@ $dbh->do("CREATE TEMPORARY TABLE $temp_table_name ($column_defs_sql)");
 
 $dbh->do("CREATE TEMPORARY TABLE ${temp_table_name}_termids AS (select t.name as term_name, db.name || ':' || x.accession as termid from cvterm t join dbxref x on t.dbxref_id = x.dbxref_id join db on x.db_id = db.db_id)");
 
+sub _fix_term
+{
+  my $termid = shift;
+  if ($termid =~ /^([A-Z]+)_(\d+)$/) {
+    return "$1:$2";
+  } else {
+    return $termid
+  }
+}
+
 for my $filename (@filenames) {
   my $column_name_sql = join ", ", @column_names;
 
@@ -69,7 +91,9 @@ for my $filename (@filenames) {
 
   my ($temp_fh, $temp_filename) = tempfile();
 
-  system ("owltools $filename --save-closure-for-chado $temp_filename") == 0
+  warn "processing: $filename\n";
+
+  system ("cd /var/pomcur/external/relation-graph-1.1; ./bin/relation-graph --ontology-file $cwd/$filename --non-redundant-output-file /dev/null --redundant-output-file $temp_filename --mode rdf --output-subclasses true --reflexive-subclasses false --equivalence-as-subclass false") == 0
     or die "can't open pipe from owltools: $?";
 
   open my $owltools_out, '<', $temp_filename
@@ -77,13 +101,21 @@ for my $filename (@filenames) {
 
   while (defined (my $line = <$owltools_out>)) {
     chomp $line;
-    my ($subjectid, $rel_termid, $pathdistance, $objectid) = split /\t/, $line;
 
-    if ($rel_termid eq 'OBO_REL:is_a') {
-      $rel_termid = 'internal:is_a';
+    my ($subjectid, $rel_termid, $objectid) = $line =~ $line_re;
+    my $pathdistance = 1;
+
+    if (!$subjectid) {
+      die "failed, can't parse: $line\n";
     }
 
-    my ($subj_db_name, $subj_accession) = split /:/, $subjectid;
+    if ($rel_termid eq 'subClassOf') {
+      $rel_termid = 'internal:is_a';
+    } else {
+      $rel_termid = _fix_term($rel_termid);
+    }
+
+    my ($subj_db_name, $subj_accession) = split /_/, $subjectid;
 
     next if $subj_db_name eq 'http' or $subj_db_name eq 'NCBITaxon';
 
@@ -97,7 +129,7 @@ for my $filename (@filenames) {
       die "can't find a DB for: $subj_db_name\n";
     }
 
-    my ($obj_db_name, $obj_accession) = split /:/, $objectid;
+    my ($obj_db_name, $obj_accession) = split /_/, $objectid;
 
     next if $obj_db_name eq 'http' or $obj_db_name eq 'NCBITaxon';
 
