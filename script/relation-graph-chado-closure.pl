@@ -91,9 +91,15 @@ for my $filename (@filenames) {
 
   my ($temp_fh, $temp_filename) = tempfile();
 
-  warn "processing: $filename\n";
+  my $filename_full_path = $filename;
 
-  system ("cd /var/pomcur/external/relation-graph-1.1; ./bin/relation-graph --ontology-file $cwd/$filename --non-redundant-output-file /dev/null --redundant-output-file $temp_filename --mode rdf --output-subclasses true --reflexive-subclasses false --equivalence-as-subclass false") == 0
+  if ($filename_full_path !~ m|^/|) {
+    $filename_full_path = "$cwd/$filename_full_path";
+  }
+
+  warn "processing: $filename_full_path\n";
+
+  system ("cd /var/pomcur/external/relation-graph-1.1; ./bin/relation-graph --ontology-file $filename_full_path --non-redundant-output-file /dev/null --redundant-output-file $temp_filename --mode rdf --output-subclasses true --reflexive-subclasses false --equivalence-as-subclass false") == 0
     or die "can't open pipe from owltools: $?";
 
   open my $owltools_out, '<', $temp_filename
