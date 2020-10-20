@@ -646,7 +646,7 @@ method _process_feature {
     if (keys %$annotation > 0) {
       my @keys =
         grep {
-          $_ ne 'organism';
+          $_ ne 'organism' and $_ ne 'figure';
         } keys %$annotation;
 
       if (@keys) {
