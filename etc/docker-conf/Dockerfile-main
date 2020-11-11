@@ -48,9 +48,9 @@ COPY --chown=pombase:pombase ng-website /pombase/ng-website
 COPY --chown=pombase:pombase trackList.json /pombase/jbrowse/data/trackList.json
 COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/ng-website/minimal_jbrowse_track_list.json
 COPY --chown=pombase:pombase pombase_jbrowse_track_metadata.csv /pombase/jbrowse/data/pombase_jbrowse_track_metadata.csv
-COPY --chown=pombase:pombase GO.xrf_abbs /pombase/ng-website/
 
-RUN (cd ng-website; ./etc/update_generated_files.sh GO.xrf_abbs /pombase/pombase_v2_config.json)
+RUN (cd ng-website; \
+    ./etc/update_generated_files.sh /pombase/pombase_v2_config.json)
 
 RUN cd ./solr-8.6.1/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
