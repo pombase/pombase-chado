@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v46 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v47 .
 FROM bitnami/minideb:latest
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -40,7 +40,7 @@ RUN npm install --silent --unsafe-perm -g @angular/cli
 
 
 
-RUN apt-get -y install libperlio-gzip-perl libgd-perl libjson-perl pandoc && apt-get clean
+RUN apt-get -y install libperlio-gzip-perl libgd-perl libjson-perl libyaml-perl pandoc && apt-get clean
 RUN curl -L http://cpanmin.us | perl - --self-upgrade
 RUN cpanm Pandoc
 
