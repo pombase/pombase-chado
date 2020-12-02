@@ -41,6 +41,8 @@ use Moose::Role;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 
+has website_config => (is => 'ro');
+
 requires 'description';
 
 =head2 checker_config

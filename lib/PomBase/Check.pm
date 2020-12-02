@@ -47,6 +47,8 @@ use PomBase::Chado;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 
+has website_config => (is => 'ro');
+
 method _do_query_checks() {
   my @query_checks = @{$self->config()->{check_chado}->{query_checks}};
 
@@ -147,7 +149,8 @@ method run() {
   for my $module (@check_modules) {
     warn "Running check: $module\n";
     my $obj = $module->new(config => $self->config(),
-                           chado => $self->chado());
+                           chado => $self->chado(),
+                           website_config => $self->website_config());
 
     if (!$obj->check()) {
       warn "failed test: ", $obj->description(), "\n";
@@ -155,9 +158,7 @@ method run() {
     }
   }
 
-  $seen_failure ||= $self->_do_query_checks();
-
-  return $seen_failure;
+  return $self->_do_query_checks() || $seen_failure;
 }
 
 1;
