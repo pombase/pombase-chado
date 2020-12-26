@@ -154,8 +154,28 @@ method load($fh) {
       my $cvterm = $self->find_cvterm_by_term_id($do_id);
 
       if (!defined $cvterm) {
-        warn "could not find cvterm for $do_id - maybe obsolete?  Skipping annotation for ",
-          $dest_gene->uniquename(), " / $malacards_disease_slug\n";
+        $cvterm = $self->find_cvterm_by_term_id($do_id,
+                                                { include_obsolete => 1 });
+
+        if ($cvterm) {
+          my $replaced_by_prop = $cvterm->cvtermprops()
+            ->search({ 'type.name' => 'replaced_by' },
+                     { join => 'type' })
+            ->first();
+
+          if (defined $replaced_by_prop) {
+            warn "$do_id is obsolete (replaced by: ",
+              $replaced_by_prop->value(), ") - skipping annotation for ",
+              $dest_gene->uniquename(), " / $malacards_disease_slug\n";
+          } else {
+            warn qq|$do_id is obsolete (no "replaced_by" tag) - skipping annotation for |,
+              $dest_gene->uniquename(), " / $malacards_disease_slug\n";
+          }
+        } else {
+          warn "could not find cvterm for $do_id - skipping annotation for ",
+            $dest_gene->uniquename(), " / $malacards_disease_slug\n";
+        }
+
         next;
       }
 
