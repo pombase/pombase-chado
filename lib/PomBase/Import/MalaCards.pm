@@ -137,6 +137,15 @@ method load($fh) {
         $malacards_displayed_disease_name, $human_gene_name, $do_id) =
       map { $_->trim() || undef } @$columns_ref;
 
+    if (!defined $do_id) {
+      print STDERR "not enough columns in MalaCards input file line $., ignoring";
+      if ((join "\t", @$columns_ref) =~ / /) {
+        print STDERR "  (note: line contains spaces)";
+      }
+      warn "\n";
+      next;
+    }
+
     my $dest_gene = $self->human_ortholog_map()->{$human_gene_name};
 
     if (defined $dest_gene) {
