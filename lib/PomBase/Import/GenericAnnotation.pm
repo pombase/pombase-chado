@@ -155,7 +155,7 @@ method load($fh) {
       my $cvterm = $self->find_cvterm_by_term_id($term_id);
 
       if (!defined $cvterm) {
-        warn "can't load annotation for $systematic_id - $term_id not found in database\n";
+        warn "can't load annotation for $systematic_id, line $. - $term_id not found in database\n";
         return;
       }
 
