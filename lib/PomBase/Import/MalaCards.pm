@@ -133,18 +133,16 @@ method load($fh) {
     if (@$columns_ref == 1 && $columns_ref->[0]->trim()->length() == 0) {
       next;
     }
+
+    if (@$columns_ref != 5) {
+      warn "needed 5 columns, got ", scalar(@$columns_ref),
+        " in MalaCards input file line $., ignoring\n";
+      next;
+    }
+
     my ($malacards_disease_name, $malacards_disease_slug,
         $malacards_displayed_disease_name, $human_gene_name, $do_id) =
       map { $_->trim() || undef } @$columns_ref;
-
-    if (!defined $do_id) {
-      print STDERR "not enough columns in MalaCards input file line $., ignoring";
-      if ((join "\t", @$columns_ref) =~ / /) {
-        print STDERR "  (note: line contains spaces)";
-      }
-      warn "\n";
-      next;
-    }
 
     my $dest_gene = $self->human_ortholog_map()->{$human_gene_name};
 
