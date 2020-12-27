@@ -140,7 +140,17 @@ method load($fh) {
     next unless $systematic_id;
 
     my $proc = sub {
-      my $feature = $self->find_chado_feature("$systematic_id", 1, 1, $self->organism());
+      my $feature;
+
+      try {
+        $feature = $self->find_chado_feature("$systematic_id", 1, 1, $self->organism());
+      } catch {
+        warn "can't find feature in Chado for $systematic_id - skipping line $.\n";
+      };
+
+      if (!defined $feature) {
+        return;
+      }
 
       my $cvterm = $self->find_cvterm_by_term_id($term_id);
 
