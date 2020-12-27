@@ -99,7 +99,15 @@ method load($fh) {
 
     my %columns = ();
 
-    @columns{ $csv->column_names() } = $csv->fields();
+    my @fields = $csv->fields();
+
+    if (@fields != 6) {
+      warn "needed 6 columns, got ", scalar(@fields),
+        " - ignoring line $.\n";
+      next;
+    }
+
+    @columns{ $csv->column_names() } = @fields;
 
     my $systematic_id = $columns{"systematic_id"}->trim();
     my $feature_name = $columns{"feature_name"}->trim();
