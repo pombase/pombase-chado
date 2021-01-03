@@ -57,20 +57,27 @@ method retrieve() {
       "configuration file\n";
   }
 
-  my $sql = q|select f.uniquename, ext_p.value, pub.uniquename from feature f
-join feature_cvterm fc on f.feature_id = fc.feature_id
-join pub on fc.pub_id = pub.pub_id
-join cvterm ext_term on ext_term.cvterm_id = fc.cvterm_id
-join cv ext_term_cv on ext_term_cv.cv_id = ext_term.cv_id
-join cvtermprop ext_p on ext_term.cvterm_id = ext_p.cvterm_id
-join cvterm ext_p_type on ext_p.type_id = ext_p_type.cvterm_id
-where ext_term_cv.name = 'PomBase annotation extension terms'
-and ext_p_type.name in
-('annotation_extension_relation-has_direct_input',
-'annotation_extension_relation-has_input',
-'annotation_extension_relation-directly_negatively_regulates',
-'annotation_extension_relation-directly_positively_regulates')
-and f.organism_id = | . $self->organism()->organism_id();
+  my $sql = q|
+SELECT base_cv_name,
+       f.uniquename,
+       ext_p.value,
+       pub.uniquename
+FROM feature f
+JOIN pombase_feature_cvterm_ext_resolved_terms fc ON f.feature_id = fc.feature_id
+JOIN pub ON fc.pub_id = pub.pub_id
+JOIN cvterm ext_term ON ext_term.cvterm_id = fc.cvterm_id
+JOIN cv ext_term_cv ON ext_term_cv.cv_id = ext_term.cv_id
+JOIN cvtermprop ext_p ON ext_term.cvterm_id = ext_p.cvterm_id
+JOIN cvterm ext_p_type ON ext_p.type_id = ext_p_type.cvterm_id
+WHERE ext_term_cv.name = 'PomBase annotation extension terms'
+  AND (ext_p_type.name IN
+    ('annotation_extension_relation-has_direct_input',
+     'annotation_extension_relation-directly_negatively_regulates',
+     'annotation_extension_relation-directly_positively_regulates')
+   OR (ext_p_type.name IN ('annotation_extension_relation-has_regulation_target',
+                           'annotation_extension_relation-has_input')
+         AND base_cv_name = 'molecular_function'))
+  AND f.organism_id = | . $self->organism()->organism_id();
 
   my $dbh = $chado->storage()->dbh();
 
