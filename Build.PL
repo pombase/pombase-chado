@@ -30,6 +30,9 @@ my $builder = Module::Build->new(
       'Clone'                  => 0,
       'Bio::Tools::CodonOptTable' => 0,
       'perl5i::2'              => 0,
+      'Data::Compare' => 0,
+      'Devel::Declare' => 0.006019,
+      'Tie::IxHash' => 0,
     },
     test_requires => {
       'Test::LongString' => 0,
