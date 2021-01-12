@@ -58,8 +58,7 @@ method retrieve() {
   }
 
   my $sql = q|
-SELECT base_cv_name,
-       f.uniquename,
+SELECT f.uniquename,
        ext_p.value,
        pub.uniquename
 FROM feature f
