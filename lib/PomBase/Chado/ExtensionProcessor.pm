@@ -288,8 +288,35 @@ method store_extension($feature_cvterm, $extensions) {
   my $update_failed = undef;
 
   if ($existing_fc_rs->count() > 0) {
-    $update_failed = "that annotation has already been stored in Chado";
-  } else {
+
+    my $current_props_rs = $feature_cvterm->feature_cvtermprops()
+      ->search({ 'type.name' => 'evidence' },
+               { join => 'type' });
+
+    my $first_prop = $current_props_rs->first();
+
+    if (defined $first_prop) {
+      my $current_evidence = $first_prop->value();
+
+      for my $fc ($existing_fc_rs->all()) {
+        my $fc_props_rs = $fc->feature_cvtermprops()
+          ->search({ 'type.name' => 'evidence' },
+                   { join => 'type' });
+        my $fc_first_prop = $fc_props_rs->first();
+
+        if (defined $fc_first_prop) {
+          my $fc_evidence = $fc_first_prop->value();
+
+          if ($current_evidence eq $fc_evidence) {
+            $update_failed = qq|that annotation (evidence code "$fc_evidence") has already been stored in Chado|;
+            last;
+          }
+        }
+      }
+    }
+  }
+
+  if (!defined $update_failed) {
     $feature_cvterm->cvterm($new_term);
 
     try {
