@@ -431,6 +431,17 @@ method retrieve() {
 
         my $expression = $first_allele->{expression} // '';
 
+        my $residue = $row_fc_props{residue};
+
+        if ($residue) {
+          my $residue_str = join ',', @$residue;
+          if ($extensions && length $extensions > 0) {
+            $extensions .= ",residue($residue_str)";
+          } else {
+            $extensions = "residue($residue_str)";
+          }
+        }
+
         return [
           $db_name,
           $gene_uniquename, $id,
