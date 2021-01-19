@@ -363,6 +363,7 @@ method retrieve() {
         # we have separate columns for these:
         if ($extensions) {
           $extensions =~ s/(has_penetrance|has_severity)\([^\)]+\),?//g;
+          $extensions =~ s/,$//;
         }
 
         my $fc_id = $row->feature_cvterm_id();
