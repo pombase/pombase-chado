@@ -171,7 +171,21 @@ method load($fh) {
       $type_cvterm_name = $type;
     }
 
-    my $type_cvterm = $self->find_cvterm_by_name('gene_ex', $type_cvterm_name);
+    my $cv_name;
+
+    if ($type eq 'RNA') {
+      $cv_name = 'PomGeneExRNA';
+    } else {
+      $cv_name = 'PomGeneExProt';
+    }
+
+    if (exists $self->gene_ex_qualifiers()->{$level}) {
+      $type_cvterm_name .= " $level";
+    } else {
+      die qq("$level" is not a valid qualifier for gene expression annotation in line:\n@$columns_ref\n);
+    }
+
+    my $type_cvterm = $self->find_cvterm_by_name($cv_name, $type_cvterm_name);
 
     if (!defined $type_cvterm) {
       die qq(can't find gene expression term "$type_cvterm_name" in the database\n);
@@ -179,11 +193,6 @@ method load($fh) {
 
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $type_cvterm, $pub, 0);
-
-    if (!exists $self->gene_ex_qualifiers()->{$level}) {
-      die qq("$level" is not a valid qualifier for gene expression annotation in line:\n@$columns_ref\n);
-    }
-    $self->add_feature_cvtermprop($feature_cvterm, 'qualifier', $level);
 
     $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
                                   'high throughput');
