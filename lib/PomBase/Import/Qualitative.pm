@@ -164,6 +164,11 @@ method load($fh) {
     }
     my $pub = $self->find_or_create_pub($pubmedid);
 
+    # temporary fix for Duncan_29432178.txt:
+    if ($type eq 'translation') {
+      $type = 'protein';
+    }
+
     my $type_cvterm_name;
     if ($type eq 'RNA' || $type eq 'protein') {
       $type_cvterm_name = "$type level";
