@@ -287,7 +287,19 @@ method store_extension($feature_cvterm, $extensions) {
 
   my $update_failed = undef;
 
+  my $new_rank = 0;
+
   if ($existing_fc_rs->count() > 0) {
+
+    my $max_rank = 0;
+
+    while (defined (my $fc = $existing_fc_rs->next())) {
+      if ($fc->rank() > $max_rank) {
+        $max_rank = $fc->rank();
+      }
+    }
+
+    $new_rank = $max_rank + 1;
 
     my $current_props_rs = $feature_cvterm->feature_cvtermprops()
       ->search({ 'type.name' => 'evidence' },
@@ -318,6 +330,7 @@ method store_extension($feature_cvterm, $extensions) {
 
   if (!defined $update_failed) {
     $feature_cvterm->cvterm($new_term);
+    $feature_cvterm->rank($new_rank);
 
     try {
       $feature_cvterm->update();
