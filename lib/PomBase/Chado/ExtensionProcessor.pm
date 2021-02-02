@@ -300,29 +300,52 @@ method store_extension($feature_cvterm, $extensions) {
 
     $new_rank = $max_rank + 1;
 
+    my @props_to_check = qw(evidence residue condition qualifier gene_product_form_id with from quant_gene_ex_copies_per_cell quant_gene_ex_avg_copies_per_cell);
+
+    my @prop_names_for_query =
+      map {
+        ('type.name' => $_);
+      } @props_to_check;
+
     my $current_props_rs = $feature_cvterm->feature_cvtermprops()
-      ->search({ 'type.name' => 'evidence' },
+      ->search({ -or => \@prop_names_for_query },
                { join => 'type' });
 
-    my $first_prop = $current_props_rs->first();
+    my $display_undef = 'not set';
 
-    if (defined $first_prop) {
-      my $current_evidence = $first_prop->value();
+    my %current_props = ();
 
-      for my $fc ($existing_fc_rs->all()) {
-        my $fc_props_rs = $fc->feature_cvtermprops()
-          ->search({ 'type.name' => 'evidence' },
-                   { join => 'type' });
-        my $fc_first_prop = $fc_props_rs->first();
+    while (defined (my $prop = $current_props_rs->next())) {
+      $current_props{$prop->type()->name()} = $prop->value();
+    }
 
-        if (defined $fc_first_prop) {
-          my $fc_evidence = $fc_first_prop->value();
+    my $_make_prop_string = sub {
+      my $props_map = shift;
+      return
+        join ", ",
+        map {
+          $_ . ': "' . $props_map->{$_} . '"';
+        } keys %{$props_map};
+    };
 
-          if ($current_evidence eq $fc_evidence) {
-            $update_failed = qq|that annotation (evidence code "$fc_evidence") has already been stored in Chado|;
-            last;
-          }
-        }
+    my $current_props_string = $_make_prop_string->(\%current_props);
+
+    for my $fc ($existing_fc_rs->all()) {
+      my $fc_props_rs = $fc->feature_cvtermprops()
+        ->search({ -or => \@prop_names_for_query },
+                 { join => 'type' });
+
+      my %fc_props = ();
+
+      while (defined (my $fc_prop = $fc_props_rs->next())) {
+        $fc_props{$fc_prop->type()->name()} = $fc_prop->value();
+      }
+
+      my $fc_props_string = $_make_prop_string->(\%fc_props);
+
+      if ($current_props_string eq $fc_props_string) {
+        $update_failed = qq|that annotation has already been stored in Chado with properties:  $current_props_string|;
+        last;
       }
     }
   }
