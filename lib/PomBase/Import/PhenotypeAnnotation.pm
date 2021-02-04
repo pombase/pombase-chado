@@ -360,7 +360,15 @@ method load($fh) {
 
       $expression = undef if $expression && lc $expression eq 'null';
 
-      my $genotype_feature = $self->get_genotype_for_allele($allele_data, $expression);
+      my $background_description =
+        ($genotype_description // '') . ' ' . ($strain_background // '');
+
+      if ($background_description =~ /^\s*$/) {
+        $background_description = undef;
+      }
+
+      my $genotype_feature =
+        $self->get_genotype_for_allele($background_description, $allele_data, $expression);
 
       $self->_store_annotation($genotype_feature, $cvterm, $pub, $date, $extension,
                                $penetrance, $severity, $long_evidence,

@@ -101,8 +101,8 @@ method get_genotype($genotype_identifier, $genotype_name, $genotype_background, 
   my $first_allele_data = $alleles->[0];
 
   if (!$first_allele_data->{allele}) {
-    confess "allele data for genotypes must have the form { id => '', " .
-      "expression => '' } (where expression is optional) \n details:",
+    confess "allele data for genotypes must have the form { allele => {...}, " .
+      "expression => ... } (where expression is optional) \n details:",
       Dumper([$genotype_identifier, $alleles]);
   }
 
@@ -168,7 +168,14 @@ method _get_genotype_suffix_sqlite {
   return $max + 1;
 }
 
-method _get_genotype_uniquename {
+=head2 get_genotype_uniquename
+
+ Usage   : my $uniquename = $self->get_genotype_uniquename();
+ Function: return a genotype uniquename that hasn't been used
+
+=cut
+
+method get_genotype_uniquename {
   my $dbh = $self->chado()->storage()->dbh();
 
   my $database_name = $self->config()->{database_name};
@@ -185,16 +192,16 @@ method _get_genotype_uniquename {
   return "$prefix$new_suffix";
 }
 
-method get_genotype_for_allele($allele_data, $expression) {
+method get_genotype_for_allele($background, $allele_data, $expression) {
   my $allele = $self->get_allele($allele_data);
 
-  my $genotype_identifier = $self->_get_genotype_uniquename();
+  my $genotype_identifier = $self->get_genotype_uniquename();
 
   $expression = undef if $expression && lc $expression eq 'null';
 
   $expression = 'Not assayed' if $expression && lc $expression eq 'not specified';
 
-  return $self->get_genotype($genotype_identifier, undef, undef,
+  return $self->get_genotype($genotype_identifier, undef, $background,,
                              [{ allele => $allele, expression => $expression }]);
 }
 
