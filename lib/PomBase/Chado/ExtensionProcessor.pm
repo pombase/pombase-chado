@@ -316,7 +316,7 @@ method store_extension($feature_cvterm, $extensions) {
     my %current_props = ();
 
     while (defined (my $prop = $current_props_rs->next())) {
-      $current_props{$prop->type()->name()} = $prop->value();
+      push @{$current_props{$prop->type()->name()}}, $prop->value();
     }
 
     my $_make_prop_string = sub {
@@ -324,7 +324,7 @@ method store_extension($feature_cvterm, $extensions) {
       return
         join ", ",
         map {
-          $_ . ': "' . $props_map->{$_} . '"';
+          $_ . ': "' . (join ',', sort @{$props_map->{$_}}) . '"';
         } keys %{$props_map};
     };
 
@@ -332,19 +332,25 @@ method store_extension($feature_cvterm, $extensions) {
 
     for my $fc ($existing_fc_rs->all()) {
       my $fc_props_rs = $fc->feature_cvtermprops()
-        ->search({ -or => \@prop_names_for_query },
+        ->search({ -or => [@prop_names_for_query, 'type.name' => 'canto_session'] },
                  { join => 'type' });
 
       my %fc_props = ();
 
+      my $fc_session = 'UNKNOWN';
+
       while (defined (my $fc_prop = $fc_props_rs->next())) {
-        $fc_props{$fc_prop->type()->name()} = $fc_prop->value();
+        if ($fc_prop->type()->name() eq 'canto_session') {
+          $fc_session = $fc_prop->value();
+        } else {
+          push @{$fc_props{$fc_prop->type()->name()}}, $fc_prop->value();
+        }
       }
 
       my $fc_props_string = $_make_prop_string->(\%fc_props);
 
       if ($current_props_string eq $fc_props_string) {
-        $update_failed = qq|that annotation has already been stored in Chado with properties:  $current_props_string|;
+        $update_failed = qq|that annotation has already been stored in Chado with properties:  $current_props_string  from session: $fc_session|;
         last;
       }
     }
