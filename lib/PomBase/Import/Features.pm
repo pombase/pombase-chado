@@ -72,6 +72,7 @@ has column_filters => (is => 'rw', init_arg => undef);
 has null_pub => (is => 'rw', init_arg => undef);
 has transcript_so_name => (is => 'rw', init_arg => undef);
 has transcript_rel_cvterm => (is => 'rw', init_arg => undef);
+has feature_prop_from_columns => (is => 'rw', init_arg => undef);
 
 sub BUILD
 {
@@ -90,6 +91,7 @@ sub BUILD
   my $ignore_short_lines = 0;
   my $ignore_duplicate_uniquenames = 0;
   my $transcript_so_name = undef;
+  my @feature_prop_from_columns_args = ();
   my @column_filters = ();
 
   my @opt_config = ("organism-taxonid=s" => \$organism_taxonid,
@@ -106,6 +108,7 @@ sub BUILD
                     "ignore-short-lines" => \$ignore_short_lines,
                     "ignore-duplicate-uniquenames" => \$ignore_duplicate_uniquenames,
                     "transcript-so-name=s" => \$transcript_so_name,
+                    "feature-prop-from-column=s" => \@feature_prop_from_columns_args,
                   );
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
@@ -184,6 +187,22 @@ sub BUILD
 
     $self->transcript_rel_cvterm($transcript_rel_cvterm);
   }
+
+  my @feature_prop_from_columns =
+    map {
+      my $arg = $_;
+
+      if ($arg =~ /(.*):(\d+)$/) {
+        {
+          prop_name => $1,
+          column => $2 - 1,
+        };
+      } else {
+        die qq|can't arg "--feature-prop-from-column=$arg" - should be "column_name:column_number"\n|;
+      }
+    } @feature_prop_from_columns_args;
+
+  $self->feature_prop_from_columns(\@feature_prop_from_columns);
 }
 
 method load($fh) {
@@ -315,6 +334,15 @@ method load($fh) {
       my $transcript_rel_cvterm = $self->transcript_rel_cvterm();
 
       $self->store_feature_rel($transcript_feature, $feat, $transcript_rel_cvterm);
+    }
+
+    if ($self->feature_prop_from_columns()) {
+      map {
+        my $conf = $_;
+        my $value = $columns[$conf->{column}];
+
+        $self->store_featureprop($feat, $conf->{prop_name}, $value)
+      } @{$self->feature_prop_from_columns()};
     }
   }
 
