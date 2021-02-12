@@ -85,6 +85,7 @@ RUN (cd ng-website; ln -fs /pombase/pombase_v2_config.json .; \
      rm -rf /pombase/ng-website /pombe/.npm-global
 
 RUN (cd /var/www/html/jbrowse; \
+    (cd plugins; git clone https://github.com/elsiklab/gccontent GCContent); \
     ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/Schizosaccharomyces_pombe_all_chromosomes.fa.gz \
       --trackLabel 'DNA sequence' --key 'DNA sequence'; \
     ./bin/flatfile-to-json.pl --gff /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_forward_strand.gff3 \
