@@ -20,10 +20,12 @@ RUN cd /pombase && curl https://archive.apache.org/dist/lucene/solr/8.6.1/solr-8
     (cd /pombase/solr-8.6.1/; rm -rf example contrib licenses *.txt docs)
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
-ENV PATH="/pombase/.cargo/bin/:${PATH}"
-RUN rustup default nightly
 
 USER root
+
+ENV PATH="/pombase/.cargo/bin/:${PATH}"
+
+RUN rustup default nightly
 
 RUN apt-get -y install gnupg2 git-core procps xz-utils \
   libterm-readline-gnu-perl pkg-config libssl-dev unzip ipip \
