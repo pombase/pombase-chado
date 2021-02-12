@@ -49,7 +49,7 @@ RUN pip3 install django django-allauth gunicorn
 
 USER pombase
 
-ENV JBROWSE_VERSION=1.16.9-pombase
+ENV JBROWSE_VERSION=1.16.10-pombase
 
 RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION.tar.gz; \
     curl -L https://www.pombase.org/software/$JBROWSE_TAR | tar xzf -; \
