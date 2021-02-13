@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v48 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v49 .
 FROM bitnami/minideb:latest
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -33,8 +33,7 @@ RUN apt-get -y install gnupg2 git-core procps xz-utils \
 RUN apt-get -y install --reinstall python-pkg-resources && apt-get clean
 RUN apt-get -y install python3-pip && apt-get clean
 RUN echo "deb http://deb.debian.org/debian stable main" >> /etc/apt/sources.list; apt update
-RUN apt-get -y install openjdk-11-jre-headless && apt-get clean
-RUN apt-get -y install python3-zmq && apt-get clean
+RUN apt-get -y install openjdk-11-jre-headless python3-zmq && apt-get clean
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get update && apt-get -y install nodejs && apt-get clean
