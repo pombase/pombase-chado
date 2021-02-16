@@ -176,7 +176,11 @@ method load($fh) {
     if ($type eq 'RNA') {
       $cv_name = 'PomGeneExRNA';
     } else {
-      $cv_name = 'PomGeneExProt';
+      if ($type eq 'protein') {
+        $cv_name = 'PomGeneExProt';
+      } else {
+        $cv_name = 'PomGeneExRD';
+      }
     }
 
     if (exists $self->gene_ex_qualifiers()->{$level}) {
