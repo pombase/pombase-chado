@@ -126,8 +126,8 @@ method load($fh) {
     if (!defined $type) {
       die qq(mandatory column value for feature type missing at line $.\n);
     }
-    if (!grep { $_ eq $type } qw(RNA protein translation)) {
-      die qq(the type column must be either "RNA" or "protein", not "$type"\n);
+    if (!grep { $_ eq $type } ("RNA" "protein" "ribosomal density")) {
+      die qq(the type column must be either "RNA", "protein" or "ribosomal density", not "$type"\n);
     }
     if (!defined $evidence_code) {
       die qq(mandatory column value for evidence missing at line $.\n);
@@ -165,7 +165,7 @@ method load($fh) {
     my $pub = $self->find_or_create_pub($pubmedid);
 
     my $type_cvterm_name;
-    if ($type eq 'RNA' || $type eq 'protein') {
+    if ($type eq 'RNA' || $type eq 'protein' || $type eq 'ribosomal density') {
       $type_cvterm_name = "$type level";
     } else {
       $type_cvterm_name = $type;
