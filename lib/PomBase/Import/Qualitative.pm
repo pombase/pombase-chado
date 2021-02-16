@@ -126,7 +126,7 @@ method load($fh) {
     if (!defined $type) {
       die qq(mandatory column value for feature type missing at line $.\n);
     }
-    if (!grep { $_ eq $type } ("RNA" "protein" "ribosomal density")) {
+    if (!grep { $_ eq $type } ("RNA", "protein", "ribosomal density")) {
       die qq(the type column must be either "RNA", "protein" or "ribosomal density", not "$type"\n);
     }
     if (!defined $evidence_code) {
