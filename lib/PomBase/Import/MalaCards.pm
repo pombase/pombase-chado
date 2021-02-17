@@ -109,7 +109,7 @@ method BUILD {
     }
 
     if ($human_gene->name()) {
-      $human_ortholog_map{$human_gene->name()} = $dest_gene;
+      push @{$human_ortholog_map{$human_gene->name()}}, $dest_gene;
     } else {
       die "human gene with no name, id: ", $human_gene->uniquename();
     }
@@ -144,12 +144,14 @@ method load($fh) {
         $malacards_displayed_disease_name, $human_gene_name, $do_id) =
       map { $_->trim() || undef } @$columns_ref;
 
-    my $dest_gene = $self->human_ortholog_map()->{$human_gene_name};
+    my $dest_genes = $self->human_ortholog_map()->{$human_gene_name};
 
-    if (defined $dest_gene) {
+    if (defined $dest_genes) {
+      my $dest_genes_uniquenames = join ',', map { $_->uniquename(); } @{$dest_genes};
+
       if (!defined $do_id) {
         warn "no MONDO ID for $malacards_disease_slug -> $human_gene_name " .
-          "(", $dest_gene->uniquename(), ")\n";
+          "($dest_genes_uniquenames)\n";
         next;
       }
 
@@ -173,14 +175,14 @@ method load($fh) {
           if (defined $replaced_by_prop) {
             warn "$do_id is obsolete (replaced by: ",
               $replaced_by_prop->value(), ") - skipping annotation for ",
-              $dest_gene->uniquename(), " / $malacards_disease_slug\n";
+              "$dest_genes_uniquenames / $malacards_disease_slug\n";
           } else {
             warn qq|$do_id is obsolete (no "replaced_by" tag) - skipping annotation for |,
-              $dest_gene->uniquename(), " / $malacards_disease_slug\n";
+              "$dest_genes_uniquenames / $malacards_disease_slug\n";
           }
         } else {
           warn "could not find cvterm for $do_id - skipping annotation for ",
-            $dest_gene->uniquename(), " / $malacards_disease_slug\n";
+            "$dest_genes_uniquenames / $malacards_disease_slug\n";
         }
 
         next;
@@ -195,13 +197,15 @@ method load($fh) {
         };
       }
 
-      my $key = "$do_id -> " . $dest_gene->uniquename();
+      for my $dest_gene (@$dest_genes) {
+        my $key = "$do_id -> " . $dest_gene->uniquename();
 
-      if (!$seen_annotations{$key}) {
-        my $feature_cvterm = $self->create_feature_cvterm($dest_gene, $cvterm, $pub, 0);
-        $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
-                                      'non-experimental');
-        $seen_annotations{$key} = 1;
+        if (!$seen_annotations{$key}) {
+          my $feature_cvterm = $self->create_feature_cvterm($dest_gene, $cvterm, $pub, 0);
+          $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
+                                        'non-experimental');
+          $seen_annotations{$key} = 1;
+        }
       }
     }
   }
