@@ -204,6 +204,8 @@ method load($fh) {
           my $feature_cvterm = $self->create_feature_cvterm($dest_gene, $cvterm, $pub, 0);
           $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
                                         'non-experimental');
+          $self->add_feature_cvtermprop($feature_cvterm, 'malacards_human_source_gene',
+                                        $human_gene_name);
           $seen_annotations{$key} = 1;
         }
       }
