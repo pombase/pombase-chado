@@ -136,6 +136,7 @@ pub.uniquename as pub_uniquename,
 from pombase_feature_cvterm_ext_resolved_terms fc
 join pub on fc.pub_id = pub.pub_id
 join feature mrna on mrna.feature_id = fc.feature_id
+join cvterm mrna_type on mrna.type_id = mrna_type.cvterm_id
 join feature_relationship frel on frel.subject_id = mrna.feature_id
 join cvterm frel_type on frel_type.cvterm_id = frel.type_id
 join feature gene on frel.object_id = gene.feature_id
@@ -143,6 +144,7 @@ join feature_cvtermprop fcp on fcp.feature_cvterm_id = fc.feature_cvterm_id
 join organismprop op on gene.organism_id = op.organism_id
 join cvterm opt on op.type_id = opt.cvterm_id
 where fcp.type_id in (select cvterm_id from cvterm where name = 'evidence')
+and mrna_type.name = 'mRNA'
 and fc.base_cvterm_name = 'protein binding'
 and frel_type.name = 'part_of'
 and fcp.value = 'Inferred from Physical Interaction'
