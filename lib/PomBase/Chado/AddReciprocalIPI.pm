@@ -104,11 +104,8 @@ method _add_new_ipi($protein_binding_term, $results) {
   $self->add_feature_cvtermprop($feature_cvterm, 'with',
                                 $self->config()->{database_name} . ':' . $new_object);
 
-  $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
-                                'low throughput');
-
   my @prop_names = qw(community_curated assigned_by curator_name curator_email canto_session
-                      approver_email date);
+                      approver_email date annotation_throughput_type);
 
   for my $prop_name (@prop_names) {
     my $value = $results->{$prop_name . '_value'};
@@ -134,7 +131,8 @@ pub.uniquename as pub_uniquename,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'curator_email')) as curator_email_value,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'canto_session')) as canto_session_value,
 (select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'approver_email')) as approver_email_value,
-(select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'date')) as date_value
+(select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'date')) as date_value,
+(select value from feature_cvtermprop fcp2 where fcp2.feature_cvterm_id = fc.feature_cvterm_id and fcp2.type_id in (select cvterm_id from cvterm where name = 'annotation_throughput_type')) as annotation_throughput_type_value
 from pombase_feature_cvterm_ext_resolved_terms fc
 join pub on fc.pub_id = pub.pub_id
 join feature mrna on mrna.feature_id = fc.feature_id
