@@ -672,7 +672,8 @@ method _process_feature {
                                       changed_by => $changed_by_json,
                                       %useful_session_data);
 
-    if ($with_gene && $evidence_code eq 'IPI' && $termid eq 'GO:0005515') {
+    if ($with_gene && $evidence_code eq 'IPI' && $termid eq 'GO:0005515' &&
+        $feature->type()->name() eq 'mRNA') {
       # create a reciprocal annotation that will be stored later if a matching
       # manual annotation isn't seen
 
