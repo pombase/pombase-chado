@@ -237,15 +237,25 @@ method load($fh) {
       next;
     }
 
-    if ($qualifier =~ /\|/) {
-      warn "annotation with multiple qualifiers ($qualifier)\n";
-      next;
-    }
-
     my $is_not = 0;
 
-    if ($qualifier =~ /^not$/i) {
-      $is_not = 1;
+    my @qualifier_bits = split /\|/, $qualifier;
+
+    if (@qualifier_bits > 0) {
+      @qualifier_bits = map {
+        my $qual = $_;
+        if ($qual =~ /^not$/i) {
+          $is_not = 1;
+          ();
+        } else {
+          $qual;
+        }
+      } @qualifier_bits;
+    }
+
+    if (@qualifier_bits > 1) {
+      warn "annotation with multiple qualifiers ($qualifier)\n";
+      next;
     }
 
     my $go_id = $columns{"GO_id"};
