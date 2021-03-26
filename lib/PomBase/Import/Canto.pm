@@ -852,10 +852,8 @@ method _get_genotypes($session_alleles, $session_genotype_data) {
           expression => $_->{expression},
           allele => $session_alleles->{$allele_key},
         };
-        if (@loci > 1) {
-          $expressed_allele->{genotype_locus} =
-            "$genotype_identifier-locus-" . ($locus_index+1);
-        }
+        $expressed_allele->{genotype_locus} =
+          "$genotype_identifier-locus-" . ($locus_index+1);
         push @alleles, $expressed_allele;
       } @{$locus};
     }
