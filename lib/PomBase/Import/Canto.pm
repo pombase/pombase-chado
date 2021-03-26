@@ -263,6 +263,9 @@ method _store_ontology_annotation {
   my $publication = $args{publication};
   my $long_evidence = $args{long_evidence};
   my $feature = $args{feature};
+  if (!defined $feature) {
+    die "no feature passed to _store_ontology_annotation()\n";
+  }
   my $expression = $args{expression};
   my $conditions = $args{conditions};
   my $with_gene = $args{with_gene};
@@ -838,15 +841,24 @@ method _get_genotypes($session_alleles, $session_genotype_data) {
   return %ret if !$session_alleles;
 
   while (my ($genotype_identifier, $details) = each %$session_genotype_data) {
-    my @alleles = map {
+    my @loci = @{$details->{loci}};
+    my @alleles = ();
+
+    for (my $locus_index = 0; $locus_index < @loci; $locus_index++) {
+      my $locus = $loci[$locus_index];
       map {
         my $allele_key = $_->{id};
-        {
+        my $expressed_allele = {
           expression => $_->{expression},
           allele => $session_alleles->{$allele_key},
         };
-      } @{$_};
-    } @{$details->{loci}};
+        if (@loci > 1) {
+          $expressed_allele->{genotype_locus} =
+            "$genotype_identifier-locus-" . ($locus_index+1);
+        }
+        push @alleles, $expressed_allele;
+      } @{$locus};
+    }
 
     if (@alleles) {
       $ret{$genotype_identifier} =

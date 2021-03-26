@@ -122,6 +122,9 @@ method get_genotype($genotype_identifier, $genotype_name, $genotype_background, 
     if ($_->{expression}) {
       $self->store_feature_relationshipprop($rel, 'expression', $_->{expression});
     }
+    if ($_->{genotype_locus}) {
+      $self->store_feature_relationshipprop($rel, 'genotype_locus', $_->{genotype_locus});
+    }
   } @$alleles;
 
   $self->genotype_cache()->put($genotype_name, $genotype_background, $alleles, $genotype);
