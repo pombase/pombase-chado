@@ -375,7 +375,7 @@ method get_allele($allele_data) {
     if ($new_allele_type eq 'wild_type') {
       $new_allele_name = ($gene_name || $gene_uniquename) . '+';
     }
-    if($new_allele_type eq 'deletion') {
+    if($new_allele_type eq 'deletion' && !$new_allele_name) {
       $new_allele_name = ($gene_name || $gene_uniquename) . 'delta';
     }
 
