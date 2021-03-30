@@ -21,6 +21,7 @@ my %input_types = (
   gaf => 'PomBase::Import::GeneAssociationFile',
   'generic-annotation' => 'PomBase::Import::GenericAnnotation',
   'generic-property' => 'PomBase::Import::GenericProperty',
+  'generic-synonym' => 'PomBase::Import::GenericSynonym',
   'canto-json' => 'PomBase::Import::Canto',
   orthologs => 'PomBase::Import::Orthologs',
   quantitative => 'PomBase::Import::Quantitative',
