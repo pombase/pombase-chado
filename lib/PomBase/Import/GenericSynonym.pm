@@ -104,6 +104,11 @@ method load($fh) {
   while (my $columns_ref = $tsv->getline($fh)) {
     my $col_count = scalar(@$columns_ref);
 
+    if ($. == 1 && lc $columns_ref->[0] eq 'name') {
+      # header
+      next;
+    }
+
     if ($self->feature_uniquename_column() && $self->feature_uniquename_column() >= $col_count) {
       die "value for --feature-uniquename-column too large at line $.\n"
     }
