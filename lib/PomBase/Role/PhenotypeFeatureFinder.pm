@@ -527,7 +527,7 @@ method get_allele($allele_data) {
       }
     } else {
       # no name so check for existing alleles that match our description
-      if ($new_allele_description eq 'unknown') {
+      if (defined $new_allele_description && $new_allele_description eq 'unknown') {
         # we can have multiple alleles with no name and the description "unknown"
       } else {
         while (defined (my $existing_allele = $existing_rs->next())) {
