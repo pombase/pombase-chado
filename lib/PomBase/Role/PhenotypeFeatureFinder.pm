@@ -312,6 +312,16 @@ method get_allele($allele_data) {
     croak "no 'allele_data' key passed to get_allele()";
   }
 
+  if (defined $allele_data->{name}) {
+    $allele_data->{name} =~ s/^\s+//;
+    $allele_data->{name} =~ s/\s+$//;
+  }
+
+  if (defined $allele_data->{description}) {
+    $allele_data->{description} =~ s/^\s+//;
+    $allele_data->{description} =~ s/\s+$//;
+  }
+
   if (ref $allele_data->{gene} eq 'HASH') {
     $gene = $self->get_gene($allele_data->{gene});
   } else {
