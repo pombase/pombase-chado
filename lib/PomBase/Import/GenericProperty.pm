@@ -57,22 +57,40 @@ has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has organism => (is => 'rw', init_arg => undef);
 has property_cvterm => (is => 'rw', init_arg => undef);
 has feature_uniquename_column => (is => 'rw', init_arg => undef);
+has feature_name_column => (is => 'rw', init_arg => undef);
 has property_column => (is => 'rw', init_arg => undef);
 
 method BUILD {
   my $organism_taxonid = undef;
   my $property_name = undef;
   my $feature_uniquename_column = undef;
+  my $feature_name_column = undef;
   my $property_column = undef;
 
   my @opt_config = ("organism-taxonid=s" => \$organism_taxonid,
                     "property-name=s" => \$property_name,
                     "feature-uniquename-column=s" => \$feature_uniquename_column,
+                    "feature-name-column=s" => \$feature_name_column,
                     "property-column=s" => \$property_column,
                   );
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
     croak "option parsing failed";
+  }
+
+  if ($feature_uniquename_column && $feature_name_column) {
+    die "pass only one of --feature-uniquename-column or --feature-name-column to the GenericProperty loader\n";
+  }
+
+  if ($feature_uniquename_column || $feature_name_column) {
+    if ($feature_uniquename_column) {
+      $self->feature_uniquename_column($feature_uniquename_column - 1);
+    }
+    if ($feature_name_column) {
+      $self->feature_name_column($feature_name_column - 1);
+    }
+  } else {
+    die "no --feature-uniquename-column or --feature-name-column passed to the GenericProperty loader\n";
   }
 
   if (!defined $organism_taxonid || length $organism_taxonid == 0) {
@@ -122,8 +140,18 @@ method load($fh) {
   while (my $columns_ref = $tsv->getline($fh)) {
     my $col_count = scalar(@$columns_ref);
 
-    if ($self->feature_uniquename_column() >= $col_count) {
-      die "value for --feature-uniquename-column too big at line $.\n"
+    if ($. == 1 && lc $columns_ref->[0] eq 'name') {
+      # header
+      next;
+    }
+
+    if ($self->feature_uniquename_column() &&
+        $self->feature_uniquename_column() >= $col_count) {
+      die "value for --feature-uniquename-column too large at line $.\n"
+    }
+
+    if ($self->feature_name_column() && $self->feature_name_column() >= $col_count) {
+      die "value for --feature-name-column too large at line $.\n"
     }
 
     if ($self->property_column() >= $col_count) {
@@ -132,18 +160,35 @@ method load($fh) {
 
     my $feature = undef;
 
-    my $feature_uniquename = $columns_ref->[$self->feature_uniquename_column()];
-    my $property_value = $columns_ref->[$self->property_column()];
+    if (defined $self->feature_uniquename_column()) {
+      my $feature_uniquename = $columns_ref->[$self->feature_uniquename_column()];
 
-    try {
-      $feature = $self->find_chado_feature($feature_uniquename);
-    } catch {
-      warn "line $.: $_";
-    };
+      try {
+        $feature = $self->find_chado_feature($feature_uniquename);
+      } catch {
+        warn "line $.: searched for uniquename '$feature_uniquename' - $_";
+      };
 
-    if (!defined $feature) {
-      next;
+      if (!defined $feature) {
+        next;
+      }
     }
+
+    if (defined $self->feature_name_column()) {
+      my $feature_name = $columns_ref->[$self->feature_name_column()];
+
+      try {
+        $feature = $self->find_chado_feature($feature_name, 1);
+      } catch {
+        warn "line $.: searched for name '$feature_name' - $_";
+      };
+
+      if (!defined $feature) {
+        next;
+      }
+    }
+
+    my $property_value = $columns_ref->[$self->property_column()];
 
     $self->store_featureprop($feature, $self->property_cvterm()->name(), $property_value);
   }
