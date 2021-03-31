@@ -39,6 +39,8 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose::Role;
 
+use utf8::all;
+
 requires 'allele_type_from_desc';
 requires 'get_cvterm';
 requires 'find_chado_feature';
@@ -315,6 +317,8 @@ method get_allele($allele_data) {
   if (defined $allele_data->{name}) {
     $allele_data->{name} =~ s/^\s+//;
     $allele_data->{name} =~ s/\s+$//;
+    # turn deltas to text unless the next char is a letter
+    $allele_data->{name} =~ s/(\N{GREEK CAPITAL LETTER DELTA}|\N{INCREMENT})(?=[^a-z]|$)/delta/g;
   }
 
   if (defined $allele_data->{description}) {
