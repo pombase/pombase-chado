@@ -74,7 +74,7 @@ method BUILD {
   }
 
   if ($feature_uniquename_column && $feature_name_column) {
-    die "pass only one of --feature-uniquename-column or --feature-name-column to the GenericProperty loader\n";
+    die "pass only one of --feature-uniquename-column or --feature-name-column to the GenericSynonym loader\n";
   }
 
   if ($feature_uniquename_column || $feature_name_column) {
@@ -85,13 +85,13 @@ method BUILD {
       $self->feature_name_column($feature_name_column - 1);
     }
   } else {
-    die "no --feature-uniquename-column or --feature-name-column passed to the GenericProperty loader\n";
+    die "no --feature-uniquename-column or --feature-name-column passed to the GenericSynonym loader\n";
   }
 
   if ($synonym_column) {
     $self->synonym_column($synonym_column - 1);
   } else {
-    die "no --property-column passed to the GenericProperty loader\n";
+    die "no --synonym-column passed to the GenericSynonym loader\n";
   }
 }
 
@@ -109,7 +109,8 @@ method load($fh) {
       next;
     }
 
-    if ($self->feature_uniquename_column() && $self->feature_uniquename_column() >= $col_count) {
+    if ($self->feature_uniquename_column() &&
+        $self->feature_uniquename_column() >= $col_count) {
       die "value for --feature-uniquename-column too large at line $.\n"
     }
 
