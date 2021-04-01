@@ -54,6 +54,7 @@ with 'PomBase::Role::FeatureFinder';
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
+has publication_uniquename_column => (is => 'rw', init_arg => undef);
 has feature_uniquename_column => (is => 'rw', init_arg => undef);
 has feature_name_column => (is => 'rw', init_arg => undef);
 has synonym_column => (is => 'rw', init_arg => undef);
@@ -63,10 +64,12 @@ method BUILD {
   my $feature_uniquename_column = undef;
   my $feature_name_column = undef;
   my $synonym_column = undef;
+  my $publication_uniquename_column = undef;
 
   my @opt_config = ("feature-uniquename-column=s" => \$feature_uniquename_column,
                     "feature-name-column=s" => \$feature_name_column,
                     "synonym-column=s" => \$synonym_column,
+                    "publication-uniquename-column=s" => \$publication_uniquename_column,
                   );
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
@@ -92,6 +95,10 @@ method BUILD {
     $self->synonym_column($synonym_column - 1);
   } else {
     die "no --synonym-column passed to the GenericSynonym loader\n";
+  }
+
+  if ($publication_uniquename_column) {
+    $self->publication_uniquename_column($publication_uniquename_column - 1);
   }
 }
 
@@ -159,7 +166,20 @@ method load($fh) {
       next;
     }
 
-    $self->store_feature_synonym($feature, $synonym_value, 'exact', 1);
+    my $publication_uniquename = undef;
+
+    my $publication_uniquename_column = $self->publication_uniquename_column();
+
+    if ($publication_uniquename_column) {
+      if ($publication_uniquename_column >= $col_count) {
+        die "value for --publication-uniquename-column too large at line $.\n"
+      }
+
+      $publication_uniquename = $columns_ref->[$publication_uniquename_column];
+    }
+
+    $self->store_feature_synonym($feature, $synonym_value, 'exact', 1,
+                                 $publication_uniquename);
   }
 }
 

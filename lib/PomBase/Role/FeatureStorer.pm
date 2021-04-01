@@ -96,12 +96,12 @@ method find_or_create_synonym($synonym_name, $type_name) {
   });
 }
 
-method store_feature_synonym($feature, $synonym_name, $type, $is_current) {
+method store_feature_synonym($feature, $synonym_name, $type, $is_current, $pubmed_id) {
   $is_current //= 1;
 
   my $synonym = $self->find_or_create_synonym($synonym_name, $type);
 
-  my $pub = $self->find_or_create_pub('null');
+  my $pub = $self->find_or_create_pub($pubmed_id || 'null');
 
   warn "   creating synonym for ", $feature->uniquename(), " - $synonym_name, type: $type\n"
     if $self->verbose();
@@ -175,17 +175,17 @@ method store_feature_and_loc($feature, $chromosome, $so_type, $start_arg, $end_a
     next if $synonym eq $gene_uniquename;
     next if defined $name and $synonym eq $name;
 
-    $self->store_feature_synonym($chado_feature, $synonym, 'exact');
+    $self->store_feature_synonym($chado_feature, $synonym, 'exact', undef);
   }
 
   if (defined $reserved_name) {
-    $self->store_feature_synonym($chado_feature, $reserved_name, 'reserved_name');
+    $self->store_feature_synonym($chado_feature, $reserved_name, 'reserved_name', undef);
   }
 
   if ($feature->has_tag('obsolete_name')) {
     my @obsolete_names = $feature->get_tag_values('obsolete_name');
     for my $obsolete_name (@obsolete_names) {
-      $self->store_feature_synonym($chado_feature, $obsolete_name, 'obsolete_name', 0);
+      $self->store_feature_synonym($chado_feature, $obsolete_name, 'obsolete_name', 0, undef);
     }
   }
 

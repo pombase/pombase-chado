@@ -796,7 +796,7 @@ method _query_genes($session_gene_data) {
   return %ret;
 }
 
-method _get_alleles($canto_session, $session_genes, $session_allele_data) {
+method _get_alleles($pubmed_id, $canto_session, $session_genes, $session_allele_data) {
   my %ret = ();
 
   for my $key (sort keys %$session_allele_data) {
@@ -819,7 +819,8 @@ method _get_alleles($canto_session, $session_genes, $session_allele_data) {
 
         for my $new_synonym (@{$allele_data->{synonyms}}) {
           if (!grep { $_ eq $new_synonym } @existing_names) {
-            $self->store_feature_synonym($allele, $new_synonym, 'exact', 1);
+            $self->store_feature_synonym($allele, $new_synonym, 'exact', 1,
+                                         $pubmed_id);
           }
         }
       }
@@ -935,7 +936,8 @@ method _process_sessions($curation_sessions) {
 
     my %session_genes = $self->_query_genes($session_data{genes});
     my %session_alleles =
-      $self->_get_alleles($canto_session, \%session_genes, $session_data{alleles});
+      $self->_get_alleles($metadata->{curation_pub_id}, $canto_session,
+                          \%session_genes, $session_data{alleles});
     my %session_genotypes =
       $self->_get_genotypes(\%session_alleles, $session_data{genotypes});
 
