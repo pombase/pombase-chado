@@ -118,12 +118,6 @@ method BUILD {
 
   $self->property_cvterm($property_cvterm);
 
-  if ($feature_uniquename_column) {
-    $self->feature_uniquename_column($feature_uniquename_column - 1);
-  } else {
-    die "no --feature-uniquename-column passed to the GenericProperty loader\n";
-  }
-
   if ($property_column) {
     $self->property_column($property_column - 1);
   } else {
