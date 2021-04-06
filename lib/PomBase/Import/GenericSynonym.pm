@@ -111,8 +111,7 @@ method load($fh) {
   while (my $columns_ref = $tsv->getline($fh)) {
     my $col_count = scalar(@$columns_ref);
 
-    if ($. == 1 && lc $columns_ref->[0] eq 'name') {
-      # header
+    if ($columns_ref->[0] =~ /^#/) {
       next;
     }
 
