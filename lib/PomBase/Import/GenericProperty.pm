@@ -165,7 +165,7 @@ method load($fh) {
       try {
         $feature = $self->find_chado_feature($feature_uniquename);
       } catch {
-        warn "line $.: searched for uniquename '$feature_uniquename' - $_";
+        warn "line $.: searched for uniquename - $_";
       };
 
       if (!defined $feature) {
@@ -179,7 +179,7 @@ method load($fh) {
       try {
         $feature = $self->find_chado_feature($feature_name, 1);
       } catch {
-        warn "line $.: searched for name '$feature_name' - $_";
+        warn "line $.: searched for name - $_";
       };
 
       if (!defined $feature) {
