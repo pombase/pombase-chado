@@ -21,8 +21,11 @@ USER root
 
 RUN mkdir -p /var/www/html/api/v1/dataset/latest/; ln -s /pombase/jbrowse /var/www/html/jbrowse
 
+RUN mkdir /pombase/misc
+
 COPY --chown=pombase:pombase web-json /var/www/html/web-json
 COPY --chown=pombase:pombase misc/sitemap.txt /var/www/html/
+COPY --chown=pombase:pombase misc/gene_expression_table.tsv /pombase/misc/
 COPY --chown=pombase:pombase gff /pombase/gff
 COPY --chown=pombase:pombase chromosome_fasta /pombase/chromosome_fasta
 COPY --chown=pombase:pombase feature_sequences /pombase/feature_sequences
