@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v49 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v50 .
 FROM bitnami/minideb:latest
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -46,7 +46,7 @@ RUN curl -L http://cpanmin.us | perl - --self-upgrade
 RUN cpanm Pandoc
 
 RUN pip3 install 'tornado<5'; pip3 install circus; pip3 install pipenv
-RUN pip3 install django django-allauth gunicorn
+RUN pip3 install django django-allauth gunicorn seaborn numpy matplotlib pandas
 
 USER pombase
 
