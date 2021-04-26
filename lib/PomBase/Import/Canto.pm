@@ -900,6 +900,12 @@ method _store_metadata($metadata) {
   if ($metadata->{curator_name}) {
     $self->create_pubprop($pub, 'canto_curator_name', $metadata->{curator_name});
   }
+  if ($metadata->{previous_curators}) {
+    map {
+      my $prev_curator = $_;
+      $self->create_pubprop($pub, 'previous_curator_name', $prev_curator->{curator_name});
+    } @{$metadata->{previous_curators}}
+  }
   if ($metadata->{curator_role}) {
     $self->create_pubprop($pub, 'canto_curator_role', $metadata->{curator_role});
   }
