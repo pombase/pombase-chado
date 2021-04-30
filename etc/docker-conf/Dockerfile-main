@@ -46,13 +46,13 @@ COPY --chown=pombase:pombase conf/solr-docs-schema-commands.txt /pombase/solr-do
 
 USER pombase
 
-COPY --chown=pombase:pombase ng-website /pombase/ng-website
+COPY --chown=pombase:pombase pombase-website /pombase/pombase-website
 
 COPY --chown=pombase:pombase trackList.json /pombase/jbrowse/data/trackList.json
-COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/ng-website/minimal_jbrowse_track_list.json
+COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/pombase-website/minimal_jbrowse_track_list.json
 COPY --chown=pombase:pombase pombase_jbrowse_track_metadata.csv /pombase/jbrowse/data/pombase_jbrowse_track_metadata.csv
 
-RUN (cd ng-website; \
+RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json)
 
 RUN cd ./solr-8.6.1/; ./bin/solr start -force -m 4g && \
@@ -71,7 +71,7 @@ RUN cd ./solr-8.6.1/; ./bin/solr start -force -m 4g && \
     gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/terms.json.gz | ./bin/post -c terms -type application/json -d && \
     gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/references.json.gz | ./bin/post -c refs -type application/json -d && \
     gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/genes.json.gz | ./bin/post -c genes -type application/json -d && \
-    ./bin/post -c docs -type application/json -d < /pombase/ng-website/src/app/config/docs.json && \
+    ./bin/post -c docs -type application/json -d < /pombase/pombase-website/src/app/config/docs.json && \
     ./bin/solr stop && \
     rm -rf /var/www/html/api/v1/dataset/latest/data/solr_data
 
@@ -80,12 +80,12 @@ RUN mkdir /pombase/.npm-global; npm config set prefix "/pombase/.npm-global"
 ENV PATH="/pombase/.npm-global/bin:$PATH"
 
 
-RUN (cd ng-website; ln -fs /pombase/main_config.json .; \
+RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
      npm install -g yarn; \
      yarn; \
      ./etc/build_app.sh $target && cp -r dist/* /var/www/html/) && \
-     rm -rf /pombase/ng-website /pombe/.npm-global
+     rm -rf /pombase/pombase-website /pombe/.npm-global
 
 RUN (cd /var/www/html/jbrowse; \
     ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/Schizosaccharomyces_pombe_all_chromosomes.fa.gz \
