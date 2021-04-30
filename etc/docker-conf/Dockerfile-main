@@ -35,7 +35,7 @@ COPY --chown=pombase:pombase Rocket.toml /pombase/
 
 COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
 
-COPY --chown=pombase:pombase pombase-config/website/pombase_v2_config.json /pombase/pombase_v2_config.json
+COPY --chown=pombase:pombase main_config.json /pombase/main_config.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/web-json data)
 RUN chown -R pombase:pombase /var/www/html
 
@@ -53,7 +53,7 @@ COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/ng-website
 COPY --chown=pombase:pombase pombase_jbrowse_track_metadata.csv /pombase/jbrowse/data/pombase_jbrowse_track_metadata.csv
 
 RUN (cd ng-website; \
-    ./etc/update_generated_files.sh /pombase/pombase_v2_config.json)
+    ./etc/update_generated_files.sh /pombase/main_config.json)
 
 RUN cd ./solr-8.6.1/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
@@ -80,7 +80,7 @@ RUN mkdir /pombase/.npm-global; npm config set prefix "/pombase/.npm-global"
 ENV PATH="/pombase/.npm-global/bin:$PATH"
 
 
-RUN (cd ng-website; ln -fs /pombase/pombase_v2_config.json .; \
+RUN (cd ng-website; ln -fs /pombase/main_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
      npm install -g yarn; \
      yarn; \
