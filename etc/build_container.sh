@@ -9,10 +9,10 @@ SCRIPT_PATH=$(dirname "$SCRIPT")
 version=$1
 dump_dir=$2
 target=$3
+container_dir=$4
 
-CONTAINER_DIR=/var/pomcur/container_build
 
-cd $CONTAINER_DIR
+cd $container_dir
 
 (cd pombase-config; git pull)
 (cd ng-website; git pull)
@@ -21,20 +21,20 @@ cd $CONTAINER_DIR
 
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
-rsync -acvPHS --delete-after pombase-chado-json/Rocket.toml $CONTAINER_DIR/
+rsync -acvPHS --delete-after pombase-chado-json/Rocket.toml $container_dir/
 
-rsync -acvPHS --delete-after $dump_dir/web-json $CONTAINER_DIR/
-rsync -acvPHS --delete-after $dump_dir/misc $CONTAINER_DIR/
-rsync -acvPHS --delete-after $dump_dir/gff $CONTAINER_DIR/
-rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $CONTAINER_DIR/chromosome_fasta/
+rsync -acvPHS --delete-after $dump_dir/web-json $container_dir/
+rsync -acvPHS --delete-after $dump_dir/misc $container_dir/
+rsync -acvPHS --delete-after $dump_dir/gff $container_dir/
+rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $container_dir/chromosome_fasta/
 
-mkdir -p $CONTAINER_DIR/feature_sequences
-rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $CONTAINER_DIR/feature_sequences/peptide.fa.gz
+mkdir -p $container_dir/feature_sequences
+rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $container_dir/feature_sequences/peptide.fa.gz
 
-$SCRIPT_PATH/create_jbrowse_track_list.pl $CONTAINER_DIR/pombase-config/website/trackListTemplate.json \
-   $CONTAINER_DIR/pombase-config/website/pombase_jbrowse_track_metadata.csv \
-   $CONTAINER_DIR/trackList.json $CONTAINER_DIR/pombase_jbrowse_track_metadata.csv \
-   $CONTAINER_DIR/minimal_jbrowse_track_list.json
+$SCRIPT_PATH/create_jbrowse_track_list.pl $container_dir/pombase-config/website/trackListTemplate.json \
+   $container_dir/pombase-config/website/pombase_jbrowse_track_metadata.csv \
+   $container_dir/trackList.json $container_dir/pombase_jbrowse_track_metadata.csv \
+   $container_dir/minimal_jbrowse_track_list.json
 
 echo building container ...
 docker build -f conf/Dockerfile-main --build-arg target=$target -t=pombase/web:$version-$target .
