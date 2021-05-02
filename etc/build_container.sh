@@ -34,8 +34,8 @@ mkdir -p $container_dir/feature_sequences
 rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $container_dir/feature_sequences/peptide.fa.gz
 
 $SCRIPT_PATH/create_jbrowse_track_list.pl $container_dir/pombase-config/website/trackListTemplate.json \
-   $container_dir/pombase-config/website/pombase_jbrowse_track_metadata.csv \
-   $container_dir/trackList.json $container_dir/pombase_jbrowse_track_metadata.csv \
+   $container_dir/pombase-config/website/jbrowse_track_metadata.csv \
+   $container_dir/trackList.json $container_dir/jbrowse_track_metadata.csv \
    $container_dir/minimal_jbrowse_track_list.json
 
 echo building container ...

@@ -50,7 +50,7 @@ COPY --chown=pombase:pombase pombase-website /pombase/pombase-website
 
 COPY --chown=pombase:pombase trackList.json /pombase/jbrowse/data/trackList.json
 COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/pombase-website/minimal_jbrowse_track_list.json
-COPY --chown=pombase:pombase pombase_jbrowse_track_metadata.csv /pombase/jbrowse/data/pombase_jbrowse_track_metadata.csv
+COPY --chown=pombase:pombase jbrowse_track_metadata.csv /pombase/jbrowse/data/jbrowse_track_metadata.csv
 
 RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json)
