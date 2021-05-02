@@ -88,11 +88,11 @@ RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
      rm -rf /pombase/pombase-website /pombe/.npm-global
 
 RUN (cd /var/www/html/jbrowse; \
-    ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/Schizosaccharomyces_pombe_all_chromosomes.fa.gz \
+    ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/*_all_chromosomes.fa.gz \
       --trackLabel 'refseqs' --key 'DNA sequence'; \
-    ./bin/flatfile-to-json.pl --gff /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_forward_strand.gff3 \
+    ./bin/flatfile-to-json.pl --gff /pombase/gff/*_all_chromosomes_forward_strand.gff3 \
       --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'PomBase forward strand features'; \
-    ./bin/flatfile-to-json.pl --gff /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_reverse_strand.gff3 \
+    ./bin/flatfile-to-json.pl --gff /pombase/gff/*_all_chromosomes_reverse_strand.gff3 \
       --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'PomBase reverse strand features')
 
 COPY --chown=pombase:pombase conf/circus.ini circus.ini
