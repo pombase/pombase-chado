@@ -19,6 +19,8 @@ cd $container_dir
 (cd pombase-chado-json; git pull)
 (cd pombase-python-web; git pull)
 
+(cd pombase-website; cp src/$target/index.html src/)
+
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
 rsync -acvPHS --delete-after pombase-chado-json/Rocket.toml $container_dir/
