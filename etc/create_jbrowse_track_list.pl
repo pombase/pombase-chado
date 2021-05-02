@@ -62,7 +62,7 @@ while (my $row = $csv->getline_hr ($fh)) {
 
   $csv->print($out_csv_fh, \@out_row);
 
-  next if $row->{label} =~ /PomBase (forward|reverse) strand features|DNA sequence/;
+  next if $row->{label} =~ /(Forward|Reverse) strand features|DNA sequence/;
 
   my $store_class = undef;
 
