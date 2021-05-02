@@ -19,7 +19,7 @@ cd $container_dir
 (cd pombase-chado-json; git pull)
 (cd pombase-python-web; git pull)
 
-(cd pombase-website; cp src/$target/index.html src/)
+(cd pombase-website; cp src/pombase/index.html src/)
 
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
