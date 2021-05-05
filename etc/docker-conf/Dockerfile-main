@@ -96,7 +96,7 @@ RUN (cd /var/www/html/jbrowse; \
     ./bin/flatfile-to-json.pl --gff /pombase/gff/*_all_chromosomes_reverse_strand.gff3 \
       --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'Reverse strand features')
 
-COPY --chown=pombase:pombase conf/circus.ini.template circus.ini
+COPY --chown=pombase:pombase conf/circus.ini.template circus.ini.template
 COPY --chown=pombase:pombase conf/start_all.sh start_all.sh
 COPY --chown=pombase:pombase conf/docker-healthcheck docker-healthcheck
 
