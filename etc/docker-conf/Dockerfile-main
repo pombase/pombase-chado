@@ -5,8 +5,9 @@ ARG version
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
 ARG target
+ARG database_name
 ENV ANALYTICS_ID=UNSET
-ENV DATANAME_NAME=pombase
+ENV DATABASE_NAME=pombase
 ENV APP_DEPLOY_CONFIG="{ mode: 'prod' }"
 
 USER pombase
