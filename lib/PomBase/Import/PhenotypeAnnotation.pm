@@ -180,7 +180,7 @@ method load($fh) {
                         parental_strain strain_background genotype_description
                         gene_name allele_name allele_synonym allele_type
                         evidence conditions penetrance severity extension
-                        reference taxon date illegal_extra_column));
+                        reference taxon date homozygous_diploid illegal_extra_column));
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $gene_systemtic_id = $columns_ref->{"gene_systemtic_id"}->trim();
