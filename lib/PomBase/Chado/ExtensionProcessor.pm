@@ -520,7 +520,7 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
           # the "identifier" is the percentage value
           $identifier =~ s/(\d+)\%/$1/g;
         } else {
-          my $organism = $self->find_organism_by_common_name('pombe');
+          my $organism = $self->find_organism_by_taxonid($self->config()->{taxonid});
           my $ref_feature = undef;
           try {
             # try gene name/uniquename with no prefix
