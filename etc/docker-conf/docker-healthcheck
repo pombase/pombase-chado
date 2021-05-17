@@ -1,7 +1,7 @@
 #!/bin/sh -
 
 (curl -s -f http://localhost:8500/ && \
- curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/ref/enzyme' \
+ curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/ref/nov' \
    -H 'accept: application/json, text/plain, */*' | jq . | grep -i pombe && \
  curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/term/(molecular_function%20OR%20cellular_component)/enzyme%20binding' \
    -H 'accept: application/json, text/plain, */*' | jq . | grep -i 'Interacting selectively and non-covalently' && \
