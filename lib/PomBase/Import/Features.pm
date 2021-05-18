@@ -292,20 +292,6 @@ method load($fh) {
       }
     }
 
-    if ($product_column) {
-      my $product = $columns[$product_column];
-      if ($product) {
-        my $product_cvterm =
-          $self->find_or_create_cvterm('PomBase gene products', $product);
-
-        my $product_feature_cvterm =
-          $self->create_feature_cvterm($feat, $product_cvterm, $self->null_pub(), 0);
-
-        $self->add_feature_cvtermprop($product_feature_cvterm, 'annotation_throughput_type',
-                                      'non-experimental');
-      }
-    }
-
     $feature_count++;
 
     if ($reference_column) {
@@ -327,14 +313,33 @@ method load($fh) {
 
     my $transcript_so_name = $self->transcript_so_name();
 
+    my $transcript_feature = undef;
+
     if ($transcript_so_name) {
-      my $transcript_feature =
+      $transcript_feature =
         $self->store_feature("$uniquename.1", undef, [], $transcript_so_name, $organism);
 
       my $transcript_rel_cvterm = $self->transcript_rel_cvterm();
 
       $self->store_feature_rel($transcript_feature, $feat, $transcript_rel_cvterm);
     }
+
+    if ($product_column) {
+      my $product = $columns[$product_column];
+      if ($product) {
+        my $product_cvterm =
+          $self->find_or_create_cvterm('PomBase gene products', $product);
+
+        my $product_feature = $transcript_feature // $feat;
+
+        my $product_feature_cvterm =
+          $self->create_feature_cvterm($product_feature, $product_cvterm, $self->null_pub(), 0);
+
+        $self->add_feature_cvtermprop($product_feature_cvterm, 'annotation_throughput_type',
+                                      'non-experimental');
+      }
+    }
+
 
     if ($self->feature_prop_from_columns()) {
       map {
