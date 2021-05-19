@@ -128,10 +128,10 @@ EOF
 
   while (my ($gene_uniquename, $transcript_feature_id, $product_cvterm_id, $feature_cvterm_pub_id) =
            $sth->fetchrow_array()) {
-    $existing_products{$gene_uniquename} = {
-      transcript_feature_id => $transcript_feature_id,
-      product_cvterm_id => $product_cvterm_id,
-      feature_cvterm_pub_id => $feature_cvterm_pub_id,
+    $existing_products{$gene_uniquename}->{transcript_feature_id} = $transcript_feature_id;
+    if (defined $product_cvterm_id) {
+      $existing_products{$gene_uniquename}->{product_cvterm_id} = $product_cvterm_id;
+      $existing_products{$gene_uniquename}->{feature_cvterm_pub_id} = $feature_cvterm_pub_id;
     };
   }
 
