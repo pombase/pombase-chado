@@ -30,6 +30,8 @@ sub usage
                            mapping file
                     - "add-reciprocal-ipi-annotations": add missing reciprocal
                            protein binding IPI annotations
+                    - "transfer-names-and-products": transfer from one organism
+                           to another
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
@@ -82,6 +84,7 @@ my %process_modules = (
   'change-terms' => 'PomBase::Chado::ChangeTerms',
   'uniprot-ids-to-local' => 'PomBase::Chado::UniProtIDsToLocal',
   'add-reciprocal-ipi-annotations' => 'PomBase::Chado::AddReciprocalIPI',
+  'transfer-names-and-products' => 'PomBase::Chado::TransferNamesAndProducts',
 );
 
 my $process_module = $process_modules{$process_type};
