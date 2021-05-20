@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v52 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v53 .
 FROM bitnami/minideb:latest
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
