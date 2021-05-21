@@ -295,8 +295,9 @@ method load($fh) {
       }
 
       my $local_id = $self->lookup_uniprot_id($with_or_from);
+
       if (defined $local_id) {
-        $withs_and_froms[$i] = $self->config()->{database_name} . ":$local_id";
+        $withs_and_froms[$i] = $local_id;
       }
     }
 

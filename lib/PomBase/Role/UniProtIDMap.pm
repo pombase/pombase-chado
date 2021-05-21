@@ -39,6 +39,7 @@ use perl5i::2;
 use Moose::Role;
 
 requires 'chado';
+requires 'config';
 
 has uniprot_id_map => (is => 'rw', init_arg => undef,
                        lazy_build => 1);
@@ -49,11 +50,40 @@ method _build_uniprot_id_map () {
   my %id_map = ();
 
   my $rs = $chado->resultset('Sequence::Featureprop')
-    ->search({ 'type.name' => 'uniprot_identifier' },
-             { join => ['type', { feature => 'type' } ] });
+    ->search({ 'type.name' => 'uniprot_identifier',
+             },
+             {
+               join => 'type',
+               prefetch => {
+                 'feature' => 'organism'
+               }
+             });
+
+#  my $rs = $chado->resultset('Sequence::Featureprop')
+#    ->search({ 'type.name' => 'uniprot_identifier' },
+#             { join => ['type', { feature => 'type'} ] });
 
   while (defined (my $prop = $rs->next())) {
-    $id_map{$prop->value()} = $prop->feature()->uniquename();
+    my $feature = $prop->feature();
+    my $uniquename = $feature->uniquename();
+
+    my $prefix;
+
+    if ($self->config()->{organism_prefixes}) {
+      # this code exists so that pombe genes in JaponicusDB get a "PomBase:"
+      # prefix not a "JaponicusDB:" prefix
+      my $organism = $feature->organism();
+      my $org_full_name = $organism->genus() . '_' . $organism->species();
+      $prefix = $self->config()->{organism_prefixes}->{$org_full_name};
+    }
+
+    if (!$prefix) {
+      $prefix = $self->config()->{database_name};
+    }
+
+    $uniquename = "$prefix:$uniquename";
+
+    $id_map{$prop->value()} = $uniquename;
   }
 
   return \%id_map;
