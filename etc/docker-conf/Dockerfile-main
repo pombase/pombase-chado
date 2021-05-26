@@ -103,6 +103,10 @@ COPY --chown=pombase:pombase conf/docker-healthcheck docker-healthcheck
 
 RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
 
+USER root
+
+RUN rm -rf /*/.rustup /*/.cargo /*/.cache /*/.cpan*
+
 RUN echo $version > $HOME/pombase_version
 
 # for testing:

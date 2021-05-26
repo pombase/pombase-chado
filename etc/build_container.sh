@@ -43,6 +43,6 @@ $SCRIPT_PATH/create_jbrowse_track_list.pl $container_dir/pombase-config/website/
    $container_dir/minimal_jbrowse_track_list.json
 
 echo building container ...
-docker build -f conf/Dockerfile-main --build-arg database_name=pombase --build-arg target=$target -t=pombase/web:$version-$target .
+docker build --squash -f conf/Dockerfile-main --build-arg database_name=pombase --build-arg target=$target -t=pombase/web:$version-$target .
 
 echo "ssh pombase-admin@149.155.131.177 /home/pombase-admin/bin/reload_apache" | at 6am
