@@ -198,7 +198,7 @@ method process() {
 
     $columns{DB_object_id} = $dest_db_object_id;
     $columns{Taxon} = 'taxon:' . $self->dest_organism_taxonid();
-    $columns{With_or_from} = $source_db_object_id;
+    $columns{With_or_from} = $columns{DB} . ":" . $source_db_object_id;
     $columns{DB_object_synonym} = '';
 
     $columns{DB_reference} = 'GO_REF:0000107';
