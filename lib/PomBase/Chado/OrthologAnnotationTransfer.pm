@@ -39,6 +39,8 @@ under the same terms as Perl itself.
 use perl5i::2;
 use Moose;
 
+use DateTime;
+
 use Text::CSV;
 
 use Getopt::Long qw(GetOptionsFromArray);
@@ -134,6 +136,8 @@ sub BUILD
 
 
 method process() {
+  my $dt = DateTime->now();
+
   open my $fh, '<-' or die;
 
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
@@ -200,6 +204,10 @@ method process() {
     $columns{DB_reference} = 'GO_REF:0000107';
     $columns{Annotation_extension} = '';
     $columns{Gene_product_form_id} = '';
+
+    my $date_str = $dt->ymd('');
+
+    $columns{Date} = $date_str;
 
     my $out_line =
       join "\t", map {
