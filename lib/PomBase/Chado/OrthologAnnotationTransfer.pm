@@ -52,7 +52,7 @@ has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has source_organism_taxonid => (is => 'rw', init_arg => undef);
 has dest_organism_taxonid => (is => 'rw', init_arg => undef);
 has one_to_one_orthologs => (is => 'rw', init_arg => undef);
-has ev_codes_to_keep => (is => 'rw', init_arg => undef);
+has ev_codes_to_ignore => (is => 'rw', init_arg => undef);
 
 sub BUILD
 {
@@ -60,11 +60,12 @@ sub BUILD
 
   my $source_organism_taxonid = undef;
   my $dest_organism_taxonid = undef;
-  my $ev_codes_to_keep_string = undef;
+  my $ev_codes_to_ignore_string = undef;
   my $ortholog_filename = undef;
 
   my @opt_config = ("source-organism-taxonid=s" => \$source_organism_taxonid,
                     "dest-organism-taxonid=s" => \$dest_organism_taxonid,
+                    "evidence-codes-to-ignore=s" => \$ev_codes_to_ignore_string,
                     "ortholog-file=s" => \$ortholog_filename,
                   );
 
@@ -85,6 +86,16 @@ sub BUILD
 
   $self->dest_organism_taxonid($dest_organism_taxonid);
 
+
+  my %ev_codes_to_ignore = ();
+
+  if (defined $ev_codes_to_ignore_string && length $ev_codes_to_ignore_string > 0) {
+    map {
+      $ev_codes_to_ignore{$_} = 1;
+    } split /,/, $ev_codes_to_ignore_string;
+  }
+
+  $self->ev_codes_to_ignore(\%ev_codes_to_ignore);
 
   if (!defined $ortholog_filename || length $ortholog_filename == 0) {
     die "no --ortholog-file passed to the transfer-gaf-annotations loader\n";
@@ -132,6 +143,7 @@ method process() {
 
   $csv->column_names(@column_names);
 
+  my %ev_codes_to_ignore = %{$self->ev_codes_to_ignore()};
   my %one_to_one_orthologs = %{$self->one_to_one_orthologs()};
 
   while (defined (my $line = $fh->getline())) {
@@ -166,6 +178,10 @@ method process() {
     }
 
     my $evidence_code = $columns{Evidence_code};
+
+    if ($ev_codes_to_ignore{$evidence_code}) {
+      next;
+    }
 
     $columns{Evidence_code} = 'IEA';
 
