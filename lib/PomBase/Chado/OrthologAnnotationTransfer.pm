@@ -65,7 +65,6 @@ sub BUILD
 
   my @opt_config = ("source-organism-taxonid=s" => \$source_organism_taxonid,
                     "dest-organism-taxonid=s" => \$dest_organism_taxonid,
-                    "evidence-codes-to-keep=s" => \$ev_codes_to_keep_string,
                     "ortholog-file=s" => \$ortholog_filename,
                   );
 
@@ -85,19 +84,6 @@ sub BUILD
   }
 
   $self->dest_organism_taxonid($dest_organism_taxonid);
-
-
-  if (!defined $ev_codes_to_keep_string || length $ev_codes_to_keep_string == 0) {
-    die "no --evidence-codes-to-keep passed to the transfer-gaf-annotations loader\n";
-  }
-
-  my %ev_codes_to_keep = ();
-
-  map {
-    $ev_codes_to_keep{$_} = 1;
-  } split /,/, $ev_codes_to_keep_string;
-
-  $self->ev_codes_to_keep(\%ev_codes_to_keep);
 
 
   if (!defined $ortholog_filename || length $ortholog_filename == 0) {
@@ -146,7 +132,6 @@ method process() {
 
   $csv->column_names(@column_names);
 
-  my %ev_codes_to_keep = %{$self->ev_codes_to_keep()};
   my %one_to_one_orthologs = %{$self->one_to_one_orthologs()};
 
   while (defined (my $line = $fh->getline())) {
@@ -181,10 +166,6 @@ method process() {
     }
 
     my $evidence_code = $columns{Evidence_code};
-
-    if (!$ev_codes_to_keep{$evidence_code}) {
-      next;
-    }
 
     $columns{Evidence_code} = 'IEA';
 
