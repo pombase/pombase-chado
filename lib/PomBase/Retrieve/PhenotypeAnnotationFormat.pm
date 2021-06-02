@@ -207,14 +207,6 @@ method _lookup_term($term_id) {
   }
 }
 
-func _fix_date($date) {
-  if ($date =~ /(\d+)-(\d+)-(\d+)/) {
-    return "$1$2$3";
-  } else {
-    return $date;
-  }
-}
-
 func _safe_join($expr, $array) {
   if (defined $array) {
     return join $expr, @{$array};
@@ -418,7 +410,7 @@ method retrieve() {
         my $gene_name = $first_allele->{gene_name} // $gene_uniquename;
         my $product = $first_allele->{product} // '';
 
-        my $date = _safe_join('|', [map { _fix_date($_) } @{$row_fc_props{date}}]);
+        my $date = _safe_join('|', $row_fc_props{date});
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
         my $assigned_by = _safe_join('|', $row_fc_props{assigned_by});
 
