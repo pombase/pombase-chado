@@ -86,7 +86,7 @@ sub load {
   my $csv = Text::CSV->new({ sep_char => "\t" });
 
   while (my $columns_ref = $csv->getline($fh)) {
-    if (@$columns_ref == 1 && trim($columns_ref->[0])->length() == 0) {
+    if (@$columns_ref == 1 && length(trim($columns_ref->[0])) == 0) {
       # empty line
       next;
     }

@@ -139,7 +139,7 @@ sub load {
   my %seen_annotations = ();
 
   while (my $columns_ref = $tsv->getline($fh)) {
-    if (@$columns_ref == 1 && trim($columns_ref->[0])->length() == 0) {
+    if (@$columns_ref == 1 && length(trim($columns_ref->[0])) == 0) {
       next;
     }
 

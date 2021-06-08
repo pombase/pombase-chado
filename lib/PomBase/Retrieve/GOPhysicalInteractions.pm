@@ -127,7 +127,7 @@ sub retrieve {
             goto ROW;
           }
 
-          if ($with_identifier->length() == 0) {
+          if (length($with_identifier) == 0) {
             goto ROW;
           } else {
             if ($with_identifier =~ /^UniProt/) {

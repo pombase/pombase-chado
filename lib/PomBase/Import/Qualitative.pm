@@ -122,7 +122,7 @@ sub load {
   my $tsv = Text::CSV->new({ sep_char => "\t" });
 
   while (my $columns_ref = $tsv->getline($fh)) {
-    if (@$columns_ref == 1 && trim($columns_ref->[0])->length() == 0) {
+    if (@$columns_ref == 1 && length(trim($columns_ref->[0])) == 0) {
       next;
     }
     my ($systematic_id, $gene_name, $type, $evidence_code, $level, $extension, $pubmedid, $taxonid, $date) =
