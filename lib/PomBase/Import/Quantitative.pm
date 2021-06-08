@@ -86,7 +86,7 @@ sub load {
   my $csv = Text::CSV->new({ sep_char => "\t" });
 
   while (my $columns_ref = $csv->getline($fh)) {
-    if (@$columns_ref == 1 && $columns_ref->[0]->trim()->length() == 0) {
+    if (@$columns_ref == 1 && trim($columns_ref->[0])->length() == 0) {
       # empty line
       next;
     }
@@ -94,7 +94,7 @@ sub load {
     my ($systematic_id, $gene_name, $type, $annotation_extension, $average_copies_per_cell,
         $range, $evidence_code, $scale, $conditions, $pubmedid, $taxonid, $date) =
           map {
-            my $trimmed = $_->trim();
+            my $trimmed = trim($_);
             if (length $trimmed > 0) {
               $trimmed;
             } else {
