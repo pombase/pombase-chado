@@ -40,7 +40,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 with 'PomBase::Role::ChadoUser';
@@ -59,7 +62,9 @@ with 'PomBase::Role::ConfigUser';
 
 =cut
 
-method process() {
+sub process {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my $dbh = $chado->storage()->dbh();

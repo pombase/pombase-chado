@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Getopt::Long qw(GetOptionsFromArray);
@@ -53,6 +56,7 @@ with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
+with 'PomBase::Role::OrthologMap';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
@@ -138,64 +142,11 @@ EOF
   $self->existing_products(\%existing_products);
 }
 
-method ortholog_map() {
-  my %orthologs = ();
 
-  my $ortholog_rs = $self->chado()->resultset('Sequence::FeatureRelationship')
-    ->search(
-      {
-        'organism.organism_id' => $self->dest_organism()->organism_id(),
-        'organism_2.organism_id' => $self->source_organism()->organism_id(),
-        'type.name' => 'orthologous_to',
-      },
-      {
-        join => [
-          {
-            subject => 'organism',
-          },
-          {
-            object => 'organism',
-          },
-          'type'
-        ],
-        select => ['subject.uniquename', 'object.uniquename', 'object.name'],
-        as => ['subject_uniquename', 'object_uniquename', 'object_name'],
-      });
+sub process {
+  my $self = shift;
+  my $fh = shift;
 
-  my %identifier_counts = ();
-
-  while (defined (my $row = $ortholog_rs->next())) {
-    my $subject_uniquename = $row->get_column('subject_uniquename');
-    my $object_uniquename = $row->get_column('object_uniquename');
-
-    $identifier_counts{$subject_uniquename}++;
-    $identifier_counts{$object_uniquename}++;
-  }
-
-  $ortholog_rs->reset();
-
-  while (defined (my $row = $ortholog_rs->next())) {
-    my $subject_uniquename = $row->get_column('subject_uniquename');
-    my $object_uniquename = $row->get_column('object_uniquename');
-
-    if ($identifier_counts{$subject_uniquename} > 1 ||
-        $identifier_counts{$object_uniquename} > 1) {
-      # skip non one-to-one orthologs
-      next;
-    }
-
-    my $object_name = $row->get_column('object_name');
-
-    $orthologs{$subject_uniquename} = {
-      orth_uniquename => $object_uniquename,
-      orth_name => $object_name,
-    };
-  }
-
-  return %orthologs;
-}
-
-method process($fh) {
   my %orthologs = $self->ortholog_map();
 
   my $gene_rs = $self->chado()->resultset('Sequence::Feature')

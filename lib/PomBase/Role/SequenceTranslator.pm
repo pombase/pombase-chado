@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 
 use Bio::Seq;
 use Bio::Tools::SeqStats;
@@ -45,7 +48,12 @@ use Bio::Tools::CodonOptTable;
 
 use Moose::Role;
 
-method translate_sequence($residues, $phase, $is_mito) {
+sub translate_sequence {
+  my $self = shift;
+  my $residues = shift;
+  my $phase = shift;
+  my $is_mito = shift;
+
   my $seq = Bio::Seq->new(-seq => $residues, -alphabet => 'dna');
 
   my $genetic_code = $is_mito ? 4 : 1;

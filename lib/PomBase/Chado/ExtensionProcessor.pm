@@ -35,7 +35,12 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
+use feature qw(state);
+
 use Moose;
 
 use PomBase::Chado;
@@ -91,11 +96,19 @@ method _build_isa_cvterm {
   return $self->get_relation_cvterm('is_a');
 }
 
-method _store_residue($feature_cvterm, $residue) {
+sub _store_residue {
+  my $self = shift;
+  my $feature_cvterm = shift;
+  my $residue = shift;
+
   $self->add_feature_cvtermprop($feature_cvterm, residue => $residue, 0);
 }
 
-method store_extension($feature_cvterm, $extensions) {
+sub store_extension {
+  my $self = shift;
+  my $feature_cvterm = shift;
+  my $extensions = shift;
+
   my $old_cvterm = $feature_cvterm->cvterm();
   my $old_cv_name = $old_cvterm->cv()->name();
 
@@ -383,7 +396,11 @@ method store_extension($feature_cvterm, $extensions) {
   return $new_term;
 }
 
-method check_targets($target_is_quals, $target_of_quals) {
+sub check_targets {
+  my $self = shift;
+  my $target_is_quals = shift;
+  my $target_of_quals = shift;
+
   my $organism = $self->find_organism_by_common_name('pombe');
 
   die unless defined $organism;
@@ -440,7 +457,12 @@ method check_targets($target_is_quals, $target_of_quals) {
   }
 }
 
-method process($post_process_data, $target_is_quals, $target_of_quals) {
+sub process {
+  my $self = shift;
+  my $post_process_data = shift;
+  my $target_is_quals = shift;
+  my $target_of_quals = shift;
+
   $self->check_targets($target_is_quals, $target_of_quals);
 
   while (my ($feature_cvterm_id, $data_list) = each %{$post_process_data}) {
@@ -478,7 +500,12 @@ sub _unreplace_commas
   return $string;
 }
 
-method _process_identifier($feature_uniquename, $rel_name, $arg) {
+sub _process_identifier {
+  my $self = shift;
+  my $feature_uniquename = shift;
+  my $rel_name = shift;
+  my $arg = shift;
+
   my $identifier = $arg->trim();
 
   my $nested_extension_bit = undef;
@@ -549,7 +576,12 @@ method _process_identifier($feature_uniquename, $rel_name, $arg) {
     };
 }
 
-method process_one_annotation($featurecvterm, $extension_text, $extensions) {
+sub process_one_annotation {
+  my $self = shift;
+  my $featurecvterm = shift;
+  my $extension_text = shift;
+  my $extensions = shift;
+
   my $feature_uniquename = $featurecvterm->feature()->uniquename();
 
   warn "processing annotation extension for $feature_uniquename <-> ",

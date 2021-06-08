@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Carp;
 
 use Bio::Chado::Schema;

@@ -35,18 +35,30 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
+use feature qw(state);
+
 use Moose::Role;
 
 requires 'chado';
 
-method find_or_create_dbxref($db, $accession) {
+sub find_or_create_dbxref {
+  my $self = shift;
+  my $db = shift;
+  my $accession = shift;
+
   my $dbxref_rs = $self->chado()->resultset('General::Dbxref');
   return $dbxref_rs->find_or_create({ db_id => $db->db_id(),
                                       accession => $accession });
 }
 
-method find_or_create_pub($identifier) {
+sub find_or_create_pub {
+  my $self = shift;
+  my $identifier = shift;
+
   state $cache = {};
 
   if (exists $cache->{$identifier}) {
@@ -65,7 +77,12 @@ method find_or_create_pub($identifier) {
   return $pub;
 }
 
-method create_pubprop($pub, $type_name, $value) {
+sub create_pubprop {
+  my $self = shift;
+  my $pub = shift;
+  my $type_name = shift;
+  my $value = shift;
+
   my $type_term = $self->find_cvterm_by_name('pubprop_type', $type_name);
   if (!defined $type_term) {
     croak "no pubprop_type term for: $type_name\n";
@@ -80,7 +97,10 @@ method create_pubprop($pub, $type_name, $value) {
                                value => $value });
 }
 
-method find_db_by_name($db_name) {
+sub find_db_by_name {
+  my $self = shift;
+  my $db_name = shift;
+
   die 'no $db_name' unless defined $db_name;
 
   state $cache = {};
@@ -96,7 +116,11 @@ method find_db_by_name($db_name) {
   return $db;
 }
 
-method add_feature_dbxref($feature, $dbxref_value) {
+sub add_feature_dbxref {
+  my $self = shift;
+  my $feature = shift;
+  my $dbxref_value = shift;
+
   if ($dbxref_value =~ /^((.*):(.*))/) {
     my $db_name = $2;
     my $accession = $3;
@@ -113,10 +137,15 @@ method add_feature_dbxref($feature, $dbxref_value) {
   }
 }
 
-method get_pub_from_db_xref($qual, $db_xref) {
+sub get_pub_from_db_xref {
+  my $self = shift;
+  my $qual = shift;
+  my $db_xref = shift;
+
   if (defined $db_xref) {
     if ($db_xref =~ /^(?:(\w+):(.+))/) {
-      if ($1 ne 'PMID' || $2->is_integer()) {
+      my $id_part = $2;
+      if ($1 ne 'PMID' || $id_part =~ /^\d+$/) {
         return $self->find_or_create_pub($db_xref);
       }
       # fall through
@@ -132,7 +161,11 @@ method get_pub_from_db_xref($qual, $db_xref) {
 
 }
 
-method create_feature_pub($feature, $pub) {
+sub create_feature_pub {
+  my $self = shift;
+  my $feature = shift;
+  my $pub = shift;
+
   $self->chado()->resultset('Sequence::FeaturePub')->create({
     feature => $feature,
     pub => $pub,

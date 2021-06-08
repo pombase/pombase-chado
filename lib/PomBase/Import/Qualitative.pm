@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Text::CSV;
@@ -103,7 +106,10 @@ method BUILD {
   $self->gene_ex_qualifiers_array($gene_ex_qualifiers);
 }
 
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
   my $chado = $self->chado();
 
   my $tsv = Text::CSV->new({ sep_char => "\t" });

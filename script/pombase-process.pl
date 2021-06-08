@@ -3,7 +3,10 @@
 # driver for code that processes or fixes data in Chado, without needing
 # external files
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Getopt::Long qw(:config pass_through);

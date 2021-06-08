@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 use PomBase::Chado;
@@ -52,7 +55,10 @@ requires 'config';
            (GO) term, otherwise return an empty list.
 
 =cut
-method make_gaf_extension($feature_cvterm) {
+sub make_gaf_extension {
+  my $self = shift;
+  my $feature_cvterm = shift;
+
   my $extension_term = $feature_cvterm->cvterm();
 
   if ($extension_term->cv()->name() ne 'PomBase annotation extension terms') {

@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 my $populate_sql = qq|
@@ -78,7 +81,11 @@ with 'PomBase::Role::ChadoUser';
 has cache => (is => 'ro', init_arg => undef, lazy_build => 1,
               builder => '_build_cache');
 
-func make_key($genotype_name, $genotype_background, $expression_and_allele_ids) {
+sub make_key {
+  my $genotype_name = shift;
+  my $genotype_background = shift;
+  my $expression_and_allele_ids = shift;
+
   return ($genotype_name ? $genotype_name : '[NO-NAME]') . '--' .
     ($genotype_background ? $genotype_background : '[NO-BACKGROUND]') . '-- ((' .
     (join " + ", map {
@@ -134,14 +141,25 @@ method _build_cache {
   return \%cache;
 }
 
-method get($genotype_name, $genotype_background, $alleles_and_expression) {
+sub get {
+  my $self = shift;
+  my $genotype_name = shift;
+  my $genotype_background = shift;
+  my $alleles_and_expression = shift;
+
   my $key = make_key_from_allele_objects($genotype_name, $genotype_background,
                                         $alleles_and_expression);
 
   return $self->cache()->{$key}
 }
 
-method put($genotype_name, $genotype_background, $alleles_and_expression, $genotype) {
+sub put {
+  my $self = shift;
+  my $genotype_name = shift;
+  my $genotype_background = shift;
+  my $alleles_and_expression = shift;
+  my $genotype = shift;
+
   my $key = make_key_from_allele_objects($genotype_name, $genotype_background,
                                          $alleles_and_expression);
   $self->cache()->{$key} = $genotype;

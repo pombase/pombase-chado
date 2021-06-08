@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 use YAML qw(LoadFile);
 use File::Temp qw(tempfile);
@@ -61,37 +64,60 @@ method _make_test_db {
   return Bio::Chado::Schema->connect("dbi:SQLite:$temp_db");
 }
 
-method _load_cv($chado, $cv_conf) {
+sub _load_cv {
+  my $self = shift;
+  my $chado = shift;
+  my $cv_conf = shift;
+
   for my $row (@$cv_conf) {
     $chado->resultset("Cv::Cv")->create($row);
   }
 }
 
-method _load_features($chado, $feature_conf) {
+sub _load_features {
+  my $self = shift;
+  my $chado = shift;
+  my $feature_conf = shift;
+
   for my $row (@$feature_conf) {
     $chado->resultset("Sequence::Feature")->create($row);
   }
 }
 
-method _load_feature_cvterms($chado, $feature_cvterm_conf) {
+sub _load_feature_cvterms {
+  my $self = shift;
+  my $chado = shift;
+  my $feature_cvterm_conf = shift;
+
   for my $row (@$feature_cvterm_conf) {
     $chado->resultset("Sequence::FeatureCvterm")->create($row);
   }
 }
 
-method _load_feature_relationships($chado, $feature_rel_conf) {
+sub _load_feature_relationships {
+  my $self = shift;
+  my $chado = shift;
+  my $feature_rel_conf = shift;
+
   for my $row (@$feature_rel_conf) {
     $chado->resultset("Sequence::FeatureRelationship")->create($row);
   }
 }
 
-method _load_featurelocs($chado, $featurelocs_conf) {
+sub _load_featurelocs {
+  my $self = shift;
+  my $chado = shift;
+  my $featurelocs_conf = shift;
+
   for my $row (@$featurelocs_conf) {
     $chado->resultset("Sequence::Featureloc")->create($row);
   }
 }
 
-method _load_cv_db($chado) {
+sub _load_cv_db {
+  my $self = shift;
+  my $chado = shift;
+
   my $test_data = $self->test_config()->{data};
 
   my $cv_conf = $test_data->{cv};
@@ -113,7 +139,10 @@ method _load_cv_db($chado) {
   }
 }
 
-method _load_test_features($chado) {
+sub _load_test_features {
+  my $self = shift;
+  my $chado = shift;
+
   my $test_data = $self->test_config()->{data};
 
   $self->_load_cv($chado, $test_data->{extra_cvterm_terms});

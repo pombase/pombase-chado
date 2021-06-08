@@ -36,14 +36,22 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 use Carp;
 
 requires 'chado';
 
-method store_cvterm_rel($subject, $object, $rel) {
+sub store_cvterm_rel {
+  my $self = shift;
+  my $subject = shift;
+  my $object = shift;
+  my $rel = shift;
+
   warn "   storing ", $rel->name(), " relation from ", $subject->name(), ' to ',
     $object->name(), "\n" if $self->verbose();
 
@@ -66,7 +74,12 @@ method store_cvterm_rel($subject, $object, $rel) {
              });
 }
 
-method get_cvterm_rel($subject, $object, $rel) {
+sub get_cvterm_rel {
+  my $self = shift;
+  my $subject = shift;
+  my $object = shift;
+  my $rel = shift;
+
   return $self->chado()->resultset('Cv::CvtermRelationship')
     ->search({ subject_id => $subject->cvterm_id(),
                object_id => $object->cvterm_id(),

@@ -34,7 +34,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Getopt::Long qw(GetOptionsFromArray);
@@ -93,7 +96,9 @@ method BUILD {
   close $mapping_fh or die "can't close mapping_file: $!\n";
 }
 
-method process() {
+sub process {
+  my $self = shift;
+
   my $chado = $self->chado();
   my $config = $self->config();
 

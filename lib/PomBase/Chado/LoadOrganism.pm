@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 with 'PomBase::Role::ChadoUser';
@@ -44,7 +47,14 @@ with 'PomBase::Role::CvQuery';
 
 has verbose => (is => 'ro');
 
-method load_organism($genus, $species, $common_name, $abbreviation, $taxon_id) {
+sub load_organism {
+  my $self = shift;
+  my $genus = shift;
+  my $species = shift;
+  my $common_name = shift;
+  my $abbreviation = shift;
+  my $taxon_id = shift;
+
   my $taxon_id_cvterm =
     $self->find_cvterm_by_name('organism property types', 'taxon_id');
 

@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 with 'PomBase::Role::ChadoUser';
@@ -45,7 +48,10 @@ use PomBase::Chado::LoadOrganism;
 
 has verbose => (is => 'ro');
 
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
   my $org_load = PomBase::Chado::LoadOrganism->new(chado => $self->chado);
 
   while(<$fh>) {

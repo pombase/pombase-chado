@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 use utf8::all;
@@ -77,7 +80,10 @@ method _build_allele_types {
                 organism   - the full organism name like "Genus species"
 
 =cut
-method get_gene($gene_data) {
+sub get_gene {
+  my $self = shift;
+  my $gene_data = shift;
+
   if (!defined $gene_data) {
     croak 'no $gene_data passed to get_gene()';
   }
@@ -88,11 +94,20 @@ method get_gene($gene_data) {
   return $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
 }
 
-method get_transcript($gene) {
+sub get_transcript {
+  my $self = shift;
+  my $gene = shift;
+
   return $self->find_chado_feature($gene->uniquename() . ".1", 1, 1, $gene->organism());
 }
 
-method get_genotype($genotype_identifier, $genotype_name, $genotype_background, $alleles) {
+sub get_genotype {
+  my $self = shift;
+  my $genotype_identifier = shift;
+  my $genotype_name = shift;
+  my $genotype_background = shift;
+  my $alleles = shift;
+
   my $cached_genotype =
     $self->genotype_cache()->get($genotype_name, $genotype_background, $alleles);
 
@@ -197,7 +212,12 @@ method get_genotype_uniquename {
   return "$prefix$new_suffix";
 }
 
-method get_genotype_for_allele($background, $allele_data, $expression) {
+sub get_genotype_for_allele {
+  my $self = shift;
+  my $background = shift;
+  my $allele_data = shift;
+  my $expression = shift;
+
   my $allele = $self->get_allele($allele_data);
 
   my $genotype_identifier = $self->get_genotype_uniquename();
@@ -210,7 +230,9 @@ method get_genotype_for_allele($background, $allele_data, $expression) {
                              [{ allele => $allele, expression => $expression }]);
 }
 
-func _get_allele_props($allele) {
+sub _get_allele_props {
+  my $allele = shift;
+
   my $description_prop_rs = $allele->featureprops()->search({}, { join => 'type' });
 
   my %ret = ();
@@ -222,7 +244,13 @@ func _get_allele_props($allele) {
   return %ret;
 }
 
-method fix_expression_allele($gene_name, $name, $description_ref, $expression_ref) {
+sub fix_expression_allele {
+  my $self = shift;
+  my $gene_name = shift;
+  my $name = shift;
+  my $description_ref = shift;
+  my $expression_ref = shift;
+
   if ($$name eq 'noname' and
       grep /^$$description_ref$/, qw(overexpression endogenous knockdown)) {
     if (defined $$expression_ref) {
@@ -238,7 +266,12 @@ method fix_expression_allele($gene_name, $name, $description_ref, $expression_re
 
 my $whitespace_re = "\\s\N{ZERO WIDTH SPACE}";
 
-method make_allele_data_from_display_name($gene_feature, $display_name, $expression_ref) {
+sub make_allele_data_from_display_name {
+  my $self = shift;
+  my $gene_feature = shift;
+  my $display_name = shift;
+  my $expression_ref = shift;
+
   if ($display_name =~ /^\s*(.+?)\((.*)\)/) {
     my $name = $1;
     $name = $name->trim($whitespace_re);
@@ -256,7 +289,12 @@ method make_allele_data_from_display_name($gene_feature, $display_name, $express
   }
 }
 
-method make_allele_data($name, $description, $gene_feature) {
+sub make_allele_data {
+  my $self = shift;
+  my $name = shift;
+  my $description = shift;
+  my $gene_feature = shift;
+
   my $gene_name = $gene_feature->name();
   my $organism = $gene_feature->organism();
 
@@ -278,7 +316,10 @@ method make_allele_data($name, $description, $gene_feature) {
   return \%ret;
 }
 
-method _get_allele_session($allele) {
+sub _get_allele_session {
+  my $self = shift;
+  my $allele = shift;
+
   my $props_rs = $allele->search_featureprops('canto_session');
   my $prop = $props_rs->first();
 
@@ -306,7 +347,10 @@ method _get_allele_session($allele) {
 
 =cut
 
-method get_allele($allele_data) {
+sub get_allele {
+  my $self = shift;
+  my $allele_data = shift;
+
   my $allele;
   my $gene;
 

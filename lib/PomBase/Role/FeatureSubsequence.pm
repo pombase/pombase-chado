@@ -36,7 +36,12 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
+use feature qw(state);
+
 use Moose::Role;
 
 =head2 feature_subseq
@@ -50,7 +55,12 @@ use Moose::Role;
 
 =cut
 
-method feature_subseq($feature, $start, $end) {
+sub feature_subseq {
+  my $self = shift;
+  my $feature = shift;
+  my $start = shift;
+  my $end = shift;
+
   if ($start <= 0) {
     die "start position $start is less than 1 in feature_subseq()";
   }

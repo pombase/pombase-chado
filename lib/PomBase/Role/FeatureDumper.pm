@@ -36,12 +36,18 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Carp;
 
 use Moose::Role;
 
-method dump_feature($feature) {
+sub dump_feature {
+  my $self = shift;
+  my $feature = shift;
+
   my $loc = $feature->location();
 
   my $seq = $feature->entire_seq();

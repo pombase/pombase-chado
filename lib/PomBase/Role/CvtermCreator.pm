@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 requires 'get_cv';
@@ -45,7 +48,13 @@ requires 'find_or_create_dbxref';
 requires 'find_db_by_name';
 requires 'get_db';
 
-method create_cvterm($cv_name, $db_name, $id_counter, $term_name) {
+sub create_cvterm {
+  my $self = shift;
+  my $cv_name = shift;
+  my $db_name = shift;
+  my $id_counter = shift;
+  my $term_name = shift;
+
   my $formatted_id = $id_counter->get_formatted_id($db_name);
 
   my $cv = $self->get_cv($cv_name);
@@ -62,7 +71,11 @@ method create_cvterm($cv_name, $db_name, $id_counter, $term_name) {
 }
 
 
-method find_or_create_cvterm($cv, $term_name) {
+sub find_or_create_cvterm {
+  my $self = shift;
+  my $cv = shift;
+  my $term_name = shift;
+
   if (!defined $cv) {
     croak "undefined cv";
   }

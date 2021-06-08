@@ -37,17 +37,24 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
-method description() {
+sub description {
+  my $self = shift;
+
   return "Check that all phenotype terms have a parent in one of the categories " .
     "in the website configuration for fission_yeast_phenotype";
 }
 
 with 'PomBase::Checker';
 
-method check() {
+sub check {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my $fypo_config = $self->website_config()->{cv_config}->{fission_yeast_phenotype};

@@ -36,14 +36,20 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Carp;
 
 use PomBase::Chado::LoadOrganism;
 
 use YAML::Any qw(DumpFile LoadFile);
 
-func _fix_annotation_extension_rels($chado, $config) {
+sub _fix_annotation_extension_rels {
+  my $chado = shift;
+  my $config = shift;
+
    my @extension_rel_terms = map {
      ($chado->resultset('Cv::Cv')->search({ 'me.name' => $_ })
         ->search_related('cvterms')
@@ -56,7 +62,11 @@ func _fix_annotation_extension_rels($chado, $config) {
     } @extension_rel_terms;
 }
 
-func _load_cvterms($chado, $config, $test_mode) {
+sub _load_cvterms {
+  my $chado = shift;
+  my $config = shift;
+  my $test_mode = shift;
+
   my $db_name = 'PBO';
   my $db = $chado->resultset('General::Db')->find({ name => $db_name });
 
@@ -118,7 +128,10 @@ func _load_cvterms($chado, $config, $test_mode) {
   }
 }
 
-func _load_cv_defs($chado, $config) {
+sub _load_cv_defs {
+  my $chado = shift;
+  my $config = shift;
+
   my $db_name = 'PomBase';
 
   my %cv_defs = %{$config->{cv_definitions}};
@@ -135,7 +148,10 @@ func _load_cv_defs($chado, $config) {
   }
 }
 
-func _load_dbs($chado, $config) {
+sub _load_dbs {
+  my $chado = shift;
+  my $config = shift;
+
   my @dbs = @{$config->{dbs}};
 
   for my $db (@dbs) {
@@ -143,7 +159,10 @@ func _load_dbs($chado, $config) {
   }
 }
 
-func init_objects($chado, $config) {
+sub init_objects {
+  my $chado = shift;
+  my $config = shift;
+
   _fix_annotation_extension_rels($chado, $config);
   _load_cvterms($chado, $config, $config->{test});
   _load_cv_defs($chado, $config);

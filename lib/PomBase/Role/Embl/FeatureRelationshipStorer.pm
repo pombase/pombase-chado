@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 requires 'chado';
@@ -45,7 +48,9 @@ has ranks => (is => 'ro',
               lazy => 1, builder => '_build_ranks');
 
 # preinitialise the hash of ranks of the existing feature_relationships
-method _build_ranks() {
+sub _build_ranks {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my $rs = $chado->resultset('Sequence::FeatureRelationship');
@@ -71,7 +76,14 @@ method _build_ranks() {
 
 
 
-method store_feature_rel($subject, $object, $rel_type, $no_duplicates, $rank_arg) {
+sub store_feature_rel {
+  my $self = shift;
+  my $subject = shift;
+  my $object = shift;
+  my $rel_type = shift;
+  my $no_duplicates = shift;
+  my $rank_arg = shift;
+
   my $rel_cvterm;
 
   if (ref $rel_type) {

@@ -35,7 +35,9 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
 use Moose;
 
 my %new_cvterm_ids = ();
@@ -43,12 +45,18 @@ my %new_cvterm_ids = ();
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::DbQuery';
 
-method get_formatted_id($db_name) {
+sub get_formatted_id {
+  my $self = shift;
+  my $db_name = shift;
+
   return sprintf "%07d", $self->get_dbxref_id($db_name);
 }
 
 # return a new ID in the given db
-method get_dbxref_id($db_name) {
+sub get_dbxref_id {
+  my $self = shift;
+  my $db_name = shift;
+
   if (!exists $new_cvterm_ids{$db_name}) {
     my $db = $self->get_db($db_name);
     if (!defined $db) {

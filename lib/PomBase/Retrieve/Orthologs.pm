@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Iterator::Simple qw(iterator);
@@ -74,7 +77,9 @@ sub BUILDARGS
   return \%args;
 }
 
-method retrieve() {
+sub retrieve {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my $taxon_id = $self->other_organism_taxonid();
@@ -170,7 +175,10 @@ method header {
   return '';
 }
 
-method format_result($res) {
+sub format_result {
+  my $self = shift;
+  my $res = shift;
+
   return join "\t", @$res;
 }
 

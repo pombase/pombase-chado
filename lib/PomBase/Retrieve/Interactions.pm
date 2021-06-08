@@ -36,7 +36,12 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
+use feature qw(state);
+
 use Moose;
 
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
@@ -73,7 +78,10 @@ sub BUILDARGS
 }
 
 
-method _organism_taxonid($organism) {
+sub _organism_taxonid {
+  my $self = shift;
+  my $organism = shift;
+
   state $cache = {};
 
   my $organism_id = $organism->organism_id();
@@ -88,7 +96,10 @@ method _organism_taxonid($organism) {
   return $cache->{$organism_id};
 }
 
-method _read_rel_props($rel_rs) {
+sub _read_rel_props {
+  my $self = shift;
+  my $rel_rs = shift;
+
   my %props = ();
 
   my $prop_rs = $self->chado()->resultset('Sequence::FeatureRelationshipprop')
@@ -106,7 +117,10 @@ method _read_rel_props($rel_rs) {
   return %props;
 }
 
-method _read_pubs($rel_rs) {
+sub _read_pubs {
+  my $self = shift;
+  my $rel_rs = shift;
+
   my %pubs = ();
 
   my $pubs_rs = $self->chado()->resultset('Sequence::FeatureRelationshipPub')
@@ -125,7 +139,9 @@ method _read_pubs($rel_rs) {
   return %pubs;
 }
 
-method retrieve() {
+sub retrieve {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my $org_taxonid = $self->organism_taxonid();
@@ -221,6 +237,9 @@ method header {
   return '';
 }
 
-method format_result($res) {
+sub format_result {
+  my $self = shift;
+  my $res = shift;
+
   return (join "\t", @$res);
 }

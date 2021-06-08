@@ -35,18 +35,29 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
+use feature qw(state);
+
 use Moose::Role;
 
 requires 'chado';
 requires 'get_cvterm';
 
-method find_organism_by_common_name($common_name) {
+sub find_organism_by_common_name {
+  my $self = shift;
+  my $common_name = shift;
+
   return $self->chado()->resultset('Organism::Organism')
     ->find({ common_name => $common_name });
 }
 
-method find_organism_by_full_name($full_name) {
+sub find_organism_by_full_name {
+  my $self = shift;
+  my $full_name = shift;
+
   if (my ($genus, $species) = $full_name =~ /^\s*(\S+)\s+(.*?)\s*$/) {
     return $self->chado()->resultset('Organism::Organism')
       ->find({ genus => $genus, species => $species });
@@ -55,7 +66,10 @@ method find_organism_by_full_name($full_name) {
   }
 }
 
-method find_organism_by_taxonid($taxonid) {
+sub find_organism_by_taxonid {
+  my $self = shift;
+  my $taxonid = shift;
+
   state $cache = {};
 
   if (exists $cache->{$taxonid}) {

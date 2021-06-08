@@ -35,14 +35,25 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Carp;
 
 use Moose::Role;
 
 requires 'chado';
 
-method store_location($feature, $chromosome, $strand, $start, $end, $phase) {
+sub store_location {
+  my $self = shift;
+  my $feature = shift;
+  my $chromosome = shift;
+  my $strand = shift;
+  my $start = shift;
+  my $end = shift;
+  my $phase = shift;
+
   my $chado = $self->chado();
 
   my %create_args = (

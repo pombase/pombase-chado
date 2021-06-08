@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 use Try::Tiny;
 use Text::CSV;
@@ -112,7 +115,18 @@ method _build_genotype_cache {
 my $fypo_extensions_cv_name = 'fypo_extensions';
 
 
-method _store_annotation($genotype_feature, $cvterm, $pub, $date, $extension, $penetrance, $severity, $long_evidence, $conditions) {
+sub _store_annotation {
+  my $self = shift;
+  my $genotype_feature = shift;
+  my $cvterm = shift;
+  my $pub = shift;
+  my $date = shift;
+  my $extension = shift;
+  my $penetrance = shift;
+  my $severity = shift;
+  my $long_evidence = shift;
+  my $conditions = shift;
+
   my @split_ext_parts = ("");
 
   if ($extension) {
@@ -170,7 +184,10 @@ method _store_annotation($genotype_feature, $cvterm, $pub, $date, $extension, $p
 }
 
 
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
   my $chado = $self->chado();
   my $config = $self->config();
 
@@ -228,7 +245,7 @@ method load($fh) {
 
     $taxonid =~ s/taxon://ig;
 
-    if (!$taxonid->is_integer()) {
+    if ($taxonid  !~ /^\d+$/) {
       warn "Taxon is not a number: $taxonid at line ", $fh->input_line_number(), " - skipping\n";
       return;
     }
@@ -389,7 +406,10 @@ method load($fh) {
   return undef;
 }
 
-method results_summary($results) {
+sub results_summary {
+  my $self = shift;
+  my $results = shift;
+
   return '';
 }
 

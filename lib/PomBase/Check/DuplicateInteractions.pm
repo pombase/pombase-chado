@@ -35,16 +35,23 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
-method description() {
+sub description {
+  my $self = shift;
+
   return "Check for duplicate interactions";
 }
 
 with 'PomBase::Checker';
 
-func _get_source($props) {
+sub _get_source {
+  my $props = shift;
+
   my $source = $props->{source_database};
 
   if ($source eq 'PBO') {
@@ -70,7 +77,9 @@ func _get_source($props) {
   }
 }
 
-method check() {
+sub check {
+  my $self = shift;
+
   my $chado = $self->chado();
   my %evidence_types = %{$self->config()->{evidence_types}};
 

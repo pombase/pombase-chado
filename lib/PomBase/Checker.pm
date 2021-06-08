@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 with 'PomBase::Role::ConfigUser';
@@ -51,7 +54,9 @@ requires 'description';
  Function: return the configuration for the current Checker
 
 =cut
-method checker_config() {
+sub checker_config {
+  my $self = shift;
+
   return $self->config()->{check_chado}->{ref $self};
 }
 

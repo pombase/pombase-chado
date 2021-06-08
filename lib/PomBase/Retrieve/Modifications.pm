@@ -37,7 +37,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Iterator::Simple qw(iterator);
@@ -50,7 +53,9 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Retriever';
 with 'PomBase::Role::ExtensionDisplayer';
 
-method _get_mod_fcs() {
+sub _get_mod_fcs {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my %feature_cvterms = ();
@@ -71,7 +76,9 @@ select feature_cvterm_id
   return %feature_cvterms;
 }
 
-method retrieve() {
+sub retrieve {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my %feature_cvterms = $self->_get_mod_fcs();
@@ -131,7 +138,10 @@ method header {
   return '';
 }
 
-method format_result($res) {
+sub format_result {
+  my $self = shift;
+  my $res = shift;
+
   return (join "\t", @$res);
 }
 

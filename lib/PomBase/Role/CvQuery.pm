@@ -35,13 +35,20 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+use feature qw(state);
+
 use Moose::Role;
 
 requires 'chado';
 requires 'get_db';
 
-method get_cv($cv_name) {
+sub get_cv {
+  my $self = shift;
+  my $cv_name = shift;
+
   if (!defined $cv_name) {
     croak "undefined value for cv name";
   }
@@ -62,7 +69,10 @@ sub id_of_cvterm
 }
 
 
-method get_relation_cvterm($cvterm_name) {
+sub get_relation_cvterm {
+  my $self = shift;
+  my $cvterm_name = shift;
+
   state $cache = {};
 
   if ($cache->{$cvterm_name}) {
@@ -98,7 +108,11 @@ method get_relation_cvterm($cvterm_name) {
   return $cvterm;
 }
 
-method get_cvterm($cv_name, $cvterm_name) {
+sub get_cvterm {
+  my $self = shift;
+  my $cv_name = shift;
+  my $cvterm_name = shift;
+
 
   if ($cvterm_name eq 'is_a') {
     $cv_name = 'autocreated';
@@ -153,7 +167,13 @@ method get_cvterm($cv_name, $cvterm_name) {
 
 =cut
 
-method find_cvterm_by_name($cv, $term_name,%options) {
+sub find_cvterm_by_name {
+  my $self = shift;
+  my $cv = shift;
+  my $term_name = shift;
+  my $options_ref = shift;
+  my %options = %{$options_ref};
+
   $options{include_obsolete} //= 0;
   $options{query_synonyms} //= 1;
 
@@ -262,7 +282,11 @@ method find_cvterm_by_name($cv, $term_name,%options) {
 
 }
 
-method find_cvterm_by_term_id($term_id, $options) {
+sub find_cvterm_by_term_id {
+  my $self = shift;
+  my $term_id = shift;
+  my $options = shift;
+
   state $cache = {};
 
   $options //= {};

@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 requires 'chado';
@@ -53,7 +56,13 @@ requires 'chado';
 
 =cut
 
-method get_feature_relationship($feature_1, $feature_2, $pub, $evidence) {
+sub get_feature_relationship {
+  my $self = shift;
+  my $feature_1 = shift;
+  my $feature_2 = shift;
+  my $pub = shift;
+  my $evidence = shift;
+
   my $chado = $self->chado();
 
   my $rs = $chado->resultset('Sequence::FeatureRelationship')

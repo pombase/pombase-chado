@@ -34,13 +34,19 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 
-method process_one_evidence_code($code) {
+sub process_one_evidence_code {
+  my $self = shift;
+  my $code = shift;
+
   my $chado = $self->chado();
 
   my $dbh = $chado->storage()->dbh();
@@ -176,7 +182,9 @@ EOD
 
 =cut
 
-method process() {
+sub process {
+  my $self = shift;
+
   my @codes = (
     'inferred from biological aspect of descendant',
     'inferred from biological aspect of ancestor',

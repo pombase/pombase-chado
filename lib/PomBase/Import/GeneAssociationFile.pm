@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Text::CSV;
@@ -77,7 +80,10 @@ method _build_extension_processor {
   return $processor;
 }
 
-method _load_first_column($filename) {
+sub _load_first_column {
+  my $self = shift;
+  my $filename = shift;
+
   return unless $filename;
 
   my %ret_val = ();
@@ -148,7 +154,10 @@ method BUILD {
   $self->with_prefix_filter($with_prefix_filter);
 }
 
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
   my $chado = $self->chado();
   my $config = $self->config();
 
@@ -211,7 +220,7 @@ method load($fh) {
 
     $taxonid =~ s/taxon://ig;
 
-    if (!$taxonid->is_integer()) {
+    if ($taxonid !~ /^\d+$/) {
       warn "Taxon is not a number: $taxonid - skipping\n";
       next;
     }
@@ -442,7 +451,10 @@ method load($fh) {
   return \%deleted_counts;
 }
 
-method results_summary($results) {
+sub results_summary {
+  my $self = shift;
+  my $results = shift;
+
   my $ret_val = '';
 
   for my $assigned_by (sort keys %$results) {

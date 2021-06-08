@@ -36,12 +36,19 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 with 'PomBase::Role::ChadoUser';
 
-method store_feature_rel_pub($feature_rel, $pub) {
+sub store_feature_rel_pub {
+  my $self = shift;
+  my $feature_rel = shift;
+  my $pub = shift;
+
   my %create_args = (
     feature_relationship_id => $feature_rel->feature_relationship_id(),
     pub_id => $pub->pub_id(),

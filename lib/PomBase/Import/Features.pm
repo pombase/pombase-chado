@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Getopt::Long qw(GetOptionsFromArray);
@@ -205,7 +208,10 @@ sub BUILD
   $self->feature_prop_from_columns(\@feature_prop_from_columns);
 }
 
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
   my $uniquename_column = $self->uniquename_column();
   my $name_column = $self->name_column();
   my $feature_type_name = $self->feature_type();

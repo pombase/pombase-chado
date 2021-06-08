@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use YAML qw(LoadFile);
@@ -43,7 +46,8 @@ use YAML qw(LoadFile);
 has file_name => (is => 'ro');
 has hash => (is => 'ro');
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my %new_data;
 
   if (defined $self->file_name()) {

@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Getopt::Long qw(GetOptionsFromArray);
@@ -49,7 +52,14 @@ with 'PomBase::Role::XrefStorer';
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
-method _store($uniquename, $title, $authors, $year, $abstract) {
+sub _store {
+  my $self = shift;
+  my $uniquename = shift;
+  my $title = shift;
+  my $authors = shift;
+  my $year = shift;
+  my $abstract = shift;
+
   my $pub = $self->find_or_create_pub($uniquename);
   $pub->title($title) if $title;
   $pub->pyear($year) if $year;
@@ -59,7 +69,10 @@ method _store($uniquename, $title, $authors, $year, $abstract) {
   $self->create_pubprop($pub, 'pubmed_abstract', $abstract) if $abstract;
 }
 
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
 
   my $uniquename = undef;
   my $title = undef;

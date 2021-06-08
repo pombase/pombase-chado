@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 requires 'store_feature_relationshipprop';
@@ -55,15 +58,21 @@ has physical_interaction_type => (is => 'ro', init_arg => undef,
 has symmetrical_interaction_evidence_codes => (is => 'rw', init_arg => undef,
                                                lazy_build => 1);
 
-method _build_genetic_interaction() {
+sub _build_genetic_interaction {
+  my $self = shift;
+
   return $self->get_cvterm('PomBase interaction types', 'interacts_genetically');
 }
 
-method _build_physical_interaction() {
+sub _build_physical_interaction {
+  my $self = shift;
+
   return $self->get_cvterm('PomBase interaction types', 'interacts_physically');
 }
 
-method _build_symmetrical_interaction_evidence_codes() {
+sub _build_symmetrical_interaction_evidence_codes {
+  my $self = shift;
+
   my @symmetrical_ev_codes = ();
 
   my %evidence_types = %{$self->config()->{evidence_types}};
@@ -81,7 +90,9 @@ method _build_symmetrical_interaction_evidence_codes() {
   return [@symmetrical_ev_codes];
 }
 
-method _store_interaction_helper() {
+sub _store_interaction_helper {
+  my $self = shift;
+
   my %args = @_;
   my $feature_a = $args{feature_a};
   my $feature_b = $args{feature_b};
@@ -199,7 +210,9 @@ method _store_interaction_helper() {
 
 =cut
 
-method store_interaction() {
+sub store_interaction {
+  my $self = shift;
+
   my %args = @_;
   $args{is_inferred} = 0;
 

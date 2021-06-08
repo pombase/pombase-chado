@@ -35,16 +35,23 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
-method description() {
+sub description {
+  my $self = shift;
+
   return "Check that there are enough genes";
 }
 
 with 'PomBase::Checker';
 
-method check() {
+sub check {
+  my $self = shift;
+
   my $min_count = $self->checker_config()->{min_count};
   # this should really look at each organism,
   return $self->chado()->resultset("Sequence::Feature")->count() > $min_count;

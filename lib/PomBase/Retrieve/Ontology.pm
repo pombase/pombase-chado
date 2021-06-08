@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Iterator::Simple qw(iterator);
@@ -110,7 +113,9 @@ method BUILD {
   $self->{_parents} = {};
 }
 
-method retrieve() {
+sub retrieve {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my $dbh = $self->chado()->storage()->dbh();
@@ -186,7 +191,10 @@ default-namespace: pombase
 EOF
 }
 
-method _parentid($data) {
+sub _parentid {
+  my $self = shift;
+  my $data = shift;
+
   my $parentname = $data->[4];
   if (defined $parentname) {
     return $data->[5] . ':' . $data->[6];
@@ -195,7 +203,10 @@ method _parentid($data) {
   }
 }
 
-method format_result($data) {
+sub format_result {
+  my $self = shift;
+  my $data = shift;
+
   my $id = $data->[2] . ':' . $data->[3];
   my $name = $data->[0];
   my $namespace = $data->[1];

@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use DateTime;
@@ -45,14 +48,17 @@ use Text::CSV;
 
 use Getopt::Long qw(GetOptionsFromArray);
 
+with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
-has source_organism_taxonid => (is => 'rw', init_arg => undef);
-has dest_organism_taxonid => (is => 'rw', init_arg => undef);
+has source_organism => (is => 'rw', init_arg => undef);
+has dest_organism => (is => 'rw', init_arg => undef);
 has one_to_one_orthologs => (is => 'rw', init_arg => undef);
 has ev_codes_to_ignore => (is => 'rw', init_arg => undef);
+
+with 'PomBase::Role::OrthologMap';
 
 sub BUILD
 {
@@ -97,6 +103,8 @@ sub BUILD
 
   $self->ev_codes_to_ignore(\%ev_codes_to_ignore);
 
+
+
   if (!defined $ortholog_filename || length $ortholog_filename == 0) {
     die "no --ortholog-file passed to the transfer-gaf-annotations loader\n";
   }
@@ -132,7 +140,9 @@ sub BUILD
 }
 
 
-method process() {
+sub process {
+  my $self = shift;
+
   my $dt = DateTime->now();
 
   open my $fh, '<-' or die;

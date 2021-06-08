@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Text::CSV;
@@ -66,7 +69,10 @@ method _build_extension_processor {
   return $processor;
 }
 
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
   my $chado = $self->chado();
 
   my $rna_level_cvterm = $self->get_cvterm('gene_ex', 'RNA level');

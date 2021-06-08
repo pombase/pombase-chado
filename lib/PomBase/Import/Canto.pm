@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 use charnames ':full';
 use Scalar::Util;
@@ -245,7 +248,13 @@ method _get_real_termid {
   return $real_termid;
 }
 
-func _make_binding_key($gene_uniquename, $with_uniquename, $termid, $pub_uniquename, $extensions) {
+sub _make_binding_key {
+  my $gene_uniquename = shift;
+  my $with_uniquename = shift;
+  my $termid = shift;
+  my $pub_uniquename = shift;
+  my $extensions = shift;
+
   my $ext_string = join '-::-',
     map {
       $_->{relation} . '(' . $_->{rangeValue} . ')'
@@ -557,7 +566,11 @@ method _store_ontology_annotation {
 
 # split any annotation with an extension with a vertical bar into multiple
 # annotations
-method _split_vert_bar($error_prefix, $annotation) {
+sub _split_vert_bar {
+  my $self = shift;
+  my $error_prefix = shift;
+  my $annotation = shift;
+
   my $extension_text = $annotation->{annotation_extension};
 
   if (defined $extension_text) {
@@ -742,7 +755,14 @@ method _process_feature {
 
 }
 
-method _process_annotation($annotation, $session_genes, $session_genotypes, $session_metadata, $canto_session) {
+sub _process_annotation {
+  my $self = shift;
+  my $annotation = shift;
+  my $session_genes = shift;
+  my $session_genotypes = shift;
+  my $session_metadata = shift;
+  my $canto_session = shift;
+
   my $status = delete $annotation->{status};
 
   if ($status eq 'deleted') {
@@ -786,7 +806,10 @@ method _process_annotation($annotation, $session_genes, $session_genotypes, $ses
   }
 }
 
-method _query_genes($session_gene_data) {
+sub _query_genes {
+  my $self = shift;
+  my $session_gene_data = shift;
+
   my %ret = ();
 
   while (my ($key, $details) = each %$session_gene_data) {
@@ -796,7 +819,13 @@ method _query_genes($session_gene_data) {
   return %ret;
 }
 
-method _get_alleles($pubmed_id, $canto_session, $session_genes, $session_allele_data) {
+sub _get_alleles {
+  my $self = shift;
+  my $pubmed_id = shift;
+  my $canto_session = shift;
+  my $session_genes = shift;
+  my $session_allele_data = shift;
+
   my %ret = ();
 
   for my $key (sort keys %$session_allele_data) {
@@ -835,7 +864,11 @@ method _get_alleles($pubmed_id, $canto_session, $session_genes, $session_allele_
   return %ret;
 }
 
-method _get_genotypes($session_alleles, $session_genotype_data) {
+sub _get_genotypes {
+  my $self = shift;
+  my $session_alleles = shift;
+  my $session_genotype_data = shift;
+
   confess "no alleles passed to _get_genotypes()" unless $session_alleles;
   my %ret = ();
 
@@ -871,7 +904,10 @@ method _get_genotypes($session_alleles, $session_genotype_data) {
   return %ret;
 }
 
-method _store_metadata($metadata) {
+sub _store_metadata {
+  my $self = shift;
+  my $metadata = shift;
+
   my $chado = $self->chado();
 
   my $pub_uniquename = $metadata->{curation_pub_id};
@@ -920,7 +956,10 @@ method _store_metadata($metadata) {
   }
 }
 
-method _process_publications($publications) {
+sub _process_publications {
+  my $self = shift;
+  my $publications = shift;
+
   for my $pub_uniquename (keys %$publications) {
     my $data = $publications->{$pub_uniquename};
 
@@ -933,7 +972,10 @@ method _process_publications($publications) {
   }
 }
 
-method _process_sessions($curation_sessions) {
+sub _process_sessions {
+  my $self = shift;
+  my $curation_sessions = shift;
+
   for my $canto_session (keys %$curation_sessions) {
     my %session_data = %{$curation_sessions->{$canto_session}};
 
@@ -985,7 +1027,10 @@ method _process_sessions($curation_sessions) {
   }
 }
 
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
   my $decoder = JSON->new();
 
   my $json_text;
@@ -1008,7 +1053,10 @@ method load($fh) {
   $self->_process_sessions(\%curation_sessions);
 }
 
-method results_summary($results) {
+sub results_summary {
+  my $self = shift;
+  my $results = shift;
+
   return '';
 }
 

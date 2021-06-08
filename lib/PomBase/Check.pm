@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 use feature qw(switch);
 no if $] >= 5.018, warnings => "experimental::smartmatch";
@@ -49,7 +52,9 @@ with 'PomBase::Role::ChadoUser';
 
 has website_config => (is => 'ro');
 
-method _do_query_checks() {
+sub _do_query_checks {
+  my $self = shift;
+
   my @query_checks = @{$self->config()->{check_chado}->{query_checks}};
 
   my $dbh = $self->chado()->storage()->dbh();
@@ -141,7 +146,9 @@ method _do_query_checks() {
   return $seen_failure;
 }
 
-method run() {
+sub run {
+  my $self = shift;
+
   my $seen_failure = 0;
 
   my @check_modules = usesub PomBase::Check;

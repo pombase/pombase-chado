@@ -35,7 +35,12 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
+use feature qw(state);
+
 use Moose::Role;
 
 with 'PomBase::Role::ChadoUser';
@@ -59,7 +64,14 @@ with 'PomBase::Role::ChadoUser';
 
 =cut
 
-method find_chado_feature ($systematic_id, $try_name, $ignore_case, $organism, $feature_types) {
+sub find_chado_feature {
+  my $self = shift;
+  my $systematic_id = shift;
+  my $try_name = shift;
+  my $ignore_case = shift;
+  my $organism = shift;
+  my $feature_types = shift;
+
    my $rs = $self->chado()->resultset('Sequence::Feature');
 
    state $cache = {};

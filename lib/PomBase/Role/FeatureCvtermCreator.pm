@@ -36,7 +36,12 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
+use feature qw(state);
+
 use Moose::Role;
 
 requires 'find_or_create_cvterm';
@@ -46,7 +51,9 @@ has stored_cvterms => (is => 'ro',
                        lazy => 1, builder => '_build_stored_cvterms');
 
 # preinitialise the hash of ranks of the existing feature_cvterms
-method _build_stored_cvterms() {
+sub _build_stored_cvterms {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my $rs = $chado->resultset('Sequence::FeatureCvterm')->search();
@@ -70,7 +77,13 @@ method _build_stored_cvterms() {
   return $stored_cvterms;
 }
 
-method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
+sub create_feature_cvterm {
+  my $self = shift;
+  my $chado_object = shift;
+  my $cvterm = shift;
+  my $pub = shift;
+  my $is_not = shift;
+
   my $rs = $self->chado()->resultset('Sequence::FeatureCvterm');
 
   if (!defined $cvterm) {
@@ -112,7 +125,9 @@ method create_feature_cvterm($chado_object, $cvterm, $pub, $is_not) {
 
 my $current_year = 1900 + (localtime(time))[5];
 
-func _fix_date($date) {
+sub _fix_date {
+  my $date = shift;
+
   if ($date =~ /(\d\d\d\d)-?(\d\d)-?(\d\d)/) {
     if ($1 > $current_year) {
       warn "date is in the future: $date\n";
@@ -130,7 +145,13 @@ func _fix_date($date) {
   }
 }
 
-method add_feature_cvtermprop($feature_cvterm, $name, $value, $rank) {
+sub add_feature_cvtermprop {
+  my $self = shift;
+  my $feature_cvterm = shift;
+  my $name = shift;
+  my $value = shift;
+  my $rank = shift;
+
   if (!defined $name) {
     die "no name for property\n";
   }

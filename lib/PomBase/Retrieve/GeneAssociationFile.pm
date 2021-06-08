@@ -36,7 +36,12 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
+use feature qw(state);
+
 use Moose;
 use feature 'state';
 
@@ -160,7 +165,10 @@ method _get_feature_details {
   return %ret_map;
 }
 
-func _safe_join($expr, $array) {
+sub _safe_join {
+  my $expr = shift;
+  my $array = shift;
+
   if (defined $array) {
     return join $expr, @{$array};
   } else {
@@ -168,7 +176,11 @@ func _safe_join($expr, $array) {
   }
 }
 
-method _get_qualifier($fc, $fc_props) {
+sub _get_qualifier {
+  my $self = shift;
+  my $fc = shift;
+  my $fc_props = shift;
+
   my @qual_bits;
 
   if (defined $fc_props->{qualifier}) {
@@ -186,7 +198,10 @@ method _get_qualifier($fc, $fc_props) {
   join('|', @qual_bits);
 }
 
-func _fix_with($db_name, $with) {
+sub _fix_with {
+  my $db_name = shift;
+  my $with = shift;
+
   if ($with =~ /:/) {
     if ($with =~ /GeneDB_Spombe/) {
       die qq("GeneDB_Spombe:" from "$with" is obsolete\n);
@@ -197,7 +212,10 @@ func _fix_with($db_name, $with) {
   }
 }
 
-method _lookup_term($term_id) {
+sub _lookup_term {
+  my $self = shift;
+  my $term_id = shift;
+
   state $cache = {};
 
   if (exists $cache->{$term_id}) {
@@ -210,7 +228,9 @@ method _lookup_term($term_id) {
   }
 }
 
-func _fix_date($date) {
+sub _fix_date {
+  my $date = shift;
+
   if ($date =~ /(\d+)-(\d+)-(\d+)/) {
     return "$1$2$3";
   } else {
@@ -232,7 +252,10 @@ my @ncrna_so_types = qw(ncRNA snRNA snoRNA rRNA tRNA);
 my %so_type_map = (mRNA => "protein",
                    map { ($_, $_) } @ncrna_so_types);
 
-func _make_nd_rows($feature_details, $gene_aspect_counts) {
+sub _make_nd_rows {
+  my $feature_details = shift;
+  my $gene_aspect_counts = shift;
+
   my @rows = ();
   my %dup_check = ();
 
@@ -270,7 +293,9 @@ func _current_date {
   return sprintf "%04d%02d%02d", ($year+1900), ($month+1), ($day);
 }
 
-method retrieve() {
+sub retrieve {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my $db_name = $self->config()->{database_name};
@@ -473,7 +498,10 @@ method header {
   return '';
 }
 
-method format_result($res) {
+sub format_result {
+  my $self = shift;
+  my $res = shift;
+
   my $line = (join "\t", @$res);
 
   die "dubious $line!" if $line =~ /dubious/;

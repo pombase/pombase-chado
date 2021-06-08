@@ -35,12 +35,19 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+use feature qw(state);
+
 use Moose::Role;
 
 requires 'chado';
 
-method get_db($db_name) {
+sub get_db {
+  my $self = shift;
+  my $db_name = shift;
+
   if (!defined $db_name) {
     croak "undefined value for db name";
   }
@@ -52,7 +59,11 @@ method get_db($db_name) {
            $self->chado()->resultset('General::Db')->find({ name => $db_name }));
 }
 
-method get_dbxref($db_name, $dbxref_name) {
+sub get_dbxref {
+  my $self = shift;
+  my $db_name = shift;
+  my $dbxref_name = shift;
+
   my $db = $self->get_db($db_name);
 
   if (!defined $db) {
@@ -86,3 +97,4 @@ method get_dbxref($db_name, $dbxref_name) {
   return $dbxref;
 }
 
+1;

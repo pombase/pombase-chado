@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 use Bio::Seq;
@@ -49,7 +52,10 @@ use Bio::Seq;
 
 =cut
 
-method translate($seq_str) {
+sub translate {
+  my $self = shift;
+  my $seq_str = shift;
+
   my $seq_obj = Bio::Seq->new(-seq => $seq_str,
                               -alphabet => 'dna');
 

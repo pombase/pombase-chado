@@ -1,4 +1,7 @@
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Test::More tests => 8;
 
 use PomBase::TestUtil;

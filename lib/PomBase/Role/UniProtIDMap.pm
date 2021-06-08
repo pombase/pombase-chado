@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 requires 'chado';
@@ -89,7 +92,10 @@ method _build_uniprot_id_map () {
   return \%id_map;
 }
 
-method lookup_uniprot_id($uniprot_id) {
+sub lookup_uniprot_id {
+  my $self = shift;
+  my $uniprot_id = shift;
+
   $uniprot_id =~ s/^UniProtKB://;
 
   my $local_id = $self->uniprot_id_map()->{$uniprot_id};

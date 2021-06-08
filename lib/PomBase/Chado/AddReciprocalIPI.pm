@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Getopt::Long qw(GetOptionsFromArray);
@@ -87,7 +90,11 @@ method BUILD {
   $self->organism($organism);
 }
 
-method _add_new_ipi($protein_binding_term, $results) {
+sub _add_new_ipi {
+  my $self = shift;
+  my $protein_binding_term = shift;
+  my $results = shift;
+
   my $new_subject = $results->{object_uniquename};
   my $new_object = $results->{subject_uniquename};
 
@@ -115,7 +122,9 @@ method _add_new_ipi($protein_binding_term, $results) {
   }
 }
 
-method process() {
+sub process {
+  my $self = shift;
+
   my $chado = $self->chado();
 
   my $dbh = $chado->storage()->dbh();

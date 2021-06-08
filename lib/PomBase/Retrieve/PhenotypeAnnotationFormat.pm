@@ -36,7 +36,12 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
+use feature qw(state);
+
 use Moose;
 
 use Iterator::Simple qw(iterator);
@@ -129,7 +134,10 @@ method _get_allele_props {
   return %allele_props;
 }
 
-method _get_genotype_allele_props($genotype_allele_rs) {
+sub _get_genotype_allele_props {
+  my $self = shift;
+  my $genotype_allele_rs = shift;
+
   my %genotype_allele_props = ();
 
   my $genotype_allele_prop_rs = $self->chado()->resultset('Sequence::FeatureRelationshipprop')->
@@ -194,7 +202,10 @@ method _get_genotype_details ($genotype_feature_rs) {
   return %ret_map;
 }
 
-method _lookup_term($term_id) {
+sub _lookup_term {
+  my $self = shift;
+  my $term_id = shift;
+
   state $cache = {};
 
   if (exists $cache->{$term_id}) {
@@ -207,7 +218,10 @@ method _lookup_term($term_id) {
   }
 }
 
-func _safe_join($expr, $array) {
+sub _safe_join {
+  my $expr = shift;
+  my $array = shift;
+
   if (defined $array) {
     return join $expr, @{$array};
   } else {
@@ -215,7 +229,9 @@ func _safe_join($expr, $array) {
   }
 }
 
-method retrieve() {
+sub retrieve {
+  my $self = shift;
+
   my $chado = $self->chado();
   my $config = $self->config();
 
@@ -481,7 +497,10 @@ method header {
          )) . "\n";
 }
 
-method format_result($res) {
+sub format_result {
+  my $self = shift;
+  my $res = shift;
+
   my $line = (join "\t", @$res);
 
   die "dubious $line!" if $line =~ /dubious/;

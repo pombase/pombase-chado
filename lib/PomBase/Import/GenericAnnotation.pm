@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Text::CSV;
@@ -78,7 +81,10 @@ method BUILD {
   $self->organism($organism);
 }
 
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
   my $chado = $self->chado();
   my $config = $self->config();
 

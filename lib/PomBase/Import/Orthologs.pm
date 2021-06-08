@@ -35,7 +35,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Text::CSV;
@@ -134,7 +137,10 @@ sub BUILD
  Returns : nothing
 
 =cut
-method load($fh) {
+sub load {
+  my $self = shift;
+  my $fh = shift;
+
   my $chado = $self->chado();
   my $config = $self->config();
 
@@ -236,7 +242,10 @@ method load($fh) {
   return $load_orthologs_count;
 }
 
-method results_summary($results) {
+sub results_summary {
+  my $self = shift;
+  my $results = shift;
+
   return '';
 }
 1;

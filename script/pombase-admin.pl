@@ -1,6 +1,9 @@
 #!/usr/bin/env perl
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Getopt::Long qw(:config pass_through);

@@ -35,10 +35,16 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
-method read_qualifiers($gene_ex_qualifiers) {
+sub read_qualifiers {
+  my $self = shift;
+  my $gene_ex_qualifiers = shift;
+
   open my $fh, '<', $gene_ex_qualifiers
     or die "can't opn $gene_ex_qualifiers: $!";
 

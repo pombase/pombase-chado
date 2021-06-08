@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose::Role;
 
 with 'PomBase::Role::ConfigUser';
@@ -44,7 +47,9 @@ with 'PomBase::Role::ConfigUser';
 has throughput_type_hash => (is => 'ro', lazy => 1,
                              builder => '_build_throughput_type_hash');
 
-method _build_throughput_type_hash() {
+sub _build_throughput_type_hash {
+  my $self = shift;
+
   my $config = $self->config();
 
   my %type_hash = ();
@@ -56,7 +61,10 @@ method _build_throughput_type_hash() {
   return \%type_hash;
 }
 
-method annotation_throughput_type($evidence_code) {
+sub annotation_throughput_type {
+  my $self = shift;
+  my $evidence_code = shift;
+
   return $self->throughput_type_hash()->{$evidence_code};
 }
 

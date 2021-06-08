@@ -35,14 +35,23 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
 use Carp;
 
 use Moose::Role;
 
 requires 'chado';
 
-method store_feature_sequence($feature, $chromosome, $strand, $start, $end, $phase) {
+sub store_feature_sequence {
+  my $self = shift;
+  my $feature = shift;
+  my $chromosome = shift;
+  my $strand = shift;
+  my $start = shift;
+  my $end = shift;
+  my $phase = shift;
+
   my $chr_sequence = $chromosome->residues();
 
   if ($end > length $chr_sequence) {

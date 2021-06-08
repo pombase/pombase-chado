@@ -36,7 +36,10 @@ under the same terms as Perl itself.
 
 =cut
 
-use perl5i::2;
+use strict;
+use warnings;
+use Carp;
+
 use Moose;
 
 use Iterator::Simple qw(iterator);
@@ -77,11 +80,14 @@ method _build_substrates_retriever {
                                          options => \@options);
 }
 
-func _make_key() {
+sub _make_key {
+
   return join '-|-', @_;
 }
 
-method retrieve() {
+sub retrieve {
+  my $self = shift;
+
   my $substrates_iter = $self->substrates_retriever()->retrieve();
 
   my %seen_substrates = ();
@@ -175,6 +181,9 @@ method header () {
   return '';
 }
 
-method format_result($res) {
+sub format_result {
+  my $self = shift;
+  my $res = shift;
+
   return (join "\t", @$res);
 }
