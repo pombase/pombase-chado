@@ -171,8 +171,7 @@ sub find_cvterm_by_name {
   my $self = shift;
   my $cv = shift;
   my $term_name = shift;
-  my $options_ref = shift;
-  my %options = %{$options_ref};
+  my %options = @_;
 
   $options{include_obsolete} //= 0;
   $options{query_synonyms} //= 1;
