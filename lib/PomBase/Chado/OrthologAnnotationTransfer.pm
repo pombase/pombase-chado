@@ -50,13 +50,19 @@ use Getopt::Long qw(GetOptionsFromArray);
 
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
+with 'PomBase::Role::DbQuery';
+with 'PomBase::Role::CvQuery';
+with 'PomBase::Role::OrganismFinder';
 
+has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
 has source_organism => (is => 'rw', init_arg => undef);
 has dest_organism => (is => 'rw', init_arg => undef);
-has one_to_one_orthologs => (is => 'rw', init_arg => undef);
+has source_organism_taxonid => (is => 'rw', init_arg => undef);
+has dest_organism_taxonid => (is => 'rw', init_arg => undef);
 has ev_codes_to_ignore => (is => 'rw', init_arg => undef);
+has terms_to_ignore => (is => 'rw', init_arg => undef);
 
 with 'PomBase::Role::OrthologMap';
 
@@ -67,11 +73,13 @@ sub BUILD
   my $source_organism_taxonid = undef;
   my $dest_organism_taxonid = undef;
   my $ev_codes_to_ignore_string = undef;
+  my $terms_to_ignore_string = undef;
   my $ortholog_filename = undef;
 
   my @opt_config = ("source-organism-taxonid=s" => \$source_organism_taxonid,
                     "dest-organism-taxonid=s" => \$dest_organism_taxonid,
                     "evidence-codes-to-ignore=s" => \$ev_codes_to_ignore_string,
+                    "terms-to-ignore=s" => \$terms_to_ignore_string,
                     "ortholog-file=s" => \$ortholog_filename,
                   );
 
@@ -79,18 +87,36 @@ sub BUILD
     croak "option parsing failed";
   }
 
+
   if (!defined $source_organism_taxonid || length $source_organism_taxonid == 0) {
-    die "no --source-organism-taxonid passed to the transfer-gaf-annotations loader\n";
+    die "no --source-organism-taxonid passed to the TransferNamesAndProducts loader\n";
+  }
+
+  my $source_organism = $self->find_organism_by_taxonid($source_organism_taxonid);
+
+  if (!defined $source_organism) {
+    die "can't find organism with taxon ID: $source_organism_taxonid\n";
   }
 
   $self->source_organism_taxonid($source_organism_taxonid);
+  $self->source_organism($source_organism);
 
+  if (!defined $dest_organism_taxonid || length $dest_organism_taxonid == 0) {
+    die "no --dest-organism-taxonid passed to the TransferNamesAndProducts loader\n";
+  }
+
+  my $dest_organism = $self->find_organism_by_taxonid($dest_organism_taxonid);
+
+  if (!defined $dest_organism) {
+    die "can't find organism with taxon ID: $dest_organism_taxonid\n";
+  }
+
+  $self->dest_organism_taxonid($dest_organism_taxonid);
+  $self->dest_organism($dest_organism);
 
   if (!defined $dest_organism_taxonid || length $dest_organism_taxonid == 0) {
     die "no --dest-organism-taxonid passed to the transfer-gaf-annotations loader\n";
   }
-
-  $self->dest_organism_taxonid($dest_organism_taxonid);
 
 
   my %ev_codes_to_ignore = ();
@@ -104,39 +130,26 @@ sub BUILD
   $self->ev_codes_to_ignore(\%ev_codes_to_ignore);
 
 
+  my %terms_to_ignore = ();
 
-  if (!defined $ortholog_filename || length $ortholog_filename == 0) {
-    die "no --ortholog-file passed to the transfer-gaf-annotations loader\n";
+  if (defined $terms_to_ignore_string && length $terms_to_ignore_string > 0) {
+    map {
+      my $term_id = $_;
+      $terms_to_ignore{$term_id} = 1;
+
+      my $ignore_term = $self->find_cvterm_by_term_id($term_id);
+
+      my @child_terms = $self->all_child_terms($ignore_term, 'is_a');
+
+      map {
+        my $id = $_->dbxref()->db()->name() . ':' . $_->dbxref()->accession();
+        $terms_to_ignore{$id} = 1;
+      } @child_terms;
+
+    } split /,/, $terms_to_ignore_string;
   }
 
-  my %identifier_counts = ();
-
-  my @raw_ortholog_rows = ();
-
-  open my $orth_file, '<', $ortholog_filename or
-    die qq|can't open "$ortholog_filename": $!\n|;
-
-  while (defined (my $line = <$orth_file>)) {
-    chomp $line;
-
-    my @bits = split /\t/, $line;
-
-    if (@bits >= 2) {
-      $identifier_counts{$bits[0]}++;
-      $identifier_counts{$bits[1]}++;
-      push @raw_ortholog_rows, \@bits;
-    }
-  }
-
-  my %one_to_one_orthologs = ();
-
-  map {
-    if ($identifier_counts{$_->[0]} == 1 && $identifier_counts{$_->[1]} == 1) {
-      $one_to_one_orthologs{$_->[1]} = $_->[0];
-    }
-  } @raw_ortholog_rows;
-
-  $self->one_to_one_orthologs(\%one_to_one_orthologs);
+  $self->terms_to_ignore(\%terms_to_ignore);
 }
 
 
@@ -154,7 +167,8 @@ sub process {
   $csv->column_names(@column_names);
 
   my %ev_codes_to_ignore = %{$self->ev_codes_to_ignore()};
-  my %one_to_one_orthologs = %{$self->one_to_one_orthologs()};
+  my %terms_to_ignore = %{$self->terms_to_ignore()};
+  my %one_to_one_orthologs = $self->ortholog_map_reverse();
 
   while (defined (my $line = $fh->getline())) {
     next if $line =~ /^\s*!/;
@@ -177,7 +191,7 @@ sub process {
 
     $taxonid =~ s/taxon://ig;
 
-    if (!$taxonid->is_integer()) {
+    if ($taxonid !~ /^\d+$/) {
       warn "Taxon is not a number: $taxonid - skipping\n";
       next;
     }
@@ -190,6 +204,10 @@ sub process {
     my $evidence_code = $columns{Evidence_code};
 
     if ($ev_codes_to_ignore{$evidence_code}) {
+      next;
+    }
+
+    if ($terms_to_ignore{$columns{GO_id}}) {
       next;
     }
 

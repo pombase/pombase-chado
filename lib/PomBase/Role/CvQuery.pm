@@ -351,5 +351,19 @@ sub find_cvterm_by_term_id {
   }
 }
 
+sub all_child_terms {
+  my $self = shift;
+  my $term = shift;
+  my $rel_name = shift;
+
+  return map {
+    $_->subject();
+  } $self->chado()->resultset('Cv::Cvtermpath')
+      ->search({ 'object_id' => $term->cvterm_id(),
+                 'type.name' => $rel_name, },
+               { join => [ { subject => { dbxref => 'db' }, },
+                           'type' ] })
+      ->all();
+}
 
 1;

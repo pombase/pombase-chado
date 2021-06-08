@@ -56,13 +56,15 @@ with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
-with 'PomBase::Role::OrthologMap';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
 has source_organism => (is => 'rw', init_arg => undef);
 has dest_organism => (is => 'rw', init_arg => undef);
+
+with 'PomBase::Role::OrthologMap';
+
 has existing_names => (is => 'rw', init_arg => undef);
 has existing_products => (is => 'rw', init_arg => undef);
 

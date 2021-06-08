@@ -42,6 +42,14 @@ sub usage
 
 usage:
   $0 <args>
+
+  $0 <config_file> transfer-gaf-annotations \
+    --source-organism-taxonid=<taxon_id_a> -
+    --dest-organism-taxonid=<taxon_id_b> \
+    --evidence-codes-to-keep=<comma_sep_list> \
+    --terms-to-ignore=<comma_sep_list> \
+    <host> <database_name> <username> <password> \
+       < org_a_annotations.gaf > org_b_annotations.gaf
 );
 }
 
@@ -88,6 +96,7 @@ my %process_modules = (
   'uniprot-ids-to-local' => 'PomBase::Chado::UniProtIDsToLocal',
   'add-reciprocal-ipi-annotations' => 'PomBase::Chado::AddReciprocalIPI',
   'transfer-names-and-products' => 'PomBase::Chado::TransferNamesAndProducts',
+  'transfer-gaf-annotations' => 'PomBase::Chado::OrthologAnnotationTransfer',
 );
 
 my $process_module = $process_modules{$process_type};
