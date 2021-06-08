@@ -39,6 +39,10 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+
+use Try::Tiny;
+
 use Moose;
 
 use Text::CSV;
@@ -64,7 +68,8 @@ has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
 
 has gene_ex_qualifiers_array => (is => 'rw', init_arg => undef);
 
-method _build_gene_ex_qualifiers {
+sub _build_gene_ex_qualifiers {
+  my $self = shift;
   my @gene_ex_qualifiers = @{$self->gene_ex_qualifiers_array()};
 
   my %gene_ex_qualifiers = map { ($_, 1) } @gene_ex_qualifiers;
@@ -73,7 +78,8 @@ method _build_gene_ex_qualifiers {
 }
 has gene_ex_qualifiers => (is => 'rw', init_arg => undef, lazy_build => 1);
 
-method _build_extension_processor {
+sub _build_extension_processor {
+  my $self = shift;
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -81,7 +87,8 @@ method _build_extension_processor {
   return $processor;
 }
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $gene_ex_qualifiers_file = undef;
 
   my $gene_ex_qualifier_util = PomBase::Chado::GeneExQualifiersUtil->new();
@@ -115,11 +122,11 @@ sub load {
   my $tsv = Text::CSV->new({ sep_char => "\t" });
 
   while (my $columns_ref = $tsv->getline($fh)) {
-    if (@$columns_ref == 1 && $columns_ref->[0]->trim()->length() == 0) {
+    if (@$columns_ref == 1 && trim($columns_ref->[0])->length() == 0) {
       next;
     }
     my ($systematic_id, $gene_name, $type, $evidence_code, $level, $extension, $pubmedid, $taxonid, $date) =
-      map { $_->trim() || undef } @$columns_ref;
+      map { trim($_) || undef } @$columns_ref;
 
     if ($systematic_id =~ /^#/ ||
         ($. == 1 && $systematic_id =~ /systematic.id/i)) {
@@ -221,3 +228,5 @@ sub load {
     }
   }
 }
+
+1;

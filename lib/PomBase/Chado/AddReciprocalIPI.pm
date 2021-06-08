@@ -65,7 +65,8 @@ sub _make_key {
   return join '-|-', @_;
 }
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $organism_taxonid = undef;
 
   my @opt_config = ('organism-taxonid=s' => \$organism_taxonid);

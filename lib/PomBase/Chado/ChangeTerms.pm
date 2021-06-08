@@ -38,6 +38,8 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+
 use Moose;
 
 use Getopt::Long qw(GetOptionsFromArray);
@@ -53,7 +55,8 @@ has termid_map => (is => 'rw', init_arg => undef);
 # don't remap annotation for any feature_cvterms that have this property
 has exclude_by_fc_prop => (is => 'rw', init_arg => undef);
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $mapping_file = undef;
   my $exclude_by_fc_prop = undef;
 
@@ -79,7 +82,7 @@ method BUILD {
 
   while (defined (my $line = <$mapping_fh>)) {
     $line =~ s/!.*//;
-    $line = $line->trim();
+    trim($line);
 
     if ($line =~ /^(\w+:\d+)\s+(\w+:\d+)/) {
       my $from_termid = $1;

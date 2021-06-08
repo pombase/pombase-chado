@@ -12,8 +12,10 @@ use PomBase::TestBase;
 my $test_util = PomBase::TestUtil->new();
 my $test = PomBase::TestBase->with_traits(qw(Role::OrganismFinder Role::DbQuery Role::CvQuery))->new(chado => $test_util->chado());
 
-func check_organism($org)
+sub check_organism
 {
+  my $org = shift;
+
   is($org->genus(), 'Schizosaccharomyces');
   is($org->species(), 'pombe');
   is($org->common_name(), 'pombe');

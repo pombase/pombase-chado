@@ -39,6 +39,10 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+
+use Try::Tiny;
+
 use Moose;
 
 use Text::CSV;
@@ -59,7 +63,8 @@ has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
 has organism => (is => 'rw', init_arg => undef);
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $organism_taxonid = undef;
 
   my @opt_config = ("organism-taxonid=s" => \$organism_taxonid);
@@ -115,12 +120,12 @@ sub load {
 
     @columns{ $csv->column_names() } = @fields;
 
-    my $systematic_id = $columns{"systematic_id"}->trim();
-    my $feature_name = $columns{"feature_name"}->trim();
-    my $term_id = $columns{"term_id"}->trim();
-    my $evidence_code = $columns{"evidence_code"}->trim();
-    my $publication_id = $columns{"publication_id"}->trim();
-    my $date = $columns{"date"}->trim();
+    my $systematic_id = trim($columns{"systematic_id"});
+    my $feature_name = trim($columns{"feature_name"})
+    my $term_id = trim($columns{"term_id"});
+    my $evidence_code = trim($columns{"evidence_code"});
+    my $publication_id = trim($columns{"publication_id"});
+    my $date = trim($columns{"date"});
 
     my $long_evidence = undef;
     if ($evidence_code) {

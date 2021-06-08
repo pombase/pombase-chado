@@ -39,6 +39,8 @@ use strict;
 use warnings;
 use Carp;
 
+use Try::Tiny;
+
 use feature qw(state);
 
 use Moose::Role;

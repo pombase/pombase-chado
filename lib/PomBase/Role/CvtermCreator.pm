@@ -39,6 +39,8 @@ use strict;
 use warnings;
 use Carp;
 
+use Try::Tiny;
+
 use Moose::Role;
 
 requires 'get_cv';

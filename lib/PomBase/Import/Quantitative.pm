@@ -39,6 +39,10 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+
+use Try::Tiny;
+
 use Moose;
 
 use Text::CSV;
@@ -61,7 +65,8 @@ has options => (is => 'ro', isa => 'ArrayRef');
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
-method _build_extension_processor {
+sub _build_extension_processor {
+  my $self = shift;
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -219,3 +224,5 @@ sub load {
     $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
   }
 }
+
+1;

@@ -39,6 +39,10 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+
+use Try::Tiny;
+
 use Moose;
 
 use Text::CSV;
@@ -62,7 +66,8 @@ has options => (is => 'ro', isa => 'ArrayRef');
 has organism_prefix => (is => 'rw', init_arg => undef);
 
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $organism_prefix = undef;
 
   my @opt_config = ('organism-prefix=s' => \$organism_prefix);
@@ -93,7 +98,7 @@ sub load {
       die qq|input file needs exactly two columns - error reading "|,
         join " ", @$columns_ref;
     }
-    my ($gene_id, $pathway_id) = map { $_->trim() || undef } @$columns_ref;
+    my ($gene_id, $pathway_id) = map { trim($_) || undef } @$columns_ref;
 
     my $organism_prefix = $self->organism_prefix();
     $gene_id =~ s/^$organism_prefix://;

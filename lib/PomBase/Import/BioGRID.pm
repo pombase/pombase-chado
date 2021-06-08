@@ -40,6 +40,8 @@ use strict;
 use warnings;
 use Carp;
 
+use Try::Tiny;
+
 use Moose;
 
 use Text::CSV;
@@ -70,7 +72,8 @@ has source_database_filter => (is => 'rw', init_arg => undef, isa => 'ArrayRef')
 has interaction_note_filter => (is => 'rw', init_arg => undef);
 has annotation_date => (is => 'rw', init_arg => undef);
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $organism_taxonid_filter = undef;
   my $evidence_code_filter = undef;
   my $source_database_filter = undef;

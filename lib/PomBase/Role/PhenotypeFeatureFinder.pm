@@ -55,7 +55,8 @@ requires 'genotype_cache';
 
 has allele_types => (is => 'rw', init_arg => undef, lazy_build => 1);
 
-method _build_allele_types {
+sub _build_allele_types {
+  my $self = shift;
   my %allele_types = ();
 
   my $allele_types_rs =
@@ -149,7 +150,8 @@ sub get_genotype {
   return $genotype;
 }
 
-method _get_genotype_suffix_pg {
+sub _get_genotype_suffix_pg {
+  my $self = shift;
   my $dbh = shift;
   my $prefix = shift;
 
@@ -165,7 +167,8 @@ method _get_genotype_suffix_pg {
   return $data[0] // 1;
 }
 
-method _get_genotype_suffix_sqlite {
+sub _get_genotype_suffix_sqlite {
+  my $self = shift;
   my $dbh = shift;
   my $prefix = shift;
 
@@ -195,7 +198,8 @@ method _get_genotype_suffix_sqlite {
 
 =cut
 
-method get_genotype_uniquename {
+sub get_genotype_uniquename {
+  my $self = shift;
   my $dbh = $self->chado()->storage()->dbh();
 
   my $database_name = $self->config()->{database_name};
@@ -264,7 +268,7 @@ sub fix_expression_allele {
   }
 }
 
-my $whitespace_re = "\\s\N{ZERO WIDTH SPACE}";
+my $whitespace_re = qr([\s\N{ZERO WIDTH SPACE}]+);
 
 sub make_allele_data_from_display_name {
   my $self = shift;
@@ -274,9 +278,9 @@ sub make_allele_data_from_display_name {
 
   if ($display_name =~ /^\s*(.+?)\((.*)\)/) {
     my $name = $1;
-    $name = $name->trim($whitespace_re);
+    $name =~ s/^$whitespace_re|$whitespace_re$//g;
     my $description = $2;
-    $description = $description->trim($whitespace_re);
+    $description =~ s/^$whitespace_re|$whitespace_re$//g;
     $self->fix_expression_allele($gene_feature->name(), \$name, \$description, $expression_ref);
     return $self->make_allele_data($name, $description, $gene_feature);
   } else {

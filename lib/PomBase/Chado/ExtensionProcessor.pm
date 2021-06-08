@@ -39,6 +39,11 @@ use strict;
 use warnings;
 use Carp;
 
+use Try::Tiny;
+use Text::Trim qw(trim);
+
+use Scalar::Util qw(looks_like_number);
+
 use feature qw(state);
 
 use Moose;
@@ -66,7 +71,9 @@ has isa_cvterm => (is => 'ro', init_arg => undef, lazy_build => 1);
 my $extension_cv_name = 'PomBase annotation extension terms';
 my $extension_rel_status = 'extension_relations_status';
 
-method _build_cache {
+sub _build_cache {
+  my $self = shift;
+
   if ($self->pre_init_cache()) {
     my $extension_cv =
       $self->chado()->resultset('Cv::Cv')->find({ name => $extension_cv_name });
@@ -92,7 +99,8 @@ method _build_cache {
   }
 }
 
-method _build_isa_cvterm {
+sub _build_isa_cvterm {
+  my $self = shift;
   return $self->get_relation_cvterm('is_a');
 }
 
@@ -506,7 +514,7 @@ sub _process_identifier {
   my $rel_name = shift;
   my $arg = shift;
 
-  my $identifier = $arg->trim();
+  my $identifier = trim($arg);
 
   my $nested_extension_bit = undef;
   if ($identifier =~ /(.+?)(\^.*)/) {
@@ -542,7 +550,7 @@ sub _process_identifier {
         $identifier = $1;
       } else {
         if (($rel_name eq 'has_penetrance' || $rel_name eq 'occupancy') &&
-            ($identifier =~ /^[><]?~?(.*?)\%?$/ && $1->is_number() ||
+            ($identifier =~ /^[><]?~?(.*?)\%?$/ && looks_like_number($1) ||
              $identifier =~ /^~?\d+(?:\.\d+)?\%?-~?\d+(?:\.\d+)?\%?$/)) {
           # the "identifier" is the percentage value
           $identifier =~ s/(\d+)\%/$1/g;

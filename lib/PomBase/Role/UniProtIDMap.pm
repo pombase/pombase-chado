@@ -47,7 +47,8 @@ requires 'config';
 has uniprot_id_map => (is => 'rw', init_arg => undef,
                        lazy_build => 1);
 
-method _build_uniprot_id_map () {
+sub _build_uniprot_id_map () {
+  my $self = shift;
   my $chado = $self->chado();
 
   my %id_map = ();
@@ -106,3 +107,5 @@ sub lookup_uniprot_id {
     return undef;
   }
 }
+
+1;

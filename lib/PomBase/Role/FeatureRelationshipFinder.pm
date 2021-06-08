@@ -82,3 +82,5 @@ sub get_feature_relationship {
 
   return $rs->all();
 }
+
+1;

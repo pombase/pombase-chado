@@ -40,6 +40,9 @@ use strict;
 use warnings;
 use Carp;
 
+use Try::Tiny;
+use Capture::Tiny qw(capture);
+
 use Moose;
 use charnames ':full';
 use Scalar::Util;
@@ -90,7 +93,8 @@ has db_prefix => (is => 'rw', init_arg => undef);
 has seen_binding_annotations => (is => 'rw', init_arg => undef, default => sub { {} });
 has possible_reciprocal_binding_annotations => (is => 'rw', init_arg => undef, default => sub { [] });
 
-method _build_extension_processor {
+sub _build_extension_processor {
+  my $self = shift;
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -98,7 +102,8 @@ method _build_extension_processor {
   return $processor;
 }
 
-method _build_genotype_cache {
+sub _build_genotype_cache {
+  my $self = shift;
   return PomBase::Chado::GenotypeCache->new(chado => $self->chado());
 }
 
@@ -136,7 +141,8 @@ sub BUILD
   $self->db_prefix($db_prefix);
 }
 
-method _store_interaction_annotation {
+sub _store_interaction_annotation {
+  my $self = shift;
   my %args = @_;
 
   my $annotation_type = $args{annotation_type};
@@ -196,7 +202,7 @@ sub _unreplace_commas
   return $string;
 }
 
-my $whitespace_re = "\\s\N{ZERO WIDTH SPACE}";
+my $whitespace_re = qr([\s\N{ZERO WIDTH SPACE}]+);
 
 sub _extensions_by_type
 {
@@ -210,11 +216,13 @@ sub _extensions_by_type
 
   my @bits = split /,/, $extension_copy;
   for my $bit (@bits) {
-    $bit = $bit->trim($whitespace_re);
+    $bit =~ s/^$whitespace_re|$whitespace_re$//g;
     $bit = _unreplace_commas($bit);
     if ($bit =~/(.*?)=(.*)/) {
-      my $key = $1->trim($whitespace_re);
-      my $value = $2->trim($whitespace_re);
+      my $key = $1;
+      $key =~ s/^$whitespace_re|$whitespace_re$//g;
+      my $value = $2;
+      $value =~ s/^$whitespace_re|$whitespace_re$//g;
 
       if ($value =~ /\(/ && $value !~ /\(.*\)/) {
         die "unmatched parenthesis in $key=$value\n";
@@ -229,7 +237,8 @@ sub _extensions_by_type
   return %by_type;
 }
 
-method _get_real_termid {
+sub _get_real_termid {
+  my $self = shift;
   my $termid = shift;
 
   my $cvterm = $self->find_cvterm_by_term_id($termid);
@@ -263,7 +272,8 @@ sub _make_binding_key {
     ($gene_uniquename, $with_uniquename, $termid, $pub_uniquename, $ext_string);
 }
 
-method _store_ontology_annotation {
+sub _store_ontology_annotation {
+  my $self = shift;
   my %args = @_;
 
   my $type = $args{type};
@@ -595,7 +605,8 @@ sub _split_vert_bar {
   }
 }
 
-method _process_feature {
+sub _process_feature {
+  my $self = shift;
   my $annotation = clone(shift);
   my $session_metadata = shift;
   my $feature = shift;

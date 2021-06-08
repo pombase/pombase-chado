@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Carp;
 
+use Try::Tiny;
 
 use Test::More tests => 13;
 

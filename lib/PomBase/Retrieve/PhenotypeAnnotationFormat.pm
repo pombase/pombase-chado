@@ -86,7 +86,8 @@ sub _build_fypo_extension_termids
   return \%fypo_extension_termids
 }
 
-method _get_allele_gene_map {
+sub _get_allele_gene_map {
+  my $self = shift;
   my %allele_gene_map = ();
 
   my $allele_gene_rs = $self->chado()->resultset('Sequence::FeatureRelationship')->
@@ -120,7 +121,8 @@ method _get_allele_gene_map {
   return %allele_gene_map;
 }
 
-method _get_allele_props {
+sub _get_allele_props {
+  my $self = shift;
   my %allele_props = ();
 
   my $allele_props_rs =
@@ -159,7 +161,8 @@ sub _get_genotype_allele_props {
   return %genotype_allele_props;
 }
 
-method _get_genotype_details ($genotype_feature_rs) {
+sub _get_genotype_details ($genotype_feature_rs) {
+  my $self = shift;
   my %allele_gene_map = $self->_get_allele_gene_map();
 
   my %allele_props = $self->_get_allele_props();
@@ -472,7 +475,8 @@ sub retrieve {
   };
 }
 
-method header {
+sub header {
+  my $self = shift;
   return (join "\t",
           ('#Database name',
            'Gene systematic ID',
@@ -507,3 +511,5 @@ sub format_result {
 
   return (join "\t", @$res);
 }
+
+1;

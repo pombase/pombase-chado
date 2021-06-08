@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Carp;
 
+use Capture::Tiny qw(capture);
 
 use PomBase::TestUtil;
 use PomBase::Chado::ChangeTerms;

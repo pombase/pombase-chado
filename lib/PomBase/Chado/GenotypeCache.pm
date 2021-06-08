@@ -94,8 +94,11 @@ sub make_key {
     } @$expression_and_allele_ids) . '))';
 }
 
-func make_key_from_allele_objects($genotype_name, $genotype_background,
-                                  $alleles_and_expression) {
+sub make_key_from_allele_objects {
+  my $genotype_name = shift;
+  my $genotype_background = shift;
+  my $alleles_and_expression = shift;
+
   return make_key($genotype_name, $genotype_background,
                   [map {
                     { expression => $_->{expression},
@@ -104,7 +107,8 @@ func make_key_from_allele_objects($genotype_name, $genotype_background,
                   } @{$alleles_and_expression}]);
 }
 
-method _build_cache {
+sub _build_cache {
+  my $self = shift;
   my $chado = $self->chado();
 
   my $dbh = $chado->storage()->dbh();

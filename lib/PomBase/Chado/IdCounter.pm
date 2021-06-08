@@ -75,3 +75,5 @@ sub get_dbxref_id {
 
   return $new_cvterm_ids{$db_name}++;
 }
+
+1;

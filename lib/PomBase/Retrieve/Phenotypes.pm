@@ -68,7 +68,8 @@ sub retrieve {
   };
 }
 
-method header {
+sub header {
+  my $self = shift;
   return '';
 }
 
@@ -78,3 +79,5 @@ sub format_result {
 
   return join "\t", @$res;
 }
+
+1;

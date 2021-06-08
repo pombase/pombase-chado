@@ -104,7 +104,8 @@ WHERE ext_term_cv.name = 'PomBase annotation extension terms'
   };
 }
 
-method header {
+sub header {
+  my $self = shift;
   return '';
 }
 

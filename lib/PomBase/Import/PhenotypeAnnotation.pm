@@ -40,6 +40,11 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+use Try::Tiny;
+
+use Capture::Tiny qw(capture);
+
 use Moose;
 use Try::Tiny;
 use Text::CSV;
@@ -100,7 +105,8 @@ sub BUILD
   $self->throughput_type($throughput_type);
 }
 
-method _build_extension_processor {
+sub _build_extension_processor {
+  my $self = shift;
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -108,7 +114,8 @@ method _build_extension_processor {
   return $processor;
 }
 
-method _build_genotype_cache {
+sub _build_genotype_cache {
+  my $self = shift;
   return PomBase::Chado::GenotypeCache->new(chado => $self->chado());
 }
 
@@ -200,7 +207,7 @@ sub load {
                         reference taxon date homozygous_diploid illegal_extra_column));
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
-    my $gene_systemtic_id = $columns_ref->{"gene_systemtic_id"}->trim();
+    my $gene_systemtic_id = trim($columns_ref->{"gene_systemtic_id"});
 
     if ($gene_systemtic_id =~ /^#/ ||
         ($fh->input_line_number() == 1 && $gene_systemtic_id =~ /Gene .*ID|systematic/)) {

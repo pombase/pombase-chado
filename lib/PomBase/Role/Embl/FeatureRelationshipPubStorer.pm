@@ -58,3 +58,5 @@ sub store_feature_rel_pub {
 
   return $featurerel_rs->create({ %create_args });
 }
+
+1;

@@ -40,6 +40,8 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+
 use Moose;
 
 use Iterator::Simple qw(iterator);
@@ -57,7 +59,8 @@ with 'PomBase::Retriever';
 has gaf_retriever => (is => 'rw', init_arg => undef,
                      lazy_build => 1);
 
-method _build_gaf_retriever {
+sub _build_gaf_retriever {
+  my $self = shift;
   my @options = @{$self->options()};
 
   push @options, '--filter-by-term=GO:0005515';
@@ -71,7 +74,8 @@ method _build_gaf_retriever {
 has substrates_retriever => (is => 'rw', init_arg => undef,
                      lazy_build => 1);
 
-method _build_substrates_retriever {
+sub _build_substrates_retriever {
+  my $self = shift;
   my @options = @{$self->options()};
 
   return
@@ -117,7 +121,7 @@ sub retrieve {
         if ($row) {
           my ($gene_identifier, $with_identifier, $pub_uniquename,
               $evidence_code) =
-            ($row->[1], $row->[7]->trim(), $row->[5], $row->[6]);
+            ($row->[1], trim($row->[7]), $row->[5], $row->[6]);
 
           if ($evidence_code ne 'IPI') {
             goto ROW;
@@ -176,7 +180,8 @@ sub retrieve {
   }
 };
 
-method header () {
+sub header () {
+  my $self = shift;
   # no header
   return '';
 }
@@ -187,3 +192,5 @@ sub format_result {
 
   return (join "\t", @$res);
 }
+
+1;

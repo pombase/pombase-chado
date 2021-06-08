@@ -41,6 +41,8 @@ use strict;
 use warnings;
 use Carp;
 
+use Try::Tiny;
+
 use Moose;
 
 use Text::CSV;
@@ -63,7 +65,8 @@ has feature_name_column => (is => 'rw', init_arg => undef);
 has synonym_column => (is => 'rw', init_arg => undef);
 
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $feature_uniquename_column = undef;
   my $feature_name_column = undef;
   my $synonym_column = undef;

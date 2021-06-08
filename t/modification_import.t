@@ -2,6 +2,8 @@ use strict;
 use warnings;
 use Carp;
 
+use Capture::Tiny qw(capture);
+
 use Test::More tests => 8;
 
 use PomBase::TestUtil;

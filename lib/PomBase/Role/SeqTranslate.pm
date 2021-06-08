@@ -61,3 +61,5 @@ sub translate {
 
   return $seq_obj->translate()->seq();
 }
+
+1;

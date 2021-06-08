@@ -58,7 +58,8 @@ with 'PomBase::Role::CvQuery';
 
 my $TEST_CONFIG_FILE = 't/test_config.yaml';
 
-method _make_test_db {
+sub _make_test_db {
+  my $self = shift;
   my ($fh, $temp_db) = tempfile(UNLINK => 1);
   system "sqlite3 $temp_db < t/chado_schema.sql";
   return Bio::Chado::Schema->connect("dbi:SQLite:$temp_db");
@@ -259,7 +260,8 @@ sub _load_test_features {
   $self->_load_featurelocs($chado, $test_data->{featurelocs});
 }
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my ($fh, $temp_db) = tempfile();
 
   my $test_config = LoadFile($TEST_CONFIG_FILE);

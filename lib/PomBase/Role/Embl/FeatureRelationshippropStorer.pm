@@ -124,3 +124,5 @@ sub store_feature_relationshipprop {
                rank => $rank,
              });
 }
+
+1;

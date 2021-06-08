@@ -84,7 +84,8 @@ sub BUILDARGS
   return \%args;
 }
 
-method _get_feature_details {
+sub _get_feature_details {
+  my $self = shift;
   my %synonyms = ();
 
   my $syn_rs = $self->chado()->resultset('Sequence::FeatureSynonym')->
@@ -288,7 +289,7 @@ sub _make_nd_rows {
   return \@rows;
 }
 
-func _current_date {
+sub _current_date {
   my($day, $month, $year)=(localtime)[3,4,5];
   return sprintf "%04d%02d%02d", ($year+1900), ($month+1), ($day);
 }
@@ -494,7 +495,8 @@ me.cvterm_id in
   };
 }
 
-method header {
+sub header {
+  my $self = shift;
   return '';
 }
 
@@ -508,3 +510,5 @@ sub format_result {
 
   return (join "\t", @$res);
 }
+
+1;

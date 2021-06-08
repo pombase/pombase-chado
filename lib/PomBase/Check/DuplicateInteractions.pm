@@ -188,3 +188,5 @@ sub check {
 
   return $success;
 }
+
+1;

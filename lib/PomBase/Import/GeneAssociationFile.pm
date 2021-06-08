@@ -39,6 +39,9 @@ use strict;
 use warnings;
 use Carp;
 
+use Try::Tiny;
+use Capture::Tiny qw(capture);
+
 use Moose;
 
 use Text::CSV;
@@ -72,7 +75,8 @@ has term_id_filter_values => (is => 'rw', isa => 'HashRef',
 
 has extension_processor => (is => 'ro', init_arg => undef, lazy_build => 1);
 
-method _build_extension_processor {
+sub _build_extension_processor {
+  my $self = shift;
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -105,7 +109,8 @@ sub _load_first_column {
   return %ret_val;
 }
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $assigned_by_filter = '';
   my $taxon_filter = '';
   my $remove_existing = 0;
@@ -464,3 +469,5 @@ sub results_summary {
 
   return $ret_val;
 }
+
+1;

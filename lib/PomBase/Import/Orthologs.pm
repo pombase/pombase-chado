@@ -39,6 +39,10 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+
+use Try::Tiny;
+
 use Moose;
 
 use Text::CSV;
@@ -158,7 +162,7 @@ sub load {
   my $null_pub = $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
 
   ROW: while (my $columns_ref = $csv->getline_hr($fh)) {
-    my $org1_identifier = $columns_ref->{"org1_identifier"}->trim();
+    my $org1_identifier = trim($columns_ref->{"org1_identifier"});
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
 
     if (!defined $org2_identifiers) {
@@ -169,7 +173,7 @@ sub load {
     my %org2_identifiers = ();
 
     map {
-      my $trimmed_identifier = $_->trim();
+      my $trimmed_identifier = trim($_);
       if (exists $org2_identifiers{$trimmed_identifier}) {
         warn "line $.: Skipping ortholog mentioned twice in input file: " .
           "$org1_identifier <-> $trimmed_identifier\n";

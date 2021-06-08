@@ -134,7 +134,8 @@ select fc.feature_cvterm_id, gene.uniquename, gene.name, db.name || ':' || x.acc
   };
 }
 
-method header {
+sub header {
+  my $self = shift;
   return '';
 }
 

@@ -80,3 +80,5 @@ EOQ
   my $sth = $dbh->prepare($change_uniprot_ids);
   $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 }
+
+1;

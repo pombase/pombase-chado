@@ -39,6 +39,10 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+
+use Try::Tiny;
+
 use Moose;
 
 use Text::CSV;
@@ -63,7 +67,8 @@ has organism => (is => 'rw', init_arg => undef);
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
-method _build_extension_processor {
+sub _build_extension_processor {
+  my $self = shift;
   my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
                                                           config => $self->config(),
                                                           pre_init_cache => 1,
@@ -71,7 +76,8 @@ method _build_extension_processor {
   return $processor;
 }
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
 
 }
 
@@ -87,7 +93,7 @@ sub load {
 
   while (my $columns_ref = $tsv->getline($fh)) {
     my ($systematic_id, $gene_name, $psi_mod_term_id, $evidence_code, $residue, $extension, $pubmedid, $taxonid, $date) =
-      map { $_->trim() || undef } @$columns_ref;
+      map { trim($_) || undef } @$columns_ref;
 
     if (!defined $systematic_id) {
       die qq(mandatory column value for systematic ID missing at line $.\n);
@@ -167,3 +173,5 @@ sub load {
     }
   }
 }
+
+1;

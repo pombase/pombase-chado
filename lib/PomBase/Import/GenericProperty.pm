@@ -40,6 +40,8 @@ use strict;
 use warnings;
 use Carp;
 
+use Try::Tiny;
+
 use Moose;
 
 use Text::CSV;
@@ -63,7 +65,8 @@ has feature_uniquename_column => (is => 'rw', init_arg => undef);
 has feature_name_column => (is => 'rw', init_arg => undef);
 has property_column => (is => 'rw', init_arg => undef);
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $organism_taxonid = undef;
   my $property_name = undef;
   my $feature_uniquename_column = undef;

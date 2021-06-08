@@ -242,3 +242,5 @@ sub process {
     print "$out_line\n";
   }
 }
+
+1;

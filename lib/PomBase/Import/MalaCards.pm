@@ -39,6 +39,8 @@ use strict;
 use warnings;
 use Carp;
 
+use Text::Trim qw(trim);
+
 use Moose;
 
 use Text::CSV;
@@ -61,7 +63,8 @@ has options => (is => 'ro', isa => 'ArrayRef');
 has destination_taxonid => (is => 'rw', init_arg => undef);
 has human_ortholog_map => (is => 'rw', init_arg => undef);
 
-method BUILD {
+sub BUILD {
+  my $self = shift;
   my $destination_taxonid = undef;
 
   my @opt_config = ('destination-taxonid=s' => \$destination_taxonid);
@@ -136,7 +139,7 @@ sub load {
   my %seen_annotations = ();
 
   while (my $columns_ref = $tsv->getline($fh)) {
-    if (@$columns_ref == 1 && $columns_ref->[0]->trim()->length() == 0) {
+    if (@$columns_ref == 1 && trim($columns_ref->[0])->length() == 0) {
       next;
     }
 
@@ -148,7 +151,7 @@ sub load {
 
     my ($malacards_disease_name, $malacards_disease_slug,
         $malacards_displayed_disease_name, $human_gene_name, $do_id) =
-      map { $_->trim() || undef } @$columns_ref;
+      map { trim($_) || undef } @$columns_ref;
 
     my $dest_genes = $self->human_ortholog_map()->{$human_gene_name};
 
