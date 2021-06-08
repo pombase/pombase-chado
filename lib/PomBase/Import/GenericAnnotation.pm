@@ -121,7 +121,7 @@ sub load {
     @columns{ $csv->column_names() } = @fields;
 
     my $systematic_id = trim($columns{"systematic_id"});
-    my $feature_name = trim($columns{"feature_name"})
+    my $feature_name = trim($columns{"feature_name"});
     my $term_id = trim($columns{"term_id"});
     my $evidence_code = trim($columns{"evidence_code"});
     my $publication_id = trim($columns{"publication_id"});
