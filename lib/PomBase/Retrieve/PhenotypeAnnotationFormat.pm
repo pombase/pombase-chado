@@ -161,8 +161,10 @@ sub _get_genotype_allele_props {
   return %genotype_allele_props;
 }
 
-sub _get_genotype_details ($genotype_feature_rs) {
+sub _get_genotype_details {
   my $self = shift;
+  my $genotype_feature_rs = shift;
+
   my %allele_gene_map = $self->_get_allele_gene_map();
 
   my %allele_props = $self->_get_allele_props();

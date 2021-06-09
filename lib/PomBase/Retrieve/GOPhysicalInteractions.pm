@@ -180,7 +180,7 @@ sub retrieve {
   }
 };
 
-sub header () {
+sub header {
   my $self = shift;
   # no header
   return '';
