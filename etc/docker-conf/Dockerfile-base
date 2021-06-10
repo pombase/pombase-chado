@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v53 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v54 .
 FROM bitnami/minideb:latest
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -19,13 +19,13 @@ USER pombase
 RUN cd /pombase && curl https://archive.apache.org/dist/lucene/solr/8.6.1/solr-8.6.1.tgz | tar -x --gzip -f - && \
     (cd /pombase/solr-8.6.1/; rm -rf example contrib licenses *.txt docs)
 
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
 
 USER root
 
 ENV PATH="/pombase/.cargo/bin/:${PATH}"
 
-RUN rustup default nightly
+RUN rustup default stable
 
 RUN apt-get -y install gnupg2 git-core procps xz-utils \
   libterm-readline-gnu-perl pkg-config libssl-dev unzip ipip \
