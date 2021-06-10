@@ -43,6 +43,8 @@ use Carp;
 
 use Moose;
 
+use feature qw(say);
+
 sub description {
   my $self = shift;
 

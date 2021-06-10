@@ -40,7 +40,7 @@ use warnings;
 use Carp;
 
 use Moose;
-use feature qw(switch);
+use feature qw(switch say);
 no if $] >= 5.018, warnings => "experimental::smartmatch";
 
 use Module::Find;
