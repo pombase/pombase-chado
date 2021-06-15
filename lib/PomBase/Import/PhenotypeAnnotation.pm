@@ -257,7 +257,7 @@ sub load {
       return;
     }
 
-    my $ploidiness = $columns_ref->{"ploidy"} // "haploid";
+    my $ploidiness = $columns_ref->{"ploidy"} || "haploid";
 
     my $proc = sub {
       my $organism = $self->find_organism_by_taxonid($taxonid);
