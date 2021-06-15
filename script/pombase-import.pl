@@ -34,7 +34,7 @@ my %input_types = (
   'phenotype-annotation' => 'PomBase::Import::PhenotypeAnnotation',
   'references-file' => 'PomBase::Import::ReferencesFile',
   'kegg-pathway' => 'PomBase::Import::KEGGMapping',
-  'name-and-product' => 'PomBase::Import::NameAndProduct',
+  'names-and-products' => 'PomBase::Import::NameAndProduct',
 );
 
 sub usage
