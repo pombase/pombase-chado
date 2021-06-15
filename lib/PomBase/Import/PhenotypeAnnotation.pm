@@ -204,7 +204,7 @@ sub load {
                         parental_strain strain_background genotype_description
                         gene_name allele_name allele_synonym allele_type
                         evidence conditions penetrance severity extension
-                        reference taxon date homozygous_diploid illegal_extra_column));
+                        reference taxon date ploidy illegal_extra_column));
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $gene_systemtic_id = trim($columns_ref->{"gene_systemtic_id"});
@@ -256,6 +256,8 @@ sub load {
       warn "Taxon is not a number: $taxonid at line ", $fh->input_line_number(), " - skipping\n";
       return;
     }
+
+    my $ploidiness = $columns_ref->{"ploidy"} // "haploid";
 
     my $proc = sub {
       my $organism = $self->find_organism_by_taxonid($taxonid);
@@ -391,8 +393,31 @@ sub load {
         $background_description = undef;
       }
 
-      my $genotype_feature =
-        $self->get_genotype_for_allele($background_description, $allele_data, $expression);
+      my $genotype_feature;
+
+      if ($ploidiness eq 'haploid') {
+        $genotype_feature =
+          $self->get_genotype_for_allele($background_description, $allele_data, $expression);
+      } else {
+        if ($ploidiness eq 'homozygous diploid') {
+          my $allele = $self->get_allele($allele_data);
+
+          my $genotype_identifier = $self->get_genotype_uniquename();
+
+          my $locus = "$genotype_identifier-$reference-locus-1";
+          my @alleles = (
+            { allele => $allele, expression => $expression, genotype_locus => $locus },
+            { allele => $allele, expression => $expression, genotype_locus => $locus },
+          );
+
+          $genotype_feature =
+            $self->get_genotype($genotype_identifier, undef,
+                                $background_description, \@alleles);
+
+        } else {
+          die qq|unknown value in "ploidy" column: "$ploidiness"|;
+        }
+      }
 
       $self->_store_annotation($genotype_feature, $cvterm, $pub, $date, $extension,
                                $penetrance, $severity, $long_evidence,
