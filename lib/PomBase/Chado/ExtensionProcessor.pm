@@ -539,7 +539,7 @@ sub _process_identifier {
         my $ref_feature =
           $self->find_chado_feature($identifier, 1, 1, $organism,
                                     ['gene', 'pseudogene', 'promoter']);
-        $identifier = $ref_feature->uniquename();
+        $identifier = 'PomBase:' . $ref_feature->uniquename();
       } catch {
         chomp (my $message = $_);
         warn "in extension for $feature_uniquename, can't find " .
@@ -565,7 +565,8 @@ sub _process_identifier {
           };
 
           if ($ref_feature) {
-            $identifier = $ref_feature->uniquename();
+            $identifier =
+              $self->config()->{database_name} . ':' . $ref_feature->uniquename();
           } else {
             die "in annotation extension for $feature_uniquename, can't " .
             "parse identifier: $identifier\n";
