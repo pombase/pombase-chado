@@ -31,6 +31,7 @@ my $builder = Module::Build->new(
       'Capture::Tiny'          => 0,
       'Scalar::Util'           => 0,
       'Clone'                  => 0,
+      'utf8::all'              => 0,
       'Bio::Tools::CodonOptTable' => 0,
       'Data::Compare' => 0,
       'Devel::Declare' => 0.006019,
