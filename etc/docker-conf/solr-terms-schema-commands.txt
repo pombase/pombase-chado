@@ -1,5 +1,6 @@
 {"add-field-type":{"name":"idField","class":"solr.StrField"}}
 {"add-field-type": {"name": "textField", "class": "solr.TextField", "indexAnalyzer": {"tokenizer": {"class": "solr.StandardTokenizerFactory"}, "filters": [{"class": "solr.LowerCaseFilterFactory"}, {"class": "solr.WordDelimiterGraphFilterFactory", "splitOnNumerics": 0}]}, "queryAnalyzer": {"tokenizer": {"class": "solr.StandardTokenizerFactory"}, "filters": [{"class": "solr.LowerCaseFilterFactory"}, {"class": "solr.WordDelimiterGraphFilterFactory", "splitOnNumerics": 0}]}}}
+{"add-field-type":{"name":"intField","class":"solr.IntPointField"}}
 {"add-field":{"name":"cv_name","type":"idField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"name","type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"close_synonyms","type":"textField","multiValued":"true","indexed":"false","stored":"true"}}
@@ -9,3 +10,6 @@
 {"add-field":{"name":"interesting_parent_ids","type": "textField","multiValued":"true","indexed":"true","stored":"true"}}
 {"add-field":{"name":"secondary_identifiers","type":"idField","indexed":"true","stored":"true", "multiValued": "true"}}
 {"add-field":{"name":"definition","type":"textField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"gene_count", "type": "intField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"genotype_count", "type": "intField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"annotation_count", "type": "intField","indexed":"true","stored":"true"}}
