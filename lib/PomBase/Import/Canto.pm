@@ -90,6 +90,8 @@ has organism => (is => 'rw', init_arg => undef);
 # used to prefix identifiers in "with" fields before storing as proprieties
 has db_prefix => (is => 'rw', init_arg => undef);
 
+has all_curation_is_community => (is => 'rw', init_arg => undef);
+
 has seen_binding_annotations => (is => 'rw', init_arg => undef, default => sub { {} });
 has possible_reciprocal_binding_annotations => (is => 'rw', init_arg => undef, default => sub { [] });
 
@@ -113,9 +115,11 @@ sub BUILD
 
   my $organism_taxonid = undef;
   my $db_prefix = undef;
+  my $all_curation_is_community = 0;
 
   my @opt_config = ("organism-taxonid=s" => \$organism_taxonid,
                     "db-prefix=s" => \$db_prefix,
+                    "all-curation-is-community" => \$all_curation_is_community,
                   );
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
@@ -139,6 +143,8 @@ sub BUILD
   }
 
   $self->db_prefix($db_prefix);
+
+  $self->all_curation_is_community($all_curation_is_community);
 }
 
 sub _store_interaction_annotation {
@@ -435,6 +441,16 @@ sub _store_ontology_annotation {
       }
     }
 
+    my $all_curation_is_community = $self->all_curation_is_community();
+
+    my $community_curated_flag;
+
+    if ($curator->{community_curated} || $all_curation_is_community) {
+      $community_curated_flag = 'true';
+    } else {
+      $community_curated_flag = 'false';
+    }
+
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $cvterm, $publication, $is_not);
 
@@ -447,7 +463,7 @@ sub _store_ontology_annotation {
     $self->add_feature_cvtermprop($feature_cvterm,
                                   curator_name => $curator->{name});
     $self->add_feature_cvtermprop($feature_cvterm,
-                                  community_curated => ($curator->{community_curated} ? 'true' : 'false'));
+                                  community_curated => $community_curated_flag);
     $self->add_feature_cvtermprop($feature_cvterm,
                                   canto_session => $canto_session);
     if (defined $changed_by) {
