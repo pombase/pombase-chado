@@ -970,7 +970,12 @@ sub _store_metadata {
     } @{$metadata->{previous_curators}}
   }
   if ($metadata->{curator_role}) {
-    $self->create_pubprop($pub, 'canto_curator_role', $metadata->{curator_role});
+    my $curator_role = $metadata->{curator_role};
+    if ($self->all_curation_is_community()) {
+      $curator_role = "community";
+    }
+
+    $self->create_pubprop($pub, 'canto_curator_role', $curator_role);
   }
   if ($metadata->{curation_accepted_date}) {
     $self->create_pubprop($pub, 'canto_session_accepted_date', $metadata->{curation_accepted_date});
