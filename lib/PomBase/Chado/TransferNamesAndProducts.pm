@@ -149,7 +149,8 @@ sub process {
   my $self = shift;
   my $fh = shift;
 
-  my %orthologs = $self->ortholog_map();
+  my %orthologs = $self->ortholog_map($self->source_organism(),
+                                      $self->dest_organism());
 
   my $gene_rs = $self->chado()->resultset('Sequence::Feature')
     ->search(

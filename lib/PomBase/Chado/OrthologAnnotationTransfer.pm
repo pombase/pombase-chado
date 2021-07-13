@@ -168,7 +168,8 @@ sub process {
 
   my %ev_codes_to_ignore = %{$self->ev_codes_to_ignore()};
   my %terms_to_ignore = %{$self->terms_to_ignore()};
-  my %one_to_one_orthologs = $self->ortholog_map_reverse();
+  my %one_to_one_orthologs =
+    $self->ortholog_map_reverse($self->source_organism(), $self->dest_organism());
 
   while (defined (my $line = $fh->getline())) {
     next if $line =~ /^\s*!/;

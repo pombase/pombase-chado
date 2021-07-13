@@ -42,19 +42,20 @@ use Carp;
 use Moose::Role;
 
 requires 'chado';
-requires 'source_organism';
-requires 'dest_organism';
 
 sub ortholog_map {
   my $self = shift;
+
+  my $source_organism = shift;
+  my $dest_organism = shift;
 
   my %orthologs = ();
 
   my $ortholog_rs = $self->chado()->resultset('Sequence::FeatureRelationship')
     ->search(
       {
-        'organism.organism_id' => $self->dest_organism()->organism_id(),
-        'organism_2.organism_id' => $self->source_organism()->organism_id(),
+        'organism.organism_id' => $dest_organism->organism_id(),
+        'organism_2.organism_id' => $source_organism->organism_id(),
         'type.name' => 'orthologous_to',
       },
       {
@@ -107,9 +108,12 @@ sub ortholog_map {
 sub ortholog_map_reverse {
   my $self = shift;
 
+  my $source_organism = shift;
+  my $dest_organism = shift;
+
   my %ret_map = ();
 
-  my %orthologs = $self->ortholog_map();
+  my %orthologs = $self->ortholog_map($source_organism, $dest_organism);
 
   while (my ($subject, $object_details) = each %orthologs) {
     $ret_map{$object_details->{orth_uniquename}} = $subject;
