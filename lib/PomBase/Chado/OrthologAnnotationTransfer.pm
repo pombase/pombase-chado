@@ -168,8 +168,8 @@ sub process {
 
   my %ev_codes_to_ignore = %{$self->ev_codes_to_ignore()};
   my %terms_to_ignore = %{$self->terms_to_ignore()};
-  my %one_to_one_orthologs =
-    $self->ortholog_map_reverse($self->source_organism(), $self->dest_organism());
+  my %orthologs =
+    $self->reverse_ortholog_map($self->source_organism(), $self->dest_organism());
 
   while (defined (my $line = $fh->getline())) {
     next if $line =~ /^\s*!/;
@@ -214,33 +214,35 @@ sub process {
 
     $columns{Evidence_code} = 'IEA';
 
-    my $source_db_object_id = $columns{DB_object_id};
+    my $source_db_object = $columns{DB_object_id};
 
-    my $dest_db_object_id = $one_to_one_orthologs{$source_db_object_id};
+    my $dest_db_objects = $orthologs{$source_db_object};
 
-    if (!defined $dest_db_object_id) {
+    if (!defined $dest_db_objects) {
       next;
     }
 
-    $columns{DB_object_id} = $dest_db_object_id;
-    $columns{Taxon} = 'taxon:' . $self->dest_organism_taxonid();
-    $columns{With_or_from} = $columns{DB} . ":" . $source_db_object_id;
-    $columns{DB_object_synonym} = '';
+    for my $dest_db_object (@$dest_db_objects) {
+      $columns{DB_object_id} = $dest_db_object;
+      $columns{Taxon} = 'taxon:' . $self->dest_organism_taxonid();
+      $columns{With_or_from} = $columns{DB} . ":" . $source_db_object;
+      $columns{DB_object_synonym} = '';
 
-    $columns{DB_reference} = 'GO_REF:0000107';
-    $columns{Annotation_extension} = '';
-    $columns{Gene_product_form_id} = '';
+      $columns{DB_reference} = 'GO_REF:0000107';
+      $columns{Annotation_extension} = '';
+      $columns{Gene_product_form_id} = '';
 
-    my $date_str = $dt->ymd('');
+      my $date_str = $dt->ymd('');
 
-    $columns{Date} = $date_str;
+      $columns{Date} = $date_str;
 
-    my $out_line =
-      join "\t", map {
-        $columns{$_};
-      } @column_names;
+      my $out_line =
+        join "\t", map {
+          $columns{$_};
+        } @column_names;
 
-    print "$out_line\n";
+      print "$out_line\n";
+    }
   }
 }
 
