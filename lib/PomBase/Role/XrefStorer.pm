@@ -41,6 +41,7 @@ use Carp;
 
 use feature qw(state);
 
+use Try::Tiny;
 use Moose::Role;
 
 requires 'chado';
@@ -128,10 +129,31 @@ sub add_feature_dbxref {
     my $db = $self->find_db_by_name($db_name);
     my $dbxref = $self->find_or_create_dbxref($db, $accession);
 
-    $self->chado()->resultset('Sequence::FeatureDbxref')->create({
-      feature_id => $feature->feature_id(),
-      dbxref_id => $dbxref->dbxref_id(),
-    });
+    try {
+      $self->chado()->txn_do(sub {
+                               $self->chado()
+                                 ->resultset('Sequence::FeatureDbxref')->create({
+                                   feature_id => $feature->feature_id(),
+                                   dbxref_id => $dbxref->dbxref_id(),
+                                 });
+                             });
+    }
+    catch {
+      my $existing_rs = $self->chado()
+        ->resultset('Sequence::FeatureDbxref')
+        ->search({
+          feature_id => $feature->feature_id(),
+          dbxref_id => $dbxref->dbxref_id(),
+        });
+      if ($existing_rs->count() > 0) {
+        warn "failed to store db_xref $dbxref_value for ",
+          $feature->uniquename(), " - already stored\n";
+      } else {
+        warn "failed to store db_xref $dbxref_value for ",
+          $feature->uniquename(), ": $_\n";
+      }
+
+    }
   } else {
     warn "unknown dbxref format ($dbxref_value) for ", $feature->uniquename(), "\n";
   }
@@ -166,10 +188,29 @@ sub create_feature_pub {
   my $feature = shift;
   my $pub = shift;
 
-  $self->chado()->resultset('Sequence::FeaturePub')->create({
-    feature => $feature,
-    pub => $pub,
-  });
+  try {
+    $self->chado()->txn_do(sub {
+                             $self->chado()
+                               ->resultset('Sequence::FeaturePub')
+                               ->create({
+                                 feature => $feature,
+                                 pub => $pub,
+                               });
+                           });
+  }
+  catch {
+    my $existing_rs = $self->chado()
+      ->resultset('Sequence::FeaturePub')
+      ->search({ feature_id => $feature->feature_id(),
+                 pub_id => $pub->pub_id() });
+    if ($existing_rs->count() > 0) {
+      warn "failed to store reference ", $pub->uniquename(), " for ",
+        $feature->uniquename(), " - already stored\n";
+    } else {
+      warn "failed to store reference ", $pub->uniquename(), " for ",
+        $feature->uniquename(), ": $_\n";
+    }
+  };
 }
 
 1;
