@@ -506,7 +506,9 @@ sub format_result {
 
   my $line = (join "\t", @$res);
 
-  die "dubious $line!" if $line =~ /dubious/;
+  if ($line =~ /dubious/) {
+    warn "warning, dubious GAF output: $line\n";
+  }
 
   return (join "\t", @$res);
 }
