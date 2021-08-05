@@ -95,7 +95,7 @@ sub load {
 
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
-  $csv->column_names(qw(systematic_id feature_name term_id evidence_code publication_id date));
+  $csv->column_names(qw(systematic_id feature_name term_id evidence_code publication_id date qualifiers));
 
   my $null_pub = $self->find_or_create_pub('null');
 
@@ -112,7 +112,7 @@ sub load {
 
     my @fields = $csv->fields();
 
-    if (@fields != 6) {
+    if (@fields < 6) {
       warn "needed 6 columns, got ", scalar(@fields),
         " - ignoring line $.\n";
       next;
@@ -126,6 +126,7 @@ sub load {
     my $evidence_code = trim($columns{"evidence_code"});
     my $publication_id = trim($columns{"publication_id"});
     my $date = trim($columns{"date"});
+    my $qualifiers = trim($columns{"qualifiers"});
 
     my $long_evidence = undef;
     if ($evidence_code) {
