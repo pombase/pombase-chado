@@ -184,6 +184,7 @@ sub process {
 
     @columns{ $csv->column_names() } = $csv->fields();
 
+    next if $columns{Qualifier} eq 'NOT';
 
     my $taxonid = $columns{"Taxon"};
 
