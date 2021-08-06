@@ -27,8 +27,10 @@ sub usage
   config_file   - the YAML format configuration file name
   process_type  - possibilities:
                     - "go-filter": filter redundant GO annotations
+                    - "go-filter": filter inferred annotations where there is
+                           a non-inferred NOT annotation
                     - "update-allele-names": change "SPAC1234c.12delta" to
-                        "abcdelta" if the gene now has a name
+                           "abcdelta" if the gene now has a name
                     - "change-terms": change terms in annotations based on a
                            mapping file
                     - "add-reciprocal-ipi-annotations": add missing reciprocal
@@ -91,6 +93,7 @@ my $config = PomBase::Config->new(file_name => $config_file);
 
 my %process_modules = (
   'go-filter' => 'PomBase::Chado::GOFilter',
+  'go-filter-with-not' => 'PomBase::Chado::GOFilterWithNot',
   'update-allele-names' => 'PomBase::Chado::UpdateAlleleNames',
   'change-terms' => 'PomBase::Chado::ChangeTerms',
   'uniprot-ids-to-local' => 'PomBase::Chado::UniProtIDsToLocal',
