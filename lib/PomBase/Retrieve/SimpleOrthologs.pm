@@ -97,8 +97,15 @@ sub retrieve {
 
   my $dbh = $self->chado()->storage()->dbh();
 
+  my $select_list;
+  if ($self->swap_direction()) {
+    $select_list = "o.uniquename, s.uniquename";
+  } else {
+    $select_list = "s.uniquename, o.uniquename";
+  }
+
   my $query = "
-SELECT o.uniquename, s.uniquename
+SELECT $select_list
   FROM feature_relationship rel
   JOIN cvterm t ON rel.type_id = t.cvterm_id
   JOIN feature s ON rel.subject_id = s.feature_id
