@@ -54,6 +54,7 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Retriever';
 
 has other_organism_taxonid => (is => 'rw');
+has swap_direction => (is => 'rw');
 
 sub BUILDARGS
 {
@@ -61,8 +62,10 @@ sub BUILDARGS
   my %args = @_;
 
   my $other_organism_taxonid = undef;
+  my $swap_direction;
 
   my @opt_config = ("other-organism-taxon-id=s" => \$other_organism_taxonid,
+                    "swap-direction" => \$swap_direction,
                   );
 
   if (!GetOptionsFromArray($args{options}, @opt_config)) {
@@ -74,6 +77,7 @@ sub BUILDARGS
   }
 
   $args{other_organism_taxonid} = $other_organism_taxonid;
+  $args{swap_direction} = $swap_direction // 0;
 
   return \%args;
 }
@@ -106,8 +110,15 @@ WHERE s.organism_id = ?
   my $it = do {
     my $sth = $dbh->prepare($query);
 
-    $sth->execute($other_organism->organism_id(),
-                  $self->organism()->organism_id())
+    my @execute_args;
+    if ($self->swap_direction()) {
+      @execute_args = ($other_organism->organism_id(),
+                       $self->organism()->organism_id());
+    } else {
+      @execute_args = ($self->organism()->organism_id(),
+                       $other_organism->organism_id());
+    }
+    $sth->execute(@execute_args)
       or die "Couldn't execute: " . $sth->errstr;
 
     iterator {
