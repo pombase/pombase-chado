@@ -63,6 +63,7 @@ if (!defined $config) {
 my %retrieve_modules = (
   phenotypes => 'PomBase::Retrieve::Phenotypes',
   orthologs => 'PomBase::Retrieve::Orthologs',
+  'simple-orthologs' => 'PomBase::Retrieve::SimpleOrthologs',
   interactions => 'PomBase::Retrieve::Interactions',
   ontology => 'PomBase::Retrieve::Ontology',
   gaf => 'PomBase::Retrieve::GeneAssociationFile',
