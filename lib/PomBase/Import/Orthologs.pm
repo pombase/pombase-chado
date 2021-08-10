@@ -159,6 +159,8 @@ sub load {
 
   my $load_orthologs_count = 0;
 
+  my %seen_orthologs = ();
+
   my $null_pub = $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
 
   ROW: while (my $columns_ref = $csv->getline_hr($fh)) {
@@ -206,7 +208,14 @@ sub load {
       }
     }
     for my $org2_identifier (@org2_identifiers) {
-      my $org2_feature;
+      my $seen_key = $org1_identifier . '---' . $org2_identifier;
+      if (exists $seen_orthologs{$seen_key}) {
+        next;
+      } else {
+        $seen_orthologs{$seen_key} = 1;
+      }
+
+     my $org2_feature;
       eval {
         $org2_feature = $self->find_chado_feature($org2_identifier, 1, 0, $self->organism_2());
       };
