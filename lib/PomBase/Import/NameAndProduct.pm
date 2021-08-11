@@ -45,6 +45,7 @@ use Try::Tiny;
 use Moose;
 
 use Text::CSV;
+use Text::Trim qw(trim);
 
 use Getopt::Long qw(GetOptionsFromArray);
 
@@ -142,11 +143,31 @@ sub load {
 
   my $name_update_count = 0;
   my $product_update_count = 0;
+  my $new_synonym_count = 0;
 
   my %genes = ();
 
   while (defined (my $gene = $gene_rs->next())) {
     $genes{$gene->uniquename()} = $gene;
+  }
+
+  my $chado_dbh = $self->chado()->storage()->dbh();
+  my $sth = $chado_dbh->prepare(<<'EOQ');
+SELECT f.uniquename, synonym.name
+ FROM feature f
+ JOIN organism ON f.organism_id = organism.organism_id
+ JOIN cvterm ft ON ft.cvterm_id = f.type_id
+ JOIN feature_synonym fs ON fs.feature_id = f.feature_id
+ JOIN synonym ON fs.synonym_id = synonym.synonym_id
+WHERE ( organism.organism_id = ? AND ft.name = 'gene');
+EOQ
+
+  $sth->execute($self->dest_organism()->organism_id());
+
+  my %existing_synonyms = ();
+
+  while (my ($gene_uniquename, $synonym_name) = $sth->fetchrow_array()) {
+    push @{$existing_synonyms{$gene_uniquename}}, $synonym_name;
   }
 
   my $tsv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
@@ -156,9 +177,10 @@ sub load {
       next;
     }
 
-    my $gene_uniquename = $columns_ref->[0];
-    my $new_name = $columns_ref->[1];
-    my $new_product = $columns_ref->[2];
+    my $gene_uniquename = trim($columns_ref->[0]);
+    my $new_name = trim($columns_ref->[1]);
+    my $synonyms = trim($columns_ref->[2]);
+    my $new_product = trim($columns_ref->[3]);
 
     my $gene = $genes{$gene_uniquename};
 
@@ -169,7 +191,22 @@ sub load {
         $gene->update();
       }
 
-      my $existing_product_detail = $self->existing_products()->{$gene_uniquename};
+      if (length $synonyms > 0) {
+        my @new_synonyms = split /\s*,\s*/, $synonyms;
+
+        my $existing_synonyms = $existing_synonyms{$gene_uniquename} // [];
+
+        map {
+          my $new_synonym = $_;
+
+          if (!grep { $_ eq $new_synonym } @$existing_synonyms) {
+            $self->store_feature_synonym($gene, $new_synonym, 'exact', 1, undef);
+            $new_synonym_count++;
+          }
+        } @new_synonyms;
+      }
+
+     my $existing_product_detail = $self->existing_products()->{$gene_uniquename};
 
       if ($existing_product_detail) {
         # the detail helpfully includes the transcript_feature_id so we don't need
@@ -201,7 +238,8 @@ sub load {
     }
   }
 
-  warn "loaded $name_update_count names and $product_update_count products\n";
+  warn "loaded $name_update_count names and $product_update_count products " .
+    "and added $new_synonym_count synonyms\n";
 }
 
 1;
