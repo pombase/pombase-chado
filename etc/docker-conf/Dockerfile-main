@@ -16,7 +16,7 @@ WORKDIR /pombase
 
 COPY --chown=pombase:pombase pombase-chado-json /pombase/pombase-chado-json
 RUN mkdir bin
-RUN (cd pombase-chado-json; cargo build --release && cp target/release/pombase-server /pombase/bin/) && \
+RUN (cd pombase-chado-json; rustup default stable; cargo build --release && cp target/release/pombase-server /pombase/bin/) && \
   rm -r /pombase/pombase-chado-json
 
 USER root

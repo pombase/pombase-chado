@@ -14,19 +14,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y update && apt-get -y dist-upgrade && apt-get clean
 RUN apt-get -y install apt-utils curl && apt-get clean
 
-USER pombase
-
-RUN cd /pombase && curl https://archive.apache.org/dist/lucene/solr/8.6.1/solr-8.6.1.tgz | tar -x --gzip -f - && \
-    (cd /pombase/solr-8.6.1/; rm -rf example contrib licenses *.txt docs)
-
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
-
-USER root
-
-ENV PATH="/pombase/.cargo/bin/:${PATH}"
-
-RUN rustup default stable
-
 RUN apt-get -y install gnupg2 git-core procps xz-utils \
   libterm-readline-gnu-perl pkg-config libssl-dev unzip ipip \
   lsof jq gcc net-tools && apt-get clean
@@ -44,11 +31,15 @@ RUN npm install --silent --unsafe-perm -g @angular/cli
 RUN apt-get -y install libperlio-gzip-perl libgd-perl libjson-perl libyaml-perl pandoc && apt-get clean
 RUN curl -L http://cpanmin.us | perl - --self-upgrade
 
-RUN pip3 install --upgrade setuptools; pip3 install --upgrade pip; pip3 install --upgrade distlib
-RUN pip3 install 'tornado<5'; pip3 install circus; pip3 install pipenv
-RUN pip3 install django django-allauth gunicorn seaborn numpy matplotlib pandas
+RUN pip3 install --upgrade setuptools; pip3 install --no-cache-dir --upgrade pip; \
+  pip3 install --no-cache-dir --upgrade distlib
+RUN pip3 install --no-cache-dir 'tornado<5'; pip3 install --no-cache-dir circus pipenv
+RUN pip3 install --no-cache-dir django django-allauth gunicorn seaborn numpy matplotlib pandas
 
 USER pombase
+
+RUN cd /pombase && curl https://archive.apache.org/dist/lucene/solr/8.6.1/solr-8.6.1.tgz | tar -x --gzip -f - && \
+    (cd /pombase/solr-8.6.1/; rm -rf example contrib licenses *.txt docs)
 
 ENV JBROWSE_VERSION=1.16.10-pombase
 
@@ -56,6 +47,20 @@ RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-v2.tar.gz; \
     curl -L https://www.pombase.org/software/$JBROWSE_TAR | tar xzf -; \
     mv JBrowse-$JBROWSE_VERSION jbrowse; \
     cd /pombase/jbrowse; ./setup.sh)
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable; \
+  rm -rf .rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc
+
+ENV PATH="/pombase/.cargo/bin/:${PATH}"
+RUN rustup default stable
+
+RUN rm -rf /*/.rustup /*/.cache /*/.cpan*
+
+USER root
+
+RUN apt remove -y g++ g++-10; apt install -y make; apt autoremove -y
+
+USER pombase
 
 WORKDIR /pombase
 
