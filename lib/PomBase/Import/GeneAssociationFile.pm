@@ -373,8 +373,8 @@ sub load {
     }
 
     if (!defined $feature) {
-      warn "feature not found, no synonym matches a feature (" .
-      "@synonyms)\n";
+      warn "feature not found, none of the identifiers  (" .
+        "@synonyms) from this annotation match a systematic ID in Chado\n";
       next;
     }
 
