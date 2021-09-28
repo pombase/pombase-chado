@@ -143,4 +143,21 @@ sub find_chado_feature {
    die "can't find feature for: $systematic_id\n";
  }
 
+sub resultset_by_name
+{
+  my $self = shift;
+  my $name = shift;
+  my $feature_types = shift;
+
+  my $rs = $self->chado()->resultset('Sequence::Feature')
+    ->search({ 'me.name' => $name }, { prefetch => 'type' });
+
+   if (defined $feature_types) {
+     $rs = $rs->search({ 'type.name' => { -in => $feature_types } },
+                       { join => 'type' });
+   }
+
+  return $rs;
+}
+
 1;

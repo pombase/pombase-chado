@@ -156,13 +156,28 @@ sub load {
     if (defined $self->feature_name_column()) {
       my $feature_name = $columns_ref->[$self->feature_name_column()];
 
-      try {
-        $feature = $self->find_chado_feature($feature_name, 1);
-      } catch {
-        warn "line $.: searched for name '$feature_name' - $_";
-      };
+      my $features_by_name_rs = $self->resultset_by_name($feature_name);
 
-      if (!defined $feature) {
+      if ($features_by_name_rs->count() == 1) {
+        $feature = $features_by_name_rs->first();
+      } else {
+        if ($features_by_name_rs->count() == 1) {
+          warn qq|can't find feature with name "$feature_name" at line $. - skipping\n|;
+        } else {
+          warn qq|skipping line $. - more than one feature found with name "$feature_name":\n|;
+          while (defined (my $feature = $features_by_name_rs->next())) {
+            warn "   $feature_name  ", $feature->uniquename(), "  ",
+              $feature->type()->name(), "\n";
+            my $prop_rs = $feature->featureprops()->search({}, { prefetch => 'type' });;
+            warn "      sessions:\n";
+            while (defined (my $prop = $prop_rs->next())) {
+              if ($prop->type()->name() eq 'canto_session') {
+                warn "         ", $prop->value(), "\n";
+              }
+            }
+          }
+        }
+
         next;
       }
     }
