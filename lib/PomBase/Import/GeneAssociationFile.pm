@@ -67,6 +67,8 @@ has assigned_by_filter => (is => 'rw', init_arg => undef);
 has taxon_filter => (is => 'rw', init_arg => undef);
 has remove_existing => (is => 'rw', init_arg => undef);
 has use_first_with_id => (is => 'rw', init_arg => undef);
+has load_qualifiers => (is => 'rw', init_arg => undef);
+has load_column_17 => (is => 'rw', init_arg => undef);
 has with_prefix_filter => (is => 'rw', init_arg => undef);
 has with_filter_values => (is => 'rw', isa => 'HashRef',
                              init_arg => undef);
@@ -121,6 +123,9 @@ sub BUILD {
   # if true only the first ID from a with field will be stored
   my $use_first_with_id = 0;
 
+  my $load_qualifiers = 0;
+  my $load_column_17 = 0;
+
   my @opt_config = ('assigned-by-filter=s' => \$assigned_by_filter,
                     'remove-existing' => \$remove_existing,
                     'taxon-filter=s' => \$taxon_filter,
@@ -129,7 +134,10 @@ sub BUILD {
                     'term-id-filter-filename=s' =>
                       \$term_id_filter_filename,
                     'with-prefix-filter' => \$with_prefix_filter,
-                    'use-only-first-with-id' => \$use_first_with_id);
+                    'use-only-first-with-id' => \$use_first_with_id,
+                    'load-qualifiers' => \$load_qualifiers,
+                    'load-column-17' => \$load_column_17,
+                  );
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
     croak "option parsing failed";
@@ -155,6 +163,9 @@ sub BUILD {
   $self->term_id_filter_values({%term_id_filter_values});
 
   $self->use_first_with_id($use_first_with_id);
+
+  $self->load_qualifiers($load_qualifiers);
+  $self->load_column_17($load_column_17);
 
   $self->with_prefix_filter($with_prefix_filter);
 }
@@ -423,6 +434,22 @@ sub load {
       $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
       $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                     $long_evidence);
+
+      if ($self->load_qualifiers()) {
+        for my $qual (@qualifier_bits) {
+          $self->add_feature_cvtermprop($feature_cvterm, 'qualifier',
+                                        $qual);
+        }
+      }
+
+      if ($self->load_column_17()) {
+        my $col_17_value = $columns{"Gene_product_form_id"};
+
+        if ($col_17_value) {
+          $self->add_feature_cvtermprop($feature_cvterm, 'gene_product_form_id',
+                                        $col_17_value);
+        }
+      }
 
       my $annotation_throughput_type = $self->annotation_throughput_type($evidence_code);
       if ($annotation_throughput_type) {
