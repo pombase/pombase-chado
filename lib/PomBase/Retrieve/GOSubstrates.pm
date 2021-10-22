@@ -96,6 +96,8 @@ WHERE ext_term_cv.name = 'PomBase annotation extension terms'
       if (@data) {
         # this is a hack - turn transcript IDs in gene IDs
         $data[0] =~ s/\.\d$//;
+        # remove DB prefix added by https://github.com/japonicusdb/japonicus-config/issues/30
+        $data[1] =~ s/\w+://;
         return [@data];
       } else {
         return undef;
