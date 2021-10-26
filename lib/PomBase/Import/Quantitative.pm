@@ -215,13 +215,17 @@ sub load {
                                   $scale);
     $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
 
-    my @conditions = split /\s*,\s*/, $conditions;
-    for (my $i = 0; $i < @conditions; $i++) {
-      my $condition = $conditions[$i];
-      $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
+    if ($conditions) {
+      my @conditions = split /\s*,\s*/, $conditions;
+      for (my $i = 0; $i < @conditions; $i++) {
+        my $condition = $conditions[$i];
+        $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
+      }
     }
 
-    $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
+    if ($annotation_extension) {
+      $self->extension_processor()->process_one_annotation($feature_cvterm, $annotation_extension);
+    }
   }
 }
 
