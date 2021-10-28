@@ -564,6 +564,12 @@ sub _process_identifier {
                                         ['gene', 'pseudogene']);
           };
 
+          try {
+            # maybe it's a transcript?  eg. "SPAC17G6.02c.2"
+            $ref_feature =
+              $self->find_chado_feature($identifier, 0, 0, $organism, ['mRNA']);
+          };
+
           if ($ref_feature) {
             $identifier =
               $self->config()->{database_name} . ':' . $ref_feature->uniquename();
