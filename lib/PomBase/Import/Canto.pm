@@ -809,16 +809,19 @@ sub _process_annotation {
       die "internal error: no gene found for $gene_key";
     }
 
-    my $feature;
+    my @features;
     if ($annotation->{type} eq 'phenotype' or
         $annotation->{type} eq 'genetic_interaction' or
         $annotation->{type} eq 'physical_interaction') {
-      $feature = $gene;
+      push @features, $gene;
     } else {
-      $feature = $self->get_transcript($gene);
+      @features = $self->get_transcripts_of_gene($gene);
     }
-    $self->_process_feature($annotation, $session_metadata, $feature,
-                            $canto_session, $session_genes);
+    map {
+      my $feature = $_;
+      $self->_process_feature($annotation, $session_metadata, $feature,
+                              $canto_session, $session_genes);
+    } @features;
   }
 
   my $genotype_key = delete $annotation->{genotype};

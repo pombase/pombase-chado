@@ -160,4 +160,29 @@ sub resultset_by_name
   return $rs;
 }
 
+sub get_transcripts_of_gene
+{
+  my $self = shift;
+  my $gene = shift;
+
+  my $gene_uniquename = $gene->uniquename();
+
+  state $cache = {};
+
+  if (defined $cache->{$gene_uniquename}) {
+    return @{$cache->{$gene_uniquename}}
+  }
+
+  my @transcripts = $gene
+    ->search_related('feature_relationship_objects')
+    ->search({ 'type.name' => 'part_of' },
+             { join => 'type' })
+    ->search_related('subject')
+    ->all();
+
+  $cache->{$gene_uniquename} = \@transcripts;
+
+  return @transcripts;
+}
+
 1;
