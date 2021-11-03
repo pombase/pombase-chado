@@ -287,6 +287,7 @@ sub _store_ontology_annotation {
   my $termid = $args{termid};
   my $publication = $args{publication};
   my $long_evidence = $args{long_evidence};
+  my $gene = $args{gene};
   my $feature = $args{feature};
   if (!defined $feature) {
     die "no feature passed to _store_ontology_annotation()\n";
@@ -301,7 +302,15 @@ sub _store_ontology_annotation {
   my $changed_by = $args{changed_by};
 
   if ($with_gene && $termid eq 'GO:0005515') {
-    my $seen_key = _make_binding_key($feature->uniquename(), $with_gene,
+    my $feature_uniquename = undef;
+    if (defined $gene) {
+      # $feature is a transcript but we need to use the gene uniquename to make the key
+      $feature_uniquename = $gene->uniquename();
+    } else {
+      $feature_uniquename = $feature->uniquename();
+    }
+
+    my $seen_key = _make_binding_key($feature_uniquename, $with_gene,
                                      $termid, $publication->uniquename(),
                                      $extensions // []);
 
@@ -653,6 +662,7 @@ sub _process_feature {
   my $self = shift;
   my $annotation = clone(shift);
   my $session_metadata = shift;
+  my $gene = shift;     # undef unless $feature is a transcript
   my $feature = shift;
   my $canto_session = shift;
   my $session_genes = shift;
@@ -732,6 +742,7 @@ sub _process_feature {
                                       termid => $termid,
                                       publication => $publication,
                                       long_evidence => $long_evidence,
+                                      gene => $gene,
                                       feature => $feature,
                                       expression => $expression,
                                       conditions => $conditions,
@@ -752,8 +763,6 @@ sub _process_feature {
         $feature->organism->genus() . ' ' . $feature->organism->species() . ' ' . $with_gene;
       my $with_feature = $session_genes->{$with_gene_key};
 
-      my $with_feature_transcript = $self->get_transcript($with_feature);
-
       if (!defined $with_feature) {
         die "internal error: no gene found for $with_feature";
       }
@@ -770,10 +779,10 @@ sub _process_feature {
         termid => $termid,
         publication => $publication,
         long_evidence => $long_evidence,
-        feature => $with_feature_transcript,
+        feature => $with_feature,
         expression => $expression,
         conditions => $conditions,
-        with_gene => $feature->uniquename() =~ s/\.1$//r,
+        with_gene => $gene->uniquename(),
         extension_text => undef,
         extensions => \@reciprocal_extensions,
         canto_session => $canto_session,
@@ -847,7 +856,7 @@ sub _process_annotation {
     }
     map {
       my $feature = $_;
-      $self->_process_feature($annotation, $session_metadata, $feature,
+      $self->_process_feature($annotation, $session_metadata, $gene, $feature,
                               $canto_session, $session_genes);
     } @features;
   }
@@ -856,7 +865,7 @@ sub _process_annotation {
   if (defined $genotype_key) {
     my $genotype = $session_genotypes->{$genotype_key};
     if (defined $genotype_key) {
-      $self->_process_feature($annotation, $session_metadata, $genotype,
+      $self->_process_feature($annotation, $session_metadata, undef, $genotype,
                               $canto_session, $session_genes);
     } else {
       warn "can't store annotation for missing genotype: $genotype_key\n";
