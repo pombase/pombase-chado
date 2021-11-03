@@ -315,17 +315,17 @@ sub _store_ontology_annotation {
   my $chado = $self->chado();
   my $config = $self->config();
 
-  my $annotated_transcript_id = undef;
+  my $transcript_isoform_id = undef;
 
   if ($extensions) {
     my @filtered_extensions = ();
 
     map {
-      if ($_->{relation} eq 'annotated_transcript_id') {
-        if (defined $annotated_transcript_id) {
-          die "more than one annotated_transcript_id extension for ", $feature->uniquename(), "\n";
+      if ($_->{relation} eq 'transcript_isoform_id') {
+        if (defined $transcript_isoform_id) {
+          die "more than one transcript_isoform_id extension for ", $feature->uniquename(), "\n";
         } else {
-          $annotated_transcript_id = $_->{rangeValue};
+          $transcript_isoform_id = $_->{rangeValue};
         }
       } else {
         push @filtered_extensions, $_;
@@ -336,8 +336,8 @@ sub _store_ontology_annotation {
     @$extensions = @filtered_extensions;
   }
 
-  if ($annotated_transcript_id) {
-    if ($annotated_transcript_id ne $feature->uniquename()) {
+  if ($transcript_isoform_id) {
+    if ($transcript_isoform_id ne $feature->uniquename()) {
       # annotation is not for this transcript
       return;
     }
