@@ -763,6 +763,8 @@ sub _process_feature {
         $feature->organism->genus() . ' ' . $feature->organism->species() . ' ' . $with_gene;
       my $with_feature = $session_genes->{$with_gene_key};
 
+      my $with_feature_transcript = ($self->get_transcripts_of_gene($with_feature))[0];
+
       if (!defined $with_feature) {
         die "internal error: no gene found for $with_feature";
       }
@@ -779,7 +781,8 @@ sub _process_feature {
         termid => $termid,
         publication => $publication,
         long_evidence => $long_evidence,
-        feature => $with_feature,
+        gene => $with_feature,
+        feature => $with_feature_transcript,
         expression => $expression,
         conditions => $conditions,
         with_gene => $gene->uniquename(),
@@ -1082,7 +1085,15 @@ sub _process_sessions {
 
     for my $possible_annotation (@{$self->possible_reciprocal_binding_annotations()}) {
 
-      my $key = _make_binding_key($possible_annotation->{feature}->uniquename(),
+      my $feature_uniquename;
+
+      if ($possible_annotation->{gene}) {
+        $feature_uniquename = $possible_annotation->{gene}->uniquename()
+      } else {
+        $feature_uniquename = $possible_annotation->{feature}->uniquename()
+      }
+
+      my $key = _make_binding_key($feature_uniquename,
                                   $possible_annotation->{with_gene},
                                   $possible_annotation->{termid},
                                   $possible_annotation->{publication}->uniquename(),
