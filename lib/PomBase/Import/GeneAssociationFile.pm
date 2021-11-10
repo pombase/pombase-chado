@@ -359,35 +359,37 @@ sub load {
       next;
     }
 
-    my $feature;
+    my $gene_feature;
     # try systematic ID first
     for my $synonym (@synonyms) {
       if ($synonym =~ /^($uniquename_re)/) {
         try {
-          $feature = $self->find_chado_feature("$synonym.1", 1, 1, $organism);
+          $gene_feature = $self->find_chado_feature("$synonym", 1, 1, $organism);
         };
 
-        last if defined $feature;
+        last if defined $gene_feature;
       }
     }
 
-    if (!defined $feature) {
+    if (!defined $gene_feature) {
       for my $synonym (@synonyms) {
         try {
-          $feature = $self->find_chado_feature("$synonym.1", 1, 1, $organism);
+          $gene_feature = $self->find_chado_feature("$synonym", 1, 1, $organism);
         } catch {
           # feature not found
         };
 
-        last if defined $feature;
+        last if defined $gene_feature;
       }
     }
 
-    if (!defined $feature) {
-      warn "feature not found, none of the identifiers  (" .
+    if (!defined $gene_feature) {
+      warn "gene feature not found, none of the identifiers  (" .
         "@synonyms) from this annotation match a systematic ID in Chado\n";
       next;
     }
+
+    for my $feature ($self->get_transcripts_of_gene($gene_feature)) {
 
     my @pubs = map {
       my $db_reference = $_;
@@ -473,6 +475,8 @@ sub load {
       $chado->txn_do($proc);
     } catch {
       warn "Failed to load row: $_\n";
+    }
+
     }
   }
 
