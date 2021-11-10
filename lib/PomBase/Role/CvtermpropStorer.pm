@@ -70,7 +70,7 @@ sub store_cvtermprop {
     });
   } catch {
     warn "Failed to create cvtermprop for cvterm: ", $cvterm->name(),
-      " type: ", $type_cvterm->name(), " value: $value\n";
+      " type: ", $type_cvterm->name(), " value: $value:  $_\n";
   };
 }
 
