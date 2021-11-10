@@ -215,6 +215,12 @@ sub load {
 
   my $with_prefix_filter = $self->with_prefix_filter();
 
+  my $uniquename_re = $config->{systematic_id_re};
+
+  if (!defined $uniquename_re) {
+    die "systematic_id_re configuration variable not set\n";
+  }
+
  LINE:
   while (defined (my $line = $fh->getline())) {
     next if $line =~ /^\s*!/;
@@ -344,12 +350,6 @@ sub load {
 
     map { s/\s+$//; s/^\s+//; } @synonyms;
 
-    my $uniquename_re = $config->{systematic_id_re};
-
-    if (!defined $uniquename_re) {
-      die "systematic_id_re configuration variable not set\n";
-    }
-
     my $uniquename = undef;
 
     my $organism = $self->find_organism_by_taxonid($taxonid);
@@ -391,91 +391,92 @@ sub load {
 
     for my $feature ($self->get_transcripts_of_gene($gene_feature)) {
 
-    my @pubs = map {
-      my $db_reference = $_;
-      $self->find_or_create_pub($db_reference);
-    } split /\|/, $db_references;
+      my @pubs = map {
+        my $db_reference = $_;
+        $self->find_or_create_pub($db_reference);
+      } split /\|/, $db_references;
 
-    map {
-      my $pub = $_;
-    } @pubs;
+      map {
+        my $pub = $_;
+      } @pubs;
 
-    my $proc = sub {
-      my $cvterm = $self->find_cvterm_by_term_id($go_id);
+      my $proc = sub {
+        my $cvterm = $self->find_cvterm_by_term_id($go_id);
 
-      if (!defined $cvterm) {
-        warn "can't load annotation, $go_id not found in database\n";
-        return;
-      }
-
-      my $feature_cvterm =
-        $self->create_feature_cvterm($feature, $cvterm, $pubs[0], $is_not);
-
-      if (@pubs > 1) {
-        warn "ignored ", (@pubs - 1), " extra refs for ", $feature->uniquename(), "\n";
-      }
-
-      my $extension_text = $columns{"Annotation_extension"};
-
-      if ($extension_text) {
-        my ($out, $err) = capture {
-          my $processor = $self->extension_processor();
-
-          $processor->process_one_annotation($feature_cvterm, $extension_text);
-        };
-        if (length $out > 0) {
-          die $out;
-        }
-        if (length $err > 0) {
-          die $err;
-        }
-      }
-
-      $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by',
-                                    $assigned_by);
-      $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
-      $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
-                                    $long_evidence);
-
-      if ($self->load_qualifiers()) {
-        for my $qual (@qualifier_bits) {
-          $self->add_feature_cvtermprop($feature_cvterm, 'qualifier',
-                                        $qual);
-        }
-      }
-
-      if ($self->load_column_17()) {
-        my $col_17_value = $columns{"Gene_product_form_id"};
-
-        if ($col_17_value) {
-          $self->add_feature_cvtermprop($feature_cvterm, 'gene_product_form_id',
-                                        $col_17_value);
-        }
-      }
-
-      my $annotation_throughput_type = $self->annotation_throughput_type($evidence_code);
-      if ($annotation_throughput_type) {
-        $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
-                                      $annotation_throughput_type);
-      }
-
-      for (my $i = 0; $i < @withs_and_froms; $i++) {
-        my $with_or_from = $withs_and_froms[$i];
-
-        if ($use_first_with_id && $i > 0) {
-          next;
+        if (!defined $cvterm) {
+          warn "can't load annotation, $go_id not found in database\n";
+          return;
         }
 
-        $self->add_feature_cvtermprop($feature_cvterm, 'with',
-                                      $with_or_from, $i);
-      }
-    };
+        my $feature_cvterm =
+          $self->create_feature_cvterm($feature, $cvterm, $pubs[0], $is_not);
 
-    try {
-      $chado->txn_do($proc);
-    } catch {
-      warn "Failed to load row: $_\n";
-    }
+        if (@pubs > 1) {
+          warn "ignored ", (@pubs - 1), " extra refs for ", $feature->uniquename(), "\n";
+        }
+
+        my $extension_text = $columns{"Annotation_extension"};
+
+        if ($extension_text) {
+          my ($out, $err) = capture {
+            my $processor = $self->extension_processor();
+
+            $processor->process_one_annotation($feature_cvterm, $extension_text);
+          };
+          if (length $out > 0) {
+            die $out;
+          }
+          if (length $err > 0) {
+            die $err;
+          }
+        }
+
+        $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by',
+                                      $assigned_by);
+        $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
+        $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
+                                      $long_evidence);
+
+        if ($self->load_qualifiers()) {
+          for my $qual (@qualifier_bits) {
+            $self->add_feature_cvtermprop($feature_cvterm, 'qualifier',
+                                          $qual);
+          }
+        }
+
+        if ($self->load_column_17()) {
+          my $col_17_value = $columns{"Gene_product_form_id"};
+
+          if ($col_17_value) {
+            $self->add_feature_cvtermprop($feature_cvterm, 'gene_product_form_id',
+                                          $col_17_value);
+          }
+        }
+
+        my $annotation_throughput_type = $self->annotation_throughput_type($evidence_code);
+        if ($annotation_throughput_type) {
+          $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
+                                        $annotation_throughput_type);
+        }
+
+        for (my $i = 0; $i < @withs_and_froms; $i++) {
+          my $with_or_from = $withs_and_froms[$i];
+
+          if ($use_first_with_id && $i > 0) {
+            next;
+          }
+
+          $self->add_feature_cvtermprop($feature_cvterm, 'with',
+                                        $with_or_from, $i);
+        }
+      };
+
+      try {
+        $chado->txn_do($proc);
+      }
+      catch {
+        warn "Failed to load row: $_\n";
+      }
 
     }
   }
