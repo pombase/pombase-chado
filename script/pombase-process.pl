@@ -29,6 +29,8 @@ sub usage
                     - "go-filter": filter redundant GO annotations
                     - "go-filter-with-not": filter inferred annotations where
                            there is a non-inferred NOT annotation
+                    - "go-filter-duplicate-assigner": remove redundancy due to
+                           annotation assigned by multiple sources
                     - "update-allele-names": change "SPAC1234c.12delta" to
                            "abcdelta" if the gene now has a name
                     - "change-terms": change terms in annotations based on a
@@ -52,6 +54,11 @@ usage:
     --terms-to-ignore=<comma_sep_list> \
     <host> <database_name> <username> <password> \
        < org_a_annotations.gaf > org_b_annotations.gaf
+
+  $0 <config_file> go-filter-duplicate-assigner \
+    --primary-assigner=<some_important_assigned_by> \
+    --secondary_assigner=<less_important_assigned_by> \
+    <host> <database_name> <username> <password>
 );
 }
 
@@ -94,6 +101,7 @@ my $config = PomBase::Config->new(file_name => $config_file);
 my %process_modules = (
   'go-filter' => 'PomBase::Chado::GOFilter',
   'go-filter-with-not' => 'PomBase::Chado::GOFilterWithNot',
+  'go-filter-duplicate-assigner' => 'PomBase::Chado::GoFilterDuplicateAssigner',
   'update-allele-names' => 'PomBase::Chado::UpdateAlleleNames',
   'change-terms' => 'PomBase::Chado::ChangeTerms',
   'uniprot-ids-to-local' => 'PomBase::Chado::UniProtIDsToLocal',
