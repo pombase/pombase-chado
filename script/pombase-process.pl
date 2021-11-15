@@ -27,8 +27,8 @@ sub usage
   config_file   - the YAML format configuration file name
   process_type  - possibilities:
                     - "go-filter": filter redundant GO annotations
-                    - "go-filter": filter inferred annotations where there is
-                           a non-inferred NOT annotation
+                    - "go-filter-with-not": filter inferred annotations where
+                           there is a non-inferred NOT annotation
                     - "update-allele-names": change "SPAC1234c.12delta" to
                            "abcdelta" if the gene now has a name
                     - "change-terms": change terms in annotations based on a
