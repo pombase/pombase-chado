@@ -55,6 +55,7 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::FeatureCvtermCreator';
 
+has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 
 has eco_map => (is => 'rw', init_arg => undef);
@@ -109,17 +110,11 @@ sub process
 
   my %eco_map = %{$self->eco_map()};
 
-  my $where =
-    "me.feature_cvterm_id IN
-      (SELECT feature_cvterm_id FROM pombase_feature_cvterm_ext_resolved_terms fc
-        WHERE fc.base_cv_name = 'fission_yeast_phenotype')";
-
-
   my $rs = $self->chado()->resultset('Sequence::FeatureCvtermprop')
     ->search({ 'type.name' => 'evidence' },
              {
-               where => \$where,
-               join => 'type'
+               join => 'type',
+               prefetch => 'feature_cvterm',
              });
 
   my %missing_evidence_codes = ();
@@ -127,15 +122,19 @@ sub process
   while (defined (my $prop = $rs->next())) {
     my $pombase_ev_code = lc $prop->value();
 
-    if (!exists $eco_map{$pombase_ev_code}) {
+    my $eco_evidence = $eco_map{$pombase_ev_code};
+    if (defined $eco_evidence) {
+      $self->add_feature_cvtermprop($prop->feature_cvterm(),
+                                    'eco_evidence', $eco_evidence);
+    } else {
       $missing_evidence_codes{$pombase_ev_code} = 1;
     }
   }
 
   if (keys %missing_evidence_codes > 0) {
-    warn "PomBase evidence codes not in ECO mapping file:\n";
+    print "PomBase evidence codes not in ECO mapping file:\n";
     map {
-      warn "  $_\n";
+      print "  $_\n";
     } sort keys %missing_evidence_codes;
   }
 }

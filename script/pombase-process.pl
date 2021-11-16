@@ -105,6 +105,10 @@ my $guard = $chado->txn_scope_guard;
 
 my $config = PomBase::Config->new(file_name => $config_file);
 
+my $id_counter = PomBase::Chado::IdCounter->new(config => $config,
+                                                chado => $chado);
+$config->{id_counter} = $id_counter;
+
 my %process_modules = (
   'go-filter' => 'PomBase::Chado::GOFilter',
   'go-filter-with-not' => 'PomBase::Chado::GOFilterWithNot',
