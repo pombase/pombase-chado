@@ -39,6 +39,9 @@ sub usage
                            protein binding IPI annotations
                     - "transfer-names-and-products": transfer from one organism
                            to another
+                    - "add-eco-evidence-codes": using a mapping file, add an ECO
+                           evidence code as a feature_cvtermprop with prop type
+                           "eco_evidence" based on the existing "evidence" prop
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
@@ -58,6 +61,10 @@ usage:
   $0 <config_file> go-filter-duplicate-assigner \
     --primary-assigner=<some_important_assigned_by> \
     --secondary_assigner=<less_important_assigned_by> \
+    <host> <database_name> <username> <password>
+
+  $0 <config_file> add-eco-evidence-codes \
+    --eco-mapping-file=<file_path> \
     <host> <database_name> <username> <password>
 );
 }
@@ -108,6 +115,7 @@ my %process_modules = (
   'add-reciprocal-ipi-annotations' => 'PomBase::Chado::AddReciprocalIPI',
   'transfer-names-and-products' => 'PomBase::Chado::TransferNamesAndProducts',
   'transfer-gaf-annotations' => 'PomBase::Chado::OrthologAnnotationTransfer',
+  'add-eco-evidence-codes' => 'PomBase::Chado::AddEcoEvidenceCodes',
 );
 
 my $process_module = $process_modules{$process_type};
