@@ -42,6 +42,8 @@ use Carp;
 
 use feature qw(state);
 
+use Getopt::Long qw(GetOptionsFromArray :config pass_through);
+
 use Moose;
 
 use Iterator::Simple qw(iterator);
@@ -61,6 +63,8 @@ my $fypo_extensions_cv_name = 'fypo_extensions';
 
 has fypo_extension_termids => (is => 'ro', init_arg => undef,
                                lazy_build => 1);
+
+has use_eco_evidence_codes => (is => 'rw');
 
 sub _build_fypo_extension_termids
 {
@@ -84,6 +88,24 @@ sub _build_fypo_extension_termids
   }
 
   return \%fypo_extension_termids
+}
+
+sub BUILDARGS
+{
+  my $class = shift;
+  my %args = @_;
+
+  my $use_eco_evidence_codes = 0;
+
+  my @opt_config = ('use-eco-evidence-codes' => \$use_eco_evidence_codes);
+
+  if (!GetOptionsFromArray($args{options}, @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  $args{use_eco_evidence_codes} = $use_eco_evidence_codes;
+
+  return \%args;
 }
 
 sub _get_allele_gene_map {
@@ -405,22 +427,32 @@ sub retrieve {
 
         my $dbxref = $cvterm->dbxref();
         my $id = $dbxref->db()->name() . ':' . $dbxref->accession();
-        my $evidence = _safe_join('|', $row_fc_props{evidence});
         my $evidence_code;
-        if (defined $evidence && length $evidence > 0) {
-          if (defined $self->config()->{evidence_types}->{$evidence}) {
-            $evidence_code = $evidence;
-          } else {
-            # maybe the name is used instead of the code
-            $evidence_code = $config->{evidence_name_to_code}->{lc $evidence};
-            if (!defined $evidence_code) {
-              warn qq|cannot find the evidence code for "$evidence"|;
-              goto ROW;
-            }
+
+        if ($self->use_eco_evidence_codes()) {
+          $evidence_code = _safe_join('|', $row_fc_props{eco_evidence});
+
+          if (length $evidence_code == 0) {
+            warn "no ECO evidence for ", $genotype->uniquename(), " <-> ", $cvterm->name() , " - skipping\n";
+            goto ROW;
           }
         } else {
-          warn "no evidence for ", $genotype->uniquename(), " <-> ", $cvterm->name() , "\n";
-          $evidence_code = "";
+          my $evidence = _safe_join('|', $row_fc_props{evidence});
+          if (defined $evidence && length $evidence > 0) {
+            if (defined $self->config()->{evidence_types}->{$evidence}) {
+              $evidence_code = $evidence;
+            } else {
+              # maybe the name is used instead of the code
+              $evidence_code = $config->{evidence_name_to_code}->{lc $evidence};
+              if (!defined $evidence_code) {
+                warn qq|cannot find the evidence code for "$evidence"|;
+                goto ROW;
+              }
+            }
+          } else {
+            warn "no evidence for ", $genotype->uniquename(), " <-> ", $cvterm->name() , "\n";
+            $evidence_code = "";
+          }
         }
 
         my $pub = $row->pub();
