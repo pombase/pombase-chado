@@ -68,8 +68,10 @@ sub check_description
   my $description = shift;
 
   map {
-    if ($allele_type eq 'nucleotide_mutation' && !/^[ATGCU]\d+[ATGCU]$/ ||
-        $allele_type eq 'amino_acid_mutation' && !/^[A-Z]\d+[A-Z]$/) {
+    if (($allele_type eq 'nucleotide_mutation' &&
+         !(/^([ATGCU]+)\d+([ATGCU]+)$/ && length $1 == length $2)) ||
+        ($allele_type eq 'amino_acid_mutation' &&
+         !(/^([A-Z]+)\d+([A-Z]+)$/ && length $1 == length $2))) {
       return 0;
     }
   } split ',', $description;
