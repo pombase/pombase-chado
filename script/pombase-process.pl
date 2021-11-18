@@ -42,6 +42,8 @@ sub usage
                     - "add-eco-evidence-codes": using a mapping file, add an ECO
                            evidence code as a feature_cvtermprop with prop type
                            "eco_evidence" based on the existing "evidence" prop
+                    - "add-missing-allele-names": use the gene name and allele
+                           description to name unnamed genes
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
@@ -120,6 +122,7 @@ my %process_modules = (
   'transfer-names-and-products' => 'PomBase::Chado::TransferNamesAndProducts',
   'transfer-gaf-annotations' => 'PomBase::Chado::OrthologAnnotationTransfer',
   'add-eco-evidence-codes' => 'PomBase::Chado::AddEcoEvidenceCodes',
+  'add-missing-allele-names' => 'PomBase::Chado::AddMissingAlleleNames',
 );
 
 my $process_module = $process_modules{$process_type};
