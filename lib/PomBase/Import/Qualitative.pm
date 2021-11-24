@@ -129,7 +129,8 @@ sub load {
       map { trim($_) || undef } @$columns_ref;
 
     if ($systematic_id =~ /^#/ ||
-        ($. == 1 && $systematic_id =~ /systematic.id/i)) {
+        $systematic_id =~ /^#?systematic.id/i) {
+      # skip comments and header
       next;
     }
 
