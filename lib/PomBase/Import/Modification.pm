@@ -95,6 +95,10 @@ sub load {
     my ($systematic_id, $gene_name, $psi_mod_term_id, $evidence_code, $residue, $extension, $pubmedid, $taxonid, $date) =
       map { trim($_) || undef } @$columns_ref;
 
+    if ($systematic_id =~ /^#/) {
+      next;
+    }
+
     if (!defined $systematic_id) {
       die qq(mandatory column value for systematic ID missing at line $.\n);
     }
