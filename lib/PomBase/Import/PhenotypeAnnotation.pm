@@ -210,7 +210,7 @@ sub load {
     my $gene_systemtic_id = trim($columns_ref->{"gene_systemtic_id"});
 
     if ($gene_systemtic_id =~ /^#/ ||
-        ($fh->input_line_number() == 1 && $gene_systemtic_id =~ /Gene .*ID|systematic/)) {
+        $gene_systemtic_id =~ /^#?(Gene .*ID|systematic)/i) {
       next;
     }
 
