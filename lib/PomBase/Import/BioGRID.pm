@@ -119,7 +119,16 @@ sub load {
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
 
-  $csv->column_names ($csv->getline($fh));
+  while (my $columns_ref = $csv->getline($fh)) {
+    if ($columns_ref->[0] =~ /BioGRID Interaction ID/) {
+      $csv->column_names (@$columns_ref);
+      last
+    }
+    if ($columns_ref->[0] !~ /^#/) {
+      die "aborting - read data line before header: ",
+        (join "\t", map { if ($_) { $_ } else { "" } } @$columns_ref), "\n";
+    }
+  }
 
   my $organism_taxonid_filter = $self->organism_taxonid_filter();
 
@@ -164,7 +173,8 @@ sub load {
 
   ROW:
   while (my $columns_ref = $csv->getline_hr($fh)) {
-    my $biogrid_id = $columns_ref->{"#BioGRID Interaction ID"};;
+    my $biogrid_id = $columns_ref->{"#BioGRID Interaction ID"} //
+      $columns_ref->{"BioGRID Interaction ID"};
 
     # ignore empty lines
     next unless grep $_, values %$columns_ref;
