@@ -156,6 +156,12 @@ while (my $row = $csv->getline_hr ($fh)) {
       autoscale => 'local',
     };
 
+    if ($track_type eq 'Alignments2') {
+      my $url = $row->{source_url};
+      $url =~ s/\.bam$/.bw/;
+      $new_track->{histograms}->{urlTemplate} = $url;
+    }
+
     if (scalar keys %style > 0) {
       $new_track->{style} = \%style;
     }
