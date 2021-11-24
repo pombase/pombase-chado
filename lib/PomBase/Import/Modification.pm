@@ -89,13 +89,17 @@ sub load {
 
   my $tsv = Text::CSV->new({ sep_char => "\t" });
 
-  $tsv->column_names($tsv->getline($fh));
-
   while (my $columns_ref = $tsv->getline($fh)) {
     my ($systematic_id, $gene_name, $psi_mod_term_id, $evidence_code, $residue, $extension, $pubmedid, $taxonid, $date) =
       map { trim($_) || undef } @$columns_ref;
 
     if ($systematic_id =~ /^#/) {
+      # skip comments
+      next;
+    }
+
+    if ($systematic_id =~ /^#?Systematic/) {
+      # skip header
       next;
     }
 
