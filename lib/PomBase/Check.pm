@@ -51,6 +51,7 @@ with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 
 has website_config => (is => 'ro');
+has output_prefix => (is => 'ro');
 
 sub _do_query_checks {
   my $self = shift;
@@ -63,6 +64,9 @@ sub _do_query_checks {
 
   for my $check (@query_checks) {
     my $name = $check->{name};
+
+    open my $out_fh, '>', $self->output_prefix() . ".$name";
+
     my $query = $check->{query} =~ s/;\s*$//r;
     my $warning_on_failure = $check->{warning_on_failure};
 
@@ -71,7 +75,6 @@ sub _do_query_checks {
     my $expected_conf = $check->{expected} //
       die "expected value not set for $name\n";
     my $description = $check->{description} // $name;
-    print "$description - ";
 
     my $count_sth = $dbh->prepare("select count(*) from ($query) as sub");
     $count_sth->execute() or die "Couldn't execute: " . $count_sth->errstr;
@@ -124,10 +127,10 @@ sub _do_query_checks {
 
     if ($failure) {
       if ($warning_on_failure) {
-        say "WARNING: $failure\n
-(this is a warning that won't cause the Chado checks to fail)";
+        print $out_fh "$description - WARNING: $failure\n
+(this is a warning that won't cause the Chado checks to fail)\n";
       } else {
-        say "CHECK FAILURE: $failure";
+        print $out_fh "$description - CHECK FAILURE: $failure\n";
         $seen_failure = 1;
       }
       if ($verbose_fail) {
@@ -135,12 +138,14 @@ sub _do_query_checks {
         $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
         while (my @data = map { $_ // '[null]' } $sth->fetchrow_array()) {
-          say "  " . (join "\t", @data);
+          print $out_fh "  " . (join "\t", @data). "\n";
         }
       }
     } else {
-      say "SUCCESS";
+      # success
     }
+
+    close $out_fh;
   }
 
   return $seen_failure;

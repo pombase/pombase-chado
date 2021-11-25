@@ -17,9 +17,9 @@ BEGIN {
 use PomBase::Check;
 use PomBase::Config;
 
-if (@ARGV != 6) {
+if (@ARGV != 7) {
   die "$0: needs six arguments:
-  eg. $0 config_file website_config database_host database_name user_name password\n";
+  eg. $0 config_file website_config database_host database_name user_name password output_prefix\n";
 }
 
 my $config_file = shift;
@@ -28,6 +28,7 @@ my $host = shift;
 my $database = shift;
 my $username = shift;
 my $password = shift;
+my $output_prefix = shift;
 
 my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
@@ -43,6 +44,7 @@ my $website_config_text = '';
 my $website_config = JSON->new()->decode($website_config_text);
 
 my $check = PomBase::Check->new(chado => $chado, config => $config,
+                                output_prefix => $output_prefix,
                                 website_config => $website_config);
 
 exit $check->run();
