@@ -399,7 +399,7 @@ sub load {
         $genotype_feature =
           $self->get_genotype_for_allele($background_description, $allele_data, $expression);
       } else {
-        if ($ploidiness eq 'homozygous diploid') {
+        if ($ploidiness =~ /^homozygous.diploid$/) {
           my $allele = $self->get_allele($allele_data);
 
           my $genotype_identifier = $self->get_genotype_uniquename();
