@@ -66,8 +66,8 @@ while (defined (my $fc = $feature_cvterm_rs->next())) {
               'reporter gene assay evidence'
             ],
             'condition' => [
-              'PECO:0000005',
-              'PECO:0000081'
+              'FYECO:0000005',
+              'FYECO:0000081'
             ]
     });
 

@@ -80,7 +80,7 @@ while (my $data = $results->next()) {
              '',
              'nucleotide_mutation',
              'Co-immunoprecipitation experiment',
-             'PECO:0000005',
+             'FYECO:0000005',
              'FYPO_EXT:0000003',
              '',
              '',

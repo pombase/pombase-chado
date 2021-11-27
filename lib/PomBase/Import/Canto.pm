@@ -544,7 +544,7 @@ sub _store_ontology_annotation {
       for (my $i = 0; $i < @$conditions; $i++) {
         my $termid = $conditions->[$i];
 
-        if ($termid !~ /PECO:/) {
+        if ($termid !~ /FYECO:/) {
           die "condition '$termid' isn't a PECO term ID\n";
         }
 
