@@ -176,6 +176,9 @@ sub load {
         qq("\n);
       next;
     }
+
+    my $proc = sub {
+
     my $pub = $self->find_or_create_pub($pubmedid);
 
     my $type_cvterm_name;
@@ -226,6 +229,15 @@ sub load {
 
     if (defined $extension) {
       $self->extension_processor()->process_one_annotation($feature_cvterm, $extension);
+    }
+
+    };
+
+    try {
+      $chado->txn_do($proc);
+    }
+    catch {
+      warn "Failed to load row: $_\n";
     }
   }
 }
