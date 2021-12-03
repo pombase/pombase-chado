@@ -416,12 +416,6 @@ sub retrieve {
         }
 
         if (@{$details} > 1) {
-          my $allele_string =
-            join ' ',
-            map {
-              $_->{allele_name} // $_->{allele_uniquename};
-            } @{$details};
-          warn "ignoring multi-allele $allele_string\n";
           goto ROW;
         }
 
