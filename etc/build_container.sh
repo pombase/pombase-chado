@@ -16,6 +16,7 @@ cd $container_dir
 
 (cd pombase-config; git pull)
 (cd pombase-website; git pull)
+(cd pombase-curation; git pull)
 (cd pombase-chado-json; git pull)
 (cd pombase-python-web; git pull)
 

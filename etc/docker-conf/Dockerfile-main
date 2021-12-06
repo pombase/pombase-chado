@@ -25,6 +25,8 @@ RUN mkdir -p /var/www/html/api/v1/dataset/latest/; ln -s /pombase/jbrowse /var/w
 
 RUN mkdir /pombase/misc
 
+COPY --chown=pombase:pombase pombase-curation/data_files /pombase/curation-data-files
+
 COPY --chown=pombase:pombase web-json /var/www/html/web-json
 COPY --chown=pombase:pombase misc/sitemap.txt /var/www/html/
 COPY --chown=pombase:pombase misc/gene_expression_table.tsv /pombase/misc/
@@ -55,7 +57,7 @@ COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/pombase-we
 COPY --chown=pombase:pombase jbrowse_track_metadata.csv /pombase/jbrowse/data/jbrowse_track_metadata.csv
 
 RUN (cd pombase-website; \
-    ./etc/update_generated_files.sh /pombase/main_config.json $database_name)
+    ./etc/update_generated_files.sh /pombase/main_config.json /pombase/curation-data-files)
 
 RUN cd ./solr-8.6.1/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
