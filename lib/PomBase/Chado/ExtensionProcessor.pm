@@ -555,6 +555,11 @@ sub _process_identifier {
           # the "identifier" is the percentage value
           $identifier =~ s/(\d+)\%/$1/g;
         } else {
+          if ($rel_name eq 'multiplicity') {
+            if ($identifier !~ /^\d+$/) {
+              die "multiplicity relation value must be a number, not: $identifier\n";
+            }
+          } else {
           my $organism = $self->find_organism_by_taxonid($self->config()->{taxonid});
           my $ref_feature = undef;
           try {
@@ -577,6 +582,7 @@ sub _process_identifier {
             die "in annotation extension for $feature_uniquename, can't " .
               qq|parse identifier in "$rel_name($identifier)"\n|;
           };
+          }
         }
       }
     }
