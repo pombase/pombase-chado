@@ -574,8 +574,8 @@ sub _process_identifier {
             $identifier =
               $self->config()->{database_name} . ':' . $ref_feature->uniquename();
           } else {
-            die qq|in annotation extension for $feature_uniquename, can't " .
-              "parse identifier in "$rel_name($identifier)"\n|;
+            die "in annotation extension for $feature_uniquename, can't " .
+              qq|parse identifier in "$rel_name($identifier)"\n|;
           };
         }
       }
