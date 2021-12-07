@@ -65,7 +65,10 @@ sub _do_query_checks {
   for my $check (@query_checks) {
     my $name = $check->{name};
 
-    open my $out_fh, '>', $self->output_prefix() . ".$name";
+    my $output_file = $self->output_prefix() . ".$name";
+
+    open my $out_fh, '>', $output_file
+      or die "can't open Chado check output file $output_file: $!\n";
 
     my $query = $check->{query} =~ s/;\s*$//r;
     my $warning_on_failure = $check->{warning_on_failure};
