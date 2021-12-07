@@ -140,6 +140,10 @@ sub _do_query_checks {
         my $sth = $dbh->prepare($query);
         $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
+        my @column_names = @{$sth->{NAME}};
+
+        print $out_fh (join "\t", @column_names), "\n";
+
         while (my @data = map { $_ // '[null]' } $sth->fetchrow_array()) {
           print $out_fh "  " . (join "\t", @data). "\n";
         }
