@@ -185,8 +185,21 @@ sub load {
             warn "$do_id is obsolete (replaced by: ",
               $replaced_by_prop->value(), ") - skipping annotation for ",
               "$dest_genes_uniquenames / $malacards_disease_slug\n";
-          } else {
-            warn qq|$do_id is obsolete (no "replaced_by" tag) - skipping annotation for |,
+          }
+
+          my $consider_prop = $cvterm->cvtermprops()
+            ->search({ 'type.name' => 'consider' },
+                     { join => 'type' })
+            ->first();
+
+          if (defined $consider_prop) {
+            warn "$do_id is obsolete (consider: ",
+              $consider_prop->value(), ") - skipping annotation for ",
+              "$dest_genes_uniquenames / $malacards_disease_slug\n";
+          }
+
+          if (!defined $replaced_by_prop && !defined $consider_prop) {
+            warn qq|$do_id is obsolete (no "replaced_by" or "consider" tag) - skipping annotation for |,
               "$dest_genes_uniquenames / $malacards_disease_slug\n";
           }
         } else {
