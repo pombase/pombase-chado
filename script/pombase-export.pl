@@ -84,6 +84,8 @@ $retrieve_module->new(chado => \$chado, config => \$config,
 };
   die "$@" if $@;
 
+  binmode(STDOUT, 'encoding(UTF-8)');
+
   print $retriever->header();
 
   my $results = $retriever->retrieve();
