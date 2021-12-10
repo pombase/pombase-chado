@@ -118,12 +118,13 @@ EOQ
 
   my @warnings = ();
 
+  my $update_sth = $dbh->prepare("UPDATE feature SET name = ? WHERE feature_id = ?");
+
   while (my ($allele_feature_id, $allele_type, $allele_description, $gene_name,
              $session, $source) = $sth->fetchrow_array()) {
 
     if (check_description($allele_type, $allele_description)) {
       my $allele_name = "$gene_name-$allele_description";
-      my $update_sth = $dbh->prepare("UPDATE feature SET name = ? WHERE feature_id = ?");
       $update_sth->execute($allele_name, $allele_feature_id);
     } else {
       push @warnings,
