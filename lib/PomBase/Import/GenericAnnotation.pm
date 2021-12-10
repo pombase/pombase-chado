@@ -167,7 +167,40 @@ sub load {
       my $cvterm = $self->find_cvterm_by_term_id($term_id);
 
       if (!defined $cvterm) {
-        warn "can't load annotation for $systematic_id, line $. - $term_id not found in database\n";
+        $cvterm = $self->find_cvterm_by_term_id($term_id,
+                                                { include_obsolete => 1 });
+
+        if ($cvterm) {
+          my $replaced_by_prop = $cvterm->cvtermprops()
+            ->search({ 'type.name' => 'replaced_by' },
+                     { join => 'type' })
+            ->first();
+
+          if (defined $replaced_by_prop) {
+            warn "$term_id is obsolete (replaced by: ",
+              $replaced_by_prop->value(), ") - skipping annotation for ",
+              "$systematic_id, line $.\n";
+          }
+
+          my $consider_prop = $cvterm->cvtermprops()
+            ->search({ 'type.name' => 'consider' },
+                     { join => 'type' })
+            ->first();
+
+          if (defined $consider_prop) {
+            warn "$term_id is obsolete (consider: ",
+              $consider_prop->value(), ") - skipping annotation for ",
+              "$systematic_id, line $.\n";
+          }
+
+          if (!defined $replaced_by_prop && !defined $consider_prop) {
+            warn qq|$term_id is obsolete (no "replaced_by" or "consider" tag) - skipping annotation for |,
+              "$systematic_id, line $.\n";
+          }
+        } else {
+          warn "can't load annotation for $systematic_id, line $. - $term_id not found in database\n";
+        }
+
         return;
       }
 
