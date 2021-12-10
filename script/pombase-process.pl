@@ -44,6 +44,8 @@ sub usage
                            "eco_evidence" based on the existing "evidence" prop
                     - "add-missing-allele-names": use the gene name and allele
                            description to name unnamed genes
+                    - "fix-allele-names": add the gene name as prefix to allele
+                           names that match the description
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
@@ -123,6 +125,7 @@ my %process_modules = (
   'transfer-gaf-annotations' => 'PomBase::Chado::OrthologAnnotationTransfer',
   'add-eco-evidence-codes' => 'PomBase::Chado::AddEcoEvidenceCodes',
   'add-missing-allele-names' => 'PomBase::Chado::AddMissingAlleleNames',
+  'fix-allele-names' => 'PomBase::Chado::FixAlleleNames',
 );
 
 my $process_module = $process_modules{$process_type};
