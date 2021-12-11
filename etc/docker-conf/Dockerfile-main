@@ -10,6 +10,9 @@ ENV ANALYTICS_ID=UNSET
 ENV DATABASE_NAME=pombase
 ENV APP_DEPLOY_CONFIG="{ mode: 'prod' }"
 
+# see: https://solr.apache.org/news.html#apache-solr-affected-by-apache-log4j-cve-2021-44228
+ENV LOG4J_FORMAT_MSG_NO_LOOKUPS=true
+
 USER pombase
 
 WORKDIR /pombase
