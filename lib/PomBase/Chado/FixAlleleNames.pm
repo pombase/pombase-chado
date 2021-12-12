@@ -98,7 +98,7 @@ sub process
   my $sql = <<'EOQ';
 SELECT gene.name, allele.feature_id, allele.name, type_p.value as allele_type,
        array_to_string(array(
-         SELECT value
+         SELECT distinct value
            FROM featureprop sess_p
           WHERE sess_p.type_id in
              (SELECT cvterm_id
