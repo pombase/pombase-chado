@@ -43,6 +43,8 @@ use Moose;
 use feature qw(switch say);
 no if $] >= 5.018, warnings => "experimental::smartmatch";
 
+use open ':encoding(utf8)';
+
 use Module::Find;
 
 use PomBase::Chado;
@@ -69,6 +71,8 @@ sub _do_query_checks {
 
     open my $out_fh, '>', $output_file
       or die "can't open Chado check output file $output_file: $!\n";
+
+    binmode($out_fh, ":utf8");
 
     my $query = $check->{query} =~ s/;\s*$//r;
     my $warning_on_failure = $check->{warning_on_failure};
