@@ -7,7 +7,7 @@ SOLR_OPTS=-Dsolr.dns.prevent.reverse.lookup=true
 [watcher:solr]
 cmd = bin/solr
 args = start -f -force -m 2g
-working_dir = solr-8.6.1
+working_dir = solr-8.11.1
 warmup_delay = 0
 numprocesses = 1
 singleton = True

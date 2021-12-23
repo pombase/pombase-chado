@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v56 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v57 .
 FROM bitnami/minideb:bullseye
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -39,8 +39,8 @@ RUN pip3 install --no-cache-dir django django-allauth gunicorn seaborn numpy mat
 
 USER pombase
 
-RUN cd /pombase && curl https://archive.apache.org/dist/lucene/solr/8.6.1/solr-8.6.1.tgz | tar -x --gzip -f - && \
-    (cd /pombase/solr-8.6.1/; rm -rf example contrib licenses *.txt docs)
+RUN cd /pombase && curl -L 'https://www.apache.org/dyn/closer.lua/lucene/solr/8.11.1/solr-8.11.1.tgz?action=download' | tar -x --gzip -f - && \
+    (cd /pombase/solr-8.11.1/; rm -rf example contrib licenses *.txt docs)
 
 ENV JBROWSE_VERSION=1.16.10-pombase
 

@@ -1,5 +1,5 @@
 # -*- dockerfile -*-
-FROM pombase/web-base:v56
+FROM pombase/web-base:v57
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -62,7 +62,7 @@ COPY --chown=pombase:pombase jbrowse_track_metadata.csv /pombase/jbrowse/data/jb
 RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json /pombase/curation-data-files)
 
-RUN cd ./solr-8.6.1/; ./bin/solr start -force -m 4g && \
+RUN cd ./solr-8.11.1/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
     ./bin/solr create_core -force -c refs && \
     ./bin/solr create_core -force -c genes && \
