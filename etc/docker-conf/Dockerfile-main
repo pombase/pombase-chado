@@ -28,7 +28,7 @@ RUN mkdir -p /var/www/html/api/v1/dataset/latest/; ln -s /pombase/jbrowse /var/w
 
 RUN mkdir /pombase/misc
 
-COPY --chown=pombase:pombase pombase-curation/data_files /pombase/curation-data-files
+COPY --chown=pombase:pombase curation/data_files /pombase/curation-data-files
 
 COPY --chown=pombase:pombase web-json /var/www/html/web-json
 COPY --chown=pombase:pombase misc/sitemap.txt /var/www/html/
