@@ -82,9 +82,7 @@ sub get_relation_cvterm {
   my $cvterm_rs = $self->chado()->resultset('Cv::Cvterm')
     ->search({ name => $cvterm_name, is_relationshiptype => 1 });
 
-  my $cvterm = $cvterm_rs->next();
-
-  my @extra_cvterms = $cvterm_rs->all();
+  my ($cvterm, @extra_cvterms) = $cvterm_rs->all();
 
   if (@extra_cvterms > 0) {
     my $internal_term = undef;
