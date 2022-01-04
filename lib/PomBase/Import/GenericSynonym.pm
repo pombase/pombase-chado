@@ -161,7 +161,7 @@ sub load {
       if ($features_by_name_rs->count() == 1) {
         $feature = $features_by_name_rs->first();
       } else {
-        if ($features_by_name_rs->count() == 1) {
+        if ($features_by_name_rs->count() == 0) {
           warn qq|can't find feature with name "$feature_name" at line $. - skipping\n|;
         } else {
           warn qq|skipping line $. - more than one feature found with name "$feature_name":\n|;
