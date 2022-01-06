@@ -95,7 +95,7 @@ sub BUILD {
   $self->organism_taxonid_filter($organism_taxonid_filter);
 
   if (defined $evidence_code_filter) {
-    $self->evidence_code_filter([split(/,/, $evidence_code_filter)]);
+    $self->evidence_code_filter([ map { lc } split(/,/, $evidence_code_filter)]);
   }
   if (defined $source_database_filter) {
     $self->source_database_filter([map { lc } split(/,/, $source_database_filter)]);
@@ -245,7 +245,8 @@ sub load {
     }
 
     if (@evidence_code_filter) {
-      if (grep { $_ eq $experimental_system } @evidence_code_filter) {
+      my $lc_experimental_system = lc $experimental_system;
+      if (grep { $_ eq $lc_experimental_system } @evidence_code_filter) {
         warn "ignoring interaction of $uniquename_a " .
           "<-> $uniquename_b because of evidence/experimental system " .
           qq("$experimental_system"\n);
