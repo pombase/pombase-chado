@@ -169,6 +169,10 @@ EOQ
   my %chado_ipi_annotation = ();
 
   while (my $results = $sth->fetchrow_hashref()) {
+    if ($results->{assigned_by_value} ne $self->config()->{database_name}) {
+      next;
+    }
+
     my $subject_uniquename = $results->{subject_uniquename};
     $results->{object_uniquename} =~ s/.*://;
     my $object_uniquename = $results->{object_uniquename};
