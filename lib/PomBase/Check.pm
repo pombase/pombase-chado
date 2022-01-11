@@ -179,6 +179,8 @@ sub run {
       warn "failed test: ", $obj->description(), "\n";
       $seen_failure = 1;
     }
+
+    warn "\n";
   }
 
   return $self->_do_query_checks() || $seen_failure;
