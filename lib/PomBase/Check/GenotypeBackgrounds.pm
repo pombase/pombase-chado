@@ -117,6 +117,7 @@ sub check {
     $gene_name = clean_string($gene_name);
 
     $removable_bits{$gene_name} = 1;
+    $removable_bits{"$gene_name-GFP"} = 1;
     $removable_bits{"$gene_name+"} = 1;
     $removable_bits{"$gene_name+"} = 1;
     $removable_bits{$gene_name . "delta"} = 1;
