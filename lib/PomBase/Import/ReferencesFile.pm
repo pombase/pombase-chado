@@ -65,8 +65,8 @@ sub _store {
   $pub->pyear($year) if $year;
   $pub->update();
 
-  $self->create_pubprop($pub, 'pubmed_authors', $authors) if $authors;
-  $self->create_pubprop($pub, 'pubmed_abstract', $abstract) if $abstract;
+  $self->create_pubprop($pub, 'authors', $authors) if $authors;
+  $self->create_pubprop($pub, 'abstract', $abstract) if $abstract;
 }
 
 sub load {
@@ -86,7 +86,9 @@ sub load {
 
     chomp $_;
 
-    if (/pb_ref_id:\s*(.*)/) {
+    s/^\s+//;
+
+    if (/^(?:pb_)?ref_id:\s*(.*)/) {
       if ($uniquename) {
         $self->_store($uniquename, $title, $authors, $year, $abstract);
         $uniquename = undef;
@@ -98,16 +100,16 @@ sub load {
       $uniquename = $1;
     }
 
-    if (/title:\s*(.*)/) {
+    if (/^title:\s*(.*)/) {
       $title = $1;
     }
-    if (/authors:\s*(.*)/) {
+    if (/^authors:\s*(.*)/) {
       $authors = $1;
     }
-    if (/year:\s*(.*)/) {
+    if (/^year:\s*(.*)/) {
       $year = $1;
     }
-    if (/abstract:\s*(.*)/) {
+    if (/^abstract:\s*(.*)/) {
       $abstract = $1;
     }
   }
