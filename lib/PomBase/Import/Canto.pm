@@ -965,7 +965,7 @@ sub _get_genotypes {
     if (@alleles) {
       $ret{$genotype_identifier} =
         $self->get_genotype($genotype_identifier, $details->{name},
-                            $details->{background}, \@alleles);
+                            $details->{background}, $details->{comment}, \@alleles);
     } else {
       warn "genotype $genotype_identifier has no alleles\n";
     }

@@ -412,7 +412,7 @@ sub load {
 
           $genotype_feature =
             $self->get_genotype($genotype_identifier, undef,
-                                $background_description, \@alleles);
+                                $background_description, undef, \@alleles);
 
         } else {
           die qq|unknown value in "ploidy" column: "$ploidiness"|;

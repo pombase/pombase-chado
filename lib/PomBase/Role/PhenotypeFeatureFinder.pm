@@ -107,7 +107,13 @@ sub get_genotype {
   my $genotype_identifier = shift;
   my $genotype_name = shift;
   my $genotype_background = shift;
+  my $genotype_comment = shift;
   my $alleles = shift;
+
+  if (!defined $alleles) {
+    warn "no alleles passed to get_genotype()\n";
+    exit 1;
+  }
 
   my $cached_genotype =
     $self->genotype_cache()->get($genotype_name, $genotype_background, $alleles);
@@ -133,6 +139,11 @@ sub get_genotype {
   if ($genotype_background) {
     $self->store_featureprop($genotype, 'genotype_background',
                              $genotype_background);
+  }
+
+  if ($genotype_comment) {
+    $self->store_featureprop($genotype, 'genotype_comment',
+                             $genotype_comment);
   }
 
   map {
@@ -230,7 +241,7 @@ sub get_genotype_for_allele {
 
   $expression = 'Not assayed' if $expression && lc $expression eq 'not specified';
 
-  return $self->get_genotype($genotype_identifier, undef, $background,,
+  return $self->get_genotype($genotype_identifier, undef, $background, undef,
                              [{ allele => $allele, expression => $expression }]);
 }
 
