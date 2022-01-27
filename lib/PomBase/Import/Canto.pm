@@ -936,6 +936,7 @@ sub _get_alleles {
 
 sub _get_genotypes {
   my $self = shift;
+  my $canto_session = shift;
   my $session_alleles = shift;
   my $session_genotype_data = shift;
 
@@ -963,9 +964,15 @@ sub _get_genotypes {
     }
 
     if (@alleles) {
-      $ret{$genotype_identifier} =
+      my $new_genotype =
         $self->get_genotype($genotype_identifier, $details->{name},
                             $details->{background}, $details->{comment}, \@alleles);
+
+      $ret{$genotype_identifier} = $new_genotype;
+
+      $self->store_featureprop($new_genotype, 'canto_session',
+                               $canto_session);
+
     } else {
       warn "genotype $genotype_identifier has no alleles\n";
     }
@@ -1062,7 +1069,8 @@ sub _process_sessions {
       $self->_get_alleles($metadata->{curation_pub_id}, $canto_session,
                           \%session_genes, $session_data{alleles});
     my %session_genotypes =
-      $self->_get_genotypes(\%session_alleles, $session_data{genotypes});
+      $self->_get_genotypes($canto_session,
+                            \%session_alleles, $session_data{genotypes});
 
     if (defined $session_data{annotations}) {
       my @annotations = @{$session_data{annotations}};
