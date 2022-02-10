@@ -52,7 +52,7 @@ with 'PomBase::Checker';
 sub check {
   my $self = shift;
 
-  my $min_count = $self->checker_config()->{min_count};
+  my $min_count = $self->check_config()->{'PomBase::Check::FeatureCount'}->{min_count};
   # this should really look at each organism,
   return $self->chado()->resultset("Sequence::Feature")->count() > $min_count;
 }

@@ -45,19 +45,9 @@ with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 
 has website_config => (is => 'ro');
+has check_config => (is => 'ro');
 
 requires 'description';
 
-=head2 checker_config
-
- Usage   : my $config = $checker->checker_config();
- Function: return the configuration for the current Checker
-
-=cut
-sub checker_config {
-  my $self = shift;
-
-  return $self->config()->{check_chado}->{ref $self};
-}
 
 1;

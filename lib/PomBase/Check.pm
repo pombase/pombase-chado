@@ -44,6 +44,7 @@ use feature qw(switch say);
 no if $] >= 5.018, warnings => "experimental::smartmatch";
 
 use open ':encoding(utf8)';
+binmode(STDOUT, 'encoding(UTF-8)');
 
 use Module::Find;
 
@@ -52,13 +53,32 @@ use PomBase::Chado;
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::ChadoUser';
 
+has config_field => (is => 'ro');
 has website_config => (is => 'ro');
 has output_prefix => (is => 'ro');
+
+sub _write_query {
+  my $dbh = shift;
+  my $query = shift;
+  my $out_fh = shift;
+
+  my $sth = $dbh->prepare($query);
+  $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+
+  my @column_names = @{$sth->{NAME}};
+
+  print $out_fh (join "\t", @column_names), "\n";
+
+  while (my @data = map { $_ // '[null]' } $sth->fetchrow_array()) {
+    print $out_fh "  " . (join "\t", @data). "\n";
+  }
+}
 
 sub _do_query_checks {
   my $self = shift;
 
-  my @query_checks = @{$self->config()->{check_chado}->{query_checks}};
+  my $check_config = $self->config()->{$self->config_field()};
+  my @query_checks = @{$check_config->{queries}};
 
   my $dbh = $self->chado()->storage()->dbh();
 
@@ -79,9 +99,11 @@ sub _do_query_checks {
 
     # if true, show the result set content on failure:
     my $verbose_fail = $check->{verbose_fail} && $check->{verbose_fail} eq 'true';
-    my $expected_conf = $check->{expected} //
-      die "expected value not set for $name\n";
     my $description = $check->{description} // $name;
+
+    if ($check_config->{no_fail}) {
+
+    } else {
 
     my $count_sth = $dbh->prepare("select count(*) from ($query) as sub");
     $count_sth->execute() or die "Couldn't execute: " . $count_sth->errstr;
@@ -91,6 +113,9 @@ sub _do_query_checks {
     die "query ('$query') didn't return exactly one row" if @data != 1;
 
     my $type = '=';
+
+    my $expected_conf = $check->{expected};
+
     my $expected;
 
     if ($expected_conf =~ /^(>|<|<=|>=)?\s*(\d+)$/) {
@@ -141,25 +166,21 @@ sub _do_query_checks {
         $seen_failure = 1;
       }
       if ($verbose_fail) {
-        my $sth = $dbh->prepare($query);
-        $sth->execute() or die "Couldn't execute: " . $sth->errstr;
-
-        my @column_names = @{$sth->{NAME}};
-
-        print $out_fh (join "\t", @column_names), "\n";
-
-        while (my @data = map { $_ // '[null]' } $sth->fetchrow_array()) {
-          print $out_fh "  " . (join "\t", @data). "\n";
-        }
+        _write_query($dbh, $query, $out_fh);
       }
     } else {
       # success
     }
+  }
 
     close $out_fh;
   }
 
-  return $seen_failure;
+  if ($check_config->{no_fail}) {
+    return 0;
+  } else {
+    return $seen_failure;
+  }
 }
 
 sub run {
@@ -167,20 +188,27 @@ sub run {
 
   my $seen_failure = 0;
 
-  my @check_modules = usesub PomBase::Check;
+  my $check_config = $self->config()->{$self->config_field()};
+
+  if (!defined $check_config) {
+    die "can't find ", $self->config_field(), " in the config file\n";
+  }
+
+  my @check_modules = usesub $check_config->{module_namespace};
 
   for my $module (@check_modules) {
-    warn "Running check: $module\n";
+    print "Running: $module\n";
     my $obj = $module->new(config => $self->config(),
                            chado => $self->chado(),
+                           check_config => $check_config,
                            website_config => $self->website_config());
 
-    if (!$obj->check()) {
-      warn "failed test: ", $obj->description(), "\n";
+    if (!$obj->check() && !$check_config->{no_fail}) {
+      print "failed: ", $obj->description(), "\n";
       $seen_failure = 1;
     }
 
-    warn "\n";
+    print "\n";
   }
 
   return $self->_do_query_checks() || $seen_failure;
