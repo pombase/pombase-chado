@@ -2,7 +2,8 @@ package PomBase::QCQueries::QueryGenotypeComments;
 
 =head1 NAME
 
-PomBase::QCQueries::QueryGenotypeComments -
+PomBase::QCQueries::QueryGenotypeComments - Query for genotypes that have
+                         comments, include session IDs in the output
 
 =head1 SYNOPSIS
 
