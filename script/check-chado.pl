@@ -48,7 +48,9 @@ my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
 my $config = PomBase::Config->new(file_name => $config_file);
 
-open my $website_config_fh, '<', $website_config_filename or die;
+open my $website_config_fh, '<', $website_config_filename or
+  die "can't open $website_config_filename: $!\n";
+
 my $website_config_text = '';
 {
   local $/ = undef;
