@@ -67,6 +67,7 @@ has assigned_by_filter => (is => 'rw', init_arg => undef);
 has taxon_filter => (is => 'rw', init_arg => undef);
 has remove_existing => (is => 'rw', init_arg => undef);
 has use_first_with_id => (is => 'rw', init_arg => undef);
+has ignore_synonyms => (is => 'rw', init_arg => undef);
 has load_qualifiers => (is => 'rw', init_arg => undef);
 has load_column_17 => (is => 'rw', init_arg => undef);
 has with_prefix_filter => (is => 'rw', init_arg => undef);
@@ -123,6 +124,9 @@ sub BUILD {
   # if true only the first ID from a with field will be stored
   my $use_first_with_id = 0;
 
+  # if true, don't try to look up the gene using the synonyms column values
+  my $ignore_synonyms = 0;
+
   my $load_qualifiers = 0;
   my $load_column_17 = 0;
 
@@ -135,6 +139,7 @@ sub BUILD {
                       \$term_id_filter_filename,
                     'with-prefix-filter' => \$with_prefix_filter,
                     'use-only-first-with-id' => \$use_first_with_id,
+                    'ignore-synonyms' => \$ignore_synonyms,
                     'load-qualifiers' => \$load_qualifiers,
                     'load-column-17' => \$load_column_17,
                   );
@@ -163,6 +168,7 @@ sub BUILD {
   $self->term_id_filter_values({%term_id_filter_values});
 
   $self->use_first_with_id($use_first_with_id);
+  $self->ignore_synonyms($ignore_synonyms);
 
   $self->load_qualifiers($load_qualifiers);
   $self->load_column_17($load_column_17);
@@ -344,7 +350,11 @@ sub load {
       next;
     }
 
-    my @synonyms = split /\|/, $db_object_synonym;
+    my @synonyms = ();
+
+    if (!$self->ignore_synonyms()) {
+      @synonyms = split /\|/, $db_object_synonym;
+    }
 
     push @synonyms, $db_object_id, $db_object_symbol;
 
