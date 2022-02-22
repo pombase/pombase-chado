@@ -60,6 +60,10 @@ sub find_or_create_pub {
   my $self = shift;
   my $identifier = shift;
 
+  $identifier =~ s/^\s+//;
+  $identifier =~ s/\s+$//;
+  $identifier =~ s/:\s+(\d+)/:$1/;
+
   state $cache = {};
 
   if (exists $cache->{$identifier}) {
