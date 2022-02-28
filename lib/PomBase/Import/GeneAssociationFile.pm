@@ -237,7 +237,11 @@ sub load {
 
     my %columns = ();
 
-    @columns{ $csv->column_names() } = $csv->fields();
+    @columns{ $csv->column_names() } = map {
+      s/^\s+//;
+      s/\s+$//;
+      $_;
+    } $csv->fields();
 
     my $taxonid = $columns{"Taxon"};
 
