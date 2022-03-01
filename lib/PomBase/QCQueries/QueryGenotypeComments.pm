@@ -108,7 +108,7 @@ sub check {
     ->search(
       {
         'type.name' => 'genotype',
-        'type_2.name' => 'genotype_background',
+        'type_2.name' => 'genotype_comment',
         'type_3.name' => 'canto_session',
       },
       {
@@ -122,13 +122,13 @@ sub check {
           }
         ],
         '+select' => ['featureprops.value', 'featureprops_2.value', ],
-        '+as'     => ['genotype_background', 'canto_session'],
+        '+as'     => ['genotype_comment', 'canto_session'],
       });
 
   while (defined (my $genotype = $rs->next())) {
     my $genotype_display_name = _make_display_name($genotype);
 
-    print $genotype->get_column('genotype_background'), "\t",
+    print $genotype->get_column('genotype_comment'), "\t",
       $genotype->get_column('canto_session'), "\t",
       $genotype_display_name, "\n";
   }
