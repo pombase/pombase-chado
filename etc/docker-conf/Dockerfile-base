@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v58 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v59 .
 FROM bitnami/minideb:bullseye
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -35,7 +35,7 @@ RUN curl -L http://cpanmin.us | perl - --self-upgrade
 RUN pip3 install --upgrade setuptools; pip3 install --no-cache-dir --upgrade pip; \
   pip3 install --no-cache-dir --upgrade distlib
 RUN pip3 install --no-cache-dir 'tornado<5'; pip3 install --no-cache-dir circus pipenv
-RUN pip3 install --no-cache-dir django django-allauth gunicorn seaborn numpy matplotlib pandas
+RUN pip3 install --no-cache-dir django django-allauth gunicorn seaborn numpy matplotlib pandas regex
 
 USER pombase
 
