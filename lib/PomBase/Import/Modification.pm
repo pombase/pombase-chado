@@ -116,6 +116,8 @@ sub load {
       die qq(mandatory column value for reference missing at line $.\n);
     }
     $pubmedid =~ s/ //g;
+    $pubmedid =~ s/PMID_(\d+)/PMID:$1/;
+
     if (!defined $taxonid) {
       die qq(mandatory column value for taxon missing at line $.\n);
     }
