@@ -318,7 +318,16 @@ sub load {
     my @withs_and_froms = ();
 
     if (length $with_or_from_column > 0) {
-      @withs_and_froms = split (/[,\|]/, $with_or_from_column);
+      @withs_and_froms = split (/\|/, $with_or_from_column);
+
+      @with_or_from_column = grep {
+        if (/,/) {
+          warn qq|ignoring "with" value containing a comma: $_\n|;
+          0;
+        } else {
+          1;
+        }
+      } @withs_and_froms;
     }
 
     if (defined $with_prefix_filter) {
