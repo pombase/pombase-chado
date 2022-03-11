@@ -320,7 +320,7 @@ sub load {
     if (length $with_or_from_column > 0) {
       @withs_and_froms = split (/\|/, $with_or_from_column);
 
-      @with_or_from_column = grep {
+      @withs_and_froms = grep {
         if (/,/) {
           warn qq|ignoring "with" value containing a comma: $_\n|;
           0;
