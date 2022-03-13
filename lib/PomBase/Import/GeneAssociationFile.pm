@@ -318,11 +318,11 @@ sub load {
     my @withs_and_froms = ();
 
     if (length $with_or_from_column > 0) {
-      @withs_and_froms = split (/\|/, $with_or_from_column);
+      @withs_and_froms = split (/,/, $with_or_from_column);
 
       @withs_and_froms = grep {
-        if (/,/) {
-          warn qq|ignoring "with" value containing a comma: $_\n|;
+        if (/\|/) {
+          warn q{ignoring with/from value containing a pipe ("|"): $_\n};
           0;
         } else {
           1;
