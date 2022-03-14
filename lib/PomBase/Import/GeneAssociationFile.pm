@@ -322,7 +322,7 @@ sub load {
 
       @withs_and_froms = grep {
         if (/\|/) {
-          warn q{ignoring with/from value containing a pipe ("|"): $_\n};
+          warn qq{ignoring with/from value containing a pipe ("|") at line $.: $_\n};
           0;
         } else {
           1;
