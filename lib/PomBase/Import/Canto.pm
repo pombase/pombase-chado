@@ -574,7 +574,7 @@ sub _store_ontology_annotation {
       die $err;
     }
 
-    my @props_to_store = qw(col17 modified_form residue qualifier condition);
+    my @props_to_store = qw(col17 column_17 modified_form residue qualifier condition);
 
     for my $prop_name (@props_to_store) {
       if (defined (my $prop_vals = delete $by_type{$prop_name})) {
@@ -587,7 +587,8 @@ sub _store_ontology_annotation {
             if ($prop_name eq 'qualifier') {
               push @qualifiers, $prop_val;
             } else {
-              if ($prop_name eq 'column_17' or $prop_name eq 'col17') {
+              if ($prop_name eq 'column_17' or $prop_name eq 'col17' or
+                  $prop_name eq 'modified_form') {
                 push @column_17_values, $prop_val;
               } else {
                 if ($prop_name eq 'condition') {
