@@ -574,7 +574,7 @@ sub _store_ontology_annotation {
       die $err;
     }
 
-    my @props_to_store = qw(col17 column_17 residue qualifier condition);
+    my @props_to_store = qw(col17 modified_form residue qualifier condition);
 
     for my $prop_name (@props_to_store) {
       if (defined (my $prop_vals = delete $by_type{$prop_name})) {
