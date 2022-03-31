@@ -441,7 +441,7 @@ sub _store_ontology_annotation {
           if ($_->{relation} eq 'residue') {
             push @residues, $range_value;
           } else {
-            if ($_->{relation} =~ /^col(?:umn)?(?:_)?17$/) {
+            if ($_->{relation} =~ /^col(?:umn)?(?:_)?17|modified_form$/) {
               push @column_17_values, $range_value;
             } else {
               if ($_->{relation} eq 'has_qualifier') {
