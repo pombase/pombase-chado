@@ -53,6 +53,7 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Retriever';
 
 has other_organism_taxonid => (is => 'rw');
+has other_organism_field_name => (is => 'rw');
 
 sub BUILDARGS
 {
@@ -60,8 +61,10 @@ sub BUILDARGS
   my %args = @_;
 
   my $other_organism_taxonid = undef;
+  my $other_organism_field_name = 'name';
 
   my @opt_config = ("other-organism-taxon-id=s" => \$other_organism_taxonid,
+                    "other-organism-field-name=s" => \$other_organism_field_name,
                   );
 
   if (!GetOptionsFromArray($args{options}, @opt_config)) {
@@ -73,6 +76,7 @@ sub BUILDARGS
   }
 
   $args{other_organism_taxonid} = $other_organism_taxonid;
+  $args{other_organism_field_name} = $other_organism_field_name;
 
   return \%args;
 }
@@ -89,6 +93,8 @@ sub retrieve {
   if (!defined $other_organism) {
     die "can't organism with taxon ID $taxon_id in the database\n";
   }
+
+  my $subject_identifier_field_name = $self->other_organism_field_name();
 
   my $dbh = $self->chado()->storage()->dbh();
 
@@ -117,7 +123,8 @@ WHERE r.subject_id = s.feature_id
 
   my $ortholog_temp = "
 CREATE TEMP TABLE ortholog_list AS
-SELECT distinct object.feature_id, object.uniquename as o_un, subject.name as s_name
+SELECT distinct object.feature_id, object.uniquename as o_un,
+               subject.$subject_identifier_field_name as s_name
   FROM feature object
   LEFT OUTER JOIN feature_relationship r
     ON r.type_id = (select cvterm_id from cvterm where name = 'orthologous_to')
