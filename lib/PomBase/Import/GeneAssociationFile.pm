@@ -318,16 +318,20 @@ sub load {
     my @withs_and_froms = ();
 
     if (length $with_or_from_column > 0) {
-      @withs_and_froms = split (/,|\|/, $with_or_from_column);
-
-#      @withs_and_froms = grep {
-#        if (/\|/) {
-#          warn qq{ignoring with/from value containing a pipe ("|") at line $.: $_\n};
-#          0;
-#        } else {
-#          1;
-#        }
-#      } @withs_and_froms;
+      if ($evidence_code eq 'IC') {
+        @withs_and_froms = grep {
+          if (/\|/) {
+            warn qq{ignoring $evidence_code from value containing a pipe ("|") at line $.: $_\n};
+            0;
+          } else {
+            1;
+          }
+        } split (/,/, $with_or_from_column);
+      } else {
+        # we treat pipe as if they were commas for with fields because
+        # it amounts to the same thing
+        @withs_and_froms = split (/,|\|/, $with_or_from_column);
+      }
     }
 
     if (defined $with_prefix_filter) {
