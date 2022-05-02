@@ -42,6 +42,8 @@ use Carp;
 use Try::Tiny;
 use Capture::Tiny qw(capture);
 
+use IO::Handle;
+
 use Moose;
 
 use Text::CSV;
@@ -246,14 +248,14 @@ sub load {
     my $taxonid = $columns{"Taxon"};
 
     if (!defined $taxonid) {
-      warn "Taxon missing - skipping\n";
+      warn "Taxon missing - skipping line ", $fh->input_line_number(), "\n";
       next;
     }
 
     $taxonid =~ s/taxon://ig;
 
     if ($taxonid !~ /^\d+$/) {
-      warn "Taxon is not a number: $taxonid - skipping\n";
+      warn "Taxon is not a number: $taxonid - skipping line ", $fh->input_line_number(), "\n";
       next;
     }
 
@@ -265,7 +267,7 @@ sub load {
     my @taxon_filter = @{$self->taxon_filter()};
 
     if (@taxon_filter > 0 && !grep { $_ == $taxonid; } @taxon_filter) {
-      warn "skipping, wrong taxon: $taxonid at line $.\n" if $self->verbose();
+      warn "skipping, wrong taxon: $taxonid at line ", $fh->input_line_number(), "\n" if $self->verbose();
       next;
     }
 
@@ -412,7 +414,8 @@ sub load {
 
     if (!defined $gene_feature) {
       warn "gene feature not found, none of the identifiers  (" .
-        "@synonyms) from this annotation match a systematic ID in Chado\n";
+        "@synonyms) from this annotation match a systematic ID in Chado at line ",
+        $fh->input_line_number(), "\n";
       next;
     }
 
@@ -448,13 +451,17 @@ sub load {
           my ($out, $err) = capture {
             my $processor = $self->extension_processor();
 
-            $processor->process_one_annotation($feature_cvterm, $extension_text);
+            try {
+              $processor->process_one_annotation($feature_cvterm, $extension_text);
+            } catch {
+              warn "line ", $fh->input_line_number(), ": $_\n";
+            }
           };
           if (length $out > 0) {
-            die $out;
+            die "$out\n";
           }
           if (length $err > 0) {
-            die $err;
+            die "$err\n";
           }
         }
 
