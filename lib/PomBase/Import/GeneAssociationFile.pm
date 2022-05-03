@@ -454,7 +454,7 @@ sub load {
             try {
               $processor->process_one_annotation($feature_cvterm, $extension_text);
             } catch {
-              warn "line ", $fh->input_line_number(), ": $_\n";
+              die "line ", $fh->input_line_number(), ": $_";
             }
           };
           if (length $out > 0) {
