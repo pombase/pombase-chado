@@ -509,7 +509,7 @@ sub load {
         $chado->txn_do($proc);
       }
       catch {
-        warn "Failed to load row: $_\n";
+        warn "Failed to load row: $_";
       }
 
     }
