@@ -130,7 +130,7 @@ SELECT distinct object.feature_id, object.uniquename as o_un,
     ON r.type_id = (select cvterm_id from cvterm where name = 'orthologous_to')
    AND object.feature_id = r.object_id
   JOIN feature subject
-    ON subject.feature_id = r.subject_id AND subject.organism_id = ?
+    ON subject.feature_id = r.subject_id AND subject.organism_id = ? AND object.organism_id = ?
  WHERE object.feature_id in (select feature_id from protein_coding_genes)";
 
   my $orthologs_query = "
@@ -138,9 +138,11 @@ CREATE TEMP TABLE full_table AS
 SELECT o_un, s_name
   FROM ortholog_list
  UNION
-SELECT uniquename AS o_un, 'NONE'
+SELECT uniquename AS o_un, 'NONE' as s_name
   FROM protein_coding_genes
- WHERE feature_id NOT IN (select feature_id from ortholog_list)";
+ WHERE feature_id NOT IN (select feature_id from ortholog_list)
+ ORDER BY o_un, s_name
+";
 
   my $query = "
 SELECT o_un, string_agg(CASE WHEN s_name IS NULL THEN 'NONE' ELSE s_name END, '|')
@@ -158,7 +160,7 @@ SELECT o_un, string_agg(CASE WHEN s_name IS NULL THEN 'NONE' ELSE s_name END, '|
       or die "Couldn't execute: " . $sth->errstr;
 
     $sth = $dbh->prepare($ortholog_temp);
-    $sth->execute($other_organism->organism_id())
+    $sth->execute($other_organism->organism_id(), $self->organism->organism_id())
       or die "Couldn't execute: " . $sth->errstr;
 
     $sth = $dbh->prepare($orthologs_query);
