@@ -75,8 +75,7 @@ JOIN cvtermprop ext_p ON ext_term.cvterm_id = ext_p.cvterm_id
 JOIN cvterm ext_p_type ON ext_p.type_id = ext_p_type.cvterm_id
 WHERE ext_term_cv.name = 'PomBase annotation extension terms'
   AND (ext_p_type.name IN
-    ('annotation_extension_relation-has_direct_input',
-     'annotation_extension_relation-directly_negatively_regulates',
+    ('annotation_extension_relation-directly_negatively_regulates',
      'annotation_extension_relation-directly_positively_regulates')
    OR (ext_p_type.name IN ('annotation_extension_relation-has_regulation_target',
                            'annotation_extension_relation-has_input')
