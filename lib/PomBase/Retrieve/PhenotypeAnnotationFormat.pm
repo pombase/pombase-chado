@@ -64,6 +64,9 @@ my $fypo_extensions_cv_name = 'fypo_extensions';
 has fypo_extension_termids => (is => 'ro', init_arg => undef,
                                lazy_build => 1);
 
+has fypo_extension_names => (is => 'ro', init_arg => undef,
+                               lazy_build => 1);
+
 has use_eco_evidence_codes => (is => 'rw');
 
 sub _build_fypo_extension_termids
@@ -88,6 +91,19 @@ sub _build_fypo_extension_termids
   }
 
   return \%fypo_extension_termids
+}
+
+sub _build_fypo_extension_names
+{
+  my $self = shift;
+
+  my %fypo_extension_names = ();
+
+  while (my ($name, $termid) = each %{$self->fypo_extension_termids()}) {
+    $fypo_extension_names{$termid} = $name;
+  }
+
+  return \%fypo_extension_names;
 }
 
 sub BUILDARGS
@@ -323,14 +339,7 @@ sub retrieve {
       # "high", "low", ...
       my $ext_name = $ext_rel->object()->name();
 
-      my $value = $fypo_extension_termids{$ext_name};
-
-      if (!defined $value) {
-        warn "'$ext_name' is not a valid penetrance/severity in term: ",
-          $ext_parent->name(), "\n";
-      } else {
-        $ext_parent_values{$ext_parent->cvterm_id()}{$rel_name}{$value} = 1;
-      }
+      $ext_parent_values{$ext_parent->cvterm_id()}{$rel_name}{$ext_name} = 1;
     }
   }
 
@@ -352,7 +361,10 @@ sub retrieve {
 
   while (defined (my $ext_prop = $ext_cvtermprops_rs->next())) {
     my $rel_name = $ext_prop->type->name() =~ s/annotation_extension_relation-//r;
-    $ext_parent_values{$ext_prop->cvterm_id()}{$rel_name}{$ext_prop->value()} = 1;
+
+    my $value_or_term_name = $self->fypo_extension_names()->{$ext_prop->value()} // $ext_prop->value();
+
+    $ext_parent_values{$ext_prop->cvterm_id()}{$rel_name}{$value_or_term_name} = 1;
   }
 
   my $feature_cvterm_rs =
