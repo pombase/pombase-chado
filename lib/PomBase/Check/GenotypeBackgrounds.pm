@@ -85,6 +85,9 @@ sub check {
     'h−' => 1,
     'h90' => 1,
     'ade6-M216' => 1,
+    'ura4-D19' => 1,
+    'ura4-D6' => 1,
+    'ura4-294' => 1,
   );
 
   my $allele_rs = $self->chado()->resultset("Sequence::Feature")
