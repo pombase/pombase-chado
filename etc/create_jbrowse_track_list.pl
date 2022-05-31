@@ -142,6 +142,7 @@ while (my $row = $csv->getline_hr ($fh)) {
         assay_type => $row->{assay_type},
         data_type => $row->{data_type},
         alleles => $row->{alleles},
+        mutants => $row->{'mutant(s)'},
         comment => $row->{comment},
         source_url => $row->{source_url},
       };
