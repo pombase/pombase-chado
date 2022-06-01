@@ -65,7 +65,10 @@ has fypo_extension_termids => (is => 'ro', init_arg => undef,
                                lazy_build => 1);
 
 has fypo_extension_names => (is => 'ro', init_arg => undef,
-                               lazy_build => 1);
+                             lazy_build => 1);
+
+has allele_synonyms => (is => 'ro', init_arg => undef,
+                        lazy_build => 1);
 
 has use_eco_evidence_codes => (is => 'rw');
 
@@ -104,6 +107,33 @@ sub _build_fypo_extension_names
   }
 
   return \%fypo_extension_names;
+}
+
+sub _build_allele_synonyms
+{
+  my $self = shift;
+
+  my $synonym_query = <<"EOQ";
+       SELECT allele.uniquename,
+              s.name
+       FROM feature allele
+       JOIN feature_synonym fs ON allele.feature_id = fs.feature_id
+       JOIN SYNONYM s ON s.synonym_id = fs.synonym_id
+       JOIN cvterm t ON allele.type_id = t.cvterm_id
+       WHERE t.name = 'allele';
+EOQ
+
+  my $dbh = $self->chado()->storage()->dbh();
+  my $sth = $dbh->prepare($synonym_query);
+  $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+
+  my %synonyms = ();
+
+  while (my ($allele_uniquename, $synonym) = $sth->fetchrow_array()) {
+    push @{$synonyms{$allele_uniquename}}, $synonym;
+  }
+
+  return \%synonyms;
 }
 
 sub BUILDARGS
@@ -283,6 +313,8 @@ sub retrieve {
 
   my $phenotype_cv_name = $config->{phenotype_cv_name};
   my $parental_strain = $config->{parental_strain}->{$self->organism_taxonid()};
+
+  my %allele_synonyms = %{$self->allele_synonyms()};
 
   my $phenotype_cv_rs =
     $chado->resultset('Cv::Cv')->search({ 'cv.name' => $phenotype_cv_name });
@@ -474,6 +506,10 @@ sub retrieve {
         my $assigned_by = _safe_join('|', $row_fc_props{assigned_by});
 
         my $allele_description = $first_allele->{description} // '';
+
+        my $allele_synonyms_string =
+          _safe_join('|', $allele_synonyms{$first_allele->{allele_uniquename}});
+
         my $allele_type = $first_allele->{allele_type};
         my $condition = _safe_join(',', $row_fc_props{condition});
 
@@ -502,7 +538,7 @@ sub retrieve {
           '',
           $gene_name,
           $first_allele->{allele_name} // '',
-          '',
+          $allele_synonyms_string,
           $allele_type,
           $evidence_code, $condition,
           $penetrance, $severity,
