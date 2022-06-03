@@ -70,12 +70,6 @@ sub check {
   my $self = shift;
 
   my %removable_bits = (
-    'kanR' => 1,
-    'KanR' => 1,
-    'hphR' => 1,
-    'natR' => 1,
-    'KanMX' => 1,
-    'KanMX6' => 1,
     'leu1-32' => 1,
     'his3-27' => 1,
     'his6-366' => 1,
@@ -89,6 +83,19 @@ sub check {
     'ura4-D6' => 1,
     'ura4-294' => 1,
   );
+
+  my @markers = (
+    'kanR',
+    'KanR',
+    'hphR',
+    'natR',
+    'KanMX',
+    'KanMX6',
+  );
+
+  map {
+    $removable_bits{$_} = 1;
+  } @markers;
 
   my $allele_rs = $self->chado()->resultset("Sequence::Feature")
     ->search({ 'type.name' => 'allele' },
@@ -119,7 +126,12 @@ sub check {
 
     $gene_name = clean_string($gene_name);
 
-    $removable_bits{$gene_name} = 1;
+    map {
+      my $marker = $_;
+
+      $removable_bits{$gene_name . "::$marker"} = 1;
+    } @markers;
+
     $removable_bits{"$gene_name-GFP"} = 1;
     $removable_bits{"$gene_name+"} = 1;
     $removable_bits{"$gene_name+"} = 1;
