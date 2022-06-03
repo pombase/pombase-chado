@@ -350,6 +350,11 @@ sub load {
         next LINE;
       }
 
+      if ($with_or_from !~ /:/) {
+        warn "skippiing line $. - with/from value has no DB prefix: $with_or_from\n";
+        next LINE;
+      }
+
       my $local_id = $self->lookup_uniprot_id($with_or_from);
 
       if (defined $local_id) {
