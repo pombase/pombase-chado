@@ -43,8 +43,6 @@ use Carp;
 
 use Moose;
 
-use feature qw(say);
-
 sub description {
   my $self = shift;
 
@@ -106,10 +104,12 @@ EOQ
   my $sth = $dbh->prepare($query);
   $sth->execute(@parents_termids) or die "Couldn't execute: " . $sth->errstr;
 
+  my $output_text = '';
   my $count = 0;
 
   while (my @data = map { $_ // '[null]' } $sth->fetchrow_array()) {
-    say ("  " . (join "\t", @data));
+    $output_text .= ("  " . (join "\t", @data));
+    $output_text .= "\n";
     $count++;
   }
 

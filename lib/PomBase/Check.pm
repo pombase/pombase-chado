@@ -197,18 +197,29 @@ sub run {
   my @check_modules = usesub $check_config->{module_namespace};
 
   for my $module (@check_modules) {
-    print "Running: $module\n";
     my $obj = $module->new(config => $self->config(),
                            chado => $self->chado(),
                            check_config => $check_config,
                            website_config => $self->website_config());
 
     if (!$obj->check() && !$check_config->{no_fail}) {
-      print "failed: ", $obj->description(), "\n";
-      $seen_failure = 1;
-    }
+      my $output_text = '';
 
-    print "\n";
+      $output_text .= "Running: $module\n";
+      $output_text .= "failed: " . $obj->description() . "\n";
+      $output_text .= $obj->output_text();
+
+      $seen_failure = 1;
+
+      my $output_file = $self->output_prefix() . '.' . ($module =~ s/^.*:://r);
+
+      open my $output_fh, '>', "$output_file"
+        or die "can't open Chado check output file $output_file: $!\n";
+
+      print $output_fh "$output_text\n";
+
+      close $output_fh;
+    }
   }
 
   return $self->_do_query_checks() || $seen_failure;

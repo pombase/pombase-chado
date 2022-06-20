@@ -98,6 +98,7 @@ EOQ
   $sth = $dbh->prepare($allele_name_query);
   $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
+  my $output_text = '';
   my $count = 0;
 
  ROW:
@@ -117,10 +118,12 @@ EOQ
       }
     }
 
-    print "$allele_name\t$gene_name\t$gene_uniquename\t$canto_session\n";
+    $output_text .= "$allele_name\t$gene_name\t$gene_uniquename\t$canto_session\n";
 
     $count++;
   }
+
+  $self->output_text($output_text);
 
   return $count == 0;
 }

@@ -46,6 +46,7 @@ with 'PomBase::Role::ChadoUser';
 
 has website_config => (is => 'ro');
 has check_config => (is => 'ro');
+has output_text => (is => 'rw');
 
 requires 'description';
 

@@ -152,6 +152,7 @@ sub check {
     $removable_bits{"$_,"} = 1;
   } @removable_bits;
 
+  my $output_text = '';
   my $count = 0;
   my %seen = ();
 
@@ -186,8 +187,10 @@ sub check {
 
     $count++;
 
-    print "$line\n";
+    $output_text .= "$line\n";
   }
+
+  $self->output_text($output_text);
 
   return $count == 0;
 }

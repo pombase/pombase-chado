@@ -133,6 +133,8 @@ sub check {
   my %seen_rel = ();
   my @reciprocal_interactions_to_check = ();
 
+  my $output_text = '';
+
   my $success = 1;
 
   while (defined (my $rel = $fr_prefetch_rs->next())) {
@@ -147,14 +149,14 @@ sub check {
     my $source = _get_source(\%this_rel_props);
 
     if (!defined $source) {
-      warn "no source found for interaction $key_prefix\n";
+      $output_text .= "no source found for interaction $key_prefix\n";
       next;
     }
 
     my $evidence = $this_rel_props{evidence};
 
     if (!defined $evidence) {
-      warn "no evidence found for interaction $key_prefix\n";
+      $output_text .= "no evidence found for interaction $key_prefix\n";
       next;
     }
 
@@ -165,7 +167,7 @@ sub check {
     if (exists $seen_rel{$key}) {
       my $other_rel = $seen_rel{$key};
       my $other_source = _get_source($props{$other_rel->feature_relationship_id()});
-      warn "already exists: $key  sources: $source and $other_source\n";
+      $self->output_text() .= "already exists: $key  sources: $source and $other_source\n";
       $success = 0;
     } else {
       $seen_rel{$key} = $rel;
@@ -181,10 +183,12 @@ sub check {
 
   for my $reciprocal_key (@reciprocal_interactions_to_check) {
     if (!exists $seen_rel{$reciprocal_key}) {
-      warn "missing annotation for: $reciprocal_key\n";
+      $output_text .= "missing annotation for: $reciprocal_key\n";
       $success = 0;
     }
   }
+
+  $self->output_text($output_text);
 
   return $success;
 }
