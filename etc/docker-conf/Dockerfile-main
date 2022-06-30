@@ -49,6 +49,7 @@ RUN chown -R pombase:pombase /var/www/html
 COPY --chown=pombase:pombase conf/solr-terms-schema-commands.txt /pombase/solr-terms-schema-commands.txt
 COPY --chown=pombase:pombase conf/solr-refs-schema-commands.txt /pombase/solr-refs-schema-commands.txt
 COPY --chown=pombase:pombase conf/solr-genes-schema-commands.txt /pombase/solr-genes-schema-commands.txt
+COPY --chown=pombase:pombase conf/solr-alleles-schema-commands.txt /pombase/solr-alleles-schema-commands.txt
 COPY --chown=pombase:pombase conf/solr-docs-schema-commands.txt /pombase/solr-docs-schema-commands.txt
 
 USER pombase
@@ -66,18 +67,22 @@ RUN cd ./solr-8.11.1/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
     ./bin/solr create_core -force -c refs && \
     ./bin/solr create_core -force -c genes && \
+    ./bin/solr create_core -force -c alleles && \
     ./bin/solr create_core -force -c docs && \
     curl http://localhost:8983/solr/terms/config -d '{"set-user-property": {"update.autoCreateFields":"false"}}' && \
     curl http://localhost:8983/solr/refs/config -d '{"set-user-property": {"update.autoCreateFields":"false"}}' && \
     curl http://localhost:8983/solr/genes/config -d '{"set-user-property": {"update.autoCreateFields":"false"}}' && \
+    curl http://localhost:8983/solr/alleles/config -d '{"set-user-property": {"update.autoCreateFields":"false"}}' && \
     curl http://localhost:8983/solr/docs/config -d '{"set-user-property": {"update.autoCreateFields":"false"}}' && \
     while read command; do curl -X POST -H 'Content-type:application/json' -d "$command" http://localhost:8983/solr/terms/schema; done < /pombase/solr-terms-schema-commands.txt && \
     while read command; do curl -X POST -H 'Content-type:application/json' -d "$command" http://localhost:8983/solr/refs/schema; done < /pombase/solr-refs-schema-commands.txt && \
     while read command; do curl -X POST -H 'Content-type:application/json' -d "$command" http://localhost:8983/solr/genes/schema; done < /pombase/solr-genes-schema-commands.txt && \
+    while read command; do curl -X POST -H 'Content-type:application/json' -d "$command" http://localhost:8983/solr/alleles/schema; done < /pombase/solr-alleles-schema-commands.txt && \
     while read command; do curl -X POST -H 'Content-type:application/json' -d "$command" http://localhost:8983/solr/docs/schema; done < /pombase/solr-docs-schema-commands.txt && \
     gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/terms.json.gz | ./bin/post -c terms -type application/json -d && \
     gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/references.json.gz | ./bin/post -c refs -type application/json -d && \
     gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/genes.json.gz | ./bin/post -c genes -type application/json -d && \
+    gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/alleles.json.gz | ./bin/post -c alleles -type application/json -d && \
     ./bin/post -c docs -type application/json -d < /pombase/pombase-website/src/app/config/docs.json && \
     ./bin/solr stop && \
     rm -rf /var/www/html/api/v1/dataset/latest/data/solr_data
