@@ -64,7 +64,7 @@ sub BUILD
 }
 
 
-sub check_name
+sub allele_name_needs_gene_name
 {
   my $name = shift;
   my $allele_type = shift;
@@ -131,7 +131,8 @@ EOQ
   my $update_sth = $dbh->prepare("UPDATE feature SET name = ? WHERE feature_id = ?");
 
   while (my ($gene_name, $allele_feature_id, $allele_name, $allele_type, $session) = $sth->fetchrow_array()) {
-    if (defined $gene_name && check_name($allele_name, $allele_type)) {
+    if (defined $gene_name &&
+        allele_name_needs_gene_name($allele_name, $allele_type)) {
       my $new_allele_name = "$gene_name-$allele_name";
       $update_sth->execute($new_allele_name, $allele_feature_id);
     } else {

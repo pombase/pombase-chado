@@ -40,6 +40,8 @@ use strict;
 use warnings;
 use Carp;
 
+use PomBase::Chado::FixAlleleNames;
+
 use Moose::Role;
 
 use utf8::all;
@@ -345,6 +347,14 @@ sub _get_allele_session {
   }
 }
 
+sub _needs_gene_name_prefix
+{
+  my $allele_data = shift;
+
+  return PomBase::Chado::FixAlleleNames::allele_name_needs_gene_name($allele_data->{name},
+                                                                     $allele_data->{allele_type});
+}
+
 =head2 get_allele
 
  Usage   : with 'PomBase::Role::PhenotypeFeatureFinder';
@@ -383,6 +393,10 @@ sub get_allele {
   if (defined $allele_data->{description}) {
     $allele_data->{description} =~ s/^\s+//;
     $allele_data->{description} =~ s/\s+$//;
+  }
+
+  if ($allele_data->{name} && _needs_gene_name_prefix($allele_data)) {
+    $allele_data->{name} = $allele_data->{gene}->name() . '-' . $allele_data->{name};
   }
 
   if (ref $allele_data->{gene} eq 'HASH') {
