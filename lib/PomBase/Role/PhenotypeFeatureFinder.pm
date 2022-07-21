@@ -395,8 +395,9 @@ sub get_allele {
     $allele_data->{description} =~ s/\s+$//;
   }
 
-  if ($allele_data->{name} && _needs_gene_name_prefix($allele_data)) {
-    $allele_data->{name} = $allele_data->{gene}->name() . '-' . $allele_data->{name};
+  if ($allele_data->{name} && $allele_data->{gene} &&
+      $allele_data->{gene}->{name} && _needs_gene_name_prefix($allele_data)) {
+    $allele_data->{name} = $allele_data->{gene}->{name} . '-' . $allele_data->{name};
   }
 
   if (ref $allele_data->{gene} eq 'HASH') {

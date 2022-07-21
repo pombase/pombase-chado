@@ -377,6 +377,7 @@ sub load {
       my $allele_data = {
         gene => {
           uniquename => $gene_uniquename,
+          name => $gene_name,
           organism => $organism->genus() . ' ' . $organism->species(),
         },
         name => $allele_name,
