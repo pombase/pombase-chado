@@ -710,7 +710,8 @@ sub _process_feature {
       $annotation_type eq 'phenotype' or
       $annotation_type eq 'post_translational_modification' or
       $annotation_type eq 'wt_rna_expression' or
-      $annotation_type eq 'wt_protein_expression') {
+      $annotation_type eq 'wt_protein_expression' or
+      $annotation_type eq 'protein_sequence_feature_or_motif') {
     my $termid = delete $annotation->{term};
     my $with_gene = delete $annotation->{with_gene};
     my $extension_text = delete $annotation->{annotation_extension};
