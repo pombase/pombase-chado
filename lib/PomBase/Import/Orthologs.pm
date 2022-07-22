@@ -168,7 +168,7 @@ sub load {
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
 
     if (!defined $org2_identifiers) {
-      warn "not enough columns at line $. of line $org1_identifier - missing TAB character?\n";
+      warn "not enough columns at line $. of line containing $org1_identifier - missing TAB character?\n";
       next;
     }
 
