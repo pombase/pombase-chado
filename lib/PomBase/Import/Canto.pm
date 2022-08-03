@@ -346,6 +346,14 @@ sub _store_ontology_annotation {
   }
 
   if ($transcript_isoform_id) {
+    my $database_name = $config->{database_name};
+
+    $transcript_isoform_id =~ s/^$database_name://;
+
+    if ($transcript_isoform_id =~ /:/) {
+      die qq|badly formatted transcript_isoform_id ID: "$transcript_isoform_id"\n|;
+    }
+
     if ($transcript_isoform_id ne $feature->uniquename()) {
       # annotation is not for this transcript
       return;
