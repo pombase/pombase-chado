@@ -114,7 +114,7 @@ sub _build_genotype_cache {
 sub _build_json_encoder {
   my $self = shift;
 
-  return JSON->new()->utf8()->pretty(0)->canonical(1);
+  return JSON->new()->pretty(0)->canonical(1);
 }
 
 sub BUILD
