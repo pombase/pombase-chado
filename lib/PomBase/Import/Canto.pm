@@ -83,6 +83,8 @@ has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
+has json_encoder => (is => 'ro', init_arg => undef, lazy => 1,
+                     builder => '_build_json_encoder');
 
 # used for checking gene identifiers in "with" parameters
 has organism => (is => 'rw', init_arg => undef);
@@ -107,6 +109,12 @@ sub _build_extension_processor {
 sub _build_genotype_cache {
   my $self = shift;
   return PomBase::Chado::GenotypeCache->new(chado => $self->chado());
+}
+
+sub _build_json_encoder {
+  my $self = shift;
+
+  return JSON->new()->utf8()->pretty(0)->canonical(1);
 }
 
 sub BUILD
@@ -995,6 +1003,8 @@ sub _store_metadata {
   my $self = shift;
   my $metadata = shift;
 
+  my $encoder = $self->json_encoder();
+
   my $chado = $self->chado();
 
   my $pub_uniquename = $metadata->{curation_pub_id};
@@ -1045,6 +1055,12 @@ sub _store_metadata {
   }
   if ($metadata->{message_for_curators}) {
     $self->create_pubprop($pub, 'canto_message_for_curators', $metadata->{message_for_curators});
+  }
+  if ($metadata->{annotation_curators}) {
+    for my $annotation_curator (@{$metadata->{annotation_curators}}) {
+      my $annotation_curator_json = $encoder->encode($annotation_curator);
+      $self->create_pubprop($pub, 'annotation_curator', $annotation_curator_json);
+    }
   }
 }
 
