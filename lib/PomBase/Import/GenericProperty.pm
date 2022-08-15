@@ -64,6 +64,7 @@ has property_cvterm => (is => 'rw', init_arg => undef);
 has feature_uniquename_column => (is => 'rw', init_arg => undef);
 has feature_name_column => (is => 'rw', init_arg => undef);
 has property_column => (is => 'rw', init_arg => undef);
+has reference_column => (is => 'rw', init_arg => undef);
 
 sub BUILD {
   my $self = shift;
@@ -72,12 +73,14 @@ sub BUILD {
   my $feature_uniquename_column = undef;
   my $feature_name_column = undef;
   my $property_column = undef;
+  my $reference_column = undef;
 
   my @opt_config = ("organism-taxonid=s" => \$organism_taxonid,
                     "property-name=s" => \$property_name,
                     "feature-uniquename-column=s" => \$feature_uniquename_column,
                     "feature-name-column=s" => \$feature_name_column,
                     "property-column=s" => \$property_column,
+                    "reference-column=s" => \$reference_column,
                   );
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
@@ -129,6 +132,12 @@ sub BUILD {
   } else {
     die "no --property-column passed to the GenericProperty loader\n";
   }
+
+  if ($reference_column) {
+    $self->reference_column($reference_column - 1);
+  } else {
+    $self->reference_column(undef);
+  }
 }
 
 sub load {
@@ -158,6 +167,10 @@ sub load {
 
     if ($self->property_column() >= $col_count) {
       die "value for --property-column too big at line $.\n"
+    }
+
+    if (defined $self->reference_column() && $self->reference_column() >= $col_count) {
+      die "value for --reference-column too big at line $.\n"
     }
 
     my $feature = undef;
@@ -207,7 +220,15 @@ sub load {
 
     my $property_value = $columns_ref->[$self->property_column()];
 
-    $self->store_featureprop($feature, $self->property_cvterm()->name(), $property_value);
+    my $featureprop =
+      $self->store_featureprop($feature, $self->property_cvterm()->name(), $property_value);
+
+    my $reference_column = $self->reference_column();
+
+    if (defined $reference_column) {
+      my $reference_value = $columns_ref->[$reference_column];
+      $self->store_featureprop_pub($featureprop, $reference_value);
+    }
   }
 }
 

@@ -259,6 +259,19 @@ sub store_featureprop {
   });
 }
 
+sub store_featureprop_pub {
+  my $self = shift;
+  my $featureprop = shift;
+  my $pub_uniquename = shift;
+
+  my $pub = $self->find_or_create_pub($pub_uniquename);
+
+  $self->chado()->resultset('Sequence::FeaturepropPub')->create({
+    featureprop_id => $featureprop->featureprop_id(),
+    pub_id => $pub->pub_id(),
+  });
+}
+
 sub get_new_uniquename {
   my $self = shift;
   my $prefix = shift;
