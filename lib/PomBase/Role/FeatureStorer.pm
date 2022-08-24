@@ -61,7 +61,9 @@ sub store_feature {
   my $so_type = shift;
   my $organism = shift;
 
-  my $feature_type_term = $self->get_cvterm('sequence', $so_type);
+  my $feature_type_term =
+    $self->get_cvterm('sequence', $so_type) //
+    $self->get_cvterm('PomBase sequence feature types', $so_type);
 
   use Carp qw(cluck);
 

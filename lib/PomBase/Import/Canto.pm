@@ -40,6 +40,8 @@ use strict;
 use warnings;
 use Carp;
 
+use feature qw(state);
+
 use Try::Tiny;
 use Capture::Tiny qw(capture);
 
@@ -437,7 +439,7 @@ sub _store_ontology_annotation {
         }
       }
 
-      if ($feature->type()->name() ne 'genotype') {
+      if ($feature->type()->name() ne 'genotype' and $feature->type()->name() ne 'genotype_interaction') {
         die qq|phenotype annotation for "$term_name ($termid)" must have genotype information | .
           "has " . $feature->type()->name() . " instead\n";
       }
@@ -840,6 +842,60 @@ sub _process_feature {
 
 }
 
+sub _process_interactions {
+  my $self = shift;
+
+  my $annotation = shift;
+  my $session_genotypes = shift;
+  my $session_metadata = shift;
+
+  my $pub_uniquename = $session_metadata->{curation_pub_id};
+  my $pub = $self->find_or_create_pub($pub_uniquename);
+
+  my $curs_key = $session_metadata->{canto_session};
+
+  state $uniquename_counts = {};
+
+  my @return_interactions = ();
+
+  my @interaction_data = @{$annotation->{genotype_interactions_no_phenotype} // []};
+
+  for my $interaction_data (@interaction_data) {
+    my $genotype_a_uniquename = $interaction_data->{genotype_a};
+    my $genotype_a = $session_genotypes->{$genotype_a_uniquename};
+    my $genotype_b_uniquename = $interaction_data->{genotype_b};
+    my $genotype_b = $session_genotypes->{$genotype_b_uniquename};
+    my $interaction_type = $interaction_data->{interaction_type};
+
+    my $interaction_identifier =
+      $genotype_a_uniquename =~ s/$curs_key-genotype-//r .
+      '-' .
+      $genotype_b_uniquename =~ s/$curs_key-genotype-//r;
+
+    my $count_suffix = $uniquename_counts->{$interaction_identifier}++;
+
+    $interaction_identifier =
+      $curs_key . '-interaction-' . $interaction_identifier . '-' . $count_suffix;
+
+    my $interaction_feature =
+      $self->store_feature($interaction_identifier,
+                           undef, [], 'genotype_interaction',
+                           $self->organism());
+
+    $self->store_featureprop($interaction_feature, 'interaction_type',
+                             $interaction_type);
+
+    my $rel_a = $self->store_feature_rel($genotype_a, $interaction_feature, 'part_of');
+    my $rel_b = $self->store_feature_rel($genotype_b, $interaction_feature, 'part_of');
+
+    $self->create_feature_pub($interaction_feature, $pub);
+
+    push @return_interactions, $interaction_feature;
+  }
+
+  return @return_interactions;
+}
+
 sub _process_annotation {
   my $self = shift;
   my $annotation = shift;
@@ -858,6 +914,10 @@ sub _process_annotation {
   if ($status ne 'new') {
     die "unhandled status type: $status\n";
   }
+
+  my @new_interactions =
+    $self->_process_interactions($annotation, $session_genotypes,
+                                 $session_metadata);
 
   my $gene_key = delete $annotation->{gene};
   if (defined $gene_key) {
@@ -891,6 +951,12 @@ sub _process_annotation {
     } else {
       warn "can't store annotation for missing genotype: $genotype_key\n";
     }
+  }
+
+  for my $interaction (@new_interactions) {
+    $self->_process_feature($annotation, $session_metadata, undef,
+                            $interaction,
+                            $canto_session, $session_genes);
   }
 }
 
