@@ -858,7 +858,15 @@ sub _process_interactions {
 
   my @return_interactions = ();
 
-  my @interaction_data = @{$annotation->{genotype_interactions_no_phenotype} // []};
+  my @interaction_data = ();
+
+  if (exists $annotation->{genotype_interactions_no_phenotype}) {
+    @interaction_data = @{$annotation->{genotype_interactions_no_phenotype}};
+  }
+
+  if (exists $annotation->{genotype_interactions_with_phenotype}) {
+    push @interaction_data, @{$annotation->{genotype_interactions_with_phenotype}};
+  }
 
   for my $interaction_data (@interaction_data) {
     my $genotype_a_uniquename = $interaction_data->{genotype_a};
@@ -884,6 +892,11 @@ sub _process_interactions {
 
     $self->store_featureprop($interaction_feature, 'interaction_type',
                              $interaction_type);
+
+    if ($interaction_data->{genotype_a_phenotype_termid}) {
+      $self->store_featureprop($interaction_feature, 'interaction_rescued_phenotype_id',
+                               $interaction_data->{genotype_a_phenotype_termid});
+    }
 
     my $rel_a = $self->store_feature_rel($genotype_a, $interaction_feature, 'part_of');
     my $rel_b = $self->store_feature_rel($genotype_b, $interaction_feature, 'part_of');
