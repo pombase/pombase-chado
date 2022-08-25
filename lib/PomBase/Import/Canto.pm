@@ -900,8 +900,10 @@ sub _process_interactions {
                                $interaction_data->{genotype_a_phenotype_termid});
     }
 
-    my $rel_a = $self->store_feature_rel($genotype_a, $interaction_feature, 'part_of');
-    my $rel_b = $self->store_feature_rel($genotype_b, $interaction_feature, 'part_of');
+    my $rel_a = $self->store_feature_rel($genotype_a, $interaction_feature,
+                                         'interaction_genotype_a');
+    my $rel_b = $self->store_feature_rel($genotype_b, $interaction_feature,
+                                         'interaction_genotype_b');
 
     $self->create_feature_pub($interaction_feature, $pub);
 
