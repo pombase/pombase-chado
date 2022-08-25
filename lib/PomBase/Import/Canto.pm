@@ -749,7 +749,9 @@ sub _process_feature {
     if (keys %$annotation > 0) {
       my @keys =
         grep {
-          $_ ne 'organism' and $_ ne 'figure' and $_ ne 'old_term_ontid';
+          $_ ne 'organism' and $_ ne 'figure' and $_ ne 'old_term_ontid' and
+          $_ ne 'genotype_interactions_with_phenotype' and
+          $_ ne 'genotype_interactions_no_phenotype';
         } keys %$annotation;
 
       if (@keys) {
