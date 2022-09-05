@@ -386,8 +386,7 @@ sub get_allele {
   if (defined $allele_data->{name}) {
     $allele_data->{name} =~ s/^\s+//;
     $allele_data->{name} =~ s/\s+$//;
-    # turn deltas to text unless the next char is a letter
-    $allele_data->{name} =~ s/(\N{GREEK CAPITAL LETTER DELTA}|\N{INCREMENT})(?=[^a-z]|$)/delta/g;
+    $allele_data->{name} =~ s/\N{GREEK CAPITAL LETTER DELTA}|\N{INCREMENT}/delta/g;
   }
 
   if (defined $allele_data->{description}) {
