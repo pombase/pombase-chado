@@ -1,0 +1,4 @@
+55 21 * * * (cd $HOME/git/pombase-legacy; git pull) && $HOME/git/pombase-legacy/etc/nightly_load
+
+
+3,7,13,17,23,27,33,37,43,47,53,57 * * * * scp babraham-pombase:backups/pombase-website-dump.gz /tmp/; gzip -d < /tmp/pombase-website-dump.gz | xz -1 > /data/pombase/backups/babraham-pombase-website-db-dump.xz
