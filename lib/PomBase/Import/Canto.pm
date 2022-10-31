@@ -851,6 +851,12 @@ sub _process_interactions {
   my $session_genotypes = shift;
   my $session_metadata = shift;
 
+  my $genotype_uniquename = $annotation->{genotype};
+  if (!defined $genotype_uniquename) {
+    return;
+  }
+  my $double_mutant_genotype = $session_genotypes->{$genotype_uniquename};
+
   my $pub_uniquename = $session_metadata->{curation_pub_id};
   my $pub = $self->find_or_create_pub($pub_uniquename);
 
@@ -904,6 +910,9 @@ sub _process_interactions {
                                          'interaction_genotype_a');
     my $rel_b = $self->store_feature_rel($genotype_b, $interaction_feature,
                                          'interaction_genotype_b');
+    my $rel_double_mutant =
+      $self->store_feature_rel($double_mutant_genotype, $interaction_feature,
+                               'interaction_double_mutant_genotype');
 
     $self->create_feature_pub($interaction_feature, $pub);
 
