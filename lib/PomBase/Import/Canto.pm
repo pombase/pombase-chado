@@ -746,9 +746,14 @@ sub _process_feature {
     delete $annotation->{submitter_comment};
     delete $annotation->{checked};
 
+    if (exists $annotation->{with_gene_id} && !defined $annotation->{with_gene_id}) {
+      delete $annotation->{with_gene_id};
+    }
+
     if (keys %$annotation > 0) {
       my @keys =
         grep {
+          $_ ne 'annotation_id' and
           $_ ne 'organism' and $_ ne 'figure' and $_ ne 'old_term_ontid' and
           $_ ne 'genotype_interactions_with_phenotype' and
           $_ ne 'genotype_interactions_no_phenotype';
