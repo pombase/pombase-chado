@@ -732,6 +732,7 @@ sub _process_feature {
       $annotation_type eq 'protein_sequence_feature_or_motif') {
     my $termid = delete $annotation->{term};
     my $with_gene = delete $annotation->{with_gene};
+
     my $extension_text = delete $annotation->{annotation_extension};
     my $extensions = delete $annotation->{extension};
     my $expression = delete $annotation->{expression};
@@ -909,6 +910,15 @@ sub _process_interactions {
     if ($interaction_data->{genotype_a_phenotype_termid}) {
       $self->store_featureprop($interaction_feature, 'interaction_rescued_phenotype_id',
                                $interaction_data->{genotype_a_phenotype_termid});
+    }
+    if ($interaction_data->{genotype_a_phenotype_extension}) {
+      my $encoder = $self->json_encoder();
+
+      my $json_extension =
+        $encoder->encode($interaction_data->{genotype_a_phenotype_extension});
+
+      $self->store_featureprop($interaction_feature, 'interaction_rescued_phenotype_extension',
+                               $json_extension);
     }
 
     my $rel_a = $self->store_feature_rel($genotype_a, $interaction_feature,
