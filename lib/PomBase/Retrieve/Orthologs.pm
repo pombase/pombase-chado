@@ -54,6 +54,7 @@ with 'PomBase::Retriever';
 
 has other_organism_taxonid => (is => 'rw');
 has other_organism_field_name => (is => 'rw');
+has sensible_ortholog_direction => (is => 'rw');
 
 sub BUILDARGS
 {
@@ -63,8 +64,13 @@ sub BUILDARGS
   my $other_organism_taxonid = undef;
   my $other_organism_field_name = 'name';
 
+  # PomBase doesn't have a sensible direction (ie pombe genes are the object
+  # in the orthologous_to relations), so default to false
+  my $sensible_ortholog_direction = 0;
+
   my @opt_config = ("other-organism-taxon-id=s" => \$other_organism_taxonid,
                     "other-organism-field-name=s" => \$other_organism_field_name,
+                    "sensible-ortholog-direction" => \$sensible_ortholog_direction,
                   );
 
   if (!GetOptionsFromArray($args{options}, @opt_config)) {
@@ -77,6 +83,7 @@ sub BUILDARGS
 
   $args{other_organism_taxonid} = $other_organism_taxonid;
   $args{other_organism_field_name} = $other_organism_field_name;
+  $args{sensible_ortholog_direction} = $sensible_ortholog_direction;
 
   return \%args;
 }
@@ -94,7 +101,7 @@ sub retrieve {
     die "can't organism with taxon ID $taxon_id in the database\n";
   }
 
-  my $subject_identifier_field_name = $self->other_organism_field_name();
+  my $other_org_identifier_field_name = $self->other_organism_field_name();
 
   my $dbh = $self->chado()->storage()->dbh();
 
@@ -121,17 +128,24 @@ WHERE r.subject_id = s.feature_id
   AND r.subject_id NOT IN (select feature_id from transposons_temp)
   AND r.object_id NOT IN (select feature_id from transposons_temp);";
 
+  my $main_feature = 'object';
+  my $other_org_feature = 'subject';
+
+  if ($self->sensible_ortholog_direction()) {
+    ($main_feature, $other_org_feature) = ('subject', 'object');
+  }
+
   my $ortholog_temp = "
 CREATE TEMP TABLE ortholog_list AS
-SELECT distinct object.feature_id, object.uniquename as o_un,
-               subject.$subject_identifier_field_name as s_name
-  FROM feature object
+SELECT distinct $main_feature.feature_id, $main_feature.uniquename as o_un,
+                $other_org_feature.$other_org_identifier_field_name as s_name
+  FROM feature $main_feature
   LEFT OUTER JOIN feature_relationship r
     ON r.type_id = (select cvterm_id from cvterm where name = 'orthologous_to')
-   AND object.feature_id = r.object_id
-  JOIN feature subject
-    ON subject.feature_id = r.subject_id AND subject.organism_id = ? AND object.organism_id = ?
- WHERE object.feature_id in (select feature_id from protein_coding_genes)";
+   AND $main_feature.feature_id = r.${main_feature}_id
+  JOIN feature $other_org_feature
+    ON $other_org_feature.feature_id = r.${other_org_feature}_id AND $main_feature.organism_id = ? AND $other_org_feature.organism_id = ?
+ WHERE $main_feature.feature_id in (select feature_id from protein_coding_genes)";
 
   my $orthologs_query = "
 CREATE TEMP TABLE full_table AS
@@ -160,7 +174,7 @@ SELECT o_un, string_agg(CASE WHEN s_name IS NULL THEN 'NONE' ELSE s_name END, '|
       or die "Couldn't execute: " . $sth->errstr;
 
     $sth = $dbh->prepare($ortholog_temp);
-    $sth->execute($other_organism->organism_id(), $self->organism->organism_id())
+    $sth->execute($self->organism->organism_id(), $other_organism->organism_id())
       or die "Couldn't execute: " . $sth->errstr;
 
     $sth = $dbh->prepare($orthologs_query);
