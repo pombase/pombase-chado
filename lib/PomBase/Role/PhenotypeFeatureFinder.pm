@@ -437,6 +437,11 @@ sub get_allele {
       die "failed to find allele from: ", Dumper([$allele_data]);
     }
 
+    if ($allele->is_obsolete()) {
+      $allele->is_obsolete(0);
+      $allele->update();
+    }
+
     return $allele;
   } else {
     my $new_allele_name = $allele_data->{name};
@@ -596,6 +601,11 @@ sub get_allele {
 
           $add_canto_session->($existing_allele);
 
+          if ($allele->is_obsolete()) {
+            $existing_allele->is_obsolete(0);
+            $existing_allele->update();
+          }
+
           return $existing_allele;
         }
       } else {
@@ -618,6 +628,7 @@ sub get_allele {
                (defined $new_allele_description && defined $existing_description) &&
               $new_allele_description eq $existing_description)) {
             $existing_allele->name($new_allele_name);
+            $existing_allele->is_obsolete(0);
             $existing_allele->update();
             return $existing_allele;
           }
@@ -638,11 +649,19 @@ sub get_allele {
           }
 
           if (!defined $new_allele_description && !defined $existing_description) {
+            if ($allele->is_obsolete()) {
+              $existing_allele->is_obsolete(0);
+              $existing_allele->update();
+            }
             return $existing_allele;
           }
 
           if ((defined $new_allele_description && defined $existing_description) &&
               $new_allele_description eq $existing_description) {
+            if ($allele->is_obsolete()) {
+              $existing_allele->is_obsolete(0);
+              $existing_allele->update();
+            }
             return $existing_allele;
           }
         }
