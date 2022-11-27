@@ -359,7 +359,18 @@ sub _needs_gene_name_prefix
 
  Usage   : with 'PomBase::Role::PhenotypeFeatureFinder';
            my $allele_obj = $self->get_allele($allele_data);
- Function: Return an allele Feature for the given data
+ Function: Return an allele Feature for the given data.  If there is an existing
+           allele feature that matches, return it.  If not make a new feature
+           and return it.
+           If an allele exists with a matching name and type, but no
+           description, set the description of the existing allele and return it.
+           If the description arg is undef and there is an existing allele with
+           the same name, return it.
+           If an existing allele has the same description and type, but no
+           name, set the name of the existing allele and return it.
+           If the name arg is undef and there is an existing allele with
+           the same description, return it.
+
  Args    : $allele_data - a hash ref with these keys:
              gene - a hash ref to pass to get_gene():
                     { uniquename => "...", organism => "Genus species" }
