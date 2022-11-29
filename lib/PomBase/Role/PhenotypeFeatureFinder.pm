@@ -601,7 +601,7 @@ sub get_allele {
 
           $add_canto_session->($existing_allele);
 
-          if ($allele->is_obsolete()) {
+          if ($existing_allele->is_obsolete()) {
             $existing_allele->is_obsolete(0);
             $existing_allele->update();
           }
@@ -649,7 +649,7 @@ sub get_allele {
           }
 
           if (!defined $new_allele_description && !defined $existing_description) {
-            if ($allele->is_obsolete()) {
+            if ($existing_allele->is_obsolete()) {
               $existing_allele->is_obsolete(0);
               $existing_allele->update();
             }
@@ -658,7 +658,7 @@ sub get_allele {
 
           if ((defined $new_allele_description && defined $existing_description) &&
               $new_allele_description eq $existing_description) {
-            if ($allele->is_obsolete()) {
+            if ($existing_allele->is_obsolete()) {
               $existing_allele->is_obsolete(0);
               $existing_allele->update();
             }
