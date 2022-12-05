@@ -152,25 +152,31 @@ sub load {
   while (my $columns_ref = $tsv->getline($fh)) {
     my $col_count = scalar(@$columns_ref);
 
+    next if $col_count == 0;
+
     if ($columns_ref->[0] =~ /^#/) {
       next;
     }
 
     if ($self->feature_uniquename_column() &&
         $self->feature_uniquename_column() >= $col_count) {
-      die "value for --feature-uniquename-column too large at line $.\n"
+      warn "line $. is too short: the value for --feature-uniquename-column is ",
+        $self->feature_uniquename_column(), "\n";
     }
 
     if ($self->feature_name_column() && $self->feature_name_column() >= $col_count) {
-      die "value for --feature-name-column too large at line $.\n"
+      warn "line $. is too short: the value for --feature-name-column is ",
+        $self->feature_name_column(), "\n";
     }
 
     if ($self->property_column() >= $col_count) {
-      die "value for --property-column too big at line $.\n"
+      warn "line $. is too short: the value for --property-column is ",
+        $self->property_column(), "\n";
     }
 
     if (defined $self->reference_column() && $self->reference_column() >= $col_count) {
-      die "value for --reference-column too big at line $.\n"
+      warn "line $. is too short: the value for --reference-column is ",
+        $self->reference_column(), "\n"
     }
 
     my $feature = undef;
