@@ -389,9 +389,28 @@ sub store_extension {
   }
 
   if ($self->verbose() || defined $update_failed) {
+    my $feature = $feature_cvterm->feature();
+    my $feature_description =
+        $feature_cvterm->feature()->uniquename();
+
+    if ($feature->type()->name eq 'genotype') {
+      my @allele_names = ();
+
+      for my $rel ($feature->feature_relationship_objects()) {
+        my $allele_name = $rel->subject()->name();
+
+        if ($allele_name) {
+          push @allele_names, $allele_name;
+        }
+      }
+
+      if (@allele_names) {
+        $feature_description .= ' (' . join(" ", @allele_names) . ')';
+      }
+    }
+
     my $warn_message =
-      'storing feature_cvterm from ' .
-      $feature_cvterm->feature()->uniquename() . ' to ' .
+      'storing feature_cvterm from ' . $feature_description . ' to ' .
       $new_term->name();
 
     if (defined $update_failed) {
