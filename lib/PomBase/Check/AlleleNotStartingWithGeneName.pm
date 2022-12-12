@@ -106,14 +106,17 @@ EOQ
     if (!$gene_name) {
       next;
     }
-    if ($allele_name =~ /^$gene_name/) {
+
+    my $re = qr/(\(|delta[\(a-zA-Z\d]|delta$|\+$|-|::)/;
+
+    if ($allele_name =~ /^$gene_name$re/) {
       next;
     }
 
     my @gene_synonyms = @{$gene_synonyms{$gene_uniquename} // []};;
 
     for my $gene_synonym (@gene_synonyms) {
-      if ($allele_name =~ /^$gene_synonym/) {
+      if ($allele_name =~ /^$gene_synonym$re/) {
         next ROW;
       }
     }
