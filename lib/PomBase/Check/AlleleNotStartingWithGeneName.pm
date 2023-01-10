@@ -101,22 +101,25 @@ EOQ
   my $output_text = '';
   my $count = 0;
 
+  my @gene_tags = qw|GST GFP EGFP nmt1 nmt41 nmt81 NLS NES TetR|;
+  my $gene_tags_re = '(?:' . (join "|", @gene_tags) . ')-';
+
+  my $re = qr/(\(|delta[\-\(a-zA-Z\d]|delta$|\+$|-|::)/;
+
  ROW:
   while (my ($allele_name, $gene_name, $gene_uniquename, $canto_session) = $sth->fetchrow_array()) {
     if (!$gene_name) {
       next;
     }
 
-    my $re = qr/(\(|delta[\(a-zA-Z\d]|delta$|\+$|-|::)/;
-
-    if ($allele_name =~ /^$gene_name$re/) {
+    if ($allele_name =~ /^(?:(?:$gene_tags_re)?$gene_name$re|$gene_tags_re$gene_name)/) {
       next;
     }
 
     my @gene_synonyms = @{$gene_synonyms{$gene_uniquename} // []};;
 
     for my $gene_synonym (@gene_synonyms) {
-      if ($allele_name =~ /^$gene_synonym$re/) {
+      if ($allele_name =~ /^(?:(?:$gene_tags_re)?$gene_synonym$re|$gene_tags_re$gene_name)/) {
         next ROW;
       }
     }
