@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v63 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v64 .
 FROM bitnami/minideb:bullseye
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
