@@ -47,6 +47,51 @@ sub description {
   return "Check that all allele names start with a gene name or gene synonym";
 }
 
+my @known_ok_names = ('xlf1.EE(T180E,S192E)',
+                      qw(
+                          srp7.1
+                          hus5.62
+                          xlf1.AA
+                          rad15.P
+                          hus5.17
+                          sad1.2
+                          brr6.ts8
+                          sad1.1
+                          rad26.a14
+                          cut12.s11
+                          ade8.106
+                          ade7.50
+                          rad50S
+                          hsp-tev-2
+                          ppk8'-1
+                          ppk8'-3
+                          ppk8'-7
+                          ppk8'-8
+                          ppk8'-4
+                          ppk8'-2
+                          ppk8'-5
+                          ppk8'-6
+                          res1'-5
+                          res1'-2
+                          res1'-3
+                          res1'-4
+                          res1'-7
+                          res1'-6
+                          res1'-8
+                          res1'-10
+                          res1'-11
+                          res1'-12
+                          res1'-13
+                          res1'-2A
+                          res1'-2B
+                          res1'-B
+                          res1'-2D
+                          res1'-2C
+                          res1'-D
+                          res1'-2E
+                          res1'-E
+                      ));
+
 sub check {
   my $self = shift;
 
@@ -113,6 +158,10 @@ EOQ
     }
 
     if ($allele_name =~ /^(?:(?:$gene_tags_re)?$gene_name$re|$gene_tags_re$gene_name)/) {
+      next;
+    }
+
+    if (grep { $_ eq $allele_name } @known_ok_names) {
       next;
     }
 
