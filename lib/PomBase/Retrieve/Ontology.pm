@@ -129,7 +129,8 @@ sub retrieve {
   my $query = "
 SELECT t.name, cv.name, db.name, x.accession, obj.name, objdb.name, objdbxref.accession
   FROM cv, dbxref x, db, cvterm t
-  LEFT OUTER JOIN cvterm_relationship r ON r.subject_id = t.cvterm_id AND r.type_id = (select cvterm_id from cvterm, cv where cvterm.cv_id = cv.cv_id and cv.name = 'relations' and cvterm.name = 'is_a')
+  LEFT OUTER JOIN cvterm_relationship r ON r.subject_id = t.cvterm_id AND
+       r.type_id = (select cvterm_id from cvterm, cv where cvterm.cv_id = cv.cv_id and (cv.name = 'relations' OR cv.name = 'autocreated') and cvterm.name = 'is_a')
   LEFT OUTER JOIN cvterm obj ON r.object_id = obj.cvterm_id
   LEFT OUTER JOIN dbxref objdbxref ON objdbxref.dbxref_id = obj.dbxref_id
   LEFT OUTER JOIN db objdb ON objdbxref.db_id = objdb.db_id
@@ -156,7 +157,9 @@ SELECT t.name, cv.name, db.name, x.accession, obj.name, objdb.name, objdbxref.ac
             my $termid = $data[5] . ':' . $data[6];
             if (!exists $self->{_parents}->{$termid}) {
               my $cvterm = $self->find_cvterm_by_term_id($termid);
-              $self->{_parents}->{$termid} = $cvterm;
+              if (defined $cvterm) {
+                $self->{_parents}->{$termid} = $cvterm;
+              }
             }
           }
         }
