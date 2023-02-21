@@ -240,14 +240,19 @@ sub load {
   my %seen_uniquenames = ();
 
  LINE:
-  while (<$fh>) {
-    next if /^#|^!/;
+  while (defined (my $line = <$fh>)) {
+    next if $line =~ /^#|^!/;
 
-    next if $ignore_lines_matching_string && /$ignore_lines_matching_string/;
+    next if $ignore_lines_matching_string && $line =~ /$ignore_lines_matching_string/;
 
-    chomp $_;
+    chomp $line;
 
-    my @columns = split /\t/, $_, -1;
+    my @columns = split /\t/, $line, -1;
+
+    map {
+      s/\s+$//;
+      s/^\s+//;
+    } @columns;
 
     if (!$ignore_short_lines && $uniquename_column >= @columns) {
       die "not enough columns for --uniquename-column at: $_\n";
@@ -273,7 +278,7 @@ sub load {
     my $uniquename = $columns[$uniquename_column];
 
     if (!$uniquename) {
-      warn "empty uniquename: $_\n";
+      warn "empty uniquename: $line\n";
       next LINE;
     }
 
