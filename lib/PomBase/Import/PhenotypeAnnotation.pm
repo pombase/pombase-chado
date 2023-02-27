@@ -204,7 +204,10 @@ sub load {
                         parental_strain strain_background genotype_description
                         gene_name allele_name allele_synonym allele_type
                         evidence conditions penetrance severity extension
-                        reference taxon date ploidy illegal_extra_column));
+                        reference taxon date ploidy
+                        temperature chemical_or_agent chemical_or_agent_dose
+                        phenotype_score phenotype_score_units illegal_extra_column));
+
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $gene_systemtic_id = trim($columns_ref->{"gene_systemtic_id"});
