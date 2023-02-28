@@ -169,6 +169,14 @@ sub _store_annotation {
     my @conditions = split /\s*,\s*/, $conditions;
     for (my $i = 0; $i < @conditions; $i++) {
       my $condition = $conditions[$i];
+
+      if ($condition =~ /^(\w+:\d+)(?:\((.*)\))/) {
+        my $condition_termid = $1;
+        my $condition_detail = $2;
+
+        $condition = $condition_termid;
+      }
+
       $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
     }
 
@@ -204,9 +212,8 @@ sub load {
                         parental_strain strain_background genotype_description
                         gene_name allele_name allele_synonym allele_type
                         evidence conditions penetrance severity extension
-                        reference taxon date ploidy
-                        temperature chemical_or_agent chemical_or_agent_dose
-                        phenotype_score phenotype_score_units illegal_extra_column));
+                        reference taxon date ploidy allele_variant
+                        illegal_extra_column));
 
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
@@ -321,6 +328,8 @@ sub load {
           }
         }
       }
+
+      $severity =~ s/^\w+\([^\)]+\)$//;
 
       if (length $severity > 0) {
         my $severity_cvterm = $self->find_cvterm_by_term_id($severity);
