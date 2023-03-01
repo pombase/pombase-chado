@@ -19,6 +19,7 @@ cd $container_dir
 (cd curation; git pull)
 (cd pombase-chado-json; git pull)
 (cd pombase-python-web; git pull)
+(cd genome_changelog; git pull)
 
 (cd pombase-website; cp src/pombase/index.html src)
 (cd pombase-website/src/assets
