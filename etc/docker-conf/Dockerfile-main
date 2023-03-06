@@ -7,6 +7,7 @@ LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 ARG target
 ARG database_name
 ENV ANALYTICS_ID=UNSET
+ENV GOOGLE_TAG_MANAGER_ID=UNSET
 ENV DATABASE_NAME=pombase
 ENV APP_DEPLOY_CONFIG="{ mode: 'prod' }"
 
