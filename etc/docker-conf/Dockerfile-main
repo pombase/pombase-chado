@@ -131,4 +131,4 @@ HEALTHCHECK --start-period=10s --interval=10s --timeout=20s --retries=10 \
 CMD ./start_all.sh
 
 # server setup:
-# docker service create --publish 8501:8500 --env ANALYTICS_ID=ANALYTICS_ID=UA-XXXXXX-X --env DJANGO_SECRET_KEY=XXXXXXXX --env ROCKET_PROFILE=release --env ROCKET_SECRET_KEY=XXXXXXX --name main-1 --replicas 1 pombase/web:2019-03-27-prod
+# docker service create --publish 8501:8500 --env GOOGLE_TAG_MANAGER_ID=XXXXXXX --env ANALYTICS_ID=ANALYTICS_ID=UA-XXXXXX-X --env DJANGO_SECRET_KEY=XXXXXXXX --env ROCKET_PROFILE=release --env ROCKET_SECRET_KEY=XXXXXXX --name main-1 --replicas 1 pombase/web:2019-03-27-prod
