@@ -159,7 +159,31 @@ sub _store_annotation {
     if (length $penetrance > 0) {
       push @extension_bits, "has_penetrance($penetrance)";
     }
+
+    if ($severity =~ /^(\w+)\(([^\)]+)\)$/) {
+      my $phenotype_score_type = $1;
+      my $phenotype_score = $2;
+
+      $self->add_feature_cvtermprop($feature_cvterm,
+                                    annotation_phenotype_score => "$phenotype_score_type($phenotype_score)");
+
+      $severity = '';
+    }
+
     if (length $severity > 0) {
+      my $severity_cvterm = $self->find_cvterm_by_term_id($severity);
+
+      if (defined $severity_cvterm) {
+        if ($severity_cvterm->cv()->name() ne $fypo_extensions_cv_name) {
+          warn "can't load annotation, '$severity' is not from the ",
+            "$fypo_extensions_cv_name CV\n";
+          return;
+        }
+      } else {
+        warn "can't load annotation, $severity not found\n";
+        return;
+      }
+
       push @extension_bits, "has_severity($severity)";
     }
 
@@ -326,24 +350,6 @@ sub load {
               $fh->input_line_number(), " of PHAF file\n";
             return;
           }
-        }
-      }
-
-      $severity =~ s/^\w+\([^\)]+\)$//;
-
-      if (length $severity > 0) {
-        my $severity_cvterm = $self->find_cvterm_by_term_id($severity);
-
-        if (defined $severity_cvterm) {
-          if ($severity_cvterm->cv()->name() ne $fypo_extensions_cv_name) {
-            warn "can't load annotation, '$severity' is not from the ",
-              "$fypo_extensions_cv_name CV at line ", $fh->input_line_number(), "\n";
-            return;
-          }
-        } else {
-          warn "can't load annotation, $severity not found at line ",
-            $fh->input_line_number(), " of PHAF file\n";
-          return;
         }
       }
 
