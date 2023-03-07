@@ -133,6 +133,7 @@ sub _store_annotation {
   my $severity = shift;
   my $long_evidence = shift;
   my $conditions = shift;
+  my $allele_variant = shift;
 
   my @split_ext_parts = ("");
 
@@ -149,6 +150,11 @@ sub _store_annotation {
 
     $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
                                   $self->throughput_type());
+
+    if ($allele_variant) {
+      $self->add_feature_cvtermprop($feature_cvterm, 'allele_variant',
+                                    $allele_variant);
+    }
 
     my @extension_bits = ();
 
@@ -292,6 +298,8 @@ sub load {
     }
 
     my $ploidiness = $columns_ref->{"ploidy"} || "haploid";
+
+    my $allele_variant = $columns_ref->{"allele_variant"};
 
     my $proc = sub {
       my $organism = $self->find_organism_by_taxonid($taxonid);
@@ -440,7 +448,7 @@ sub load {
 
       $self->_store_annotation($genotype_feature, $cvterm, $pub, $date, $extension,
                                $penetrance, $severity, $long_evidence,
-                               $conditions);
+                               $conditions, $allele_variant);
     };
 
     try {
