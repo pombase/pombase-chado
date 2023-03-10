@@ -46,10 +46,6 @@ COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
 COPY --chown=pombase:pombase main_config.json /pombase/main_config.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/web-json data)
 RUN chown -R pombase:pombase /var/www/html
-RUN (cd /var/www/html; ln -s assets/favicon* \
-     assets/mstile-150x150.png assets/apple-touch-icon.png \
-     assets/browserconfig.xml assets/android-chrome-* assets/safari-* \
-     assets/site.webmanifest .)
 
 COPY --chown=pombase:pombase conf/solr-terms-schema-commands.txt /pombase/solr-terms-schema-commands.txt
 COPY --chown=pombase:pombase conf/solr-refs-schema-commands.txt /pombase/solr-refs-schema-commands.txt
@@ -101,7 +97,8 @@ RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
      npm install -g yarn; \
      yarn; \
-     ./etc/build_app.sh $target && cp -r dist/* /var/www/html/) && \
+     ./etc/build_app.sh $target && cp -r dist/* /var/www/html/ && \
+     cp dist/assets/$database_name/* /var/www/html/assets/) && \
      rm -rf /pombase/pombase-website /pombe/.npm-global
 
 RUN (cd /var/www/html/jbrowse; \
