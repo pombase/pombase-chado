@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v64 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v65 .
 FROM bitnami/minideb:bullseye
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -48,14 +48,6 @@ RUN (cd /pombase; JBROWSE_TAR=JBrowse-$JBROWSE_VERSION-v2.tar.gz; \
     curl -L https://www.pombase.org/software/$JBROWSE_TAR | tar xzf -; \
     mv JBrowse-$JBROWSE_VERSION jbrowse; \
     cd /pombase/jbrowse; ./setup.sh)
-
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable; \
-  rm -rf .rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc
-
-ENV PATH="/pombase/.cargo/bin/:${PATH}"
-RUN rustup default stable
-
-RUN rm -rf /*/.rustup /*/.cache /*/.cpan*
 
 USER root
 
