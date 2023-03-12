@@ -1,5 +1,5 @@
 # -*- dockerfile -*-
-FROM pombase/web-base:v65
+FROM pombase/web-base:v66
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
