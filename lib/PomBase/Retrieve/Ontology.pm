@@ -193,6 +193,7 @@ sub header {
 format-version: 1.2
 ontology: pombase
 default-namespace: pombase
+
 EOF
 }
 
