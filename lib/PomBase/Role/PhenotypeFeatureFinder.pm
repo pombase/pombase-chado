@@ -489,6 +489,16 @@ sub get_allele {
                            ->search_related('subject');
 
     if (defined $new_allele_name) {
+      if (defined $new_allele_description &&
+          $new_allele_name eq $new_allele_description &&
+          defined $gene_name) {
+        if (PomBase::Chado::FixAlleleNames::allele_name_needs_gene_name($new_allele_name, $new_allele_type)) {
+          my $orig_allele_name = $new_allele_name;
+          $new_allele_name = "$gene_name-$new_allele_name";
+          warn "fixing allele name from $orig_allele_name to $new_allele_name\n";
+        }
+      }
+
       my $existing_lower_name_rs = $existing_rs->search({ 'LOWER(name)' => lc $new_allele_name });
 
       if ($existing_lower_name_rs->count() > 1) {
