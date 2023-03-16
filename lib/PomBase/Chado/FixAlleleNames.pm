@@ -106,16 +106,17 @@ SELECT gene.name, allele.feature_id, allele.name, type_p.value as allele_type,
               WHERE name = 'canto_session')
            AND sess_p.feature_id = allele.feature_id), ',') as session
 FROM feature allele
-JOIN featureprop p ON p.feature_id = allele.feature_id
 JOIN featureprop type_p ON type_p.feature_id = allele.feature_id
+JOIN featureprop desc_p ON desc_p.feature_id = allele.feature_id
+JOIN cvterm desc_p_type ON desc_p.type_id = desc_p_type.cvterm_id
 JOIN feature_relationship rel on allele.feature_id = rel.subject_id
 JOIN feature gene on rel.object_id = gene.feature_id
 JOIN cvterm rel_type on rel.type_id = rel_type.cvterm_id
-WHERE allele.name = p.value
-  AND type_p.type_id in
+WHERE type_p.type_id in
     (SELECT cvterm_id
      FROM cvterm
      WHERE name = 'allele_type')
+  AND allele.name = desc_p.value
   AND type_p.value <> 'other'
   AND type_p.value <> 'disruption'
   AND rel_type.name = 'instance_of';
