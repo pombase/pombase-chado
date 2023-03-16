@@ -64,6 +64,16 @@ sub BUILD
 }
 
 
+=head2
+
+ Usage   : if (allele_name_needs_gene_name($allele_name, $allele_type)) { ... }
+ Function: return 1 if the allele name looks look a description for the
+           given $allele_type (like "A123D" for amino_acid_mutation)
+ Args    : $allele_name
+           $allele_description
+
+=cut
+
 sub allele_name_needs_gene_name
 {
   my $name = shift;
