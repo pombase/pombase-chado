@@ -162,21 +162,25 @@ sub load {
         $self->feature_uniquename_column() >= $col_count) {
       warn "line $. is too short: the value for --feature-uniquename-column is ",
         $self->feature_uniquename_column(), "\n";
+      next;
     }
 
     if ($self->feature_name_column() && $self->feature_name_column() >= $col_count) {
       warn "line $. is too short: the value for --feature-name-column is ",
         $self->feature_name_column(), "\n";
+      next;
     }
 
     if ($self->property_column() >= $col_count) {
       warn "line $. is too short: the value for --property-column is ",
         $self->property_column(), "\n";
+      next;
     }
 
     if (defined $self->reference_column() && $self->reference_column() >= $col_count) {
       warn "line $. is too short: the value for --reference-column is ",
-        $self->reference_column(), "\n"
+        $self->reference_column(), "\n";
+      next;
     }
 
     my $feature = undef;
