@@ -109,7 +109,7 @@ while (defined (my $line = <$phaf_fh>)) {
 
       $new_type = 'other' if $new_type eq 'amino_acid_other';
 
-      if ($old_type ne $changes->{allele_type}) {
+      if (defined $changes->{allele_type} && $old_type ne $changes->{allele_type}) {
         warn qq|$phaf_file: for "$old_name", type in PHAF file doesn't match mapping file "$old_type" vs "|,
           $changes->{allele_type}, qq|"\n|;
       } else {
