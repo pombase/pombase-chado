@@ -197,14 +197,22 @@ sub _store_annotation {
                                   $long_evidence);
 
     my @conditions = split /\s*,\s*/, $conditions;
+    my $condition_detail_count = 0;
+
     for (my $i = 0; $i < @conditions; $i++) {
       my $condition = $conditions[$i];
+      my $condition_detail = undef;
 
       if ($condition =~ /^(\w+:\d+)(?:\((.*)\))/) {
-        my $condition_termid = $1;
-        my $condition_detail = $2;
+        $condition = $1;
+        $condition_detail = $2;
+      }
 
-        $condition = $condition_termid;
+      if (defined $condition_detail) {
+        $self->add_feature_cvtermprop($feature_cvterm, 'condition_detail',
+                                      "$condition($condition_detail)",
+                                      $condition_detail_count);
+        $condition_detail_count++;
       }
 
       $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
