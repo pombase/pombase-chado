@@ -37,6 +37,7 @@ if (!defined $phaf_file) {
 open my $change_fh, '<', $change_file or die;
 
 my $change_tsv = Text::CSV->new({ sep_char => "\t", binary => 1,
+                                  quote_char => undef,
                                   auto_diag => 1, strict => 1 });
 
 $change_tsv->column_names($change_tsv->getline($change_fh));
