@@ -154,7 +154,7 @@ sub BUILD {
   $assigned_by_filter =~ s/\s+$//;
 
   if (length $taxon_filter == 0) {
-    warn "no taxon filter - annotation will be loaded for all taxa\n";
+    warn "notice: no taxon filter - annotation will be loaded for all taxa\n";
   }
 
   $self->assigned_by_filter([split /\s*,\s*/, $assigned_by_filter]);
@@ -234,7 +234,12 @@ sub load {
     next if $line =~ /^\s*!/;
 
     if (!$csv->parse($line)) {
-      die "Parse error at line $.: ", $csv->error_input(), "\n";
+      die "line $.: Parse error: ", $csv->error_input(), "\n";
+    }
+
+    if (scalar($csv->fields()) < 14) {
+      warn "line ", $fh->input_line_number(), ": not enough fields - skipping\n";
+      next;
     }
 
     my %columns = ();
@@ -248,14 +253,14 @@ sub load {
     my $taxonid = $columns{"Taxon"};
 
     if (!defined $taxonid) {
-      warn "Taxon missing - skipping line ", $fh->input_line_number(), "\n";
+      warn "line ", $fh->input_line_number(), ": taxon missing - skipping\n";
       next;
     }
 
     $taxonid =~ s/taxon://ig;
 
     if ($taxonid !~ /^\d+$/) {
-      warn "Taxon is not a number: $taxonid - skipping line ", $fh->input_line_number(), "\n";
+      warn "line ", $fh->input_line_number(), ": taxon is not a number - skipping\n";
       next;
     }
 
@@ -267,18 +272,13 @@ sub load {
     my @taxon_filter = @{$self->taxon_filter()};
 
     if (@taxon_filter > 0 && !grep { $_ == $taxonid; } @taxon_filter) {
-      warn "skipping, wrong taxon: $taxonid at line ", $fh->input_line_number(), "\n" if $self->verbose();
+      warn "line ", $fh->input_line_number(), ": skipping, wrong taxon: $taxonid\n" if $self->verbose();
       next;
     }
 
     my $db_object_id = $columns{"DB_object_id"};
     my $db_object_symbol = $columns{"DB_object_symbol"};
     my $qualifier = $columns{"Qualifier"};
-
-    if (!defined $qualifier) {
-      warn "The qualifier column has no value\n";
-      next;
-    }
 
     my $is_not = 0;
 
@@ -297,15 +297,27 @@ sub load {
     }
 
     if (@qualifier_bits > 1) {
-      warn "annotation with multiple qualifiers ($qualifier)\n";
+      warn "line ", $fh->input_line_number(), ": annotation with multiple qualifiers ($qualifier) - skipping\n";
       next;
     }
 
     my $go_id = $columns{"GO_id"};
 
+    if ($go_id =~ /^s*$/) {
+      warn "line ", $fh->input_line_number(), ": GO ID missing - skipping\n";
+      next;
+    }
+
+    if ($go_id !~ /^GO:\d\d\d\d\d\d\d$/) {
+      warn "line ", $fh->input_line_number(),
+        ": text doesn't look like a GO ID: $go_id - skipping\n";
+      next;
+    }
+
     if ($term_id_filter{$go_id}) {
       if ($self->verbose()) {
-        warn "ignoring line because of term filter: $go_id\n";
+        warn "line ", $fh->input_line_number(),
+          ": ignoring because of term filter: $go_id\n";
       }
       next;
     }
@@ -351,7 +363,8 @@ sub load {
       }
 
       if ($with_or_from !~ /:/) {
-        warn "skippiing line $. - with/from value has no DB prefix: $with_or_from\n";
+        warn "line ", $fh->input_line_number(),
+          ": with/from value has no DB prefix: $with_or_from - skipping\n";
         next LINE;
       }
 
@@ -365,7 +378,23 @@ sub load {
     my $db_object_synonym = $columns{"DB_object_synonym"};
 
     my $date = $columns{"Date"};
+
+    if ($date =~ /^\s*$/) {
+      warn "line ", $fh->input_line_number(), ": date missing - skipping\n";
+      next;
+    }
+
+    if ($date !~ /^\d\d\d\d-?\d\d-?\d\d$/) {
+      warn "line ", $fh->input_line_number(), ": date not in YYYY-MM-DD(ISO) or YYYMMDD format: $date - skipping\n";
+      next;
+    }
+
     my $assigned_by = $columns{"Assigned_by"};
+
+    if (!defined $assigned_by || $assigned_by =~ /^\s*$/) {
+      warn "line ", $fh->input_line_number(), ": assigned by missing - skipping\n";
+      next;
+    }
 
     if (@assigned_by_filter && !$assigned_by_filter{$assigned_by}) {
       if ($self->verbose()) {
@@ -418,9 +447,9 @@ sub load {
     }
 
     if (!defined $gene_feature) {
-      warn "gene feature not found, none of the identifiers  (" .
-        "@synonyms) from this annotation match a systematic ID in Chado at line ",
-        $fh->input_line_number(), "\n";
+      warn "line ", $fh->input_line_number(), ": gene feature not found, ",
+        "none of the identifiers (@synonyms) from this annotation ",
+        "match a systematic ID in Chado - skipping\n";
       next;
     }
 
@@ -439,7 +468,7 @@ sub load {
         my $cvterm = $self->find_cvterm_by_term_id($go_id);
 
         if (!defined $cvterm) {
-          warn "can't load annotation, $go_id not found in database\n";
+          warn "line ", $fh->input_line_number(), ": can't load annotation, $go_id not found in database\n";
           return;
         }
 
@@ -453,20 +482,20 @@ sub load {
         my $extension_text = $columns{"Annotation_extension"};
 
         if ($extension_text) {
-          my ($out, $err) = capture {
-            my $processor = $self->extension_processor();
+          my $err = undef;
 
-            try {
-              $processor->process_one_annotation($feature_cvterm, $extension_text);
-            } catch {
-              die "line ", $fh->input_line_number(), ": $_";
-            }
+          my $processor = $self->extension_processor();
+
+          try {
+            $processor->process_one_annotation($feature_cvterm, $extension_text);
+          } catch {
+            chomp $_;
+            $err = $_;
           };
-          if (length $out > 0) {
-            die "$out\n";
-          }
-          if (length $err > 0) {
-            die "$err\n";
+
+          if ($err) {
+            warn "line $.: $err\n";
+            return;
           }
         }
 
@@ -514,9 +543,8 @@ sub load {
         $chado->txn_do($proc);
       }
       catch {
-        warn "Failed to load row: $_";
+        warn "line ", $fh->input_line_number(), ": ($_)\n";
       }
-
     }
   }
 
