@@ -1,0 +1,110 @@
+<PubmedArticle>
+    <MedlineCitation Status="Publisher" Owner="NLM">
+        <PMID Version="1">29352077</PMID>
+        <DateRevised>
+            <Year>2018</Year>
+            <Month>01</Month>
+            <Day>20</Day>
+        </DateRevised>
+        <Article PubModel="Print-Electronic">
+            <Journal>
+                <ISSN IssnType="Electronic">2160-1836</ISSN>
+                <JournalIssue CitedMedium="Internet">
+                    <PubDate>
+                        <Year>2018</Year>
+                        <Month>Jan</Month>
+                        <Day>19</Day>
+                    </PubDate>
+                </JournalIssue>
+                <Title>G3 (Bethesda, Md.)</Title>
+                <ISOAbbreviation>G3 (Bethesda)</ISOAbbreviation>
+            </Journal>
+            <ArticleTitle>Whole-Genome Sequencing of Suppressor DNA Mixtures Identifies Pathways That Compensate for Chromosome Segregation Defects in<i>Schizosaccharomyces pombe</i>.</ArticleTitle>
+            <ELocationID EIdType="pii" ValidYN="Y">g3.200048.2018</ELocationID>
+            <ELocationID EIdType="doi" ValidYN="Y">10.1534/g3.118.200048</ELocationID>
+            <Abstract>
+                <AbstractText>Suppressor screening is a powerful method to identify genes that when mutated, rescue the temperature sensitivity of the original mutation. Previously, however, identification of suppressor mutations has been technically difficult. Due to the small genome size of<i>Schizosaccharomyces pombe</i>, we developed a spontaneous suppressor screening technique, followed by a cost-effective sequencing method. Genomic DNAs of 10 revertants which survived at the restrictive temperature of the original temperature sensitive (ts) mutant were mixed together as one sample before constructing a library for sequencing. Responsible suppressor mutations were identified bioinformatically based on allele frequency. Then we isolated a large number of spontaneous extragenic suppressors for 3 ts mutants that exhibited defects in chromosome segregation at their restrictive temperature. Screening provided new insight into mechanisms of chromosome segregation: Loss of Ufd2 E4 multi-ubiquitination activity suppresses defects of an AAA ATPase, Cdc48. Loss of Wpl1, a releaser of cohesin, compensates for the Eso1 mutation, which may destabilize sister chromatid cohesion. The segregation defect of a ts histone H2B mutant is rescued if it fails to be de-ubiquitinated by the SAGA complex, because H2B is stabilized by monoubiquitination.</AbstractText>
+                <CopyrightInformation>Copyright © 2018, G3: Genes, Genomes, Genetics.</CopyrightInformation>
+            </Abstract>
+            <AuthorList CompleteYN="Y">
+                <Author ValidYN="Y">
+                    <LastName>Xu</LastName>
+                    <ForeName>Xingya</ForeName>
+                    <Initials>X</Initials>
+                    <AffiliationInfo>
+                        <Affiliation>Okinawa Institute of Science and Technology Graduate University.</Affiliation>
+                    </AffiliationInfo>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Wang</LastName>
+                    <ForeName>Li</ForeName>
+                    <Initials>L</Initials>
+                    <AffiliationInfo>
+                        <Affiliation>Okinawa Institute of Science and Technology Graduate University.</Affiliation>
+                    </AffiliationInfo>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Yanagida</LastName>
+                    <ForeName>Mitsuhiro</ForeName>
+                    <Initials>M</Initials>
+                    <AffiliationInfo>
+                        <Affiliation>Okinawa Institute of Science and Technology Graduate University myanagid@gmail.com.</Affiliation>
+                    </AffiliationInfo>
+                </Author>
+            </AuthorList>
+            <Language>eng</Language>
+            <PublicationTypeList>
+                <PublicationType UI="D016428">Journal Article</PublicationType>
+            </PublicationTypeList>
+            <ArticleDate DateType="Electronic">
+                <Year>2018</Year>
+                <Month>01</Month>
+                <Day>19</Day>
+            </ArticleDate>
+        </Article>
+        <MedlineJournalInfo>
+            <Country>United States</Country>
+            <MedlineTA>G3 (Bethesda)</MedlineTA>
+            <NlmUniqueID>101566598</NlmUniqueID>
+            <ISSNLinking>2160-1836</ISSNLinking>
+        </MedlineJournalInfo>
+        <KeywordList Owner="NOTNLM">
+            <Keyword MajorTopicYN="N">Schizosaccharomyces pombe</Keyword>
+            <Keyword MajorTopicYN="N">chromosome segregation</Keyword>
+            <Keyword MajorTopicYN="N">next-generation sequencing</Keyword>
+            <Keyword MajorTopicYN="N">suppressor screen</Keyword>
+            <Keyword MajorTopicYN="N">temperature sensitive mutant</Keyword>
+        </KeywordList>
+    </MedlineCitation>
+    <PubmedData>
+        <History>
+            <PubMedPubDate PubStatus="entrez">
+                <Year>2018</Year>
+                <Month>1</Month>
+                <Day>21</Day>
+                <Hour>6</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+            <PubMedPubDate PubStatus="pubmed">
+                <Year>2018</Year>
+                <Month>1</Month>
+                <Day>21</Day>
+                <Hour>6</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+            <PubMedPubDate PubStatus="medline">
+                <Year>2018</Year>
+                <Month>1</Month>
+                <Day>21</Day>
+                <Hour>6</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+        </History>
+        <PublicationStatus>aheadofprint</PublicationStatus>
+        <ArticleIdList>
+            <ArticleId IdType="pubmed">29352077</ArticleId>
+            <ArticleId IdType="pii">g3.118.200048</ArticleId>
+            <ArticleId IdType="doi">10.1534/g3.118.200048</ArticleId>
+        </ArticleIdList>
+    </PubmedData>
+</PubmedArticle>
