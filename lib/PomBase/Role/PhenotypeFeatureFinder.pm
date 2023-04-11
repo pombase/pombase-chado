@@ -495,7 +495,6 @@ sub get_allele {
         if (PomBase::Chado::FixAlleleNames::allele_name_needs_gene_name($new_allele_name, $new_allele_type)) {
           my $orig_allele_name = $new_allele_name;
           $new_allele_name = "$gene_name-$new_allele_name";
-          warn "fixing allele name from $orig_allele_name to $new_allele_name\n";
         }
       }
 
