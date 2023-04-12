@@ -495,6 +495,7 @@ sub load {
 
           if ($err) {
             warn "line $.: $err\n";
+            $feature_cvterm->delete();
             return;
           }
         }
