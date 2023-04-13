@@ -141,6 +141,45 @@ sub store_feature_synonym {
   });
 }
 
+=head2 store_synonym_if_missing
+
+ Usage   : $self->store_synonym_if_missing($allele, $synonym);
+ Function: Take a list of synonyms for an allele and store if those
+           doesn't already exist
+ Args    : $allele
+           $synonyms - a reference of a list of synonyms
+           $pubmed_id
+ Returns : nothing
+
+=cut
+
+sub store_synonym_if_missing {
+  my $self = shift;
+  my $allele = shift;
+  my $synonyms = shift;
+  my $pubmed_id = shift;
+
+  my $chado = $self->chado();
+
+  my @existing_synonyms = $chado->resultset('Sequence::FeatureSynonym')
+    ->search({ feature_id => $allele->feature_id() },
+             { prefetch => 'synonym' })->all();
+
+  my @existing_names = map {
+    $_->synonym()->name();
+  } @existing_synonyms;
+
+  for my $new_synonym (@{$synonyms}) {
+    if (!grep { $_ eq $new_synonym } @existing_names) {
+      warn "storing $new_synonym for ", $allele->name(), "\n";
+
+      $self->store_feature_synonym($allele, $new_synonym, 'exact', 1,
+                                   $pubmed_id);
+    }
+  }
+}
+
+
 sub store_feature_and_loc {
   my $self = shift;
   my $feature = shift;

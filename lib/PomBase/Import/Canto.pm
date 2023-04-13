@@ -1033,20 +1033,8 @@ sub _get_alleles {
       if ($allele_data->{synonyms}) {
         my $chado = $self->chado();
 
-        my @existing_synonyms = $chado->resultset('Sequence::FeatureSynonym')
-          ->search({ feature_id => $allele->feature_id() },
-                   { prefetch => 'synonym' })->all();
-
-        my @existing_names = map {
-          $_->synonym()->name();
-        } @existing_synonyms;
-
-        for my $new_synonym (@{$allele_data->{synonyms}}) {
-          if (!grep { $_ eq $new_synonym } @existing_names) {
-            $self->store_feature_synonym($allele, $new_synonym, 'exact', 1,
-                                         $pubmed_id);
-          }
-        }
+        $self->store_synonym_if_missing($allele, $allele_data->{synonyms},
+                                        $pubmed_id);
       }
     };
 
