@@ -171,8 +171,6 @@ sub store_synonym_if_missing {
 
   for my $new_synonym (@{$synonyms}) {
     if (!grep { $_ eq $new_synonym } @existing_names) {
-      warn "storing $new_synonym for ", $allele->name(), "\n";
-
       $self->store_feature_synonym($allele, $new_synonym, 'exact', 1,
                                    $pubmed_id);
     }

@@ -243,8 +243,9 @@ sub get_genotype_for_allele {
 
   $expression = 'Not assayed' if $expression && lc $expression eq 'not specified';
 
-  return $self->get_genotype($genotype_identifier, undef, $background, undef,
-                             [{ allele => $allele, expression => $expression }]);
+  return ($self->get_genotype($genotype_identifier, undef, $background, undef,
+                              [{ allele => $allele, expression => $expression }]),
+          $allele);
 }
 
 sub _get_allele_props {

@@ -280,7 +280,7 @@ sub load {
     my $strain_background = $columns_ref->{"strain_background"};
     my $gene_name = $columns_ref->{"gene_name"};
     my $allele_name = $columns_ref->{"allele_name"};
-    my $allele_synonym = $columns_ref->{"allele_synonym"};
+    my $allele_synonyms = $columns_ref->{"allele_synonym"};
     my $allele_type = $columns_ref->{"allele_type"};
     my $evidence = $columns_ref->{"evidence"};
     my $conditions = $columns_ref->{"conditions"};
@@ -430,12 +430,14 @@ sub load {
 
       my $genotype_feature;
 
+      my $allele;
+
       if ($ploidiness eq 'haploid') {
-        $genotype_feature =
+        ($genotype_feature, $allele) =
           $self->get_genotype_for_allele($background_description, $allele_data, $expression);
       } else {
         if ($ploidiness =~ /^homozygous.diploid$/) {
-          my $allele = $self->get_allele($allele_data);
+          $allele = $self->get_allele($allele_data);
 
           my $genotype_identifier = $self->get_genotype_uniquename();
 
@@ -452,6 +454,14 @@ sub load {
         } else {
           die qq|unknown value in "ploidy" column: "$ploidiness"|;
         }
+      }
+
+      if ($allele_synonyms) {
+        my @synonyms = map {
+          my $synonym = $_;
+        } split /\|/, $allele_synonyms;
+
+        $self->store_synonym_if_missing($allele, \@synonyms, $reference);
       }
 
       $self->_store_annotation($genotype_feature, $cvterm, $pub, $date, $extension,
