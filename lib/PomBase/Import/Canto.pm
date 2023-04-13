@@ -1031,8 +1031,6 @@ sub _get_alleles {
       my $allele = $self->get_allele($allele_data);
       $ret{$key} = $allele;
       if ($allele_data->{synonyms}) {
-        my $chado = $self->chado();
-
         $self->store_synonym_if_missing($allele, $allele_data->{synonyms},
                                         $pubmed_id);
       }
