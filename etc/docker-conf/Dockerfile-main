@@ -41,6 +41,8 @@ COPY --chown=pombase:pombase chromosome_fasta /pombase/chromosome_fasta
 COPY --chown=pombase:pombase feature_sequences /pombase/feature_sequences
 RUN gzip -d /pombase/feature_sequences/*.gz
 
+COPY --chown=pombase:pombase data_files /pombase/data_files
+
 COPY --chown=pombase:pombase Rocket.toml /pombase/
 
 COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
@@ -64,7 +66,8 @@ COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/pombase-we
 COPY --chown=pombase:pombase jbrowse_track_metadata.csv /pombase/jbrowse/data/jbrowse_track_metadata.csv
 
 RUN (cd pombase-website; \
-    ./etc/update_generated_files.sh /pombase/main_config.json /pombase/curation-data-files)
+    ./etc/update_generated_files.sh /pombase/main_config.json \
+    /pombase/pombe_data)
 
 RUN cd ./solr-8.11.1/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
