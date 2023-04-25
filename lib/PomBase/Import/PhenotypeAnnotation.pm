@@ -241,6 +241,12 @@ sub load {
   my $self = shift;
   my $fh = shift;
 
+  my $file_name = readlink '/proc/self/fd/0';
+
+  if (defined $file_name) {
+    $file_name =~ s|.*/||;
+  }
+
   my $chado = $self->chado();
   my $config = $self->config();
 
@@ -253,6 +259,7 @@ sub load {
                         reference taxon date ploidy allele_variant
                         illegal_extra_column));
 
+  my %stored_alleles = ();
 
   while (my $columns_ref = $csv->getline_hr($fh)) {
     my $gene_systemtic_id = trim($columns_ref->{"gene_systemtic_id"});
@@ -464,6 +471,8 @@ sub load {
         $self->store_synonym_if_missing($allele, \@synonyms, $reference);
       }
 
+      $stored_alleles{$allele->feature_id()} = $allele;
+
       $self->_store_annotation($genotype_feature, $cvterm, $pub, $date, $extension,
                                $penetrance, $severity, $long_evidence,
                                $conditions, $allele_variant);
@@ -474,6 +483,13 @@ sub load {
     } catch {
       warn "Failed to load line ", $fh->input_line_number(), ": $_\n";
     }
+  }
+
+  if (defined $file_name) {
+    map {
+      my $allele = $_;
+      $self->store_featureprop($allele, 'source_file', $file_name);
+    } values %stored_alleles;
   }
 
   if (!$csv->eof()){
