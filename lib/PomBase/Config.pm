@@ -92,6 +92,7 @@ sub BUILD {
     $self->{evidence_types}->{lc $short_name . ' evidence'} = $details;
     $self->{evidence_types}->{$short_name} = $details;
     $self->{evidence_types}->{lc $short_name} = $details;
+    $self->{evidence_types}->{ucfirst lc $short_name} = $details;
   }
 }
 
