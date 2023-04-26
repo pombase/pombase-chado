@@ -273,17 +273,35 @@ sub store_featureprop {
 
   assert (defined $value, "no value passed to store_featureprop()");
 
-  my $rank;
+  my $type_cvterm = $self->get_cvterm('PomBase feature property types', $type_name);
 
-  if (exists $ranks->{$feature->feature_id()}->{$type_name}) {
-    $rank = $ranks->{$feature->feature_id()}->{$type_name}++;
-  } else {
-    $ranks->{$feature->feature_id()}->{$type_name} = 1;
-    $rank = 0;
+  if (!exists $ranks->{$type_name}) {
+    $ranks->{$type_name} = {};
+
+    my $featureprop_rs = $self->chado()->resultset('Sequence::Featureprop')
+      ->search({
+        type_id => $type_cvterm->cvterm_id(),
+      });
+
+    for my $prop ($featureprop_rs->all()) {
+      my $prop_rank = $prop->rank();
+
+      my $current_rank =
+        $ranks->{$type_name}->{$prop->feature()->feature_id()};
+
+      if (!defined $current_rank || $current_rank < $prop_rank) {
+        $ranks->{$type_name}->{$prop->feature()->feature_id()} = $prop_rank;
+      }
+    }
   }
 
-  my $type_cvterm = $self->get_cvterm('PomBase feature property types',
-                                      $type_name);
+  my $rank;
+
+  if (!exists $ranks->{$type_name}->{$feature->feature_id()}) {
+    $ranks->{$type_name}->{$feature->feature_id()} = -1;
+  }
+
+  $rank = ++$ranks->{$type_name}->{$feature->feature_id()};
 
   warn "  storing featureprop for ", $feature->uniquename(), " $type_name $value\n" if $self->verbose();
 
