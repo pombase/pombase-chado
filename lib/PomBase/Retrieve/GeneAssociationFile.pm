@@ -249,7 +249,7 @@ my %top_level_terms = (P => 'GO:0008150',
                        F => 'GO:0003674',
                      );
 
-my @ncrna_so_types = qw(ncRNA snRNA snoRNA rRNA tRNA);
+my @ncrna_so_types = qw(ncRNA snRNA snoRNA rRNA tRNA lncRNA sncRNA);
 my %so_type_map = (mRNA => "protein",
                    map { ($_, $_) } @ncrna_so_types);
 
