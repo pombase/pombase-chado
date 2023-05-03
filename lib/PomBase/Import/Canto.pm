@@ -525,6 +525,11 @@ sub _store_ontology_annotation {
     $self->add_feature_cvtermprop($feature_cvterm,
                                   canto_session => $canto_session);
     if (defined $submitter_comment) {
+      # normalise whitespace, replace tabs with space
+      $submitter_comment =~ s/\s+/ /g;
+      $submitter_comment =~ s/^\s+//g;
+      $submitter_comment =~ s/\s+$//g;
+
       $self->add_feature_cvtermprop($feature_cvterm,
                                     submitter_comment => $submitter_comment);
     }
