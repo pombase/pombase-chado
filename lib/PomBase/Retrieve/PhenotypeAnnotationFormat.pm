@@ -71,6 +71,7 @@ has allele_synonyms => (is => 'ro', init_arg => undef,
                         lazy_build => 1);
 
 has use_eco_evidence_codes => (is => 'rw');
+has add_submitter_comment_column => (is => 'rw');
 
 sub _build_fypo_extension_termids
 {
@@ -142,14 +143,17 @@ sub BUILDARGS
   my %args = @_;
 
   my $use_eco_evidence_codes = 0;
+  my $add_comment_column = 0;
 
-  my @opt_config = ('use-eco-evidence-codes' => \$use_eco_evidence_codes);
+  my @opt_config = ('use-eco-evidence-codes' => \$use_eco_evidence_codes,
+                    'add-submitter-comment-column' => \$add_comment_column);
 
   if (!GetOptionsFromArray($args{options}, @opt_config)) {
     croak "option parsing failed";
   }
 
   $args{use_eco_evidence_codes} = $use_eco_evidence_codes;
+  $args{add_submitter_comment_column} = $add_comment_column;
 
   return \%args;
 }
@@ -504,6 +508,7 @@ sub retrieve {
         my $date = _safe_join('|', $row_fc_props{date});
         my $gene_product_form_id = _safe_join('|', $row_fc_props{gene_product_form_id});
         my $assigned_by = _safe_join('|', $row_fc_props{assigned_by});
+        my $submitter_comment = _safe_join('|', $row_fc_props{submitter_comment});
 
         my $allele_description = $first_allele->{description} // '';
 
@@ -529,7 +534,7 @@ sub retrieve {
           }
         }
 
-        return [
+        my $ret_columns = [
           $db_name,
           $gene_uniquename, $id,
           $allele_description,
@@ -544,7 +549,13 @@ sub retrieve {
           $penetrance, $severity,
           $extensions // '', $pub->uniquename(),
           $taxon, $date,
-        ]
+        ];
+
+        if ($self->add_submitter_comment_column() && $submitter_comment) {
+          push @{$ret_columns}, $submitter_comment;
+        }
+
+        return $ret_columns;
       }
     }
     };
