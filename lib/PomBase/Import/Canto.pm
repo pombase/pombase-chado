@@ -311,6 +311,8 @@ sub _store_ontology_annotation {
   my $canto_session = $args{canto_session};
   my $changed_by = $args{changed_by};
 
+  my $submitter_comment = $args{submitter_comment};
+
   if ($with_gene && $termid eq 'GO:0005515') {
     my $feature_uniquename = undef;
     if (defined $gene) {
@@ -522,6 +524,11 @@ sub _store_ontology_annotation {
                                   community_curated => $community_curated_flag);
     $self->add_feature_cvtermprop($feature_cvterm,
                                   canto_session => $canto_session);
+    if (defined $submitter_comment) {
+      $self->add_feature_cvtermprop($feature_cvterm,
+                                    submitter_comment => $submitter_comment);
+    }
+
     if (defined $changed_by) {
       $self->add_feature_cvtermprop($feature_cvterm,
                                     changed_by => $changed_by);
@@ -692,6 +699,7 @@ sub _process_feature {
   my $publication_uniquename = delete $annotation->{publication};
   my $evidence_code = delete $annotation->{evidence_code};
   my $curator = delete $annotation->{curator};
+  my $submitter_comment = delete $annotation->{submitter_comment};
   my $changed_by = delete $annotation->{changed_by};
 
   my $changed_by_json = undef;
@@ -781,6 +789,7 @@ sub _process_feature {
                                       canto_session => $canto_session,
                                       curator => $curator,
                                       changed_by => $changed_by_json,
+                                      submitter_comment => $submitter_comment,
                                       %useful_session_data);
 
     if ($with_gene && $evidence_code eq 'IPI' && $termid eq 'GO:0005515' &&
