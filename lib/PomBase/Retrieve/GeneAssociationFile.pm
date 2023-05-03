@@ -62,6 +62,7 @@ my $ext_cv_name = 'PomBase annotation extension terms';
 
 has filter_by_term => (is => 'rw');
 has filter_term_by_sql => (is => 'rw');
+has add_submitter_comment_column => (is => 'rw');
 
 sub BUILDARGS
 {
@@ -70,9 +71,11 @@ sub BUILDARGS
 
   my $filter_by_term = undef;
   my $filter_term_by_sql = undef;
+  my $add_comment_column = 0;
 
   my @opt_config = ("filter-by-term=s" => \$filter_by_term,
-                    "filter-term-by-sql=s" => \$filter_term_by_sql);
+                    "filter-term-by-sql=s" => \$filter_term_by_sql,
+                    "add-submitter-comment-column" => \$add_comment_column);
 
   if (!GetOptionsFromArray($args{options}, @opt_config)) {
     croak "option parsing failed";
@@ -80,6 +83,7 @@ sub BUILDARGS
 
   $args{filter_by_term} = $filter_by_term;
   $args{filter_term_by_sql} = $filter_term_by_sql;
+  $args{add_submitter_comment_column} = $add_comment_column;
 
   return \%args;
 }
@@ -437,15 +441,24 @@ me.cvterm_id in
         my $so_type = $so_type_map{$details->{transcript_type}};
         my $assigned_by = _safe_join('|', $row_fc_props{assigned_by});
 
+        my $submitter_comment = _safe_join('|', $row_fc_props{submitter_comment});
+
         if (!$row->is_not()) {
           $gene_aspect_count{$gene_uniquename}{$aspect}++;
         }
 
-        return [$db_name, $gene_uniquename, $gene_name,
+        my $ret_columns =
+               [$db_name, $gene_uniquename, $gene_name,
                 $qualifier, $id, $pub->uniquename(),
                 $evidence_code, $with_from, $aspect, $product, $synonyms,
                 $so_type, $taxon, $date, $assigned_by, $extensions // '',
                 $gene_product_form_id];
+
+        if ($self->add_submitter_comment_column() && $submitter_comment) {
+          push @{$ret_columns}, $submitter_comment;
+        }
+
+        return $ret_columns;
       } else {
         if (defined $self->filter_by_term() || defined $self->filter_term_by_sql()) {
           return undef;
