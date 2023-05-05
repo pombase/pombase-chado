@@ -529,9 +529,12 @@ sub _store_ontology_annotation {
       $submitter_comment =~ s/\s+/ /g;
       $submitter_comment =~ s/^\s+//g;
       $submitter_comment =~ s/\s+$//g;
+      $submitter_comment =~ s/^[^\d\w]$//;
 
-      $self->add_feature_cvtermprop($feature_cvterm,
-                                    submitter_comment => $submitter_comment);
+      if (length $submitter_comment > 0) {
+        $self->add_feature_cvtermprop($feature_cvterm,
+                                      submitter_comment => $submitter_comment);
+      }
     }
 
     if (defined $changed_by) {
