@@ -117,6 +117,16 @@ sub get_genotype {
     exit 1;
   }
 
+  map {
+    my $allele_data = $_;
+    my $expression = $allele_data->{expression};
+    if ($expression &&
+        ($expression eq 'Not assayed' ||
+         $expression eq 'Wild type product level')) {
+      $allele_data->{expression} = 'Not assayed or wild type';
+    }
+  } @$alleles;
+
   my $cached_genotype =
     $self->genotype_cache()->get($genotype_name, $genotype_background, $alleles);
 
