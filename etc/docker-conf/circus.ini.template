@@ -7,14 +7,14 @@ SOLR_OPTS=-Dsolr.dns.prevent.reverse.lookup=true
 [watcher:solr]
 cmd = bin/solr
 args = start -f -force -m 2g
-working_dir = solr-8.11.1
+working_dir = solr-8.11.2
 warmup_delay = 0
 numprocesses = 1
 singleton = True
 
 [watcher:pombase-server]
 cmd = /pombase/bin/pombase-server
-args = -c /pombase/main_config.json -m /var/www/html/web-json/api_maps.json.zst -w /var/www/html/ --site-db="postgresql://<<database_name>>:<<database_name>>@$(CIRCUS.ENV.HOST_IP_ADDRESS)/<<database_name>>-website"
+args = -c /pombase/main_config.json -d /pombase/api_maps.sqlite3 -m /var/www/html/web-json/api_maps.json.zst -w /var/www/html/ --site-db="postgresql://<<database_name>>:<<database_name>>@$(CIRCUS.ENV.HOST_IP_ADDRESS)/<<database_name>>-website"
 copy_env = True
 working_dir = .
 warmup_delay = 0

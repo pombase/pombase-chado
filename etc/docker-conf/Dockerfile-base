@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v66 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v67 .
 FROM bitnami/minideb:bullseye
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -14,7 +14,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && \
     apt-get -y dist-upgrade && \
-    apt-get -y install apt-utils curl gnupg2 git-core procps xz-utils \
+    apt-get -y install apt-utils curl gnupg2 git-core procps xz-utils zstd \
         libterm-readline-gnu-perl pkg-config libssl-dev unzip ipip \
         lsof jq gcc net-tools python-pkg-resources python3-pip && \
     echo "deb http://deb.debian.org/debian stable main" >> /etc/apt/sources.list && \
@@ -34,8 +34,8 @@ RUN pip3 install --upgrade setuptools; pip3 install --no-cache-dir --upgrade pip
 
 USER pombase
 
-RUN cd /pombase && curl -L 'https://www.apache.org/dyn/closer.lua/lucene/solr/8.11.1/solr-8.11.1.tgz?action=download' | tar -x --gzip -f - && \
-    (cd /pombase/solr-8.11.1/; rm -rf example contrib licenses *.txt docs)
+RUN cd /pombase && curl -L 'https://downloads.apache.org/lucene/solr/8.11.2/solr-8.11.2.tgz' | tar -x --gzip -f - && \
+    (cd /pombase/solr-8.11.2/; rm -rf example contrib licenses *.txt docs)
 
 ENV JBROWSE_VERSION=1.16.10-pombase
 

@@ -38,6 +38,8 @@ rsync -acvPHS --delete-after $dump_dir/misc $container_dir/
 rsync -acvPHS --delete-after $dump_dir/gff $container_dir/
 rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $container_dir/chromosome_fasta/
 
+cp $dump_dir/api_maps.sqlite3.zst $container_dir/
+
 mkdir -p $container_dir/feature_sequences
 rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $container_dir/feature_sequences/peptide.fa.gz
 

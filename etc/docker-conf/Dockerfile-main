@@ -1,5 +1,5 @@
 # -*- dockerfile -*-
-FROM pombase/web-base:v66
+FROM pombase/web-base:v67
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -43,6 +43,8 @@ RUN gzip -d /pombase/feature_sequences/*.gz
 
 COPY --chown=pombase:pombase data_files /pombase/data_files
 
+COPY --chown=pombase:pombase api_maps.sqlite3.zst /pombase/
+
 COPY --chown=pombase:pombase Rocket.toml /pombase/
 
 COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
@@ -69,7 +71,7 @@ RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json \
     /pombase/data_files)
 
-RUN cd ./solr-8.11.1/; ./bin/solr start -force -m 4g && \
+RUN cd ./solr-8.11.2/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
     ./bin/solr create_core -force -c refs && \
     ./bin/solr create_core -force -c genes && \

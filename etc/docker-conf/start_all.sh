@@ -17,6 +17,8 @@ then
   exit 1
 fi
 
+zstd -dq --rm /pombase/api_maps.sqlite3.zst
+
 export HOST_IP_ADDRESS=$(route | grep '^default' | awk '{print $2}')
 
 /pombase/update_vars.sh $ANALYTICS_ID $GOOGLE_TAG_MANAGER_ID "$APP_DEPLOY_CONFIG" /var/www/html/index.html &&
