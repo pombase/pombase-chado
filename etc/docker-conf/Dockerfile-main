@@ -22,8 +22,8 @@ COPY --chown=pombase:pombase pombase-chado-json /pombase/pombase-chado-json
 RUN mkdir bin
 RUN (curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable && \
      . "$HOME/.cargo/env" && \
-     (cd pombase-chado-json; rustup default stable; cargo build --release && cp target/release/pombase-server /pombase/bin/) && \
-     rm -r /pombase/pombase-chado-json $HOME/.rustup $HOME/.cargo)
+     (cd pombase-chado-json; rustup default stable; cargo build --release --bin pombase-server && cp target/release/pombase-server /pombase/bin/) && \
+     rm -r $HOME/.rustup $HOME/.cargo)
 
 USER root
 
