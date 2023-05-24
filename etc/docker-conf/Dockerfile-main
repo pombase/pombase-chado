@@ -47,6 +47,9 @@ COPY --chown=pombase:pombase api_maps.sqlite3.zst /pombase/
 
 COPY --chown=pombase:pombase Rocket.toml /pombase/
 
+COPY --chown=pombase:pombase pombase-website/etc/website-database-schema.sql /pombase/
+COPY --chown=pombase:pombase pombase-website/etc/make_website_db_in_container.sh /pombase/
+
 COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
 
 COPY --chown=pombase:pombase main_config.json /pombase/main_config.json
