@@ -346,7 +346,7 @@ sub store_extension {
         join ", ",
         map {
           $_ . ': "' . (join ',', sort @{$props_map->{$_}}) . '"';
-        } keys %{$props_map};
+        } sort keys %{$props_map};
     };
 
     my $current_props_string = $_make_prop_string->(\%current_props);
