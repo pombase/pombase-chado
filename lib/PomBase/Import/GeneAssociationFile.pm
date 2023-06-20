@@ -472,6 +472,17 @@ sub load {
           return;
         }
 
+        my $extension_text = $columns{"Annotation_extension"};
+
+        my @extension_split;
+
+        if (length $extension_text > 0) {
+          @extension_split = sort split /(?<=\))\|/, $extension_text;
+        } else {
+          @extension_split = ("");
+        }
+
+        for my $extension_split_text (@extension_split) {
         my $feature_cvterm =
           $self->create_feature_cvterm($feature, $cvterm, $pubs[0], $is_not);
 
@@ -479,15 +490,13 @@ sub load {
           warn "ignored ", (@pubs - 1), " extra refs for ", $feature->uniquename(), "\n";
         }
 
-        my $extension_text = $columns{"Annotation_extension"};
-
-        if ($extension_text) {
+        if ($extension_split_text) {
           my $err = undef;
 
           my $processor = $self->extension_processor();
 
           try {
-            $processor->process_one_annotation($feature_cvterm, $extension_text);
+            $processor->process_one_annotation($feature_cvterm, $extension_split_text);
           } catch {
             chomp $_;
             $err = $_;
@@ -537,6 +546,8 @@ sub load {
 
           $self->add_feature_cvtermprop($feature_cvterm, 'with',
                                         $with_or_from, $i);
+        }
+
         }
       };
 
