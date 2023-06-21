@@ -113,6 +113,8 @@ EOQ
     $count++;
   }
 
+  $self->output_text($output_text);
+
   return $count == 0;
 }
 
