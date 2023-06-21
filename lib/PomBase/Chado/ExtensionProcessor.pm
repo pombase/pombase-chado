@@ -627,9 +627,11 @@ sub process_one_annotation {
   warn "processing annotation extension for $feature_uniquename <-> ",
     $featurecvterm->cvterm()->name(), "   ext: $extension_text\n" if $self->verbose();
 
+  die qq{extension contains an unhandled pipe ("|") character: $extension_text\n};
+
   (my $extension_copy = $extension_text) =~ s/(\([^\)]+\))/_replace_commas($1)/eg;
 
-  my @extension_qualifiers = sort split /(?<=\))\||,/, $extension_copy;
+  my @extension_qualifiers = sort split /,/, $extension_copy;
 
   my @extensions = map {
     my $bit = _unreplace_commas($_);
