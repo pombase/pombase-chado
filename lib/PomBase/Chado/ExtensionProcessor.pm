@@ -578,6 +578,10 @@ sub _process_identifier {
             if ($identifier !~ /^\d+$/) {
               die "multiplicity relation value must be a number, not: $identifier\n";
             }
+          } elsif ($rel_name eq 'modified_residue') {
+            if ($identifier != /^[A-Z]\d+$/) {
+              die qq|modified_residue relation value must be an AA followed by a position, eg. "A21", not: $identifier\n|;
+            }
           } else {
           my $organism = $self->find_organism_by_taxonid($self->config()->{taxonid});
           my $ref_feature = undef;
