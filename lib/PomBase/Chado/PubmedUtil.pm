@@ -388,6 +388,8 @@ sub _store_from_cache
     my $pub_details = thaw($cache->{$uniquename});
 
     if ($pub_details) {
+      print "storing: $uniquename\n";
+
       my $pub = $self->chado()->resultset('Pub::Pub')->find({ uniquename => $uniquename });
 
       $pub->title($pub_details->{title});
