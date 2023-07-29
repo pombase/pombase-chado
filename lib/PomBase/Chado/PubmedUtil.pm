@@ -437,7 +437,7 @@ sub load_by_ids
 
   my @ids_to_fetch =
     grep {
-      s/.*(\d+).*/$1/;  # remove any excess characters
+      s/^.*?(\d+).*?$/$1/;  # remove any excess characters
       !exists $self->pubmed_cache()->{"PMID:$_"};
     } @raw_ids;
 
