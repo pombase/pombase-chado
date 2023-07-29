@@ -439,6 +439,7 @@ sub load_by_ids
     } @raw_ids;
 
   while (@ids_to_fetch) {
+    print "fetching from PubMed: @ids_to_fetch\n";
     my @process_ids = splice(@ids_to_fetch, 0, $max_batch_size);
 
     $self->_process_batch(\@process_ids);
