@@ -34,13 +34,23 @@ if (!defined $phaf_file) {
 }
 
 
-open my $change_fh, '<', $change_file or die;
+open my $change_fh, '<', $change_file or die "Can't open file $change_file: $!";
 
 my $change_tsv = Text::CSV->new({ sep_char => "\t", binary => 1,
                                   quote_char => undef,
                                   auto_diag => 1, });
 
 $change_tsv->column_names($change_tsv->getline($change_fh));
+
+sub make_change_map_key {
+  my $gene_systematic_id = shift;
+  my $allele_name = shift;
+  my $allele_description = shift;
+
+  return $gene_systematic_id . '$-$' .
+    ($allele_name // '<ALLELE_NAME_MISSING>') . '$-$' .
+    ($allele_description // '<ALLELE_DESCRIPTION_MISSING>');
+}
 
 my %change_map = ();
 
@@ -49,12 +59,15 @@ while (my $row = $change_tsv->getline_hr($change_fh)) {
     next;
   }
 
-  if (exists $change_map{$row->{allele_name}}) {
-    warn "ignoring duplicate allele_name: ", $row->{allele_name}, "\n";
+  my $key = make_change_map_key($row->{systematic_id}, $row->{allele_name},
+                                $row->{allele_description});
+
+  if (exists $change_map{$key}) {
+    warn "ignoring duplicate allele: ", $row->{allele_name}, "\n";
     next;
   }
 
-  $change_map{$row->{allele_name}} = $row;
+  $change_map{$key} = $row;
 }
 
 close $change_fh;
@@ -81,7 +94,14 @@ while (defined (my $line = <$phaf_fh>)) {
     next;
   }
 
-  my $changes = $change_map{$old_name};
+    my $gene_systematic_id = $parts[0];
+    my $allele_name = $old_name;
+    my $allele_description = $parts[2];
+
+    my $key = make_change_map_key($gene_systematic_id, $allele_name,
+                                  $allele_description);
+
+  my $changes = $change_map{$key};
 
   if (defined $changes) {
     my $description_ref = \$parts[2];
