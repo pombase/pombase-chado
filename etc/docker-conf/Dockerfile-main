@@ -55,8 +55,6 @@ COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
 COPY --chown=pombase:pombase main_config.json /pombase/main_config.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/web-json data)
 
-COPY genome_changelog/gene_characterisation_status/results/figure.svg /var/www/html/assets/gene_characterisation_status_figure.svg
-
 RUN chown -R pombase:pombase /var/www/html
 
 COPY --chown=pombase:pombase conf/solr-terms-schema-commands.txt /pombase/solr-terms-schema-commands.txt
@@ -113,6 +111,8 @@ RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
      ./etc/build_app.sh $target && cp -r dist/* /var/www/html/ && \
      cp dist/assets/$database_name/* /var/www/html/assets/) && \
      rm -rf /pombase/pombase-website /pombe/.npm-global
+
+COPY genome_changelog/gene_characterisation_status/results/figure.svg /var/www/html/assets/gene_characterisation_status_figure.svg
 
 RUN (cd /var/www/html/jbrowse; \
     ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/*_all_chromosomes.fa.gz \
