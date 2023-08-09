@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v67 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v70 .
 FROM bitnami/minideb:bullseye
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -20,14 +20,13 @@ RUN apt-get -y update && \
     echo "deb http://deb.debian.org/debian stable main" >> /etc/apt/sources.list && \
     apt update && apt-get -y install openjdk-11-jre-headless python3-zmq && apt-get clean
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get update && apt-get -y install nodejs && apt-get clean
+RUN apt-get update && apt-get install -y nodejs npm && apt-get clean
 RUN npm install --silent --unsafe-perm -g @angular/cli
 
 RUN apt-get -y install libperlio-gzip-perl libgd-perl libjson-perl libtext-csv-perl libyaml-perl pandoc && apt-get clean
 RUN curl -L http://cpanmin.us | perl - --self-upgrade
 
-RUN pip3 install --upgrade setuptools; pip3 install --no-cache-dir --upgrade pip && \
+RUN pip3 install --upgrade setuptools; \
     pip3 install --no-cache-dir --upgrade distlib && \
     pip3 install --no-cache-dir 'tornado<5' && pip3 install --no-cache-dir circus pipenv && \
     pip3 install --no-cache-dir django django-allauth gunicorn seaborn numpy matplotlib pandas regex
