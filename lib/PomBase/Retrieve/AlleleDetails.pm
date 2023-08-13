@@ -65,7 +65,8 @@ SELECT gene.uniquename AS gene_uniquename,
        array_to_string(array(SELECT DISTINCT pub.uniquename
                                FROM feature_pub fp
                                JOIN pub on pub.pub_id = fp.pub_id
-                              WHERE fp.feature_id = allele.feature_id), ',') AS references
+                              WHERE fp.feature_id = allele.feature_id
+                              ORDER BY pub.uniquename), ',') AS references
 FROM feature allele
 JOIN cvterm allele_type_cvterm ON allele_type_cvterm.cvterm_id = allele.type_id
 JOIN feature_relationship rel ON rel.subject_id = allele.feature_id
