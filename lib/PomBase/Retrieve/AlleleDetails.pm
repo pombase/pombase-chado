@@ -61,7 +61,11 @@ SELECT gene.uniquename AS gene_uniquename,
        gene.name AS gene_name,
        allele.uniquename AS allele_uniquename,
        allele.name AS allele_name, desc_prop.value AS allele_description,
-       type_prop.value AS allele_type
+       type_prop.value AS allele_type,
+       array_to_string(array(SELECT DISTINCT pub.uniquename
+                               FROM feature_pub fp
+                               JOIN pub on pub.pub_id = fp.pub_id
+                              WHERE fp.feature_id = allele.feature_id), ',') AS references
 FROM feature allele
 JOIN cvterm allele_type_cvterm ON allele_type_cvterm.cvterm_id = allele.type_id
 JOIN feature_relationship rel ON rel.subject_id = allele.feature_id
@@ -100,7 +104,7 @@ WHERE allele_type_cvterm.name = 'allele'
 sub header {
   my $self = shift;
   return (join "\t",
-    qw(gene_uniquename gene_name allele_uniquename allele_name allele_description allele_type)) . "\n";
+    qw(gene_uniquename gene_name allele_uniquename allele_name allele_description allele_type references)) . "\n";
 }
 
 sub format_result {
