@@ -58,6 +58,7 @@ sub retrieve {
 
   my $sql = q|
 SELECT gene.uniquename AS gene_uniquename,
+       gene.name AS gene_name,
        allele.uniquename AS allele_uniquename,
        allele.name AS allele_name, desc_prop.value AS allele_description,
        type_prop.value AS allele_type
@@ -99,7 +100,7 @@ WHERE allele_type_cvterm.name = 'allele'
 sub header {
   my $self = shift;
   return (join "\t",
-    qw(gene_uniquename allele_uniquename allele_name allele_description allele_type)) . "\n";
+    qw(gene_uniquename gene_name allele_uniquename allele_name allele_description allele_type)) . "\n";
 }
 
 sub format_result {
