@@ -436,6 +436,18 @@ sub get_allele {
     }
   };
 
+  my $pub = $allele_data->{pub};
+
+  my $add_pub = sub {
+    if (defined $pub) {
+      my $allele = shift;
+      my $rs = $allele->feature_pubs()
+        ->search({ 'pub.uniquename' => $pub->uniquename() }, { join => 'pub' });
+      if ($rs->count() == 0) {
+        $self->create_feature_pub($allele, $pub);
+      }
+    }
+  };
 
   if (exists $allele_data->{primary_identifier} &&
       $allele_data->{primary_identifier} !~ /:($canto_session)-\d+$/) {
@@ -621,6 +633,8 @@ sub get_allele {
 
           $add_canto_session->($existing_allele);
 
+          $add_pub->($existing_allele);
+
           if ($existing_allele->is_obsolete()) {
             $existing_allele->is_obsolete(0);
             $existing_allele->update();
@@ -708,6 +722,8 @@ sub get_allele {
     }
 
     $add_canto_session->($allele);
+
+    $add_pub->($allele);
 
     if (defined $new_allele_type && length $new_allele_type > 0) {
       if (!exists $self->allele_types()->{$new_allele_type}) {

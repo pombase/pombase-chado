@@ -94,6 +94,8 @@ has organism => (is => 'rw', init_arg => undef);
 # used to prefix identifiers in "with" fields before storing as proprieties
 has db_prefix => (is => 'rw', init_arg => undef);
 
+has pub_cache => (is => 'rw', init_arg => undef, default => sub { {} });
+
 has all_curation_is_community => (is => 'rw', init_arg => undef);
 
 has seen_binding_annotations => (is => 'rw', init_arg => undef, default => sub { {} });
@@ -411,6 +413,7 @@ sub _store_ontology_annotation {
         my $res = $self->make_allele_data_from_display_name($feature, $_, \$expression);
 
         $res->{canto_session} = $canto_session;
+        $res->{pub} = $publication;
 
         my $allele_type_list = delete $by_type{allele_type};
 
@@ -717,7 +720,7 @@ sub _process_feature {
     $changed_by_json = $encoder->encode($changed_by);
   }
 
-  my $publication = $self->find_or_create_pub($publication_uniquename);
+  my $publication = $self->_get_pub($publication_uniquename);
 
   my %useful_session_data =
     map {
@@ -1032,6 +1035,20 @@ sub _query_genes {
   return %ret;
 }
 
+sub _get_pub {
+  my $self = shift;
+  my $pubmed_id = shift;
+
+  my $pub = $self->pub_cache()->{$pubmed_id};
+
+  if (!defined $pub) {
+    $pub = $self->find_or_create_pub($pubmed_id);
+    $self->pub_cache()->{$pubmed_id} = $pub;
+  }
+
+  return $pub;
+}
+
 sub _get_alleles {
   my $self = shift;
   my $pubmed_id = shift;
@@ -1045,6 +1062,7 @@ sub _get_alleles {
     my $allele_data = clone $session_allele_data->{$key};
     $allele_data->{canto_session} = $canto_session;
     $allele_data->{gene} = $session_genes->{$allele_data->{gene}};
+    $allele_data->{pub} = $self->_get_pub($pubmed_id);
     my ($out, $err) = capture {
       my $allele = $self->get_allele($allele_data);
       $ret{$key} = $allele;

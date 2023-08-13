@@ -424,6 +424,7 @@ sub load {
         name => $allele_name,
         description => $allele_description,
         allele_type => $allele_type,
+        pub => $pub,
       };
 
       $expression = undef if $expression && lc $expression eq 'null';
