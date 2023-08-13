@@ -476,7 +476,7 @@ sub load {
 
         my @extension_split;
 
-        if (length $extension_text > 0) {
+        if (defined $extension_text && length $extension_text > 0) {
           @extension_split = sort split /(?<=\))\|/, $extension_text;
         } else {
           @extension_split = ("");
