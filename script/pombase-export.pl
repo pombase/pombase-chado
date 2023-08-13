@@ -71,6 +71,7 @@ my %retrieve_modules = (
   modifications => 'PomBase::Retrieve::Modifications',
   'go-physical-interactions' => 'PomBase::Retrieve::GOPhysicalInteractions',
   'go-substrates' => 'PomBase::Retrieve::GOSubstrates',
+  'allele-details' => 'PomBase::Retrieve::AlleleDetails',
 );
 
 my $retrieve_module = $retrieve_modules{$retrieve_type};
