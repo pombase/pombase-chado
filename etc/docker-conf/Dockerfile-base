@@ -1,7 +1,7 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v70 .
-FROM bitnami/minideb:bullseye
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v71 .
+FROM bitnami/minideb:bookworm
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
 
@@ -16,9 +16,13 @@ RUN apt-get -y update && \
     apt-get -y dist-upgrade && \
     apt-get -y install apt-utils curl gnupg2 git-core procps xz-utils zstd \
         libterm-readline-gnu-perl pkg-config libssl-dev unzip ipip \
-        lsof jq gcc net-tools python-pkg-resources python3-pip && \
+        lsof jq gcc net-tools python3-pip && \
     echo "deb http://deb.debian.org/debian stable main" >> /etc/apt/sources.list && \
-    apt update && apt-get -y install openjdk-11-jre-headless python3-zmq && apt-get clean
+    apt update && apt-get -y install default-jre-headless python3-zmq && apt-get clean
+
+RUN apt install -y python3-django python3-django-allauth python3-tornado \
+    pipx gunicorn python3-seaborn python3-numpy python3-pandas \
+    python3-matplotlib python3-regex
 
 RUN apt-get update && apt-get install -y nodejs npm && apt-get clean
 RUN npm install --silent --unsafe-perm -g @angular/cli
@@ -26,12 +30,9 @@ RUN npm install --silent --unsafe-perm -g @angular/cli
 RUN apt-get -y install libperlio-gzip-perl libgd-perl libjson-perl libtext-csv-perl libyaml-perl pandoc && apt-get clean
 RUN curl -L http://cpanmin.us | perl - --self-upgrade
 
-RUN pip3 install --upgrade setuptools; \
-    pip3 install --no-cache-dir --upgrade distlib && \
-    pip3 install --no-cache-dir 'tornado<5' && pip3 install --no-cache-dir circus pipenv && \
-    pip3 install --no-cache-dir django django-allauth gunicorn seaborn numpy matplotlib pandas regex
-
 USER pombase
+
+RUN pipx install circus
 
 RUN cd /pombase && curl -L 'https://downloads.apache.org/lucene/solr/8.11.2/solr-8.11.2.tgz' | tar -x --gzip -f - && \
     (cd /pombase/solr-8.11.2/; rm -rf example contrib licenses *.txt docs)
@@ -48,6 +49,8 @@ USER root
 RUN apt remove -y g++ g++-10; apt install -y make; apt autoremove -y
 
 USER pombase
+
+RUN echo "export PATH=$PATH:$HOME/.local/bin" >> ~/.bashrc
 
 WORKDIR /pombase
 
