@@ -31,8 +31,6 @@ cp -r genome_changelog/results/pombase_tables data_files
 
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
-rsync -acvPHS --delete-after pombase-chado-json/Rocket.toml $container_dir/
-
 rsync -acvPHS --delete-after $dump_dir/web-json $container_dir/
 rsync -acvPHS --delete-after $dump_dir/misc $container_dir/
 rsync -acvPHS --delete-after $dump_dir/gff $container_dir/
