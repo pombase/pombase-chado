@@ -487,6 +487,8 @@ sub get_allele {
       $new_allele_description = undef;
     }
 
+    my $new_primary_identifier = $allele_data->{primary_identifier};
+
     my $gene_uniquename = $gene->uniquename();
     my $gene_name = $gene->name();
 
@@ -640,6 +642,9 @@ sub get_allele {
             $existing_allele->update();
           }
 
+          $self->store_featureprop($existing_allele, 'canto_allele_systematic_id',
+                                   $new_primary_identifier);
+
           return $existing_allele;
         }
       } else {
@@ -664,6 +669,9 @@ sub get_allele {
             $existing_allele->name($new_allele_name);
             $existing_allele->is_obsolete(0);
             $existing_allele->update();
+            $self->store_featureprop($existing_allele, 'canto_allele_systematic_id',
+                                     $new_primary_identifier);
+
             return $existing_allele;
           }
         }
@@ -687,6 +695,9 @@ sub get_allele {
               $existing_allele->is_obsolete(0);
               $existing_allele->update();
             }
+            $self->store_featureprop($existing_allele, 'canto_allele_systematic_id',
+                                     $new_primary_identifier);
+
             return $existing_allele;
           }
 
@@ -696,6 +707,9 @@ sub get_allele {
               $existing_allele->is_obsolete(0);
               $existing_allele->update();
             }
+            $self->store_featureprop($existing_allele, 'canto_allele_systematic_id',
+                                     $new_primary_identifier);
+
             return $existing_allele;
           }
         }
@@ -733,6 +747,9 @@ sub get_allele {
     } else {
       die "no allele_type for: $new_uniquename\n";
     }
+
+    $self->store_featureprop($allele, 'canto_allele_systematic_id',
+                             $new_primary_identifier);
 
     return $allele;
   }
