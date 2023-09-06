@@ -275,6 +275,10 @@ sub store_featureprop {
 
   my $type_cvterm = $self->get_cvterm('PomBase feature property types', $type_name);
 
+  if (!defined $type_cvterm) {
+    die qq|no cvterm found for featureprop type $type_name\n|;
+  }
+
   if (!exists $ranks->{$type_name}) {
     $ranks->{$type_name} = {};
 
@@ -305,7 +309,6 @@ sub store_featureprop {
 
   warn "  storing featureprop for ", $feature->uniquename(), " $type_name $value\n" if $self->verbose();
 
-  die qq|can't find cvterm for featureprop type "$type_name"\n| unless defined $type_cvterm;
   die "can't store a reference as a value\n" if ref $value;
 
   $self->chado()->resultset('Sequence::Featureprop')->create({
