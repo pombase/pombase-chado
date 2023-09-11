@@ -481,10 +481,13 @@ sub get_allele {
     $new_allele_type =~ s/\s+/_/g;
 
     if ($new_allele_type eq 'deletion') {
-      # There is nothing to describe if the allele is a deletion.  This method
-      # is sometimes called with a description of "deletion" which is preventing
-      # alleles from being merged.
-      $new_allele_description = undef;
+      $new_allele_description = 'deletion';
+    } elsif ($new_allele_description eq 'wild_type') {
+      $new_allele_description = 'wild type';
+    } elsif ($new_allele_description eq 'unknown') {
+      $new_allele_description = 'unknown';
+    } elsif ($new_allele_description eq 'disruption') {
+      $new_allele_description = 'disruption';
     }
 
     my $new_primary_identifier = $allele_data->{primary_identifier};
@@ -725,11 +728,6 @@ sub get_allele {
           }
         }
       }
-    }
-
-    if ($new_allele_type eq 'deletion' && $new_allele_description &&
-        $new_allele_description eq 'deletion') {
-      $new_allele_description = undef;
     }
 
     # fall through - no allele exists with matching name or description
