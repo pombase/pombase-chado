@@ -482,11 +482,11 @@ sub get_allele {
 
     if ($new_allele_type eq 'deletion') {
       $new_allele_description = 'deletion';
-    } elsif ($new_allele_description eq 'wild_type') {
+    } elsif ($new_allele_type eq 'wild_type') {
       $new_allele_description = 'wild type';
-    } elsif ($new_allele_description eq 'unknown') {
+    } elsif ($new_allele_type eq 'unknown') {
       $new_allele_description = 'unknown';
-    } elsif ($new_allele_description eq 'disruption') {
+    } elsif ($new_allele_type eq 'disruption') {
       $new_allele_description = 'disruption';
     }
 
