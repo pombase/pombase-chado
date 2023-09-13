@@ -474,6 +474,10 @@ sub get_allele {
     my $new_allele_description = $allele_data->{description};
     if ($new_allele_description) {
       $new_allele_description =~ s/[\s\N{ZERO WIDTH SPACE}]*,[\s\N{ZERO WIDTH SPACE}]*/,/g;
+
+      if ($new_allele_description eq 'unknown') {
+        $new_allele_description = undef;
+      }
     }
 
     my $new_allele_type = $allele_data->{allele_type};
@@ -483,11 +487,17 @@ sub get_allele {
     if ($new_allele_type eq 'deletion') {
       $new_allele_description = 'deletion';
     } elsif ($new_allele_type eq 'wild_type') {
-      $new_allele_description = 'wild type';
+      if (!defined $new_allele_description) {
+        $new_allele_description = 'wild type';
+      }
     } elsif ($new_allele_type eq 'unknown') {
-      $new_allele_description = 'unknown';
+      if (!defined $new_allele_description) {
+        $new_allele_description = 'unknown';
+      }
     } elsif ($new_allele_type eq 'disruption') {
-      $new_allele_description = 'disruption';
+      if (!defined $new_allele_description) {
+        $new_allele_description = 'disruption';
+      }
     }
 
     my $new_primary_identifier = $allele_data->{primary_identifier};
