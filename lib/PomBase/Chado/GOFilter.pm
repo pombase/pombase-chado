@@ -186,8 +186,6 @@ sub process {
   my $self = shift;
 
   my @codes = (
-    'inferred from biological aspect of descendant',
-    'inferred from biological aspect of ancestor',
     'inferred from reviewed computational analysis',
     'inferred from electronic annotation',
     'inferred from expression pattern',
@@ -197,6 +195,8 @@ sub process {
     'inferred from sequence or structural similarity',
     'inferred from sequence orthology',
     'inferred by curator',
+    'inferred from biological aspect of descendant',
+    'inferred from biological aspect of ancestor',
   );
 
   for my $code (@codes) {
