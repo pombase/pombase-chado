@@ -98,7 +98,7 @@ sub load {
       next;
     }
 
-    if ($systematic_id =~ /^#?(Systematic|Gene systematic)/) {
+    if ($systematic_id =~ /^#?(systematic|Gene systematic)/i) {
       # skip header
       next;
     }
