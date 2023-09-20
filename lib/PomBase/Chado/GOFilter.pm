@@ -83,6 +83,18 @@ AND
   lower(prop.value) = '$code'
 EOQ
 
+  if ($code eq 'inferred from physical interaction') {
+# See: https://github.com/pombase/curation/issues/3565
+
+$poor_ev_query .= q|
+AND
+  feature_cvterm.feature_cvterm_id NOT IN
+      (SELECT feature_cvterm_id FROM feature_cvtermprop
+        WHERE feature_cvtermprop.type_id IN
+           (SELECT cvterm_id FROM cvterm WHERE name = 'with'))
+|;
+  }
+
   $sth = $dbh->prepare($poor_ev_query);
   $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
@@ -197,6 +209,7 @@ sub process {
     'inferred by curator',
     'inferred from biological aspect of descendant',
     'inferred from biological aspect of ancestor',
+    'inferred from physical interaction',   # note special case: only when missing with
   );
 
   for my $code (@codes) {
