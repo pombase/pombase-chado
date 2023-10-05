@@ -261,7 +261,7 @@ sub get_genotype_for_allele {
 sub _get_allele_props {
   my $allele = shift;
 
-  my $prop_rs = $allele->featureprops()->search({}, { join => 'type' });
+  my $prop_rs = $allele->featureprops()->search({}, { prefetch => 'type' });
 
   my %ret = ();
 
