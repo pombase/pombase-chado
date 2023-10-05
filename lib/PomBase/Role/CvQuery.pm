@@ -337,7 +337,7 @@ sub find_cvterm_by_term_id {
       die "more than one cvterm for dbxref ($term_id)\n";
     } else {
       if (@cvterms == 1) {
-        $cache->{$term_id} = $cvterms[0];
+        $cache->{$key} = $cvterms[0];
         return $cvterms[0];
       } else {
         return undef;
