@@ -356,4 +356,21 @@ sub get_new_uniquename {
   return $prefix . $next_suffix;
 }
 
+sub store_feature_pub {
+  my $self = shift;
+  my $feature = shift;
+  my $pub = shift;
+
+  my $chado = $self->chado();
+
+  my $dbh = $chado->storage()->dbh();
+
+  my $sth =
+    $dbh->prepare("
+INSERT INTO feature_pub(feature_id, pub_id) VALUES (?, ?) ON CONFLICT DO NOTHING;
+");
+
+  $sth->execute($feature->feature_id(), $pub->pub_id());
+}
+
 1;
