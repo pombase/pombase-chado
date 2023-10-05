@@ -58,9 +58,17 @@ sub find_organism_by_full_name {
   my $self = shift;
   my $full_name = shift;
 
+  state $cache = {};
+
   if (my ($genus, $species) = $full_name =~ /^\s*(\S+)\s+(.*?)\s*$/) {
-    return $self->chado()->resultset('Organism::Organism')
-      ->find({ genus => $genus, species => $species });
+    my $key = "$genus $species";
+    if (!exists $cache->{$key}) {
+      my $org = $self->chado()->resultset('Organism::Organism')
+        ->find({ genus => $genus, species => $species });
+      $cache->{$key} = $org;
+    }
+
+    return $cache->{$key};
   } else {
     croak 'argument to find_organism_by_full_name() needs to be "Genus species"';
   }
