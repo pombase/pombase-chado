@@ -284,7 +284,9 @@ sub store_featureprop {
 
     my $featureprop_rs = $self->chado()->resultset('Sequence::Featureprop')
       ->search({
-        type_id => $type_cvterm->cvterm_id(),
+        'me.type_id' => $type_cvterm->cvterm_id(),
+      }, {
+        prefetch => 'feature'
       });
 
     for my $prop ($featureprop_rs->all()) {
