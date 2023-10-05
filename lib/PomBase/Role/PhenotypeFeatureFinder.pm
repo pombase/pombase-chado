@@ -261,11 +261,11 @@ sub get_genotype_for_allele {
 sub _get_allele_props {
   my $allele = shift;
 
-  my $description_prop_rs = $allele->featureprops()->search({}, { join => 'type' });
+  my $prop_rs = $allele->featureprops()->search({}, { join => 'type' });
 
   my %ret = ();
 
-  while (defined (my $prop = $description_prop_rs->next())) {
+  while (defined (my $prop = $prop_rs->next())) {
     $ret{$prop->type()->name()} = $prop;
   }
 
