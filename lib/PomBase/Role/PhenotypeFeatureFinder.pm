@@ -557,12 +557,12 @@ sub get_allele {
 
       my $existing_lower_name_rs = $existing_rs->search({ 'LOWER(name)' => lc $new_allele_name });
 
-      if ($existing_lower_name_rs->count() > 1) {
+      my $existing_allele = $existing_lower_name_rs->first();
+
+      if (defined $existing_lower_name_rs->next()) {
         die 'database inconsistency - there exists more than one allele feature ' .
           'with the name "' . $new_allele_name . '"' . "\n";
       }
-
-      my $existing_allele = $existing_lower_name_rs->first();
 
       if (defined $existing_allele) {
         my $existing_name = $existing_allele->name();
