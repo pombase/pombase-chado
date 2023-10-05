@@ -182,6 +182,7 @@ sub store_feature_and_loc {
   my $self = shift;
   my $feature = shift;
   my $chromosome = shift;
+  my $organism = shift;
   my $so_type = shift;
   my $start_arg = shift;
   my $end_arg = shift;
@@ -233,7 +234,7 @@ sub store_feature_and_loc {
   }
 
   my $chado_feature = $self->store_feature($uniquename, $name, [], $so_type,
-                                           $chromosome->organism());
+                                           $organism);
 
   my $start = $start_arg // $feature->location()->start();
   my $end = $end_arg // $feature->location()->end();
