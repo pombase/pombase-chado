@@ -464,11 +464,7 @@ sub get_allele {
   my $add_pub = sub {
     if (defined $pub) {
       my $allele = shift;
-      my $rs = $allele->feature_pubs()
-        ->search({ 'pub.uniquename' => $pub->uniquename() }, { join => 'pub' });
-      if ($rs->count() == 0) {
-        $self->create_feature_pub($allele, $pub);
-      }
+      $self->store_feature_pub($allele, $pub);
     }
   };
 
