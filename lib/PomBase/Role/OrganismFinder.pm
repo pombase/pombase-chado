@@ -74,8 +74,8 @@ sub find_organism_by_full_name {
   }
 }
 
-sub find_organism_by_taxonid {
-  my $self = shift;
+sub find_organism_by_taxonid_helper {
+  my $chado = shift;
   my $taxonid = shift;
 
   state $cache = {};
@@ -84,9 +84,10 @@ sub find_organism_by_taxonid {
     return $cache->{$taxonid};
   }
 
-  my $taxonid_term = $self->get_cvterm('organism property types', 'taxon_id');
-  my $organism_rs = $self->chado()->resultset('Organism::Organismprop')
-    ->search({ type_id => $taxonid_term->cvterm_id(), value => $taxonid })
+  my $organism_rs = $chado->resultset('Organism::Organismprop')
+    ->search({ 'type.name' => 'taxon_id', 'cv.name' => 'organism property types',
+               value => $taxonid },
+             { join => { type => 'cv' } } )
     ->search_related('organism');
 
   my $organism = $organism_rs->next();
@@ -98,6 +99,13 @@ sub find_organism_by_taxonid {
   $cache->{$taxonid} = $organism;
 
   return $organism;
+}
+
+sub find_organism_by_taxonid {
+  my $self = shift;
+  my $taxonid = shift;
+
+  return find_organism_by_taxonid_helper($self->chado(), $taxonid);
 }
 
 1;
