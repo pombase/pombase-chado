@@ -40,6 +40,8 @@ use strict;
 use warnings;
 use Carp;
 
+use feature qw(state);
+
 use PomBase::Chado::FixAlleleNames;
 
 use Moose::Role;
@@ -90,11 +92,21 @@ sub get_gene {
   if (!defined $gene_data) {
     croak 'no $gene_data passed to get_gene()';
   }
+
+  state $cache = {};
+
   my $gene_uniquename = $gene_data->{uniquename};
   my $organism_name = $gene_data->{organism};
-  my $organism = $self->find_organism_by_full_name($organism_name);
 
-  return $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
+  my $key = "$organism_name - $gene_uniquename";
+
+  if (!exists $cache->{$key}) {
+    my $organism = $self->find_organism_by_full_name($organism_name);
+
+    $cache->{$key} = $self->find_chado_feature($gene_uniquename, 1, 1, $organism);
+  }
+
+  return $cache->{$key};
 }
 
 sub get_transcript {
@@ -142,7 +154,18 @@ sub get_genotype {
       Dumper([$genotype_identifier, $alleles]);
   }
 
-  my $organism = $first_allele_data->{allele}->organism();
+  my $organism_id = $first_allele_data->{allele}->organism_id();
+
+  state $organism_cache = {};
+
+  my $organism = undef;
+
+  if (!exists $organism_cache->{$organism_id}) {
+    # weird and hacky :-(
+    # don't materialise the allele organism unless we have to
+    $organism_cache->{$organism_id} = $first_allele_data->{allele}->organism();
+  }
+  $organism = $organism_cache->{$organism_id};
 
   my $genotype = $self->store_feature($genotype_identifier,
                                       $genotype_name, [], 'genotype',
