@@ -280,7 +280,7 @@ sub load {
       next;
     }
 
-    my $fypo_id = $columns_ref->{"fypo_id"};
+    my $fypo_id = trim($columns_ref->{"fypo_id"});
     my $allele_description = $columns_ref->{"allele_description"};
     my $expression = ucfirst $columns_ref->{"expression"};
     my $genotype_description = $columns_ref->{"genotype_description"};
@@ -300,8 +300,13 @@ sub load {
 
     my $taxonid = $columns_ref->{"taxon"};
 
+    if ($fypo_id eq '') {
+      warn qq|FYPO ID missing - skipping line starting with "$gene_systemtic_id"\n|;
+      next;
+    }
+
     if (!defined $taxonid) {
-      warn "Taxon missing, not enough columns - skipping\n";
+      warn "Taxon missing, not enough columns - skipping file\n";
       return;
     }
 
