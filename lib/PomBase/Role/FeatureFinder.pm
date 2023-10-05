@@ -72,7 +72,8 @@ sub find_chado_feature {
   my $organism = shift;
   my $feature_types = shift;
 
-   my $rs = $self->chado()->resultset('Sequence::Feature');
+  my $rs = $self->chado()->resultset('Sequence::Feature')
+    ->search({}, { prefetch => 'organism' });
 
    state $cache = {};
 
@@ -94,7 +95,7 @@ sub find_chado_feature {
      return $cache->{$cache_key};
    }
    if (defined $organism) {
-     $rs = $rs->search({ organism_id => $organism->organism_id() });
+     $rs = $rs->search({ 'me.organism_id' => $organism->organism_id() });
    }
 
    if (defined $feature_types) {
