@@ -74,25 +74,29 @@ my $extension_rel_status = 'extension_relations_status';
 sub _build_cache {
   my $self = shift;
 
-  if ($self->pre_init_cache()) {
+  my $extension_rel_status_term =
+    $self->get_cvterm('cvterm_property_type', $extension_rel_status);
     my $extension_cv =
       $self->chado()->resultset('Cv::Cv')->find({ name => $extension_cv_name });
-    my $rs = $self->chado()->resultset('Cv::Cvterm');
-    $rs = $rs->search(
-      {
-        cv_id => $extension_cv->cv_id(),
+
+  if ($self->pre_init_cache()) {
+
+    my $prop_rs = $self->chado()->resultset('Cv::Cvtermprop')
+      ->search({
+        'cv.name' => $extension_cv_name,
+        'type.name' => $extension_rel_status,
+        value => 'created',
+      }, {
+        join => { type => 'cv', cvterm => 'cv' },
+        prefetch => { cvterm => 'cv' },
       });
+
     my %cache = ();
-    my $extension_rel_status_term =
-      $self->get_cvterm('cvterm_property_type', $extension_rel_status);
-    while (defined (my $cvterm = $rs->next())) {
-      if (grep {
-        $_->type_id() == $extension_rel_status_term->cvterm_id() &&
-        $_->value() eq 'created';
-      } $cvterm->cvtermprops()) {
-        $cache{$cvterm->name()} = 1;
-      }
+
+    while (defined (my $prop = $prop_rs->next())) {
+      $cache{$prop->cvterm()->name()} = 1;
     }
+
     return \%cache;
   } else {
     return {};
