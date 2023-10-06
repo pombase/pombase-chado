@@ -146,6 +146,10 @@ sub _store_annotation {
     my $feature_cvterm =
       $self->create_feature_cvterm($genotype_feature, $cvterm, $pub, 0);
 
+    # prevent SELECTs later
+    $feature_cvterm->feature($genotype_feature);
+    $feature_cvterm->cvterm($cvterm);
+
     $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
 
     $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
