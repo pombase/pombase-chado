@@ -63,8 +63,7 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::FeatureFinder';
 
 has verbose => (is => 'rw');
-has cache => (is => 'ro', init_arg => undef, lazy_build => 1,
-              builder => '_build_cache');
+has cache => (is => 'rw', init_arg => undef);
 has pre_init_cache => (is => 'rw', default => 0);
 has isa_cvterm => (is => 'ro', init_arg => undef, lazy_build => 1);
 
@@ -87,7 +86,7 @@ sub _build_cache {
         'type.name' => $extension_rel_status,
         value => 'created',
       }, {
-        join => { type => 'cv', cvterm => 'cv' },
+        join => [ {cvterm => 'cv'}, {type => 'cv'} ],
         prefetch => { cvterm => 'cv' },
       });
 
@@ -106,6 +105,12 @@ sub _build_cache {
 sub _build_isa_cvterm {
   my $self = shift;
   return $self->get_relation_cvterm('is_a');
+}
+
+sub BUILD {
+  my $self = shift;
+
+  $self->cache($self->_build_cache());
 }
 
 sub _store_residue {
