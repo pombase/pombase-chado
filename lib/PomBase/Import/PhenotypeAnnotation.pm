@@ -49,6 +49,7 @@ use Moose;
 use Try::Tiny;
 use Text::CSV;
 use IO::Handle;
+use JSON;
 
 use PomBase::Chado::ExtensionProcessor;
 use PomBase::Chado::GenotypeCache;
@@ -80,6 +81,9 @@ has options => (is => 'ro', isa => 'ArrayRef');
 has extension_processor => (is => 'ro', init_arg => undef, lazy_build => 1);
 
 has throughput_type => (is => 'rw', init_arg => undef);
+
+has json_encoder => (is => 'ro', init_arg => undef, lazy => 1,
+                     builder => '_build_json_encoder');
 
 sub BUILD
 {
@@ -117,6 +121,12 @@ sub _build_extension_processor {
 sub _build_genotype_cache {
   my $self = shift;
   return PomBase::Chado::GenotypeCache->new(chado => $self->chado());
+}
+
+sub _build_json_encoder {
+  my $self = shift;
+
+  return JSON->new()->pretty(0)->canonical(1);
 }
 
 my $fypo_extensions_cv_name = 'fypo_extensions';
@@ -240,6 +250,26 @@ sub _store_annotation {
   }
 }
 
+sub _parse_submitter {
+  my ($first_value, $submitter_name, $submitter_orcid, $submitter_status) = @_;
+
+  if ($first_value =~ /^#submitter_(\w+):\s*(.*?)\s*$/i) {
+    my $type = lc $1;
+    my $value = $2;
+    if ($type eq 'name') {
+      $$submitter_name = $value;
+    } else {
+      if ($type eq 'orcid') {
+        $$submitter_orcid = $value;
+      } else {
+        if ($type eq 'status') {
+          $$submitter_status = $value;
+        }
+      }
+    }
+  }
+}
+
 
 sub load {
   my $self = shift;
@@ -256,7 +286,7 @@ sub load {
 
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
-  $csv->column_names(qw(gene_systemtic_id fypo_id allele_description expression
+  my @col_names = (qw(gene_systemtic_id fypo_id allele_description expression
                         parental_strain strain_background genotype_description
                         gene_name allele_name allele_synonym allele_type
                         evidence conditions penetrance severity extension
@@ -265,13 +295,31 @@ sub load {
 
   my %stored_alleles = ();
 
-  while (my $columns_ref = $csv->getline_hr($fh)) {
-    my $gene_systemtic_id = trim($columns_ref->{"gene_systemtic_id"});
+  my %reference_annotation_counts = ();
+  my %reference_pub_object = ();
 
-    if ($gene_systemtic_id =~ /^#/ ||
-        $gene_systemtic_id =~ /^#?(Gene .*ID|systematic)/i) {
+  my $submitter_name = undef;
+  my $submitter_orcid = undef;
+  my $submitter_status = undef;
+
+  my $columns_ref = {};
+
+  $csv->bind_columns (\@{$columns_ref}{@col_names});
+
+  while ($csv->getline($fh)) {
+    my $first_value = trim($columns_ref->{"gene_systemtic_id"});
+
+    if ($first_value =~ /^#/) {
+      _parse_submitter($first_value, \$submitter_name, \$submitter_orcid,
+                       \$submitter_status);
       next;
     }
+
+    if ($first_value =~ /^Gene[_ ].*(ID|systematic)/i) {
+      next;
+    }
+
+    my $gene_systemtic_id = $first_value;
 
     if (length $gene_systemtic_id == 0) {
       warn "no value in the gene_systemtic_id column at line ", $fh->input_line_number(), " - skipping\n";
@@ -298,7 +346,7 @@ sub load {
     my $penetrance = $columns_ref->{"penetrance"};
     my $severity = $columns_ref->{"severity"};
     my $extension = $columns_ref->{"extension"};
-    my $reference = $columns_ref->{"reference"};
+    my $reference = trim($columns_ref->{"reference"});
     my $date = $columns_ref->{"date"};
     $date =~ s/^\s*(\d\d\d\d)-?(\d\d)-?(\d\d)\s*$/$1-$2-$3/;
 
@@ -386,6 +434,8 @@ sub load {
       }
 
       my $pub = $self->find_or_create_pub($reference);
+
+      $reference_pub_object{$reference} = $pub;
 
       my $cvterm = undef;
 
@@ -486,6 +536,8 @@ sub load {
       $self->_store_annotation($genotype_feature, $cvterm, $pub, $date, $extension,
                                $penetrance, $severity, $long_evidence,
                                $conditions, $allele_variant);
+
+      $reference_annotation_counts{$reference}++;
     };
 
     try {
@@ -500,6 +552,30 @@ sub load {
       my $allele = $_;
       $self->store_featureprop($allele, 'source_file', $file_name);
     } values %stored_alleles;
+
+    if (defined $submitter_name && defined $submitter_orcid &&
+        defined $submitter_status) {
+      my $encoder = $self->json_encoder();
+
+      while (my ($reference, $count) = each %reference_annotation_counts) {
+        my %curator_details = (
+          name => $submitter_name,
+          orcid => $submitter_orcid,
+          annotation_curator => $count,
+        );
+
+        if (lc $submitter_status eq 'community') {
+          $curator_details{community_curator} = JSON::true;
+        } else {
+          $curator_details{community_curator} = JSON::false;
+        }
+
+        my $curator_json = $encoder->encode(\%curator_details);
+        my $pub = $reference_pub_object{$reference};
+        $self->create_pubprop($pub, 'annotation_curator', $curator_json);
+        warn "$curator_json\n";
+      }
+    }
   }
 
   if (!$csv->eof()){
