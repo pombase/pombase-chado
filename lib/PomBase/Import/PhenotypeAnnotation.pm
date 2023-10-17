@@ -573,7 +573,6 @@ sub load {
         my $curator_json = $encoder->encode(\%curator_details);
         my $pub = $reference_pub_object{$reference};
         $self->create_pubprop($pub, 'annotation_curator', $curator_json);
-        warn "$curator_json\n";
       }
     }
   }
