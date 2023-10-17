@@ -561,7 +561,7 @@ sub load {
         my %curator_details = (
           name => $submitter_name,
           orcid => $submitter_orcid,
-          annotation_curator => $count,
+          annotation_count => $count,
         );
 
         if (lc $submitter_status eq 'community') {
