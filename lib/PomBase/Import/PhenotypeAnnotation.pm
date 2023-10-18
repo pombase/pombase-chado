@@ -562,6 +562,8 @@ sub load {
           name => $submitter_name,
           orcid => $submitter_orcid,
           annotation_count => $count,
+          file_name => $file_name,
+          file_type => 'PHAF',
         );
 
         if (lc $submitter_status eq 'community') {
