@@ -17,3 +17,5 @@
 {"add-field":{"name":"canto_annotation_status", "type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"canto_curator_name", "type": "textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"canto_curator_role", "type": "textField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"file_curator_name", "type": "textField","indexed":"true","stored":"true"}}
+{"add-field":{"name":"file_curator_role", "type": "textField","indexed":"true","stored":"true"}}
