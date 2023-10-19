@@ -253,10 +253,16 @@ sub get_genotype_uniquename {
 
   my $new_suffix;
 
-  if ($self->chado()->storage()->connect_info()->[0] =~ /dbi:SQLite/) {
-    $new_suffix = $self->_get_genotype_suffix_sqlite($dbh, $prefix);
+  if (defined $self->{_saved_genotype_uniquename}) {
+    $new_suffix = ++$self->{_saved_genotype_uniquename};
   } else {
-    $new_suffix = $self->_get_genotype_suffix_pg($dbh, $prefix);
+    if ($self->chado()->storage()->connect_info()->[0] =~ /dbi:SQLite/) {
+      $new_suffix = $self->_get_genotype_suffix_sqlite($dbh, $prefix);
+    } else {
+      $new_suffix = $self->_get_genotype_suffix_pg($dbh, $prefix);
+    }
+
+    $self->{_saved_genotype_uniquename} = $new_suffix;
   }
 
   return "$prefix$new_suffix";
