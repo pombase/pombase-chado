@@ -1187,6 +1187,10 @@ sub _store_metadata {
   }
   if ($metadata->{annotation_curators}) {
     for my $annotation_curator (@{$metadata->{annotation_curators}}) {
+      if (defined $annotation_curator->{orcid} &&
+          $annotation_curator->{orcid} =~ /^\s*$/) {
+        $annotation_curator->{orcid} = undef;
+      }
       my $annotation_curator_json = $encoder->encode($annotation_curator);
       $self->create_pubprop($pub, 'annotation_curator', $annotation_curator_json);
     }
