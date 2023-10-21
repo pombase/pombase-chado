@@ -136,6 +136,10 @@ EOQ
         JOIN cvterm allele_type ON allele_type.cvterm_id = allele.type_id
         WHERE rel_type.name = 'instance_of'
           AND allele_type.name = 'allele'
+          AND allele.feature_id NOT IN
+             (SELECT feature_id FROM featureprop fp
+                                JOIN cvterm fpt ON fpt.cvterm_id = fp.type_id
+               WHERE fpt.name = 'allele_type' AND fp.value = 'fusion_or_chimera')
           AND allele.name IS NOT NULL;
 EOQ
 
