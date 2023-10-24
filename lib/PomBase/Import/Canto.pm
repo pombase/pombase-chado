@@ -1156,6 +1156,9 @@ sub _store_metadata {
   if ($metadata->{approver_name}) {
     $self->create_pubprop($pub, 'canto_approver_name', $metadata->{approver_name});
   }
+  if ($metadata->{approver_orcid}) {
+    $self->create_pubprop($pub, 'canto_approver_orcid', $metadata->{approver_orcid});
+  }
   if ($metadata->{initial_curator_name}) {
     $self->create_pubprop($pub, 'canto_initial_curator_name', $metadata->{initial_curator_name});
   }
