@@ -560,11 +560,14 @@ sub load {
       while (my ($reference, $count) = each %reference_annotation_counts) {
         my %curator_details = (
           name => $submitter_name,
-          orcid => $submitter_orcid,
           annotation_count => $count,
           file_name => $file_name,
           file_type => 'PHAF',
         );
+
+        if (defined $submitter_orcid && $submitter_orcid !~ /^\s*$/) {
+          $curator_details{orcid} = $submitter_orcid;
+        }
 
         if (lc $submitter_status eq 'community') {
           $curator_details{community_curator} = JSON::true;
