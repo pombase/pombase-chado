@@ -75,15 +75,15 @@ with 'PomBase::Role::LegacyAlleleHandler';
 with 'PomBase::Role::Embl::FeatureRelationshippropStorer';
 with 'PomBase::Role::PhenotypeFeatureFinder';
 
+
+with 'PomBase::Importer';
+
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 
 has extension_processor => (is => 'ro', init_arg => undef, lazy_build => 1);
 
 has throughput_type => (is => 'rw', init_arg => undef);
-
-has json_encoder => (is => 'ro', init_arg => undef, lazy => 1,
-                     builder => '_build_json_encoder');
 
 sub BUILD
 {
@@ -121,12 +121,6 @@ sub _build_extension_processor {
 sub _build_genotype_cache {
   my $self = shift;
   return PomBase::Chado::GenotypeCache->new(chado => $self->chado());
-}
-
-sub _build_json_encoder {
-  my $self = shift;
-
-  return JSON->new()->pretty(0)->canonical(1);
 }
 
 my $fypo_extensions_cv_name = 'fypo_extensions';
@@ -250,26 +244,6 @@ sub _store_annotation {
   }
 }
 
-sub _parse_submitter {
-  my ($first_value, $submitter_name, $submitter_orcid, $submitter_status) = @_;
-
-  if ($first_value =~ /^#submitter_(\w+):\s*(.*?)\s*$/i) {
-    my $type = lc $1;
-    my $value = $2;
-    if ($type eq 'name') {
-      $$submitter_name = $value;
-    } else {
-      if ($type eq 'orcid') {
-        $$submitter_orcid = $value;
-      } else {
-        if ($type eq 'status') {
-          $$submitter_status = $value;
-        }
-      }
-    }
-  }
-}
-
 
 sub load {
   my $self = shift;
@@ -295,9 +269,6 @@ sub load {
 
   my %stored_alleles = ();
 
-  my %reference_annotation_counts = ();
-  my %reference_pub_object = ();
-
   my $submitter_name = undef;
   my $submitter_orcid = undef;
   my $submitter_status = undef;
@@ -310,8 +281,7 @@ sub load {
     my $first_value = trim($columns_ref->{"gene_systemtic_id"});
 
     if ($first_value =~ /^#/) {
-      _parse_submitter($first_value, \$submitter_name, \$submitter_orcid,
-                       \$submitter_status);
+      $self->parse_submitter_line($first_value);
       next;
     }
 
@@ -435,7 +405,7 @@ sub load {
 
       my $pub = $self->find_or_create_pub($reference);
 
-      $reference_pub_object{$reference} = $pub;
+      $self->record_pub_object($reference, $pub);
 
       my $cvterm = undef;
 
@@ -537,7 +507,7 @@ sub load {
                                $penetrance, $severity, $long_evidence,
                                $conditions, $allele_variant);
 
-      $reference_annotation_counts{$reference}++;
+      $self->increment_ref_annotation_count($reference);
     };
 
     try {
@@ -553,33 +523,7 @@ sub load {
       $self->store_featureprop($allele, 'source_file', $file_name);
     } values %stored_alleles;
 
-    if (defined $submitter_name && defined $submitter_orcid &&
-        defined $submitter_status) {
-      my $encoder = $self->json_encoder();
-
-      while (my ($reference, $count) = each %reference_annotation_counts) {
-        my %curator_details = (
-          name => $submitter_name,
-          annotation_count => $count,
-          file_name => $file_name,
-          file_type => 'PHAF',
-        );
-
-        if (defined $submitter_orcid && $submitter_orcid !~ /^\s*$/) {
-          $curator_details{orcid} = $submitter_orcid;
-        }
-
-        if (lc $submitter_status eq 'community') {
-          $curator_details{community_curator} = JSON::true;
-        } else {
-          $curator_details{community_curator} = JSON::false;
-        }
-
-        my $curator_json = $encoder->encode(\%curator_details);
-        my $pub = $reference_pub_object{$reference};
-        $self->create_pubprop($pub, 'annotation_file_curator', $curator_json);
-      }
-    }
+    $self->store_annotation_file_curator($file_name, 'PHAF');
   }
 
   if (!$csv->eof()){
