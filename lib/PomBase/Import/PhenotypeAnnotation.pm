@@ -249,11 +249,7 @@ sub load {
   my $self = shift;
   my $fh = shift;
 
-  my $file_name = readlink '/proc/self/fd/0';
-
-  if (defined $file_name) {
-    $file_name =~ s|.*/||;
-  }
+  my $file_name = $self->file_name_of_fh($fh);
 
   my $chado = $self->chado();
   my $config = $self->config();

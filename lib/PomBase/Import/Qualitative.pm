@@ -61,6 +61,8 @@ with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 
+with 'PomBase::Importer';
+
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
@@ -117,6 +119,8 @@ sub load {
   my $self = shift;
   my $fh = shift;
 
+  my $file_name = $self->file_name_of_fh($fh);
+
   my $chado = $self->chado();
 
   my $tsv = Text::CSV->new({ sep_char => "\t" });
@@ -125,14 +129,17 @@ sub load {
     if (@$columns_ref == 1 && length(trim($columns_ref->[0])) == 0) {
       next;
     }
-    my ($systematic_id, $gene_name, $type, $evidence_code, $level, $extension, $pubmedid, $taxonid, $date) =
+    my ($first_value, $gene_name, $type, $evidence_code, $level, $extension,
+        $pubmedid, $taxonid, $date) =
       map { trim($_) || undef } @$columns_ref;
 
-    if ($systematic_id =~ /^#/ ||
-        $systematic_id =~ /^#?systematic.id/i) {
+    if ($first_value =~ /^#/ || $first_value =~ /^#?systematic.id/i) {
+      $self->parse_submitter_line($first_value);
       # skip comments and header
       next;
     }
+
+    my $systematic_id = $first_value;
 
     if (!defined $systematic_id) {
       die qq(mandatory column value for systematic ID missing at line $.\n);
@@ -180,6 +187,8 @@ sub load {
     my $proc = sub {
 
     my $pub = $self->find_or_create_pub($pubmedid);
+
+    $self->record_pub_object($pubmedid, $pub);
 
     my $type_cvterm_name;
     if ($type eq 'RNA' || $type eq 'protein') {
@@ -231,6 +240,8 @@ sub load {
       $self->extension_processor()->process_one_annotation($feature_cvterm, $extension);
     }
 
+    $self->increment_ref_annotation_count($pubmedid);
+
     };
 
     try {
@@ -240,6 +251,12 @@ sub load {
       warn "Failed to load row: $_\n";
     }
   }
+
+  if (defined $file_name) {
+    $self->store_annotation_file_curator($file_name, 'qualitative_gene_expression');
+  }
+
+  return undef;
 }
 
 1;

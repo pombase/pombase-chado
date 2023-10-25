@@ -39,6 +39,8 @@ use strict;
 use warnings;
 use Carp;
 
+use JSON;
+
 use Moose::Role;
 
 has reference_annotation_counts => (is => 'ro', init_arg => undef,
@@ -101,6 +103,19 @@ sub parse_submitter_line {
       }
     }
   }
+}
+
+sub file_name_of_fh {
+  my $self = shift;
+  my $fh = shift;
+
+  my $file_name = readlink '/proc/self/fd/0';
+
+  if (defined $file_name) {
+    $file_name =~ s|.*/||;
+  }
+
+  return $file_name;
 }
 
 sub store_annotation_file_curator {
