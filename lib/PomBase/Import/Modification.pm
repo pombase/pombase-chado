@@ -97,8 +97,6 @@ sub load {
     my ($first_value, $gene_name, $psi_mod_term_id, $evidence_code, $residue, $extension, $pubmedid, $taxonid, $date) =
       map { trim($_) || undef } @$columns_ref;
 
-
-
     if ($first_value =~ /^#/) {
       $self->parse_submitter_line($first_value);
       # skip comments
