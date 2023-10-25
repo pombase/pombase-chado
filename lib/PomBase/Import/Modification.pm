@@ -60,6 +60,8 @@ with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 
+with 'PomBase::Importer';
+
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 has organism_taxonid => (is => 'rw', init_arg => undef);
@@ -85,23 +87,30 @@ sub load {
   my $self = shift;
   my $fh = shift;
 
+  my $file_name = $self->file_name_of_fh($fh);
+
   my $chado = $self->chado();
 
   my $tsv = Text::CSV->new({ sep_char => "\t" });
 
   while (my $columns_ref = $tsv->getline($fh)) {
-    my ($systematic_id, $gene_name, $psi_mod_term_id, $evidence_code, $residue, $extension, $pubmedid, $taxonid, $date) =
+    my ($first_value, $gene_name, $psi_mod_term_id, $evidence_code, $residue, $extension, $pubmedid, $taxonid, $date) =
       map { trim($_) || undef } @$columns_ref;
 
-    if ($systematic_id =~ /^#/) {
+
+
+    if ($first_value =~ /^#/) {
+      $self->parse_submitter_line($first_value);
       # skip comments
       next;
     }
 
-    if ($systematic_id =~ /^#?(systematic|Gene systematic)/i) {
+    if ($first_value =~ /^#?(systematic|Gene systematic)/i) {
       # skip header
       next;
     }
+
+    my $systematic_id = $first_value;
 
     if (!defined $systematic_id) {
       die qq(mandatory column value for systematic ID missing at line $.\n);
@@ -154,6 +163,8 @@ sub load {
     }
     my $pub = $self->find_or_create_pub($pubmedid);
 
+    $self->record_pub_object($pubmedid, $pub);
+
     my $feature_cvterm =
       $self->create_feature_cvterm($feature, $mod_cvterm, $pub, 0);
 
@@ -181,6 +192,12 @@ sub load {
         warn "failed to load line $.:\n$_";
       }
     }
+
+    $self->increment_ref_annotation_count($pubmedid);
+  }
+
+  if (defined $file_name) {
+    $self->store_annotation_file_curator($file_name, 'qualitative_gene_expression');
   }
 }
 
