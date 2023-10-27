@@ -117,7 +117,8 @@ sub load {
       die qq(mandatory column value for PSI-MOD ID missing at line $.\n);
     }
     if (!defined $evidence_code) {
-      die qq(mandatory column value for evidence missing at line $.\n);
+      warn qq(column value for evidence missing at line $.\n);
+      next;
     }
     if (!defined $pubmedid) {
       die qq(mandatory column value for reference missing at line $.\n);
