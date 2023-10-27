@@ -130,7 +130,7 @@ sub load {
       die qq(mandatory column value for taxon missing at line $.\n);
     }
     if (!defined $date) {
-      die qq(mandatory column value for date missing at line $.\n);
+      warn qq(column value for date missing at line $.\n);
     }
 
     my $mod_cvterm;
@@ -182,7 +182,9 @@ sub load {
       $self->add_feature_cvtermprop($feature_cvterm, 'residue', $residue);
     }
 
-    $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
+    if (defined $date) {
+      $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
+    }
 
     if (defined $extension) {
       try {
