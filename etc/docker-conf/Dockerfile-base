@@ -34,7 +34,7 @@ USER pombase
 
 RUN pipx install circus
 
-RUN cd /pombase && curl -L 'https://downloads.apache.org/lucene/solr/8.11.2/solr-8.11.2.tgz' | tar -x --gzip -f - && \
+RUN cd /pombase && curl -L 'https://curation.pombase.org/software/solr-8.11.2.tgz' | tar -x --gzip -f - && \
     (cd /pombase/solr-8.11.2/; rm -rf example contrib licenses *.txt docs)
 
 ENV JBROWSE_VERSION=1.16.10-pombase
