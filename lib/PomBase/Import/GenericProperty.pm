@@ -237,7 +237,12 @@ sub load {
 
     if (defined $reference_column) {
       my $reference_value = $columns_ref->[$reference_column];
-      $self->store_featureprop_pub($featureprop, $reference_value);
+
+      if ($reference_value =~ /:/) {
+        $self->store_featureprop_pub($featureprop, $reference_value);
+      } else {
+        warn qq|reference ID doesn't contain a colon (":"): $reference_value\n"|;
+      }
     }
   }
 }
