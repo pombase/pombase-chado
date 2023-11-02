@@ -1143,6 +1143,18 @@ sub _store_metadata {
   if ($metadata->{first_approved_timestamp}) {
     $self->create_pubprop($pub, 'canto_first_approved_date', $metadata->{first_approved_timestamp});
   }
+  if ($metadata->{first_submitted_timestamp}) {
+    $self->create_pubprop($pub, 'canto_first_submitted_timestamp',
+                          $metadata->{first_submitted_timestamp});
+  }
+  if ($metadata->{needs_approval_timestamp}) {
+    $self->create_pubprop($pub, 'canto_needs_approval_timestamp',
+                          $metadata->{needs_approval_timestamp});
+  }
+  if ($metadata->{approval_in_progress_timestamp}) {
+    $self->create_pubprop($pub, 'canto_approval_in_progress_timestamp',
+                          $metadata->{approval_in_progress_timestamp});
+  }
   if ($metadata->{first_sent_to_curator_date}) {
     $self->create_pubprop($pub, 'canto_first_sent_to_curator_date',
                           $metadata->{first_sent_to_curator_date});
