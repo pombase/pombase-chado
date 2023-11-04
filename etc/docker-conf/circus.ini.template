@@ -23,7 +23,7 @@ singleton = True
 
 [watcher:pombase-python-web]
 cmd = /usr/bin/gunicorn
-args = --workers 8 -e PEPTIDE_PATH=/pombase/feature_sequences/peptide.fa -e GENE_EX_TSV_PATH=/pombase/misc/gene_expression_table.tsv -e WEBSITE_CONFIG_JSON_PATH=/pombase/main_config.json --bind '127.0.0.1:8999' pombase.wsgi
+args = --workers 8 -e PEPTIDE_PATH=/pombase/feature_sequences/peptide.fa -e GENE_EX_TSV_PATH=/pombase/misc/gene_expression_table.tsv -e WEBSITE_CONFIG_JSON_PATH=/pombase/main_config.json DETAILED_STATS_JSON=/var/www/html/web-json/detailed_stats.json --bind '127.0.0.1:8999' pombase.wsgi
 working_dir = /pombase/pombase-python-web/
 copy_env = True
 numprocesses = 1
