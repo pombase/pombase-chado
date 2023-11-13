@@ -213,21 +213,16 @@ sub _store_annotation {
 
     for (my $i = 0; $i < @conditions; $i++) {
       my $condition = $conditions[$i];
-      my $condition_detail = undef;
+      my $condition_with_detail = $condition;
 
-      if ($condition =~ /^(\w+:\d+)(?:\((.*)\))/) {
+      if ($condition =~ /^(\w+:\d+)(?:\(.*\))/) {
         $condition = $1;
-        $condition_detail = $2;
-      }
-
-      if (defined $condition_detail) {
-        $self->add_feature_cvtermprop($feature_cvterm, 'condition_detail',
-                                      "$condition($condition_detail)",
-                                      $condition_detail_count);
-        $condition_detail_count++;
       }
 
       $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
+
+      $self->add_feature_cvtermprop($feature_cvterm, 'condition_detail',
+                                    $condition_with_detail, $i);
     }
 
     if (@extension_bits > 0) {
