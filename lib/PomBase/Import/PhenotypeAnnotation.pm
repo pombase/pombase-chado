@@ -204,6 +204,10 @@ sub _store_annotation {
     $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                   $long_evidence);
 
+    if (defined $file_name) {
+      $self->add_feature_cvtermprop($feature_cvterm, 'source_file', $file_name);
+    }
+
     my @conditions = split /\s*,\s*/, $conditions;
     my $condition_detail_count = 0;
 
