@@ -228,6 +228,7 @@ sub load {
       for (my $i = 0; $i < @conditions; $i++) {
         my $condition = $conditions[$i];
         $self->add_feature_cvtermprop($feature_cvterm, 'condition', $condition, $i);
+        $self->add_feature_cvtermprop($feature_cvterm, 'condition_detail', $condition, $i);
       }
     }
 

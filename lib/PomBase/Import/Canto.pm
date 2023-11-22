@@ -588,6 +588,7 @@ sub _store_ontology_annotation {
         my $real_termid = $self->_get_real_termid($termid);
 
         $self->add_feature_cvtermprop($feature_cvterm, condition => $real_termid, $i);
+        $self->add_feature_cvtermprop($feature_cvterm, condition_detail => $real_termid, $i);
       }
     }
 
