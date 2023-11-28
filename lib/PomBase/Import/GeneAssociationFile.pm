@@ -63,6 +63,8 @@ with 'PomBase::Role::FeatureCvtermCreator';
 with 'PomBase::Role::UniProtIDMap';
 with 'PomBase::Role::GOAnnotationProperties';
 
+with 'PomBase::Importer';
+
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has assigned_by_filter => (is => 'rw', init_arg => undef);
