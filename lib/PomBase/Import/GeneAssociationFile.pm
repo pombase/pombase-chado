@@ -182,6 +182,8 @@ sub load {
   my $self = shift;
   my $fh = shift;
 
+  my $file_name = $self->file_name_of_fh($fh);
+
   my $chado = $self->chado();
   my $config = $self->config();
 
@@ -548,6 +550,11 @@ sub load {
                                         $with_or_from, $i);
         }
 
+        }
+
+        if (defined $file_name) {
+          $self->add_feature_cvtermprop($feature_cvterm, 'source_file',
+                                        $file_name);
         }
       };
 
