@@ -550,12 +550,13 @@ sub load {
                                         $with_or_from, $i);
         }
 
-        }
-
         if (defined $file_name) {
           $self->add_feature_cvtermprop($feature_cvterm, 'source_file',
                                         $file_name);
         }
+
+        }
+
       };
 
       try {
