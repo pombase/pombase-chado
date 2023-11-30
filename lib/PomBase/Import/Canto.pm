@@ -1138,7 +1138,7 @@ sub _store_metadata {
   my $chado = $self->chado();
 
   my $pub_uniquename = $metadata->{curation_pub_id};
-  my $pub = $self->find_or_create_pub($pub_uniquename);
+  my $pub = $self->_get_pub($pub_uniquename);
 
   $self->create_pubprop($pub, 'canto_session', $metadata->{canto_session});
   if ($metadata->{first_approved_timestamp}) {
@@ -1229,6 +1229,19 @@ sub _process_publications {
   }
 }
 
+sub _process_genes {
+  my $self = shift;
+
+  my $pub_uniquename = shift;
+  my $genes = shift;
+
+  my $pub = $self->_get_pub($pub_uniquename);
+
+  for my $gene (values %$genes) {
+    $self->create_feature_pub($gene, $pub, 1);
+  }
+}
+
 sub _process_sessions {
   my $self = shift;
   my $curation_sessions = shift;
@@ -1240,6 +1253,9 @@ sub _process_sessions {
     $self->_store_metadata($metadata);
 
     my %session_genes = $self->_query_genes($session_data{genes});
+
+    $self->_process_genes($metadata->{curation_pub_id}, \%session_genes);
+
     my %session_alleles =
       $self->_get_alleles($metadata->{curation_pub_id}, $canto_session,
                           \%session_genes, $session_data{alleles});
