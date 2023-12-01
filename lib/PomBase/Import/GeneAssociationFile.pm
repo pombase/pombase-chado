@@ -68,6 +68,7 @@ with 'PomBase::Importer';
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has assigned_by_filter => (is => 'rw', init_arg => undef);
+has verbose_assigned_by_filter => (is => 'rw', init_arg => undef);
 has taxon_filter => (is => 'rw', init_arg => undef);
 has remove_existing => (is => 'rw', init_arg => undef);
 has use_first_with_id => (is => 'rw', init_arg => undef);
@@ -119,6 +120,7 @@ sub _load_first_column {
 sub BUILD {
   my $self = shift;
   my $assigned_by_filter = '';
+  my $verbose_assigned_by_filter = '';
   my $taxon_filter = '';
   my $remove_existing = 0;
   my $with_filter_filename = undef;
@@ -135,6 +137,7 @@ sub BUILD {
   my $load_column_17 = 0;
 
   my @opt_config = ('assigned-by-filter=s' => \$assigned_by_filter,
+                    'verbose-assigned-by-filter=s' => \$verbose_assigned_by_filter,
                     'remove-existing' => \$remove_existing,
                     'taxon-filter=s' => \$taxon_filter,
                     'with-filter-filename=s' =>
@@ -160,6 +163,7 @@ sub BUILD {
   }
 
   $self->assigned_by_filter([split /\s*,\s*/, $assigned_by_filter]);
+  $self->verbose_assigned_by_filter($verbose_assigned_by_filter);
   $self->taxon_filter([split /\s*,\s*/, $taxon_filter]);
   $self->remove_existing($remove_existing);
 
@@ -401,8 +405,9 @@ sub load {
     }
 
     if (@assigned_by_filter && !$assigned_by_filter{$assigned_by}) {
-      if ($self->verbose()) {
-        warn "ignoring line because of assigned_by filter: $assigned_by\n";
+      if ($self->verbose() || $self->verbose_assigned_by_filter()) {
+        warn "line ", $fh->input_line_number(),
+          ": ignoring because this value does match the assigned_by filter: $assigned_by\n";
       }
       next;
     }
