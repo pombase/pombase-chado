@@ -191,7 +191,6 @@ sub create_feature_pub {
   my $self = shift;
   my $feature = shift;
   my $pub = shift;
-  my $hide_warning_for_existing_row = shift;
 
   try {
     $self->chado()->txn_do(sub {
@@ -209,10 +208,8 @@ sub create_feature_pub {
       ->search({ feature_id => $feature->feature_id(),
                  pub_id => $pub->pub_id() });
     if ($existing_rs->count() > 0) {
-      if (!$hide_warning_for_existing_row) {
-        warn "failed to store reference ", $pub->uniquename(), " for ",
-          $feature->uniquename(), " - already stored\n";
-      }
+      warn "failed to store reference ", $pub->uniquename(), " for ",
+        $feature->uniquename(), " - already stored\n";
     } else {
       warn "failed to store reference ", $pub->uniquename(), " for ",
         $feature->uniquename(), ": $_\n";
