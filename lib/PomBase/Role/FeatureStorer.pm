@@ -368,10 +368,15 @@ sub store_feature_pub {
 
   my $sth =
     $dbh->prepare("
-INSERT INTO feature_pub(feature_id, pub_id) VALUES (?, ?) ON CONFLICT DO NOTHING;
+INSERT INTO feature_pub(feature_id, pub_id) VALUES (?, ?)
+  ON CONFLICT(feature_id, pub_id)
+  DO UPDATE SET pub_id = excluded.pub_id
+  RETURNING feature_pub_id;
 ");
 
-  $sth->execute($feature->feature_id(), $pub->pub_id());
+  my $feature_pub_id = $sth->execute($feature->feature_id(), $pub->pub_id());
+
+  return $feature_pub_id;
 }
 
 1;
