@@ -359,49 +359,39 @@ sub get_new_uniquename {
 
 =head2
 
- Usage   : $feature_pub_id = $self->store_feature_pub($feature, $pub)
- Function: Try to store a feature_pub.  Return the new feature_pub_id or
-           the ID of the existing feature_pub
+ Usage   : $feature_pub = $self->find_or_create_feature_pub($feature, $pub)
+ Function: Try to store a feature_pub.  Return the new feature_pub or
+           the existing feature_pub
 
 =cut
 
-sub store_feature_pub {
+sub find_or_create_feature_pub {
   my $self = shift;
   my $feature = shift;
   my $pub = shift;
 
   my $chado = $self->chado();
 
-  my $dbh = $chado->storage()->dbh();
-
-  my $sth =
-    $dbh->prepare("
-INSERT INTO feature_pub(feature_id, pub_id) VALUES (?, ?)
-  ON CONFLICT(feature_id, pub_id)
-  DO UPDATE SET pub_id = excluded.pub_id
-  RETURNING feature_pub_id;
-");
-
-  my $feature_pub_id = $sth->execute($feature->feature_id(), $pub->pub_id());
-
-  return $feature_pub_id;
+  return $chado->resultset('Sequence::FeaturePub')
+    ->find_or_create({ feature_id => $feature->feature_id(),
+                       pub_id => $pub->pub_id(), });
 }
 
 =head2 store_feature_pubprop
 
- Usage   : $self->store_feature_pubprop($feature_pub_id, 'feature_pub_source',
+ Usage   : $self->store_feature_pubprop($feature_pub, 'feature_pub_source',
                                         'contig_file_dbxref');
- Function: Add a property to a feature_pub
- Args    : $feature_pub_id
+ Function: Add a property to a feature_pub, or return existing property
+ Args    : $feature_pub
            $type_name
            $value
- Returns : the new FeaturePubprop
+ Returns : the new or existing FeaturePubprop
 
 =cut
 
 sub store_feature_pubprop {
   my $self = shift;
-  my $feature_pub_id = shift;
+  my $feature_pub = shift;
   my $type_name = shift;
   my $value = shift;
 
@@ -414,9 +404,10 @@ sub store_feature_pubprop {
   }
 
   my $prop_rs = $self->chado()->resultset('Sequence::FeaturePubprop');
-  return $prop_rs->create({ feature_pub_id => $feature_pub_id,
-                            type_id => $type_term->cvterm_id(),
-                            value => $value });
+
+  return $prop_rs->find_or_create({ feature_pub_id => $feature_pub->feature_pub_id(),
+                                    type_id => $type_term->cvterm_id(),
+                                    value => $value });
 }
 
 1;

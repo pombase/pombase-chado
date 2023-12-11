@@ -470,7 +470,7 @@ sub get_allele {
   my $add_pub = sub {
     if (defined $pub) {
       my $allele = shift;
-      $self->store_feature_pub($allele, $pub);
+      $self->find_or_create_feature_pub($allele, $pub);
     }
   };
 
