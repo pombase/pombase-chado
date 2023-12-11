@@ -357,6 +357,14 @@ sub get_new_uniquename {
   return $prefix . $next_suffix;
 }
 
+=head2
+
+ Usage   : $feature_pub_id = $self->store_feature_pub($feature, $pub)
+ Function: Try to store a feature_pub.  Return the new feature_pub_id or
+           the ID of the existing feature_pub
+
+=cut
+
 sub store_feature_pub {
   my $self = shift;
   my $feature = shift;
@@ -377,6 +385,38 @@ INSERT INTO feature_pub(feature_id, pub_id) VALUES (?, ?)
   my $feature_pub_id = $sth->execute($feature->feature_id(), $pub->pub_id());
 
   return $feature_pub_id;
+}
+
+=head2 store_feature_pubprop
+
+ Usage   : $self->store_feature_pubprop($feature_pub_id, 'feature_pub_source',
+                                        'contig_file_dbxref');
+ Function: Add a property to a feature_pub
+ Args    : $feature_pub_id
+           $type_name
+           $value
+ Returns : the new FeaturePubprop
+
+=cut
+
+sub store_feature_pubprop {
+  my $self = shift;
+  my $feature_pub_id = shift;
+  my $type_name = shift;
+  my $value = shift;
+
+  my $type_term = $self->find_cvterm_by_name('feature_pubprop_type', $type_name);
+  if (!defined $type_term) {
+    croak "no feature_pubprop_type term for: $type_name\n";
+  }
+  if (!defined $value) {
+    croak "can't store null value for $type_name\n";
+  }
+
+  my $prop_rs = $self->chado()->resultset('Sequence::FeaturePubprop');
+  return $prop_rs->create({ feature_pub_id => $feature_pub_id,
+                            type_id => $type_term->cvterm_id(),
+                            value => $value });
 }
 
 1;
