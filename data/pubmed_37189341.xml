@@ -1,0 +1,676 @@
+<?xml version="1.0"?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2023//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_230101.dtd">
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation Status="MEDLINE" Owner="NLM" IndexingMethod="Automated">
+      <PMID Version="1">37189341</PMID>
+      <DateCompleted>
+        <Year>2023</Year>
+        <Month>05</Month>
+        <Day>17</Day>
+      </DateCompleted>
+      <DateRevised>
+        <Year>2023</Year>
+        <Month>05</Month>
+        <Day>30</Day>
+      </DateRevised>
+      <Article PubModel="Electronic">
+        <Journal>
+          <ISSN IssnType="Electronic">2218-273X</ISSN>
+          <JournalIssue CitedMedium="Internet">
+            <Volume>13</Volume>
+            <Issue>4</Issue>
+            <PubDate>
+              <Year>2023</Year>
+              <Month>Mar</Month>
+              <Day>25</Day>
+            </PubDate>
+          </JournalIssue>
+          <Title>Biomolecules</Title>
+          <ISOAbbreviation>Biomolecules</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Regulation of the SUV39H Family Methyltransferases: Insights from Fission Yeast.</ArticleTitle>
+        <ELocationID EIdType="pii" ValidYN="Y">593</ELocationID>
+        <ELocationID EIdType="doi" ValidYN="Y">10.3390/biom13040593</ELocationID>
+        <Abstract>
+          <AbstractText>Histones, which make up nucleosomes, undergo various post-translational modifications, such as acetylation, methylation, phosphorylation, and ubiquitylation. In particular, histone methylation serves different cellular functions depending on the location of the amino acid residue undergoing modification, and is tightly regulated by the antagonistic action of histone methyltransferases and demethylases. The SUV39H family of histone methyltransferases (HMTases) are evolutionarily conserved from fission yeast to humans and play an important role in the formation of higher-order chromatin structures called heterochromatin. The SUV39H family HMTases catalyzes the methylation of histone H3 lysine 9 (H3K9), and this modification serves as a binding site for heterochromatin protein 1 (HP1) to form a higher-order chromatin structure. While the regulatory mechanism of this family of enzymes has been extensively studied in various model organisms, Clr4, a fission yeast homologue, has made an important contribution. In this review, we focus on the regulatory mechanisms of the SUV39H family of proteins, in particular, the molecular mechanisms revealed by the studies of the fission yeast Clr4, and discuss their generality in comparison to other HMTases.</AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Nakamura</LastName>
+            <ForeName>Rinko</ForeName>
+            <Initials>R</Initials>
+            <Identifier Source="ORCID">0000-0001-5248-3540</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Division of Chromatin Regulation, National Institute for Basic Biology, Okazaki 444-8585, Japan.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Department of Basic Biology, School of Life Science, The Graduate University for Advanced Studies, SOKENDAI, Okazaki 444-8585, Japan.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Nakayama</LastName>
+            <ForeName>Jun-Ichi</ForeName>
+            <Initials>JI</Initials>
+            <Identifier Source="ORCID">0000-0002-5597-8239</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Division of Chromatin Regulation, National Institute for Basic Biology, Okazaki 444-8585, Japan.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Department of Basic Biology, School of Life Science, The Graduate University for Advanced Studies, SOKENDAI, Okazaki 444-8585, Japan.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+          <PublicationType UI="D016454">Review</PublicationType>
+          <PublicationType UI="D013485">Research Support, Non-U.S. Gov't</PublicationType>
+        </PublicationTypeList>
+        <ArticleDate DateType="Electronic">
+          <Year>2023</Year>
+          <Month>03</Month>
+          <Day>25</Day>
+        </ArticleDate>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>Switzerland</Country>
+        <MedlineTA>Biomolecules</MedlineTA>
+        <NlmUniqueID>101596414</NlmUniqueID>
+        <ISSNLinking>2218-273X</ISSNLinking>
+      </MedlineJournalInfo>
+      <ChemicalList>
+        <Chemical>
+          <RegistryNumber>EC 2.1.1.43</RegistryNumber>
+          <NameOfSubstance UI="D011495">Histone-Lysine N-Methyltransferase</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D006657">Histones</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>EC 2.1.1.-</RegistryNumber>
+          <NameOfSubstance UI="D000076983">Histone Methyltransferases</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D002843">Chromatin</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D006570">Heterochromatin</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D018797">Cell Cycle Proteins</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>EC 2.1.1.43</RegistryNumber>
+          <NameOfSubstance UI="C112744">clr4 protein, S pombe</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D029702">Schizosaccharomyces pombe Proteins</NameOfSubstance>
+        </Chemical>
+      </ChemicalList>
+      <CitationSubset>IM</CitationSubset>
+      <MeshHeadingList>
+        <MeshHeading>
+          <DescriptorName UI="D006801" MajorTopicYN="N">Humans</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D012568" MajorTopicYN="Y">Schizosaccharomyces</DescriptorName>
+          <QualifierName UI="Q000235" MajorTopicYN="N">genetics</QualifierName>
+          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D011495" MajorTopicYN="N">Histone-Lysine N-Methyltransferase</DescriptorName>
+          <QualifierName UI="Q000235" MajorTopicYN="N">genetics</QualifierName>
+          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D006657" MajorTopicYN="N">Histones</DescriptorName>
+          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D000076983" MajorTopicYN="N">Histone Methyltransferases</DescriptorName>
+          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D002843" MajorTopicYN="N">Chromatin</DescriptorName>
+          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D006570" MajorTopicYN="N">Heterochromatin</DescriptorName>
+          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D018797" MajorTopicYN="N">Cell Cycle Proteins</DescriptorName>
+          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D029702" MajorTopicYN="Y">Schizosaccharomyces pombe Proteins</DescriptorName>
+          <QualifierName UI="Q000235" MajorTopicYN="N">genetics</QualifierName>
+          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+        </MeshHeading>
+      </MeshHeadingList>
+      <KeywordList Owner="NOTNLM">
+        <Keyword MajorTopicYN="N">Clr4</Keyword>
+        <Keyword MajorTopicYN="N">SET domain</Keyword>
+        <Keyword MajorTopicYN="N">SUV39H</Keyword>
+        <Keyword MajorTopicYN="N">autoregulation</Keyword>
+        <Keyword MajorTopicYN="N">chromodomain</Keyword>
+        <Keyword MajorTopicYN="N">fission yeast</Keyword>
+        <Keyword MajorTopicYN="N">histone methylation</Keyword>
+        <Keyword MajorTopicYN="N">histone methyltransferases</Keyword>
+        <Keyword MajorTopicYN="N">ubiquitylation</Keyword>
+      </KeywordList>
+      <CoiStatement>The authors declare no conflict of interest.</CoiStatement>
+    </MedlineCitation>
+    <PubmedData>
+      <History>
+        <PubMedPubDate PubStatus="received">
+          <Year>2023</Year>
+          <Month>2</Month>
+          <Day>27</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="revised">
+          <Year>2023</Year>
+          <Month>3</Month>
+          <Day>22</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="accepted">
+          <Year>2023</Year>
+          <Month>3</Month>
+          <Day>22</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="medline">
+          <Year>2023</Year>
+          <Month>5</Month>
+          <Day>17</Day>
+          <Hour>6</Hour>
+          <Minute>42</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="pubmed">
+          <Year>2023</Year>
+          <Month>5</Month>
+          <Day>16</Day>
+          <Hour>6</Hour>
+          <Minute>42</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="entrez">
+          <Year>2023</Year>
+          <Month>5</Month>
+          <Day>16</Day>
+          <Hour>1</Hour>
+          <Minute>8</Minute>
+        </PubMedPubDate>
+      </History>
+      <PublicationStatus>epublish</PublicationStatus>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">37189341</ArticleId>
+        <ArticleId IdType="pmc">PMC10135481</ArticleId>
+        <ArticleId IdType="doi">10.3390/biom13040593</ArticleId>
+        <ArticleId IdType="pii">biom13040593</ArticleId>
+      </ArticleIdList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Strahl B.D., Allis C.D. The language of covalent histone modifications. Nature. 2000;403:41&#x2013;45. doi: 10.1038/47412.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/47412</ArticleId>
+            <ArticleId IdType="pubmed">10638745</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Murray K. The Occurrence of Epsilon-N-Methyl Lysine in Histones. Biochemistry. 1964;3:10&#x2013;15. doi: 10.1021/bi00889a003.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1021/bi00889a003</ArticleId>
+            <ArticleId IdType="pubmed">14114491</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Tschiersch B., Hofmann A., Krauss V., Dorn R., Korge G., Reuter G. The protein encoded by the Drosophila position-effect variegation suppressor gene Su(var)3-9 combines domains of antagonistic regulators of homeotic gene complexes. EMBO J. 1994;13:3822&#x2013;3831. doi: 10.1002/j.1460-2075.1994.tb06693.x.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1002/j.1460-2075.1994.tb06693.x</ArticleId>
+            <ArticleId IdType="pmc">PMC395295</ArticleId>
+            <ArticleId IdType="pubmed">7915232</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Aagaard L., Laible G., Selenko P., Schmid M., Dorn R., Schotta G., Kuhfittig S., Wolf A., Lebersorger A., Singh P.B., et al. Functional mammalian homologues of the Drosophila PEV-modifier Su(var)3-9 encode centromere-associated proteins which complex with the heterochromatin component M31. EMBO J. 1999;18:1923&#x2013;1938. doi: 10.1093/emboj/18.7.1923.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1093/emboj/18.7.1923</ArticleId>
+            <ArticleId IdType="pmc">PMC1171278</ArticleId>
+            <ArticleId IdType="pubmed">10202156</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Eissenberg J.C., Morris G.D., Reuter G., Hartnett T. The heterochromatin-associated protein HP-1 is an essential protein in Drosophila with dosage-dependent effects on position-effect variegation. Genetics. 1992;131:345&#x2013;352. doi: 10.1093/genetics/131.2.345.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1093/genetics/131.2.345</ArticleId>
+            <ArticleId IdType="pmc">PMC1205009</ArticleId>
+            <ArticleId IdType="pubmed">1644277</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Ekwall K., Ruusala T. Mutations in rik1, clr2, clr3 and clr4 genes asymmetrically derepress the silent mating-type loci in fission yeast. Genetics. 1994;136:53&#x2013;64. doi: 10.1093/genetics/136.1.53.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1093/genetics/136.1.53</ArticleId>
+            <ArticleId IdType="pmc">PMC1205792</ArticleId>
+            <ArticleId IdType="pubmed">8138176</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Allshire R.C., Nimmo E.R., Ekwall K., Javerzat J.P., Cranston G. Mutations derepressing silent centromeric domains in fission yeast disrupt chromosome segregation. Genes Dev. 1995;9:218&#x2013;233. doi: 10.1101/gad.9.2.218.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1101/gad.9.2.218</ArticleId>
+            <ArticleId IdType="pubmed">7851795</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Ivanova A.V., Bonaduce M.J., Ivanov S.V., Klar A.J. The chromo and SET domains of the Clr4 protein are essential for silencing in fission yeast. Nat. Genet. 1998;19:192&#x2013;195. doi: 10.1038/566.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/566</ArticleId>
+            <ArticleId IdType="pubmed">9620780</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Paro R., Hogness D.S. The Polycomb protein shares a homologous domain with a heterochromatin-associated protein of Drosophila. Proc. Natl. Acad. Sci. USA. 1991;88:263&#x2013;267. doi: 10.1073/pnas.88.1.263.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1073/pnas.88.1.263</ArticleId>
+            <ArticleId IdType="pmc">PMC50790</ArticleId>
+            <ArticleId IdType="pubmed">1898775</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Platero J.S., Hartnett T., Eissenberg J.C. Functional analysis of the chromo domain of HP1. EMBO J. 1995;14:3977&#x2013;3986. doi: 10.1002/j.1460-2075.1995.tb00069.x.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1002/j.1460-2075.1995.tb00069.x</ArticleId>
+            <ArticleId IdType="pmc">PMC394476</ArticleId>
+            <ArticleId IdType="pubmed">7664737</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Rea S., Eisenhaber F., O&#x2019;Carroll D., Strahl B.D., Sun Z.W., Schmid M., Opravil S., Mechtler K., Ponting C.P., Allis C.D., et al. Regulation of chromatin structure by site-specific histone H3 methyltransferases. Nature. 2000;406:593&#x2013;599. doi: 10.1038/35020506.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/35020506</ArticleId>
+            <ArticleId IdType="pubmed">10949293</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Bannister A.J., Zegerman P., Partridge J.F., Miska E.A., Thomas J.O., Allshire R.C., Kouzarides T. Selective recognition of methylated lysine 9 on histone H3 by the HP1 chromo domain. Nature. 2001;410:120&#x2013;124. doi: 10.1038/35065138.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/35065138</ArticleId>
+            <ArticleId IdType="pubmed">11242054</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Lachner M., O&#x2019;Carroll D., Rea S., Mechtler K., Jenuwein T. Methylation of histone H3 lysine 9 creates a binding site for HP1 proteins. Nature. 2001;410:116&#x2013;120. doi: 10.1038/35065132.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/35065132</ArticleId>
+            <ArticleId IdType="pubmed">11242053</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Nakayama J., Rice J.C., Strahl B.D., Allis C.D., Grewal S.I. Role of histone H3 lysine 9 methylation in epigenetic control of heterochromatin assembly. Science. 2001;292:110&#x2013;113. doi: 10.1126/science.1060118.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1126/science.1060118</ArticleId>
+            <ArticleId IdType="pubmed">11283354</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Sadaie M., Shinmyozu K., Nakayama J. A conserved SET domain methyltransferase, Set11, modifies ribosomal protein Rpl12 in fission yeast. J. Biol. Chem. 2008;283:7185&#x2013;7195. doi: 10.1074/jbc.M709429200.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1074/jbc.M709429200</ArticleId>
+            <ArticleId IdType="pubmed">18195021</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Shirai A., Sadaie M., Shinmyozu K., Nakayama J. Methylation of ribosomal protein L42 regulates ribosomal function and stress-adapted cell growth. J. Biol. Chem. 2010;285:22448&#x2013;22460. doi: 10.1074/jbc.M110.132274.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1074/jbc.M110.132274</ArticleId>
+            <ArticleId IdType="pmc">PMC2903366</ArticleId>
+            <ArticleId IdType="pubmed">20444689</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Velazquez Camacho O., Galan C., Swist-Rosowska K., Ching R., Gamalinda M., Karabiber F., De La Rosa-Velazquez I., Engist B., Koschorz B., Shukeir N., et al. Major satellite repeat RNA stabilize heterochromatin retention of Suv39h enzymes by RNA-nucleosome association and RNA:DNA hybrid formation. Elife. 2017;6:e25293. doi: 10.7554/eLife.25293.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.7554/eLife.25293</ArticleId>
+            <ArticleId IdType="pmc">PMC5538826</ArticleId>
+            <ArticleId IdType="pubmed">28760199</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Tamaru H., Selker E.U. A histone H3 methyltransferase controls DNA methylation in Neurospora crassa. Nature. 2001;414:277&#x2013;283. doi: 10.1038/35104508.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/35104508</ArticleId>
+            <ArticleId IdType="pubmed">11713521</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Dumesic P.A., Homer C.M., Moresco J.J., Pack L.R., Shanle E.K., Coyle S.M., Strahl B.D., Fujimori D.G., Yates J.R., 3rd, Madhani H.D. Product binding enforces the genomic specificity of a yeast polycomb repressive complex. Cell. 2015;160:204&#x2013;218. doi: 10.1016/j.cell.2014.11.039.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.cell.2014.11.039</ArticleId>
+            <ArticleId IdType="pmc">PMC4303595</ArticleId>
+            <ArticleId IdType="pubmed">25533783</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Iglesias N., Currie M.A., Jih G., Paulo J.A., Siuti N., Kalocsay M., Gygi S.P., Moazed D. Automethylation-induced conformational switch in Clr4 (Suv39h) maintains epigenetic stability. Nature. 2018;560:504&#x2013;508. doi: 10.1038/s41586-018-0398-2.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/s41586-018-0398-2</ArticleId>
+            <ArticleId IdType="pmc">PMC6287498</ArticleId>
+            <ArticleId IdType="pubmed">30051891</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Gay N., Wu H., Min J., Lunin V.V., Antoshenko T., Dombrovski L., Zeng H., Allali-Hassani A., Campagna-Slater V., Vedadi M., et al. Structural Biology of Human H3K9 Methyltransferases. PLoS ONE. 2010;5:e8570. doi: 10.1371/journal.pone.0008570.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1371/journal.pone.0008570</ArticleId>
+            <ArticleId IdType="pmc">PMC2797608</ArticleId>
+            <ArticleId IdType="pubmed">20084102</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Piao L., Nakakido M., Suzuki T., Dohmae N., Nakamura Y., Hamamoto R. Automethylation of SUV39H2, an oncogenic histone lysine methyltransferase, regulates its binding affinity to substrate proteins. Oncotarget. 2016;7:22846&#x2013;22856. doi: 10.18632/oncotarget.8072.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.18632/oncotarget.8072</ArticleId>
+            <ArticleId IdType="pmc">PMC5008405</ArticleId>
+            <ArticleId IdType="pubmed">26988914</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Kuzdere T., Flury V., Schalch T., Iesmantavicius V., Hess D., Buhler M. Differential phosphorylation of Clr4(SUV39H) by Cdk1 accompanies a histone H3 methylation switch that is essential for gametogenesis. EMBO Rep. 2023;24:e55928. doi: 10.15252/embr.202255928.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.15252/embr.202255928</ArticleId>
+            <ArticleId IdType="pmc">PMC9827552</ArticleId>
+            <ArticleId IdType="pubmed">36408846</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Lee C.H., Yu J.R., Granat J., Saldana-Meyer R., Andrade J., LeRoy G., Jin Y., Lund P., Stafford J.M., Garcia B.A., et al. Automethylation of PRC2 promotes H3K27 methylation and is impaired in H3K27M pediatric glioma. Genes Dev. 2019;33:1428&#x2013;1440. doi: 10.1101/gad.328773.119.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1101/gad.328773.119</ArticleId>
+            <ArticleId IdType="pmc">PMC6771381</ArticleId>
+            <ArticleId IdType="pubmed">31488577</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Wang X., Long Y., Paucek R.D., Gooding A.R., Lee T., Burdorf R.M., Cech T.R. Regulation of histone methylation by automethylation of PRC2. Genes Dev. 2019;33:1416&#x2013;1427. doi: 10.1101/gad.328849.119.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1101/gad.328849.119</ArticleId>
+            <ArticleId IdType="pmc">PMC6771386</ArticleId>
+            <ArticleId IdType="pubmed">31488576</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Chin H.G., Esteve P.O., Pradhan M., Benner J., Patnaik D., Carey M.F., Pradhan S. Automethylation of G9a and its implication in wider substrate specificity and HP1 binding. Nucleic Acids Res. 2007;35:7313&#x2013;7323. doi: 10.1093/nar/gkm726.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1093/nar/gkm726</ArticleId>
+            <ArticleId IdType="pmc">PMC2175347</ArticleId>
+            <ArticleId IdType="pubmed">17962312</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Sampath S.C., Marazzi I., Yap K.L., Sampath S.C., Krutchinsky A.N., Mecklenbrauker I., Viale A., Rudensky E., Zhou M.M., Chait B.T., et al. Methylation of a histone mimic within the histone methyltransferase G9a regulates protein complex assembly. Mol. Cell. 2007;27:596&#x2013;608. doi: 10.1016/j.molcel.2007.06.026.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.molcel.2007.06.026</ArticleId>
+            <ArticleId IdType="pubmed">17707231</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Al-Sady B., Madhani H.D., Narlikar G.J. Division of labor between the chromodomains of HP1 and Suv39 methylase enables coordination of heterochromatin spread. Mol. Cell. 2013;51:80&#x2013;91. doi: 10.1016/j.molcel.2013.06.013.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.molcel.2013.06.013</ArticleId>
+            <ArticleId IdType="pmc">PMC3752401</ArticleId>
+            <ArticleId IdType="pubmed">23849629</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Muller M.M., Fierz B., Bittova L., Liszczak G., Muir T.W. A two-state activation mechanism controls the histone methyltransferase Suv39h1. Nat. Chem. Biol. 2016;12:188&#x2013;193. doi: 10.1038/nchembio.2008.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/nchembio.2008</ArticleId>
+            <ArticleId IdType="pmc">PMC4876634</ArticleId>
+            <ArticleId IdType="pubmed">26807716</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Ishida M., Shimojo H., Hayashi A., Kawaguchi R., Ohtani Y., Uegaki K., Nishimura Y., Nakayama J. Intrinsic nucleic acid-binding activity of Chp1 chromodomain is required for heterochromatic gene silencing. Mol. Cell. 2012;47:228&#x2013;241. doi: 10.1016/j.molcel.2012.05.017.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.molcel.2012.05.017</ArticleId>
+            <ArticleId IdType="pubmed">22727667</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Lu J., Gilbert D.M. Proliferation-dependent and cell cycle regulated transcription of mouse pericentric heterochromatin. J. Cell Biol. 2007;179:411&#x2013;421. doi: 10.1083/jcb.200706176.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1083/jcb.200706176</ArticleId>
+            <ArticleId IdType="pmc">PMC2064789</ArticleId>
+            <ArticleId IdType="pubmed">17984319</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Shirai A., Kawaguchi T., Shimojo H., Muramatsu D., Ishida-Yonetani M., Nishimura Y., Kimura H., Nakayama J.I., Shinkai Y. Impact of nucleic acid and methylated H3K9 binding activities of Suv39h1 on its heterochromatin assembly. Elife. 2017;6:e25317. doi: 10.7554/eLife.25317.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.7554/eLife.25317</ArticleId>
+            <ArticleId IdType="pmc">PMC5538823</ArticleId>
+            <ArticleId IdType="pubmed">28760201</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Johnson W.L., Yewdell W.T., Bell J.C., McNulty S.M., Duda Z., O&#x2019;Neill R.J., Sullivan B.A., Straight A.F. RNA-dependent stabilization of SUV39H1 at constitutive heterochromatin. Elife. 2017;6:e25299. doi: 10.7554/eLife.25299.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.7554/eLife.25299</ArticleId>
+            <ArticleId IdType="pmc">PMC5538822</ArticleId>
+            <ArticleId IdType="pubmed">28760200</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cifuentes-Rojas C., Hernandez A.J., Sarma K., Lee J.T. Regulatory interactions between RNA and polycomb repressive complex 2. Mol. Cell. 2014;55:171&#x2013;185. doi: 10.1016/j.molcel.2014.05.009.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.molcel.2014.05.009</ArticleId>
+            <ArticleId IdType="pmc">PMC4107928</ArticleId>
+            <ArticleId IdType="pubmed">24882207</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Kaneko S., Son J., Bonasio R., Shen S.S., Reinberg D. Nascent RNA interaction keeps PRC2 activity poised and in check. Genes Dev. 2014;28:1983&#x2013;1988. doi: 10.1101/gad.247940.114.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1101/gad.247940.114</ArticleId>
+            <ArticleId IdType="pmc">PMC4173153</ArticleId>
+            <ArticleId IdType="pubmed">25170018</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Wang X., Goodrich K.J., Gooding A.R., Naeem H., Archer S., Paucek R.D., Youmans D.T., Cech T.R., Davidovich C. Targeting of Polycomb Repressive Complex 2 to RNA by Short Repeats of Consecutive Guanines. Mol. Cell. 2017;65:1056&#x2013;1067.e5. doi: 10.1016/j.molcel.2017.02.003.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.molcel.2017.02.003</ArticleId>
+            <ArticleId IdType="pubmed">28306504</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Horn P.J., Bastie J.N., Peterson C.L. A Rik1-associated, cullin-dependent E3 ubiquitin ligase is essential for heterochromatin formation. Genes Dev. 2005;19:1705&#x2013;1714. doi: 10.1101/gad.1328005.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1101/gad.1328005</ArticleId>
+            <ArticleId IdType="pmc">PMC1176008</ArticleId>
+            <ArticleId IdType="pubmed">16024659</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Hong E.J., Villen J., Gerace E.L., Gygi S.P., Moazed D. A cullin E3 ubiquitin ligase complex associates with Rik1 and the Clr4 histone H3-K9 methyltransferase and is required for RNAi-mediated heterochromatin formation. RNA Biol. 2005;2:106&#x2013;111. doi: 10.4161/rna.2.3.2131.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.4161/rna.2.3.2131</ArticleId>
+            <ArticleId IdType="pubmed">17114925</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Jia S., Kobayashi R., Grewal S.I. Ubiquitin ligase component Cul4 associates with Clr4 histone methyltransferase to assemble heterochromatin. Nat. Cell Biol. 2005;7:1007&#x2013;1013. doi: 10.1038/ncb1300.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/ncb1300</ArticleId>
+            <ArticleId IdType="pubmed">16127433</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Li F., Goto D.B., Zaratiegui M., Tang X., Martienssen R., Cande W.Z. Two novel proteins, dos1 and dos2, interact with rik1 to regulate heterochromatic RNA interference and histone modification. Curr. Biol. 2005;15:1448&#x2013;1457. doi: 10.1016/j.cub.2005.07.021.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.cub.2005.07.021</ArticleId>
+            <ArticleId IdType="pubmed">16040243</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Thon G., Hansen K.R., Altes S.P., Sidhu D., Singh G., Verhein-Hansen J., Bonaduce M.J., Klar A.J. The Clr7 and Clr8 directionality factors and the Pcu4 cullin mediate heterochromatin formation in the fission yeast Schizosaccharomyces pombe. Genetics. 2005;171:1583&#x2013;1595. doi: 10.1534/genetics.105.048298.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1534/genetics.105.048298</ArticleId>
+            <ArticleId IdType="pmc">PMC1456086</ArticleId>
+            <ArticleId IdType="pubmed">16157682</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Buscaino A., White S.A., Houston D.R., Lejeune E., Simmer F., de Lima Alves F., Diyora P.T., Urano T., Bayne E.H., Rappsilber J., et al. Raf1 Is a DCAF for the Rik1 DDB1-like protein and has separable roles in siRNA generation and chromatin modification. PLoS Genet. 2012;8:e1002499. doi: 10.1371/journal.pgen.1002499.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1371/journal.pgen.1002499</ArticleId>
+            <ArticleId IdType="pmc">PMC3271066</ArticleId>
+            <ArticleId IdType="pubmed">22319459</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Kuscu C., Zaratiegui M., Kim H.S., Wah D.A., Martienssen R.A., Schalch T., Joshua-Tor L. CRL4-like Clr4 complex in Schizosaccharomyces pombe depends on an exposed surface of Dos1 for heterochromatin silencing. Proc. Natl. Acad. Sci. USA. 2014;111:1795&#x2013;1800. doi: 10.1073/pnas.1313096111.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1073/pnas.1313096111</ArticleId>
+            <ArticleId IdType="pmc">PMC3918804</ArticleId>
+            <ArticleId IdType="pubmed">24449894</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>White S.A., Buscaino A., Sanchez-Pulido L., Ponting C.P., Nowicki M.W., Allshire R.C. The RFTS Domain of Raf2 Is Required for Cul4 Interaction and Heterochromatin Integrity in Fission Yeast. PLoS ONE. 2014;9:e104161. doi: 10.1371/journal.pone.0104161.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1371/journal.pone.0104161</ArticleId>
+            <ArticleId IdType="pmc">PMC4121317</ArticleId>
+            <ArticleId IdType="pubmed">25090107</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Oya E., Nakagawa R., Yoshimura Y., Tanaka M., Nishibuchi G., Machida S., Shirai A., Ekwall K., Kurumizaka H., Tagami H., et al. H3K14 ubiquitylation promotes H3K9 methylation for heterochromatin assembly. EMBO Rep. 2019;20:e48111. doi: 10.15252/embr.201948111.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.15252/embr.201948111</ArticleId>
+            <ArticleId IdType="pmc">PMC6776926</ArticleId>
+            <ArticleId IdType="pubmed">31468675</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Stirpe A., Guidotti N., Northall S.J., Kilic S., Hainard A., Vadas O., Fierz B., Schalch T. SUV39 SET domains mediate crosstalk of heterochromatic histone marks. Elife. 2021;10:e62682. doi: 10.7554/eLife.62682.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.7554/eLife.62682</ArticleId>
+            <ArticleId IdType="pmc">PMC8443253</ArticleId>
+            <ArticleId IdType="pubmed">34524082</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Wiren M., Silverstein R.A., Sinha I., Walfridsson J., Lee H.M., Laurenson P., Pillus L., Robyr D., Grunstein M., Ekwall K. Genomewide analysis of nucleosome density histone acetylation and HDAC function in fission yeast. EMBO J. 2005;24:2906&#x2013;2918. doi: 10.1038/sj.emboj.7600758.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/sj.emboj.7600758</ArticleId>
+            <ArticleId IdType="pmc">PMC1187943</ArticleId>
+            <ArticleId IdType="pubmed">16079916</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Bjerling P., Silverstein R.A., Thon G., Caudy A., Grewal S., Ekwall K. Functional divergence between histone deacetylases in fission yeast by distinct cellular localization and in vivo specificity. Mol. Cell Biol. 2002;22:2170&#x2013;2181. doi: 10.1128/MCB.22.7.2170-2181.2002.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1128/MCB.22.7.2170-2181.2002</ArticleId>
+            <ArticleId IdType="pmc">PMC133699</ArticleId>
+            <ArticleId IdType="pubmed">11884604</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Lewis Z.A., Adhvaryu K.K., Honda S., Shiver A.L., Knip M., Sack R., Selker E.U. DNA methylation and normal chromosome behavior in Neurospora depend on five components of a histone methyltransferase complex, DCDC. PLoS Genet. 2010;6:e1001196. doi: 10.1371/journal.pgen.1001196.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1371/journal.pgen.1001196</ArticleId>
+            <ArticleId IdType="pmc">PMC2973830</ArticleId>
+            <ArticleId IdType="pubmed">21079689</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Yang Y., Liu R., Qiu R., Zheng Y., Huang W., Hu H., Ji Q., He H., Shang Y., Gong Y., et al. CRL4B promotes tumorigenesis by coordinating with SUV39H1/HP1/DNMT3A in DNA methylation-based epigenetic silencing. Oncogene. 2015;34:104&#x2013;118. doi: 10.1038/onc.2013.522.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/onc.2013.522</ArticleId>
+            <ArticleId IdType="pubmed">24292684</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Higa L.A., Wu M., Ye T., Kobayashi R., Sun H., Zhang H. CUL4-DDB1 ubiquitin ligase interacts with multiple WD40-repeat proteins and regulates histone methylation. Nat. Cell Biol. 2006;8:1277&#x2013;1283. doi: 10.1038/ncb1490.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/ncb1490</ArticleId>
+            <ArticleId IdType="pubmed">17041588</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Wang H., Zhai L., Xu J., Joo H.Y., Jackson S., Erdjument-Bromage H., Tempst P., Xiong Y., Zhang Y. Histone H3 and H4 ubiquitylation by the CUL4-DDB-ROC1 ubiquitin ligase facilitates cellular response to DNA damage. Mol. Cell. 2006;22:383&#x2013;394. doi: 10.1016/j.molcel.2006.03.035.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.molcel.2006.03.035</ArticleId>
+            <ArticleId IdType="pubmed">16678110</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Kim W., Bennett E.J., Huttlin E.L., Guo A., Li J., Possemato A., Sowa M.E., Rad R., Rush J., Comb M.J., et al. Systematic and quantitative assessment of the ubiquitin-modified proteome. Mol. Cell. 2011;44:325&#x2013;340. doi: 10.1016/j.molcel.2011.08.025.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.molcel.2011.08.025</ArticleId>
+            <ArticleId IdType="pmc">PMC3200427</ArticleId>
+            <ArticleId IdType="pubmed">21906983</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Chandrasekharan M.B., Huang F., Sun Z.W. Histone H2B ubiquitination and beyond: Regulation of nucleosome stability, chromatin dynamics and the trans-histone H3 methylation. Epigenetics. 2010;5:460&#x2013;468. doi: 10.4161/epi.5.6.12314.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.4161/epi.5.6.12314</ArticleId>
+            <ArticleId IdType="pmc">PMC3230548</ArticleId>
+            <ArticleId IdType="pubmed">20523115</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Kim J., Kim J.A., McGinty R.K., Nguyen U.T., Muir T.W., Allis C.D., Roeder R.G. The n-SET domain of Set1 regulates H2B ubiquitylation-dependent H3K4 methylation. Mol. Cell. 2013;49:1121&#x2013;1133. doi: 10.1016/j.molcel.2013.01.034.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.molcel.2013.01.034</ArticleId>
+            <ArticleId IdType="pmc">PMC3615140</ArticleId>
+            <ArticleId IdType="pubmed">23453808</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Sun Z.W., Allis C.D. Ubiquitination of histone H2B regulates H3 methylation and gene silencing in yeast. Nature. 2002;418:104&#x2013;108. doi: 10.1038/nature00883.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/nature00883</ArticleId>
+            <ArticleId IdType="pubmed">12077605</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Dover J., Schneider J., Tawiah-Boateng M.A., Wood A., Dean K., Johnston M., Shilatifard A. Methylation of histone H3 by COMPASS requires ubiquitination of histone H2B by Rad6. J. Biol. Chem. 2002;277:28368&#x2013;28371. doi: 10.1074/jbc.C200348200.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1074/jbc.C200348200</ArticleId>
+            <ArticleId IdType="pubmed">12070136</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Kalb R., Latwiel S., Baymaz H.I., Jansen P.W., Muller C.W., Vermeulen M., Muller J. Histone H2A monoubiquitination promotes histone H3 methylation in Polycomb repression. Nat. Struct. Mol. Biol. 2014;21:569&#x2013;571. doi: 10.1038/nsmb.2833.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/nsmb.2833</ArticleId>
+            <ArticleId IdType="pubmed">24837194</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Nishiyama A., Yamaguchi L., Sharif J., Johmura Y., Kawamura T., Nakanishi K., Shimamura S., Arita K., Kodama T., Ishikawa F., et al. Uhrf1-dependent H3K23 ubiquitylation couples maintenance DNA methylation and replication. Nature. 2013;502:249&#x2013;253. doi: 10.1038/nature12488.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1038/nature12488</ArticleId>
+            <ArticleId IdType="pubmed">24013172</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Ishiyama S., Nishiyama A., Saeki Y., Moritsugu K., Morimoto D., Yamaguchi L., Arai N., Matsumura R., Kawakami T., Mishima Y., et al. Structure of the Dnmt1 Reader Module Complexed with a Unique Two-Mono-Ubiquitin Mark on Histone H3 Reveals the Basis for DNA Methylation Maintenance. Mol. Cell. 2017;68:350&#x2013;360.e7. doi: 10.1016/j.molcel.2017.09.037.</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="doi">10.1016/j.molcel.2017.09.037</ArticleId>
+            <ArticleId IdType="pubmed">29053958</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>
