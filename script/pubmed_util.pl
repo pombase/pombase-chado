@@ -8,6 +8,8 @@ use Getopt::Long;
 use File::Basename;
 use lib qw(lib);
 use GDBM_File;
+use Storable qw(thaw);
+use JSON;
 
 use PomBase::Config;
 use PomBase::Chado;
@@ -15,6 +17,7 @@ use PomBase::Chado::PubmedUtil;
 
 my $dry_run = 0;
 my $do_fields = 0;
+my $dump_json = 0;
 my $do_help = 0;
 my $verbose = 0;
 
@@ -32,6 +35,7 @@ my $password = shift;
 
 if (!GetOptions("dry-run|d" => \$dry_run,
                 "add-missing-fields|f" => \$do_fields,
+                "dump-as-json:s" => \$dump_json,
                 "help|h" => \$do_help,
                 "verbose|v" => \$verbose)) {
   usage();
@@ -39,28 +43,29 @@ if (!GetOptions("dry-run|d" => \$dry_run,
 
 sub usage
 {
-  die "$0: needs six arguments:
-   <config_file> <host> <database> <user> <password> --add-missing-fields
+  die "usage:
+   $0 <config_file> <host> <database> <user> <password> <options> --add-missing-fields
+ OR
+   $0 <config_file> <host> <database> <user> <password> <options> --dump-as-json <pmid_id>
 
 options:
   --add-missing-fields (or -f): access pubmed to add missing title, abstract,
           authors, etc. to publications in the publications table (pub)
+
+  --dump-as-json: write the details about <pmid_id> as JSON to stdout
 ";
 }
 
-if ($do_help || !$do_fields || @ARGV > 0) {
+if ($do_help || !($do_fields || $dump_json) || @ARGV > 0) {
   usage();
 }
 
 my $chado = PomBase::Chado::db_connect($host, $database, $username, $password);
 
-my $guard = $chado->txn_scope_guard();
-
-my $result = GetOptions ("add-missing-fields|f" => \$do_fields,
-                         "help|h" => \$do_help);
+tie my %pubmed_cache, 'GDBM_File', 'pubmed_cache.gdbm', &GDBM_WRCREAT, 0640;
 
 if ($do_fields) {
-  tie my %pubmed_cache, 'GDBM_File', 'pubmed_cache.gdbm', &GDBM_WRCREAT, 0640;
+  my $guard = $chado->txn_scope_guard();
 
   my $pubmed_util = PomBase::Chado::PubmedUtil->new(chado => $chado, config => $config,
                                                     pubmed_cache => \%pubmed_cache);
@@ -68,6 +73,20 @@ if ($do_fields) {
 
   print "$missing_count publications have missing fields\n";
   print "details added for $loaded_count publications\n";
+
+  $guard->commit() unless $dry_run;
 }
 
-$guard->commit() unless $dry_run;
+if ($dump_json) {
+  my $uniquename = $dump_json;
+  my $raw_cached = $pubmed_cache{$uniquename};
+  if (defined $raw_cached) {
+    my $pub_details = thaw($raw_cached);
+
+    my $json = JSON->new()->allow_nonref();
+
+    print $json->encode($pub_details);
+  } else {
+    warn "$uniquename is not cached\n";
+  }
+}
