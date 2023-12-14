@@ -345,6 +345,20 @@ sub parse_pubmed_xml
         }
       }
 
+      my $keyword_list = $medline_citation->{KeywordList};
+
+      my @keywords = ();
+
+      if (defined $keyword_list) {
+        my @keywords_list = @{$keyword_list->{Keyword} // []};
+
+        @keywords = map {
+          $_->{content};
+        } grep {
+          defined $_->{content};
+        } @keywords_list;
+      }
+
       my $pub = $self->chado()->resultset('Pub::Pub')->find({ uniquename => $uniquename });
 
       $self->pubmed_cache()->{$uniquename} = freeze({
@@ -358,6 +372,7 @@ sub parse_pubmed_xml
         journal_title => $journal_title,
         abstract => $abstract,
         doi => $doi,
+        keywords => \@keywords,
       });
     }
   }

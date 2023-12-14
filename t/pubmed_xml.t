@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More tests => 3;
 
 use Storable qw(thaw);
 
@@ -35,3 +35,5 @@ ok(exists $pubmed_cache{'PMID:37189341'});
 my $pub_details = thaw($pubmed_cache{'PMID:37189341'});
 
 is($pub_details->{publication_date}, '25 Mar 2023');
+
+ok(grep { $_ eq 'Clr4' } @{$pub_details->{keywords}});
