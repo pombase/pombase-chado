@@ -1025,12 +1025,19 @@ sub _process_annotation {
 
 sub _query_genes {
   my $self = shift;
+  my $pub = shift;
   my $session_gene_data = shift;
 
   my %ret = ();
 
   while (my ($key, $details) = each %$session_gene_data) {
-    $ret{$key} = $self->get_gene($details);
+    my $gene = $self->get_gene($details);
+
+    my $feature_pub = $self->find_or_create_feature_pub($gene, $pub);
+    $self->store_feature_pubprop($feature_pub, 'feature_pub_source',
+                                 'canto');
+
+    $ret{$key} = $gene;
   }
 
   return %ret;
@@ -1211,6 +1218,8 @@ sub _store_metadata {
       $self->create_pubprop($pub, 'annotation_curator', $annotation_curator_json);
     }
   }
+
+  return ($pub);
 }
 
 sub _process_publications {
@@ -1237,9 +1246,9 @@ sub _process_sessions {
     my %session_data = %{$curation_sessions->{$canto_session}};
 
     my $metadata = $session_data{metadata};
-    $self->_store_metadata($metadata);
+    my ($pub) = $self->_store_metadata($metadata);
 
-    my %session_genes = $self->_query_genes($session_data{genes});
+    my %session_genes = $self->_query_genes($pub, $session_data{genes});
     my %session_alleles =
       $self->_get_alleles($metadata->{curation_pub_id}, $canto_session,
                           \%session_genes, $session_data{alleles});
