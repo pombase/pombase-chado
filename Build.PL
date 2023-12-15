@@ -36,6 +36,7 @@ my $builder = Module::Build->new(
       'Data::Compare' => 0,
       'Devel::Declare' => 0.006019,
       'Tie::IxHash' => 0,
+      'List::Util' => 1.63,
     },
     test_requires => {
       'Test::LongString' => 0,

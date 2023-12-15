@@ -45,12 +45,14 @@ use Storable qw(freeze thaw);
 use Text::CSV;
 use XML::Simple;
 use LWP::UserAgent;
+use List::Util qw(uniq);
 
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::DbQuery';
 with 'PomBase::Role::CvQuery';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::XrefStorer';
+with 'PomBase::Role::FeatureStorer';
 
 has verbose => (is => 'rw');
 has pubmed_cache => (is => 'rw', required => 1);
@@ -350,13 +352,25 @@ sub parse_pubmed_xml
       my @keywords = ();
 
       if (defined $keyword_list) {
-        my @keywords_list = @{$keyword_list->{Keyword} // []};
+        my $keyword_array = $keyword_list->{Keyword};
 
-        @keywords = map {
-          $_->{content};
-        } grep {
-          defined $_->{content};
-        } @keywords_list;
+        if (defined $keyword_array) {
+          if (ref $keyword_array ne 'ARRAY') {
+            $keyword_array = [$keyword_array];
+          }
+
+          @keywords =
+            uniq
+            map {
+              split /\s*,\s*/;
+            }
+            map {
+              $_->{content};
+            }
+            grep {
+              defined $_->{content};
+            } @{$keyword_array};
+        }
       }
 
       my $pub = $self->chado()->resultset('Pub::Pub')->find({ uniquename => $uniquename });
@@ -392,6 +406,7 @@ sub _process_batch
 sub _store_from_cache
 {
   my $self = shift;
+  my $taxonid = shift;
   my $ids = shift;
 
   my $cache = $self->pubmed_cache();
@@ -424,6 +439,44 @@ sub _store_from_cache
         $self->create_pubprop($pub, 'pubmed_doi', $pub_details->{doi});
       }
 
+      my @lc_keywords = map { lc $_ } @{$pub_details->{keywords}};
+
+      for my $lc_keyword (@lc_keywords) {
+        if ($lc_keyword =~ /(.*)p$/i) {
+          # some protein names end in "p" like "Cdc11p"
+          push @lc_keywords, $1;
+        }
+      }
+
+      my $organism_rs =
+        $self->chado()->resultset('Organism::Organismprop')
+        ->search({ 'type.name' => 'taxon_id',
+                   value => $taxonid,
+                 },
+                 { join => [ 'type' ] })
+        ->search_related('organism');
+
+      my $keyword_gene_rs =
+        $self->chado()->resultset('Sequence::Feature')
+        ->search( { 'type.name' => 'gene',
+                     -or => [
+                      { 'LOWER(me.uniquename)' => \@lc_keywords },
+                      { 'LOWER(me.name)' => \@lc_keywords },
+                    ],
+                    organism_id => {
+                      '=' => $organism_rs->get_column('organism_id')->as_query()
+                    },
+                  },
+                  {
+                    join => ['type']
+                  });
+
+      while (defined (my $keyword_gene = $keyword_gene_rs->next())) {
+        my $feature_pub = $self->find_or_create_feature_pub($keyword_gene, $pub);
+        $self->store_feature_pubprop($feature_pub, 'feature_pub_source',
+                                        'pubmed_keyword');
+      }
+
       $count++;
     }
   }
@@ -436,7 +489,9 @@ sub _store_from_cache
  Usage: my $count = PomBase::Chado::PubmedUtil::load_by_ids(...)
  Function: Load the publications with the given ids into the
            database.
- Args    : $ids - an array ref of ids of publications to load, with
+ Args    : $taxonid - the taxon ID to use when looking up genes from the
+                      PubMed keywords
+           $ids - an array ref of ids of publications to load, with
                   optional "PMID:" prefix
  Returns : a count of the number of publications found and loaded
 
@@ -444,6 +499,7 @@ sub _store_from_cache
 sub load_by_ids
 {
   my $self = shift;
+  my $taxonid = shift;
   my $ids = shift;
 
   my @raw_ids = map { s/^PMID://; $_; } @$ids;
@@ -455,13 +511,14 @@ sub load_by_ids
     } @raw_ids;
 
   while (@ids_to_fetch) {
-    print "fetching from PubMed: @ids_to_fetch\n";
     my @process_ids = splice(@ids_to_fetch, 0, $max_batch_size);
 
     $self->_process_batch(\@process_ids);
+
+    sleep(10);
   }
 
-  return $self->_store_from_cache(\@raw_ids);
+  return $self->_store_from_cache($taxonid, \@raw_ids);
 }
 
 =head2 load_by_query
@@ -479,6 +536,8 @@ sub load_by_query
 
   my $config = $self->config();
   my $schema = $self->chado();
+
+  my $taxonid = $config->{taxonid};
 
   my $query = shift;
 
@@ -507,7 +566,7 @@ sub load_by_query
     $self->_process_batch(\@process_ids);
   }
 
-  $self->_store_from_cache(\@ids);
+  $self->_store_from_cache($taxonid, \@ids);
 }
 
 
@@ -523,6 +582,14 @@ sub add_missing_fields
 {
   my $self = shift;
 
+  my %args = @_;
+
+  my $taxonid = $args{taxonid};
+
+  if (!defined $taxonid) {
+    die "no taxon ID passed to add_missing_fields()";
+  }
+
   my $config = $self->config();
   my $chado = $self->chado();
 
@@ -536,7 +603,7 @@ sub add_missing_fields
 
   my $missing_count = $rs->count();
 
-  my $loaded_count = $self->load_by_ids([map { $_->uniquename() } $rs->all()]);
+  my $loaded_count = $self->load_by_ids($taxonid, [map { $_->uniquename() } $rs->all()]);
 
   return ($missing_count, $loaded_count);
 }

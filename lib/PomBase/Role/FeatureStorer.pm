@@ -403,11 +403,45 @@ sub store_feature_pubprop {
     croak "can't store null value for $type_name\n";
   }
 
+  state $ranks = {};
+
+  if (!exists $ranks->{$type_name}) {
+    $ranks->{$type_name} = {};
+
+    my $feature_pubprop_rs = $self->chado()->resultset('Sequence::FeaturePubprop')
+      ->search({
+        'me.type_id' => $type_term->cvterm_id(),
+      }, {
+        prefetch => 'feature_pub'
+      });
+
+    for my $prop ($feature_pubprop_rs->all()) {
+      my $prop_rank = $prop->rank();
+
+      my $current_rank =
+        $ranks->{$type_name}->{$prop->feature_pub()->feature_pub_id()};
+
+      if (!defined $current_rank || $current_rank < $prop_rank) {
+        $ranks->{$type_name}->{$prop->feature_pub()->feature_pub_id()} = $prop_rank;
+      }
+    }
+  }
+
+  my $rank;
+
+  if (!exists $ranks->{$type_name}->{$feature_pub->feature_pub_id()}) {
+    $ranks->{$type_name}->{$feature_pub->feature_pub_id()} = -1;
+  }
+
+  $rank = ++$ranks->{$type_name}->{$feature_pub->feature_pub_id()};
+
   my $prop_rs = $self->chado()->resultset('Sequence::FeaturePubprop');
 
   return $prop_rs->find_or_create({ feature_pub_id => $feature_pub->feature_pub_id(),
                                     type_id => $type_term->cvterm_id(),
-                                    value => $value });
+                                    value => $value,
+                                    rank => $rank,
+                                  });
 }
 
 1;
