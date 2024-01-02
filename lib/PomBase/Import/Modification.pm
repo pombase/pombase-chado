@@ -198,7 +198,7 @@ sub load {
   }
 
   if (defined $file_name) {
-    $self->store_annotation_file_curator($file_name, 'qualitative_gene_expression');
+    $self->store_annotation_file_curator($file_name, 'protein_modification');
   }
 }
 
