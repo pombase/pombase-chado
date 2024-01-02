@@ -63,6 +63,8 @@ with 'PomBase::Role::Embl::FeatureRelationshipPubStorer';
 with 'PomBase::Role::InteractionStorer';
 with 'PomBase::Role::FeatureStorer';
 
+with 'PomBase::Importer';
+
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 
@@ -115,6 +117,8 @@ sub load {
   my $self = shift;
   my $fh = shift;
 
+  my $file_name = $self->file_name_of_fh($fh);
+
   my $chado = $self->chado();
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
@@ -124,7 +128,10 @@ sub load {
       $csv->column_names (@$columns_ref);
       last
     }
-    if ($columns_ref->[0] !~ /^#/) {
+    if ($columns_ref->[0] =~ /^#/) {
+      my $first_value = $columns_ref->[0];
+      $self->parse_submitter_line($first_value);
+    } else {
       die "aborting - read data line before header: ",
         (join "\t", map { if ($_) { $_ } else { "" } } @$columns_ref), "\n";
     }
@@ -316,6 +323,8 @@ sub load {
 
     my $pub = $self->find_or_create_pub($pubmedid);
 
+    $self->record_pub_object($pubmedid, $pub);
+
     my $rel_type_name;
 
     if ($experimental_system_type eq 'genetic') {
@@ -339,6 +348,12 @@ sub load {
       creation_date => $self->annotation_date(),
       notes => \@qualifications,
     );
+
+    $self->increment_ref_annotation_count($pubmedid);
+  }
+
+  if (defined $file_name) {
+    $self->store_annotation_file_curator($file_name, 'interaction');
   }
 
   return undef;
