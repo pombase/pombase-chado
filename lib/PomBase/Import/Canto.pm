@@ -1110,6 +1110,8 @@ sub _get_genotypes {
         my $allele_key = $_->{id};
         my $expressed_allele = {
           expression => $_->{expression},
+          promoter_gene => $_->{promoter_gene},
+          exogenous_promoter => $_->{exogenous_promoter},
           allele => $session_alleles->{$allele_key},
         };
         $expressed_allele->{genotype_locus} =

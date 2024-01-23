@@ -186,6 +186,12 @@ sub get_genotype {
     if ($_->{expression}) {
       $self->store_feature_relationshipprop($rel, 'expression', $_->{expression});
     }
+    if ($_->{promoter_gene}) {
+      $self->store_feature_relationshipprop($rel, 'promoter_gene', $_->{promoter_gene});
+    }
+    if ($_->{exogenous_promoter}) {
+      $self->store_feature_relationshipprop($rel, 'exogenous_promoter', $_->{exogenous_promoter});
+    }
     if ($_->{genotype_locus}) {
       $self->store_feature_relationshipprop($rel, 'genotype_locus', $_->{genotype_locus});
     }
@@ -273,6 +279,8 @@ sub get_genotype_for_allele {
   my $background = shift;
   my $allele_data = shift;
   my $expression = shift;
+  my $promoter_gene = shift;
+  my $exogenous_promoter = shift;
 
   my $allele = $self->get_allele($allele_data);
 
@@ -283,7 +291,9 @@ sub get_genotype_for_allele {
   $expression = 'Not assayed' if $expression && lc $expression eq 'not specified';
 
   return ($self->get_genotype($genotype_identifier, undef, $background, undef,
-                              [{ allele => $allele, expression => $expression }]),
+                              [{ allele => $allele, expression => $expression,
+                                 promoter_gene => $promoter_gene,
+                                 exogenous_promoter => $exogenous_promoter }]),
           $allele);
 }
 
