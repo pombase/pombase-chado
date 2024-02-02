@@ -380,6 +380,11 @@ sub load {
 
       if (defined $local_id) {
         $withs_and_froms[$i] = $local_id;
+      } else {
+        if ($with_or_from =~ /^UniProtKB:/ && $go_id eq 'GO:0005515') {
+          # with field contains a non-pombe gene
+          next LINE;
+        }
       }
     }
 
