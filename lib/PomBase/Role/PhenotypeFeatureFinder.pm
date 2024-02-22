@@ -484,15 +484,24 @@ sub get_allele {
     }
   };
 
-  if (exists $allele_data->{primary_identifier} &&
-      $allele_data->{primary_identifier} !~ /:($canto_session)-\d+$/) {
+  if (exists $allele_data->{external_uniquename}) {
+    # use the existing Chado uniquename
     $allele = $self->chado()->resultset('Sequence::Feature')
-                   ->find({ uniquename => $allele_data->{primary_identifier},
+                   ->find({ uniquename => $allele_data->{external_uniquename},
                             organism_id => $gene->organism()->organism_id() });
     if (!defined $allele) {
       use Data::Dumper;
       $Data::Dumper::Maxdepth = 3;
       die "failed to find allele from: ", Dumper([$allele_data]);
+    }
+
+    $add_canto_session->($allele);
+
+    if ($allele_data->{primary_identifier}) {
+      $self->store_featureprop($allele, 'canto_allele_systematic_id',
+                               $allele_data->{primary_identifier});
+    } else {
+      die "no primary_identifier for ", $allele_data->{external_uniquename}, "\n";
     }
 
     if ($allele->is_obsolete()) {
