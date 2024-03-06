@@ -26,6 +26,7 @@ my %input_types = (
   'generic-annotation' => 'PomBase::Import::GenericAnnotation',
   'generic-property' => 'PomBase::Import::GenericProperty',
   'generic-synonym' => 'PomBase::Import::GenericSynonym',
+  'generic-feature-pub' => 'PomBase::Import::GenericFeaturePub',
   'canto-json' => 'PomBase::Import::Canto',
   orthologs => 'PomBase::Import::Orthologs',
   quantitative => 'PomBase::Import::Quantitative',
