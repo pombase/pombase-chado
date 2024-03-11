@@ -46,6 +46,7 @@ with 'PomBase::Role::ConfigUser';
 sub process_one_evidence_code {
   my $self = shift;
   my $code = shift;
+  my $reference = shift;
 
   my $chado = $self->chado();
 
@@ -65,22 +66,29 @@ EOQ
   my $sth = $dbh->prepare($go_cvterms_query);
   $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 
+  my $pub_join_clause = '';
+  my $pub_constraint = '';
+
+  if (defined $reference) {
+    $pub_join_clause = 'JOIN pub on pub.pub_id = feature_cvterm.pub_id';
+    $pub_constraint = "AND pub.uniquename = '$reference'";
+  }
+
   my $poor_ev_query = <<"EOQ";
 CREATE TEMP TABLE poor_evidence_fcs AS
-SELECT feature_cvterm.* FROM feature_cvterm, feature_cvtermprop prop,
-       cvterm prop_type
+SELECT feature_cvterm.* FROM feature_cvterm
+  JOIN feature_cvtermprop prop ON feature_cvterm.feature_cvterm_id = prop.feature_cvterm_id
+  JOIN cvterm prop_type ON prop.type_id = prop_type.cvterm_id
+  $pub_join_clause
 WHERE
   feature_cvterm.cvterm_id in (select cvterm_id from go_cvterms)
 AND
-  feature_cvterm.feature_cvterm_id = prop.feature_cvterm_id
-AND
   prop_type.name = 'evidence'
-AND
-  prop.type_id = prop_type.cvterm_id
 AND
   NOT feature_cvterm.is_not
 AND
   lower(prop.value) = '$code'
+$pub_constraint
 EOQ
 
   if ($code eq 'inferred from physical interaction') {
@@ -212,8 +220,26 @@ sub process {
     'inferred from physical interaction',   # note special case: only when missing with
   );
 
+  my @iea_go_refs = (
+    'GO_REF:0000118',
+    'GO_REF:0000117',
+    'GO_REF:0000044',
+    'GO_REF:0000043',
+    'GO_REF:0000104',
+    'GO_REF:0000002',
+    'GO_REF:0000041',
+    'GO_REF:0000003',
+    'GO_REF:0000116',
+  );
+
   for my $code (@codes) {
-    $self->process_one_evidence_code($code);
+    if ($code eq 'inferred from electronic annotation') {
+      for my $go_ref (@iea_go_refs) {
+        $self->process_one_evidence_code($code, $go_ref);
+      }
+    } else {
+      $self->process_one_evidence_code($code);
+    }
   }
 }
 
