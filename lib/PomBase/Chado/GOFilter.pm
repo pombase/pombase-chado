@@ -206,7 +206,6 @@ sub process {
   my $self = shift;
 
   my @codes = (
-    'inferred from reviewed computational analysis',
     'inferred from electronic annotation',
     'inferred from expression pattern',
     'non-traceable author statement',
