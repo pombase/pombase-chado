@@ -206,34 +206,34 @@ sub process {
   my $self = shift;
 
   my @codes = (
-    'inferred from electronic annotation',
-    'inferred from expression pattern',
-    'non-traceable author statement',
-    'traceable author statement',
-    'inferred from sequence model',
-    'inferred from sequence or structural similarity',
-    'inferred from sequence orthology',
-    'inferred by curator',
-    'inferred from biological aspect of descendant',
-    'inferred from biological aspect of ancestor',
     'inferred from physical interaction',   # note special case: only when missing with
+    'inferred from biological aspect of ancestor',
+    'inferred from biological aspect of descendant',
+    'inferred by curator',
+    'inferred from sequence orthology',
+    'inferred from sequence or structural similarity',
+    'inferred from sequence model',
+    'traceable author statement',
+    'non-traceable author statement',
+    'inferred from expression pattern',
+    'inferred from electronic annotation',
   );
 
   my @iea_go_refs = (
-    'GO_REF:0000118',
-    'GO_REF:0000117',
-    'GO_REF:0000044',
-    'GO_REF:0000043',
-    'GO_REF:0000104',
-    'GO_REF:0000002',
-    'GO_REF:0000041',
-    'GO_REF:0000003',
     'GO_REF:0000116',
+    'GO_REF:0000003',
+    'GO_REF:0000041',
+    'GO_REF:0000002',
+    'GO_REF:0000104',
+    'GO_REF:0000043',
+    'GO_REF:0000044',
+    'GO_REF:0000117',
+    'GO_REF:0000118',
   );
 
-  for my $code (@codes) {
+  for my $code (reverse @codes) {
     if ($code eq 'inferred from electronic annotation') {
-      for my $go_ref (@iea_go_refs) {
+      for my $go_ref (reverse @iea_go_refs) {
         $self->process_one_evidence_code($code, $go_ref);
       }
     } else {
