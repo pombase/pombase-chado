@@ -220,15 +220,15 @@ sub process {
   );
 
   my @iea_go_refs = (
-    'GO_REF:0000116',
-    'GO_REF:0000003',
-    'GO_REF:0000041',
-    'GO_REF:0000002',
-    'GO_REF:0000104',
-    'GO_REF:0000043',
-    'GO_REF:0000044',
-    'GO_REF:0000117',
-    'GO_REF:0000118',
+    'GO_REF:0000116',  # RHEA
+    'GO_REF:0000003',  # EC
+    'GO_REF:0000041',  # UniPathway
+    'GO_REF:0000002',  # InterPro
+    'GO_REF:0000104',  # UniRule
+    'GO_REF:0000043',  # UniProtKB-KW
+    'GO_REF:0000044',  # UniProtKB-SubCell
+    'GO_REF:0000117',  # ARBA
+    'GO_REF:0000118',  # TreeGrafter
   );
 
   for my $code (reverse @codes) {
