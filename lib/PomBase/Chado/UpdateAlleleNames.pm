@@ -69,7 +69,7 @@ sub process {
 
   my $dbh = $chado->storage()->dbh();
 
-  my $update_allele_names = <<'EOQ';
+  my $update_deletion_allele_names = <<'EOQ';
 UPDATE feature allele SET name = gene.name || 'delta'
   FROM feature_relationship rel, feature gene, cvterm rel_type,
        cvterm allele_type
@@ -80,7 +80,21 @@ UPDATE feature allele SET name = gene.name || 'delta'
        allele_type.cvterm_id = allele.type_id AND allele_type.name = 'allele'
 EOQ
 
-  my $sth = $dbh->prepare($update_allele_names);
+  my $sth = $dbh->prepare($update_deletion_allele_names);
+  $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+
+  my $update_wt_allele_names = <<'EOQ';
+UPDATE feature allele SET name = gene.name || '+'
+  FROM feature_relationship rel, feature gene, cvterm rel_type,
+       cvterm allele_type
+ WHERE rel_type.name = 'instance_of' AND
+       gene.name IS NOT NULL AND allele.name LIKE gene.uniquename || '+' AND
+       allele.feature_id = rel.subject_id AND
+       gene.feature_id = rel.object_id AND rel.type_id = rel_type.cvterm_id AND
+       allele_type.cvterm_id = allele.type_id AND allele_type.name = 'allele'
+EOQ
+
+  $sth = $dbh->prepare($update_wt_allele_names);
   $sth->execute() or die "Couldn't execute: " . $sth->errstr;
 }
 
