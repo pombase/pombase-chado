@@ -325,6 +325,13 @@ sub load {
 
     $self->record_pub_object($pubmedid, $pub);
 
+    my $feature_a_pub = $self->find_or_create_feature_pub($feature_a, $pub);
+    $self->store_feature_pubprop($feature_a_pub, 'feature_pub_source',
+                                 'interaction_file');
+    my $feature_b_pub = $self->find_or_create_feature_pub($feature_b, $pub);
+    $self->store_feature_pubprop($feature_b_pub, 'feature_pub_source',
+                                 'interaction_file');
+
     my $rel_type_name;
 
     if ($experimental_system_type eq 'genetic') {
