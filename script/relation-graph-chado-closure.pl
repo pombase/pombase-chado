@@ -105,6 +105,8 @@ for my $filename (@filenames) {
   open my $owltools_out, '<', $temp_filename
     or die "can't open owltools output from $temp_filename: $!\n";
 
+  my %db_warnings = ();
+
   while (defined (my $line = <$owltools_out>)) {
     chomp $line;
 
@@ -137,7 +139,11 @@ for my $filename (@filenames) {
     my $subj_db_id = $db_name_ids{$subj_db_name};
 
     if (!defined $subj_db_id) {
-      die "can't find a DB for: $subj_db_name\n";
+      if (!$db_warnings{$subj_db_name}) {
+        warn "can't find a DB for: $subj_db_name\n";
+        $db_warnings{$subj_db_name} = 1;
+      }
+      next;
     }
 
     my ($obj_db_name, $obj_accession) = split /_/, $objectid;
@@ -151,7 +157,11 @@ for my $filename (@filenames) {
     my $obj_db_id = $db_name_ids{$obj_db_name};
 
     if (!defined $obj_db_id) {
-      die "can't find a DB for: $obj_db_name\n";
+      if (!$db_warnings{$obj_db_name}) {
+        warn "can't find a DB for: $obj_db_name\n";
+        $db_warnings{$obj_db_name} = 1;
+      }
+      next;
     }
 
     my $row =
