@@ -108,9 +108,8 @@ for my $filename (@filenames) {
   while (defined (my $line = <$owltools_out>)) {
     chomp $line;
 
-    if ($line =~ m|<http://purl.obolibrary.org/obo/RO_0004004>|) {
-      # skip "has material basis in germline mutation in" because the object
-      # is an HGNC gene ID
+    if ($line =~ m|http://identifiers.org/hgnc|) {
+      # skip HGNC objects
       next;
     }
 
