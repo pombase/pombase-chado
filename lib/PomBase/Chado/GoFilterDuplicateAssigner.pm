@@ -216,10 +216,12 @@ EOQ
 
   warn "deleting $delete_count annotations\n";
 
-  my $bind_bit = join ",", (('?') x scalar(@feature_cvterm_ids_to_delete));
+  if (@feature_cvterm_ids_to_delete > 0) {
+    my $bind_bit = join ",", (('?') x scalar(@feature_cvterm_ids_to_delete));
 
-  $sth = $dbh->prepare("delete from feature_cvterm where feature_cvterm_id in ($bind_bit)");
-  $sth->execute(@feature_cvterm_ids_to_delete);
+    $sth = $dbh->prepare("delete from feature_cvterm where feature_cvterm_id in ($bind_bit)");
+    $sth->execute(@feature_cvterm_ids_to_delete);
+  }
 }
 
 1;
