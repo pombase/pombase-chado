@@ -879,6 +879,8 @@ sub _process_interactions {
   my $session_genotypes = shift;
   my $session_metadata = shift;
 
+  my $creation_date = $annotation->{creation_date};
+
   my $genotype_uniquename = $annotation->{genotype};
   if (!defined $genotype_uniquename) {
     return;
@@ -928,6 +930,8 @@ sub _process_interactions {
 
     $self->store_featureprop($interaction_feature, 'interaction_type',
                              $interaction_type);
+    $self->store_featureprop($interaction_feature, 'annotation_date',
+                             $creation_date);
 
     if ($interaction_data->{genotype_a_phenotype_termid}) {
       $self->store_featureprop($interaction_feature, 'interaction_rescued_phenotype_id',
