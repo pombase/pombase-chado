@@ -138,8 +138,7 @@ SELECT fc.feature_cvterm_id,
                           JOIN cvterm t ON t.cvterm_id = p.type_id
                           WHERE p.feature_cvterm_id = fc.feature_cvterm_id
                             AND t.name = 'from'
-                          ORDER BY value), ',') AS
-FROM,
+                          ORDER BY value), ',') AS from_value,
        array_to_string(array
                          (SELECT value
                           FROM feature_cvtermprop p
