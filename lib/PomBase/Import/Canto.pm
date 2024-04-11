@@ -906,6 +906,10 @@ sub _process_interactions {
     push @interaction_data, @{$annotation->{genotype_interactions_with_phenotype}};
   }
 
+  my $curator_details = $annotation->{curator};
+
+  my $config = $self->config();
+
   for my $interaction_data (@interaction_data) {
     my $genotype_a_uniquename = $interaction_data->{genotype_a};
     my $genotype_a = $session_genotypes->{$genotype_a_uniquename};
@@ -932,6 +936,29 @@ sub _process_interactions {
                              $interaction_type);
     $self->store_featureprop($interaction_feature, 'annotation_date',
                              $creation_date);
+    $self->store_featureprop($interaction_feature, 'annotation_throughput_type',
+                             'low throughput');
+    $self->store_featureprop($interaction_feature, 'canto_session',
+                             $curs_key);
+    $self->store_featureprop($interaction_feature, 'assigned_by',
+                             $config->{database_name});
+
+    if (defined $curator_details) {
+      if (defined $curator_details->{name}) {
+        $self->store_featureprop($interaction_feature, 'curator_name',
+                                 $curator_details->{name});
+      }
+      if (defined $curator_details->{community_curated}) {
+        my $prop_val;
+        if ($curator_details->{community_curated}) {
+          $prop_val = 'true';
+        } else {
+          $prop_val = 'false';
+        }
+        $self->store_featureprop($interaction_feature, 'canto_session',
+                                 $prop_val);
+      }
+    }
 
     if ($interaction_data->{genotype_a_phenotype_termid}) {
       $self->store_featureprop($interaction_feature, 'interaction_rescued_phenotype_id',
