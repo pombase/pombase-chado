@@ -70,14 +70,6 @@ SELECT genotype.feature_id AS genotype_feature_id,
         FROM cvterm
         WHERE name = 'promoter_gene') LIMIT 1) AS promoter_gene,
 
-  (SELECT value
-   FROM feature_relationshipprop p
-   WHERE p.feature_relationship_id = rel.feature_relationship_id
-     AND p.type_id IN
-       (SELECT cvterm_id
-        FROM cvterm
-        WHERE name = 'exogenous_promoter') LIMIT 1) AS exogenous_promoter,
-
   allele.feature_id AS allele_feature_id
 FROM feature genotype
 JOIN feature_relationship rel ON rel.object_id = genotype.feature_id
@@ -108,7 +100,6 @@ sub make_key {
     (join " + ", map {
       ($_->{expression} ? $_->{expression} : "[NULL]") . '-=' .
       ($_->{promoter_gene} ? $_->{promoter_gene} : "[promoter_gene: NULL]") . '-=' .
-      ($_->{exogenous_promoter} ? $_->{exogenous_promoter} : "[exogenous_promoter: NULL]") . '-=' .
         $_->{allele_feature_id};
     } @$expression_and_allele_ids) . '))';
 }
@@ -122,7 +113,6 @@ sub make_key_from_allele_objects {
                   [map {
                     { expression => $_->{expression},
                         promoter_gene => $_->{promoter_gene},
-                        exogenous_promoter => $_->{exogenous_promoter},
                         allele_feature_id => $_->{allele}->feature_id(),
                       };
                   } @{$alleles_and_expression}]);
@@ -140,14 +130,13 @@ sub _build_cache {
   my %collect_hash = ();
 
   while (my ($genotype_feature_id, $genotype_name, $genotype_background,
-             $expression, $promoter_gene, $exogenous_promoter,
+             $expression, $promoter_gene,
              $allele_feature_id) = $sth->fetchrow_array()) {
     $collect_hash{$genotype_feature_id}->{name} = $genotype_name;
     $collect_hash{$genotype_feature_id}->{background} = $genotype_background;
     push @{$collect_hash{$genotype_feature_id}->{expression_and_allele_ids}}, {
       expression => $expression,
       promoter_gene => $promoter_gene,
-      exogenous_promoter => $exogenous_promoter,
       allele_feature_id => $allele_feature_id,
     };
   }
