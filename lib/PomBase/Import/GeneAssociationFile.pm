@@ -69,6 +69,7 @@ has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has assigned_by_filter => (is => 'rw', init_arg => undef);
 has verbose_assigned_by_filter => (is => 'rw', init_arg => undef);
+has source_file_name => (is => 'rw', init_arg => undef);
 has taxon_filter => (is => 'rw', init_arg => undef);
 has remove_existing => (is => 'rw', init_arg => undef);
 has use_first_with_id => (is => 'rw', init_arg => undef);
@@ -120,6 +121,7 @@ sub _load_first_column {
 sub BUILD {
   my $self = shift;
   my $assigned_by_filter = '';
+  my $source_file_name = undef;
   my $verbose_assigned_by_filter = '';
   my $taxon_filter = '';
   my $remove_existing = 0;
@@ -137,6 +139,7 @@ sub BUILD {
   my $load_column_17 = 0;
 
   my @opt_config = ('assigned-by-filter=s' => \$assigned_by_filter,
+                    'source-file-name=s' => \$source_file_name,
                     'verbose-assigned-by-filter=s' => \$verbose_assigned_by_filter,
                     'remove-existing' => \$remove_existing,
                     'taxon-filter=s' => \$taxon_filter,
@@ -164,6 +167,14 @@ sub BUILD {
 
   $self->assigned_by_filter([split /\s*,\s*/, $assigned_by_filter]);
   $self->verbose_assigned_by_filter($verbose_assigned_by_filter);
+
+  if ($source_file_name) {
+    $source_file_name =~ s/^\s+//;
+    $source_file_name =~ s/\s+$//;
+
+    $self->source_file_name($source_file_name);
+  }
+
   $self->taxon_filter([split /\s*,\s*/, $taxon_filter]);
   $self->remove_existing($remove_existing);
 
@@ -198,6 +209,8 @@ sub load {
 
   my $assigned_by_cvterm =
     $self->get_cvterm('feature_cvtermprop_type', 'assigned_by');
+
+  my $source_file_name = $self->source_file_name();
 
   my %deleted_counts = ();
 
@@ -562,9 +575,14 @@ sub load {
                                         $with_or_from, $i);
         }
 
-        if (defined $file_name) {
+        if ($source_file_name) {
           $self->add_feature_cvtermprop($feature_cvterm, 'source_file',
-                                        $file_name);
+                                        $source_file_name);
+        } else {
+          if (defined $file_name) {
+            $self->add_feature_cvtermprop($feature_cvterm, 'source_file',
+                                          $file_name);
+          }
         }
 
         }
