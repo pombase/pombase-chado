@@ -577,11 +577,14 @@ sub _process_identifier {
       if ($identifier =~ /^(UniProtKB:.*|SGD:S\d+|Pfam:PF\d+)$/) {
         $identifier = $1;
       } else {
-        if (($rel_name eq 'has_penetrance' || $rel_name eq 'occupancy') &&
-            ($identifier =~ /^[><]?~?(.*?)\%?$/ && looks_like_number($1) ||
-             $identifier =~ /^~?\d+(?:\.\d+)?\%?-~?\d+(?:\.\d+)?\%?$/)) {
-          # the "identifier" is the percentage value
-          $identifier =~ s/(\d+)\%/$1/g;
+        if (($rel_name eq 'has_penetrance' || $rel_name eq 'occupancy')){
+          if ($identifier =~ /^[><]?~?(.*?)\%?$/ && looks_like_number($1) ||
+             $identifier =~ /^~?\d+(?:\.\d+)?\%?-~?\d+(?:\.\d+)?\%?$/) {
+            # normalise by removing the percentage sign
+            $identifier =~ s/(\d+)\%/$1/g;
+          } else {
+            die qq|penetrance value "$identifier" incorrectly formatted, must be in one of these formats: "NUMBER", "NUMBER-NUMBER", ">NUMBER", "<NUMBER", "~NUMBER" or "~NUMBER-NUMBER"\n|;
+          }
         } else {
           if ($rel_name eq 'multiplicity') {
             if ($identifier !~ /^\d+$/) {
