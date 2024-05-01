@@ -61,9 +61,16 @@ sub store_feature {
   my $so_type = shift;
   my $organism = shift;
 
-  my $feature_type_term =
-    $self->get_cvterm('sequence', $so_type) //
-    $self->get_cvterm('PomBase sequence feature types', $so_type);
+  my $feature_type_term;
+
+  if ($so_type eq 'protein-containing complex') {
+    # special case: https://github.com/pombase/pombase-chado/issues/1166#issuecomment-2087573512
+    $feature_type_term = $self->get_cvterm('cellular_component', $so_type);
+  } else {
+    $feature_type_term =
+      $self->get_cvterm('sequence', $so_type) //
+      $self->get_cvterm('PomBase sequence feature types', $so_type);
+  }
 
   use Carp qw(cluck);
 

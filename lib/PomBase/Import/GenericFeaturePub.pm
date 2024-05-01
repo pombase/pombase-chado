@@ -56,6 +56,7 @@ with 'PomBase::Role::OrganismFinder';
 with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::FeatureFinder';
 with 'PomBase::Role::FeatureStorer';
+with 'PomBase::Role::Embl::FeatureRelationshipStorer';
 
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
@@ -63,6 +64,10 @@ has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has organism => (is => 'rw', init_arg => undef);
 has feature_pub_source => (is => 'rw', init_arg => undef);
 has feature_uniquename_column => (is => 'rw', init_arg => undef);
+has create_feature_with_type => (is => 'rw', init_arg => undef);
+has subject_feature_column => (is => 'rw', init_arg => undef);
+has relationship_type => (is => 'rw', init_arg => undef);
+has relationship_type_cvterm => (is => 'rw', init_arg => undef);
 has reference_column => (is => 'rw', init_arg => undef);
 
 sub BUILD {
@@ -70,11 +75,17 @@ sub BUILD {
   my $organism_taxonid = undef;
   my $feature_pub_source = undef;
   my $feature_uniquename_column = undef;
+  my $create_feature_with_type = undef;
+  my $subject_feature_column = undef;
+  my $relationship_type = undef;
   my $reference_column = undef;
 
   my @opt_config = ("organism-taxonid=s" => \$organism_taxonid,
                     "feature-pub-source=s" => \$feature_pub_source,
                     "feature-uniquename-column=s" => \$feature_uniquename_column,
+                    "create-feature-with-type=s" => \$create_feature_with_type,
+                    "subject-feature-column=s" => \$subject_feature_column,
+                    "relationship-type=s" => \$relationship_type,
                     "reference-column=s" => \$reference_column,
                   );
 
@@ -111,6 +122,17 @@ sub BUILD {
   } else {
     die "no --reference-column passed to the loader\n";
   }
+
+  $self->create_feature_with_type($create_feature_with_type);
+  if (defined $subject_feature_column) {
+    $self->subject_feature_column($subject_feature_column - 1);
+  }
+  $self->relationship_type($relationship_type);
+
+  if (defined $relationship_type) {
+    my $rel_cvterm = $self->get_cvterm('relationship', $relationship_type);
+    $self->relationship_type_cvterm($rel_cvterm);
+  }
 }
 
 sub load {
@@ -122,6 +144,22 @@ sub load {
 
   my $reference_column = $self->reference_column();
   my $feature_pub_source = $self->feature_pub_source();
+
+  my $create_feature_with_type = $self->create_feature_with_type();
+  my $subject_feature_column = $self->subject_feature_column();
+  my $relationship_type = $self->relationship_type();
+  my $relationship_type_cvterm = $self->relationship_type_cvterm();
+
+  if (defined $create_feature_with_type) {
+    if (!defined $subject_feature_column) {
+      die "missing arg --subject-feature-column, required by --create-feature-with-type\n"
+    }
+    if (!defined $relationship_type) {
+      die "missing arg --relationship-type, required by --create-feature-with-type\n"
+    }
+  }
+
+  my $organism = $self->organism();
 
   my %seen_feature_pubs = ();
 
@@ -138,13 +176,20 @@ sub load {
 
     if ($self->feature_uniquename_column() >= $col_count) {
       warn "line $. is too short: the value for --feature-uniquename-column is ",
-        $self->feature_uniquename_column(), "\n";
+        ($self->feature_uniquename_column() + 1), "\n";
       next;
     }
 
     if ($self->reference_column() >= $col_count) {
       warn "line $. is too short: the value for --reference-column is ",
-        $self->reference_column(), "\n";
+        ($self->reference_column() + 1), "\n";
+      next;
+    }
+
+    if (defined $subject_feature_column &&
+        $subject_feature_column >= $col_count) {
+      warn "line $. is too short: the value for --subject-feature-column is ",
+        ($subject_feature_column + 1), "\n";
       next;
     }
 
@@ -161,16 +206,29 @@ sub load {
       $seen_feature_pubs{$seen_feature_pubs_key} = 1;
     }
 
-    try {
-      $feature = $self->find_chado_feature($feature_uniquename);
-    } catch {
-      warn "line $.: failed to find feature: $_";
-    };
+    if ($create_feature_with_type) {
+      my $type_name = $create_feature_with_type;
+      $feature = $self->store_feature($feature_uniquename, undef, [],
+                                      $type_name, $organism);
 
-    if (!defined $feature) {
-      next;
+      my $subject_feature_uniquename = $columns_ref->[$subject_feature_column];
+
+      my $subject_feature =
+        $self->find_chado_feature($subject_feature_uniquename);
+
+      $self->store_feature_rel($subject_feature, $feature,
+                               $relationship_type_cvterm);
+    } else {
+      try {
+        $feature = $self->find_chado_feature($feature_uniquename);
+      } catch {
+        warn "line $.: failed to find feature: $_";
+      };
+
+      if (!defined $feature) {
+        next;
+      }
     }
-
 
     my $reference = $self->find_or_create_pub($reference_value);
 
