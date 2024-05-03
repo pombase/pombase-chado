@@ -162,6 +162,7 @@ sub load {
   my $organism = $self->organism();
 
   my %seen_feature_pubs = ();
+  my %seen_features = ();
 
   my $tsv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
@@ -197,20 +198,31 @@ sub load {
 
     my $feature_uniquename = $columns_ref->[$self->feature_uniquename_column()];
 
-    my $reference_value = $columns_ref->[$reference_column];
-
-    my $seen_feature_pubs_key = "$feature_uniquename--$reference_value";
-    if ($seen_feature_pubs{$seen_feature_pubs_key}) {
-      next;
+    if (defined $seen_features{$feature_uniquename}) {
+      $feature = $seen_features{$feature_uniquename};
     } else {
-      $seen_feature_pubs{$seen_feature_pubs_key} = 1;
+      if ($create_feature_with_type) {
+        my $type_name = $create_feature_with_type;
+        $feature = $self->store_feature($feature_uniquename, undef, [],
+                                        $type_name, $organism);
+
+      } else {
+        try {
+          $feature = $self->find_chado_feature($feature_uniquename);
+        }
+        catch {
+          warn "line $.: failed to find feature: $_";
+        };
+
+        if (!defined $feature) {
+          next;
+        }
+      }
+
+      $seen_features{$feature_uniquename} = $feature;
     }
 
     if ($create_feature_with_type) {
-      my $type_name = $create_feature_with_type;
-      $feature = $self->store_feature($feature_uniquename, undef, [],
-                                      $type_name, $organism);
-
       my $subject_feature_uniquename = $columns_ref->[$subject_feature_column];
 
       my $subject_feature =
@@ -218,16 +230,15 @@ sub load {
 
       $self->store_feature_rel($subject_feature, $feature,
                                $relationship_type_cvterm);
-    } else {
-      try {
-        $feature = $self->find_chado_feature($feature_uniquename);
-      } catch {
-        warn "line $.: failed to find feature: $_";
-      };
+    }
 
-      if (!defined $feature) {
-        next;
-      }
+    my $reference_value = $columns_ref->[$reference_column];
+
+    my $seen_feature_pubs_key = "$feature_uniquename--$reference_value";
+    if ($seen_feature_pubs{$seen_feature_pubs_key}) {
+      next;
+    } else {
+      $seen_feature_pubs{$seen_feature_pubs_key} = 1;
     }
 
     my $reference = $self->find_or_create_pub($reference_value);
