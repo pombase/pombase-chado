@@ -389,6 +389,12 @@ sub load {
         next LINE;
       }
 
+      if ($with_or_from !~ /.:./) {
+        warn "line ", $fh->input_line_number(),
+          ": with/from value is badly formatted: $with_or_from - skipping\n";
+        next LINE;
+      }
+
       my $local_id = $self->lookup_uniprot_id($with_or_from);
 
       if (defined $local_id) {
