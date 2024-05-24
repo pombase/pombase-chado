@@ -28,6 +28,7 @@ my %input_types = (
   'generic-synonym' => 'PomBase::Import::GenericSynonym',
   'generic-feature-pub' => 'PomBase::Import::GenericFeaturePub',
   'generic-feature-name' => 'PomBase::Import::GenericFeatureName',
+  'generic-cvtermprop' => 'PomBase::Import::GenericCvtermprop',
   'canto-json' => 'PomBase::Import::Canto',
   orthologs => 'PomBase::Import::Orthologs',
   quantitative => 'PomBase::Import::Quantitative',
