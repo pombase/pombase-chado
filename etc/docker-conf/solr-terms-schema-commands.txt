@@ -10,6 +10,7 @@
 {"add-field":{"name":"interesting_parent_ids","type":"textField","omitTermFreqAndPositions":"true","multiValued":"true","indexed":"true","stored":"true"}}
 {"add-field":{"name":"definition_xrefs","type":"idField","indexed":"true","stored":"true", "multiValued": "true"}}
 {"add-field":{"name":"secondary_identifiers","type":"idField","indexed":"true","stored":"true", "multiValued": "true"}}
+{"add-field":{"name":"gocams","type":"idField","indexed":"true","stored":"true", "multiValued": "true"}}
 {"add-field":{"name":"definition","type":"textField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"gene_count", "type": "intField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"genotype_count", "type": "intField","indexed":"true","stored":"true"}}
