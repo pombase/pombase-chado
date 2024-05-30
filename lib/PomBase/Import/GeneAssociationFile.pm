@@ -135,7 +135,7 @@ sub BUILD {
   # if true, don't try to look up the gene using the synonyms column values
   my $ignore_synonyms = 0;
 
-  my $load_qualifiers = 0;
+  my $load_qualifiers = undef;
   my $load_column_17 = 0;
 
   my @opt_config = ('assigned-by-filter=s' => \$assigned_by_filter,
@@ -150,7 +150,7 @@ sub BUILD {
                     'with-prefix-filter' => \$with_prefix_filter,
                     'use-only-first-with-id' => \$use_first_with_id,
                     'ignore-synonyms' => \$ignore_synonyms,
-                    'load-qualifiers' => \$load_qualifiers,
+                    'load-qualifiers=s' => \$load_qualifiers,
                     'load-column-17' => \$load_column_17,
                   );
 
@@ -548,10 +548,19 @@ sub load {
         $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                       $long_evidence);
 
-        if ($self->load_qualifiers()) {
+        my $load_qualifiers = lc $self->load_qualifiers();
+
+        if (defined $load_qualifiers) {
+          my %load_qualifiers = ();
+          for my $qual (split /,/, $load_qualifiers) {
+            $load_qualifiers{$qual} = 1;
+          }
+
           for my $qual (@qualifier_bits) {
-            $self->add_feature_cvtermprop($feature_cvterm, 'qualifier',
-                                          $qual);
+            if ($load_qualifiers eq 'all' or $load_qualifiers{$qual}) {
+              $self->add_feature_cvtermprop($feature_cvterm, 'qualifier',
+                                            $qual);
+            }
           }
         }
 
