@@ -548,9 +548,9 @@ sub load {
         $self->add_feature_cvtermprop($feature_cvterm, 'evidence',
                                       $long_evidence);
 
-        my $load_qualifiers = lc $self->load_qualifiers();
+        if (defined $self->load_qualifiers()) {
+          my $load_qualifiers = lc $self->load_qualifiers();
 
-        if (defined $load_qualifiers) {
           my %load_qualifiers = ();
           for my $qual (split /,/, $load_qualifiers) {
             $load_qualifiers{$qual} = 1;
