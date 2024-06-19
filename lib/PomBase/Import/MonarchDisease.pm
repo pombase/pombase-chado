@@ -62,15 +62,18 @@ has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 
 has destination_taxonid => (is => 'rw', init_arg => undef);
+has add_qualifier => (is => 'rw', init_arg => undef);
 has monarch_reference => (is => 'rw', init_arg => undef);
 has human_ortholog_map => (is => 'rw', init_arg => undef);
 
 sub BUILD {
   my $self = shift;
   my $destination_taxonid = undef;
+  my $add_qualifier = undef;
   my $monarch_reference = undef;
 
   my @opt_config = ('destination-taxonid=s' => \$destination_taxonid,
+                    'add-qualifier=s' => \$add_qualifier,
                     'monarch-reference=s' => \$monarch_reference);
 
   my @options_copy = @{$self->options()};
@@ -90,6 +93,10 @@ sub BUILD {
   }
 
   $self->monarch_reference($monarch_reference);
+
+  if (defined $add_qualifier) {
+    $self->add_qualifier($add_qualifier);
+  }
 
   my $chado = $self->chado();
 
@@ -141,6 +148,8 @@ sub load {
   my $tsv = Text::CSV->new({ sep_char => "\t" });
 
   my $pub = $self->find_or_create_pub($self->monarch_reference());
+
+  my $add_qualifier = $self->add_qualifier();
 
   my %seen_annotations = ();
 
@@ -225,6 +234,9 @@ sub load {
 
         if (!$seen_annotations{$key}) {
           my $feature_cvterm = $self->create_feature_cvterm($dest_gene, $cvterm, $pub, 0);
+          if (defined $add_qualifier) {
+            $self->add_feature_cvtermprop($feature_cvterm, 'qualifier', $add_qualifier);
+          }
           $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
                                         'non-experimental');
           $seen_annotations{$key} = 1;
