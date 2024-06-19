@@ -116,7 +116,7 @@ for my $gocam_id (keys %all_details) {
 
   $request = HTTP::Request->new(GET => "https://api.geneontology.org/api/go-cam/$gocam_id");
   $request->header("accept" => "application/json");
-$request->header("user-agent" => "evil");
+  $request->header("user-agent" => "evil");
   $response = $ua->request($request);
 
   my $api_model = decode_json $response->content();
@@ -152,7 +152,7 @@ if (scalar (keys %all_details) < 10) {
 open my $gene_output_file, '>', $gene_mapping_filename or die;
 open my $term_output_file, '>', $term_mapping_filename or die;
 
-for my $gocam_id (keys %all_details) {
+for my $gocam_id (sort keys %all_details) {
   my $model_details = $all_details{$gocam_id};
 
   my $gocam = $gocam_id;
@@ -161,11 +161,11 @@ for my $gocam_id (keys %all_details) {
     $gocam .= ':' . $model_details->{title};
   }
 
-  for my $gene (@{$model_details->{genes}}) {
+  for my $gene (sort @{$model_details->{genes}}) {
     print $gene_output_file "$gene\t$gocam\n";
   }
 
-  for my $process_term (@{$model_details->{process_terms} // []}) {
+  for my $process_term (sort @{$model_details->{process_terms} // []}) {
     print $term_output_file "$process_term\t$gocam\n";
   }
 }
