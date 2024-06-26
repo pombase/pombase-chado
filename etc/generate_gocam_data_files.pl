@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Read write Noctua GPAD and API to (re-)create the term and gene mapping files
+# Read Noctua GPAD and API to (re-)create the term and gene mapping files
 # Run as:
 #   ./etc/generate_gocam_data_files.pl pombe-embl/supporting_files/production_gocam_id_mapping.tsv pombe-embl/supporting_files/production_gocam_term_id_mapping.tsv
 # then svn commit the files
