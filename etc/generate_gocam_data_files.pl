@@ -119,6 +119,11 @@ for my $gocam_id (keys %all_details) {
   $request->header("user-agent" => "evil");
   $response = $ua->request($request);
 
+  if (!$response->is_success()) {
+    print "  request failed: ", $response->status_line(), "\n";
+    next;
+  }
+
   my $api_model = decode_json $response->content();
 
   map {
