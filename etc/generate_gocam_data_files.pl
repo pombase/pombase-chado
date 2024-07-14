@@ -109,6 +109,8 @@ sub get_process_terms
 
 my $term_count = 0;
 
+my @api_failed_ids = ();
+
 for my $gocam_id (keys %all_details) {
   my $model_title;
 
@@ -120,7 +122,8 @@ for my $gocam_id (keys %all_details) {
   $response = $ua->request($request);
 
   if (!$response->is_success()) {
-    print "  request failed: ", $response->status_line(), "\n";
+    print "  request failed: ", $response->status_line(), " - skipping\n";
+    push @api_failed_ids, $gocam_id;
     next;
   }
 
@@ -143,6 +146,10 @@ for my $gocam_id (keys %all_details) {
   $term_count += scalar(@process_terms);
 
   $all_details{$gocam_id}->{process_terms} = \@process_terms;
+}
+
+for my $gocam_id (@api_failed_ids) {
+  delete $all_details{$gocam_id};
 }
 
 if ($term_count < 10) {
