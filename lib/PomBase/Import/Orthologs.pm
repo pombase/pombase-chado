@@ -66,6 +66,7 @@ has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 has swap_direction => (is => 'rw', init_arg => undef);
 has publication => (is => 'rw', init_arg => undef);
+has source_database => (is => 'rw', init_arg => undef);
 has organism_1 => (is => 'rw', init_arg => undef);
 has organism_2 => (is => 'rw', init_arg => undef);
 has organism_1_term => (is => 'rw', init_arg => undef);
@@ -76,6 +77,7 @@ sub BUILD
 
   my $swap_direction = 0;
   my $publication_uniquename = undef;
+  my $source_database = undef;
   my $organism_1_taxonid = undef;
   my $organism_2_taxonid = undef;
   my $org_1_term_name = undef;
@@ -83,6 +85,7 @@ sub BUILD
 
   my @opt_config = ("swap-direction" => \$swap_direction,
                     "publication=s" => \$publication_uniquename,
+                    "source-database=s" => \$source_database,
                     "organism_1_taxonid=s" => \$organism_1_taxonid,
                     "organism_2_taxonid=s" => \$organism_2_taxonid,
                     "add_org_1_term_name=s" => \$org_1_term_name,
@@ -101,6 +104,8 @@ sub BUILD
 
   my $publication = $self->find_or_create_pub($publication_uniquename);
   $self->publication($publication);
+
+  $self->source_database($source_database);
 
   if (!defined $organism_1_taxonid) {
     die "the --organism_1_taxonid argument is required\n";
@@ -238,6 +243,10 @@ sub load {
         $load_orthologs_count++;
 
         $self->store_feature_rel_pub($feature_rel, $self->publication());
+
+        if ($self->source_database()) {
+          $self->store_feature_relationshipprop($feature_rel, source_database => $self->source_database());
+        }
       };
 
       try {
