@@ -1270,6 +1270,14 @@ sub _process_publications {
   }
 }
 
+sub _store_session_as_gene_featureprop {
+  my ($self, $canto_session, $session_genes) = @_;
+
+  for my $gene (values %$session_genes) {
+    $self->store_featureprop($gene, 'canto_session', $canto_session);
+  }
+}
+
 sub _process_sessions {
   my $self = shift;
   my $curation_sessions = shift;
@@ -1281,6 +1289,9 @@ sub _process_sessions {
     my ($pub) = $self->_store_metadata($metadata);
 
     my %session_genes = $self->_query_genes($pub, $session_data{genes});
+
+    $self->_store_session_as_gene_featureprop($canto_session, \%session_genes);
+
     my %session_alleles =
       $self->_get_alleles($metadata->{curation_pub_id}, $canto_session,
                           \%session_genes, $session_data{alleles});
