@@ -37,11 +37,12 @@ my %all_details = ();
 
 for my $gpad_line (split /\n/, $gpad_contents) {
   if ($gpad_line =~ /^!/) {
-    if ($gpad_line eq '!gpa-version: 1.2') {
-      next;
-    } else {
-      die "wrong GPAD version: $gpad_line";
+    if ($gpad_line =~ '!gpad-version: (.*)') {
+      if ($1 ne '1.2') {
+        die "wrong GPAD version, need 1.2 got: $gpad_line";
+      }
     }
+    next;
   }
 
   my ($db, $object_id, $qual, $go_term, $reference, $evidence, $with_from,
