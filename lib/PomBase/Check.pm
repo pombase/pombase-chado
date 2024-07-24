@@ -40,8 +40,7 @@ use warnings;
 use Carp;
 
 use Moose;
-use feature qw(switch say);
-no if $] >= 5.018, warnings => "experimental::smartmatch";
+use feature qw(say);
 
 use open ':encoding(utf8)';
 binmode(STDOUT, 'encoding(UTF-8)');
@@ -129,28 +128,28 @@ sub _do_query_checks {
 
     my $failure;
 
-    given ($type) {
-      when ('=') {
+    for ($type) {
+      if ($_ eq '=') {
         if ($data[0] ne $expected) {
           $failure = " expected $expected but got $data[0]";
         }
       }
-      when ('<') {
+      elsif ($_ eq '<') {
         if ($data[0] >= $expected) {
           $failure = " expected less than $expected but got $data[0]";
         }
       }
-      when ('>') {
+      elsif ($_ eq '>') {
         if ($data[0] <= $expected) {
           $failure = " expected greater than $expected but got $data[0]";
         }
       }
-      when ('<=') {
+      elsif ($_ eq '<=') {
         if ($data[0] > $expected) {
           $failure = " expected $type $expected but got $data[0]";
         }
       }
-      when ('>=') {
+      elsif ($_ eq '>=') {
         if ($data[0] < $expected) {
           $failure = " expected $type $expected but got $data[0]";
         }
