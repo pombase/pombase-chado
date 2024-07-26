@@ -1062,7 +1062,19 @@ sub _query_genes {
   my %ret = ();
 
   while (my ($key, $details) = each %$session_gene_data) {
-    my $gene = $self->get_gene($details);
+    my $gene;
+
+    try {
+      $gene = $self->get_gene($details);
+    } catch {
+      $gene = undef;
+    };
+
+    if (!defined $gene) {
+      warn "can't find gene feature in Chado for: ",
+        $details->{uniquename}, "\n";
+      return undef;
+    }
 
     my $feature_pub = $self->find_or_create_feature_pub($gene, $pub);
     $self->store_feature_pubprop($feature_pub, 'feature_pub_source',
@@ -1071,7 +1083,7 @@ sub _query_genes {
     $ret{$key} = $gene;
   }
 
-  return %ret;
+  return \%ret;
 }
 
 sub _get_pub {
@@ -1281,14 +1293,26 @@ sub _store_session_as_gene_featureprop {
 sub _process_sessions {
   my $self = shift;
   my $curation_sessions = shift;
+  my $chado = $self->chado();
 
   for my $canto_session (keys %$curation_sessions) {
-    my %session_data = %{$curation_sessions->{$canto_session}};
+    # nested transaction
+    $chado->txn_begin();
+
+    my %session_data =%{$curation_sessions->{$canto_session}};
 
     my $metadata = $session_data{metadata};
     my ($pub) = $self->_store_metadata($metadata);
 
-    my %session_genes = $self->_query_genes($pub, $session_data{genes});
+    my $session_genes = $self->_query_genes($pub, $session_data{genes});
+
+    if (!defined $session_genes) {
+      warn "failed to find a gene, $canto_session will not be loaded\n";
+      $chado->txn_rollback();
+      next;
+    }
+
+    my %session_genes = %$session_genes;
 
     $self->_store_session_as_gene_featureprop($canto_session, \%session_genes);
 
@@ -1342,6 +1366,8 @@ sub _process_sessions {
     # reset for next session:
     $self->seen_binding_annotations({});
     $self->possible_reciprocal_binding_annotations([]);
+
+    $chado->txn_commit();
   }
 }
 
