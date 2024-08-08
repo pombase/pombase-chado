@@ -132,7 +132,8 @@ sub load {
     my $cvterm = $self->find_cvterm_by_term_id($termid);
 
     if (!defined $cvterm) {
-      die "can't find term for $termid\n";
+      warn "can't find cvterm for $termid\n";
+      next;
     }
 
     my $property_value = $columns_ref->[$self->property_value_column() - 1];
