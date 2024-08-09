@@ -58,10 +58,24 @@ with 'PomBase::Role::XrefStorer';
 with 'PomBase::Role::CvtermCreator';
 with 'PomBase::Role::FeatureCvtermCreator';
 
+use PomBase::Chado::ExtensionProcessor;
+
 has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
 has organism => (is => 'rw', init_arg => undef);
+
+has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
+                            builder => '_build_extension_processor');
+
+sub _build_extension_processor {
+  my $self = shift;
+  my $processor = PomBase::Chado::ExtensionProcessor->new(chado => $self->chado(),
+                                                          config => $self->config(),
+                                                          pre_init_cache => 1,
+                                                          verbose => $self->verbose());
+  return $processor;
+}
 
 sub BUILD {
   my $self = shift;
@@ -95,7 +109,7 @@ sub load {
 
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
-  $csv->column_names(qw(systematic_id feature_name term_id evidence_code publication_id date qualifiers));
+  $csv->column_names(qw(systematic_id feature_name term_id evidence_code publication_id date qualifiers extension));
 
   my $null_pub = $self->find_or_create_pub('null');
 
@@ -127,6 +141,11 @@ sub load {
     my $publication_id = trim($columns{"publication_id"});
     my $date = trim($columns{"date"});
     my $qualifiers = trim($columns{"qualifiers"});
+
+    my $extension = undef;
+    if (@fields >= 7) {
+      $extension = trim($columns{"extension"});
+    }
 
     my $long_evidence = undef;
     if ($evidence_code) {
@@ -206,6 +225,15 @@ sub load {
 
       my $feature_cvterm =
         $self->create_feature_cvterm($feature, $cvterm, $pubs[0], 0);
+
+      if (defined $extension) {
+        try {
+          $self->extension_processor()->process_one_annotation($feature_cvterm, $extension);
+        }
+        catch {
+          warn "failed to load line $.:\n$_";
+        }
+      }
 
       if (@pubs > 1) {
         warn "ignored ", (@pubs - 1), " extra refs for ", $feature->uniquename(), "\n";
