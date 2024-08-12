@@ -349,6 +349,13 @@ sub load {
     my $long_evidence =
       $self->config()->{evidence_types}->{$evidence_code}->{name};
 
+    if (!defined $long_evidence) {
+      warn "line ", $fh->input_line_number(),
+        ": can't find configuration for evidence code: ",
+        $evidence_code, "\n";
+      next;
+    }
+
     my $with_or_from_column = $columns{"With_or_from"};
     my @withs_and_froms = ();
 
