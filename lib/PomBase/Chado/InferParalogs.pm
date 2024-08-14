@@ -182,7 +182,6 @@ sub process
         my $key = make_key($subject_gene_uniquename, $object_gene_uniquename);
 
         if (!defined $created_paralogs{$key} && !defined $existing_paralogs{$key}) {
-          print "create $subject_gene_uniquename $object_gene_uniquename\n";
           $self->store_feature_rel($subject_gene, $object_gene,
                                    $paralogous_to_term, 1);
 
