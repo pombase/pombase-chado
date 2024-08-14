@@ -46,6 +46,7 @@ sub usage
                            description to name unnamed genes
                     - "fix-allele-names": add the gene name as prefix to allele
                            names that match the description
+                    - "infer-paralogs": Use orthologs to infer paralogs
   host          - the database server machine name
   database_name - the Chado database name
   username      - the database user name
@@ -69,6 +70,10 @@ usage:
 
   $0 <config_file> add-eco-evidence-codes \
     --eco-mapping-file=<file_path> \
+    <host> <database_name> <username> <password>
+
+  $0 <config_file> infer-paralogs \
+    --this-taxonid=<taxonid> --ortholog-taxonid=<taxonid> \
     <host> <database_name> <username> <password>
 );
 }
@@ -126,6 +131,7 @@ my %process_modules = (
   'add-eco-evidence-codes' => 'PomBase::Chado::AddEcoEvidenceCodes',
   'add-missing-allele-names' => 'PomBase::Chado::AddMissingAlleleNames',
   'fix-allele-names' => 'PomBase::Chado::FixAlleleNames',
+  'infer-paralogs' => 'PomBase::Chado::InferParalogs',
 );
 
 my $process_module = $process_modules{$process_type};
