@@ -158,22 +158,27 @@ sub load {
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
 
-  $csv->column_names(qw(org1_identifier org2_identifiers));
+  $csv->column_names(qw(org1_identifier org2_identifiers qualifiers reference));
 
   my $organism_1_term = $self->organism_1_term();
 
   my $load_orthologs_count = 0;
-
-  my %seen_orthologs = ();
 
   my $null_pub = $chado->resultset('Pub::Pub')->find({ uniquename => 'null' });
 
   ROW: while (my $columns_ref = $csv->getline_hr($fh)) {
     my $org1_identifier = trim($columns_ref->{"org1_identifier"});
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
+    my $qualifiers = $columns_ref->{"qualifiers"};
+    my $reference = $columns_ref->{"reference"};
 
     if (!defined $org2_identifiers) {
       warn "not enough columns at line $. of line containing $org1_identifier - missing TAB character?\n";
+      next;
+    }
+
+    if (defined $reference && $reference !~ /:/) {
+      warn qq|line $.: "$reference" doesn't look like a reference\n|;
       next;
     }
 
@@ -213,13 +218,6 @@ sub load {
       }
     }
     for my $org2_identifier (@org2_identifiers) {
-      my $seen_key = $org1_identifier . '---' . $org2_identifier;
-      if (exists $seen_orthologs{$seen_key}) {
-        next;
-      } else {
-        $seen_orthologs{$seen_key} = 1;
-      }
-
      my $org2_feature;
       eval {
         $org2_feature = $self->find_chado_feature($org2_identifier, 1, 0, $self->organism_2());
@@ -232,17 +230,28 @@ sub load {
       my $proc = sub {
         my $feature_rel;
         if ($self->swap_direction()) {
-          $feature_rel = $self->store_feature_rel($org2_feature, $org1_feature, $orthologous_to_term, 1);
+          $feature_rel = $self->store_feature_rel($org2_feature, $org1_feature, $orthologous_to_term, 0);
         } else {
-          $feature_rel = $self->store_feature_rel($org1_feature, $org2_feature, $orthologous_to_term, 1);
+          $feature_rel = $self->store_feature_rel($org1_feature, $org2_feature, $orthologous_to_term, 0);
         }
 
         $self->store_feature_relationshipprop($feature_rel,
                                               annotation_throughput_type => 'non-experimental');
 
-        $load_orthologs_count++;
+        if ($qualifiers) {
+          $self->store_feature_relationshipprop($feature_rel, ortholog_qualifier => $qualifiers);
+        }
 
-        $self->store_feature_rel_pub($feature_rel, $self->publication());
+        if ($reference) {
+          my $reference = $self->find_or_create_pub($reference);
+          $self->store_feature_rel_pub($feature_rel, $reference);
+        } else {
+          if ($self->publication()) {
+            $self->store_feature_rel_pub($feature_rel, $self->publication());
+          }
+        }
+
+        $load_orthologs_count++;
 
         if ($self->source_database()) {
           $self->store_feature_relationshipprop($feature_rel, source_database => $self->source_database());
