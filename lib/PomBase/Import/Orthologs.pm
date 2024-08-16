@@ -158,7 +158,7 @@ sub load {
 
   my $csv = Text::CSV->new({ sep_char => "\t" });
 
-  $csv->column_names(qw(org1_identifier org2_identifiers qualifiers reference));
+  $csv->column_names(qw(org1_identifier org2_identifiers qualifiers reference date));
 
   my $organism_1_term = $self->organism_1_term();
 
@@ -171,6 +171,7 @@ sub load {
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
     my $qualifiers = $columns_ref->{"qualifiers"};
     my $reference = $columns_ref->{"reference"};
+    my $date = $columns_ref->{"date"};
 
     if (!defined $org2_identifiers) {
       warn "not enough columns at line $. of line containing $org1_identifier - missing TAB character?\n";
@@ -240,6 +241,10 @@ sub load {
 
         if ($qualifiers) {
           $self->store_feature_relationshipprop($feature_rel, ortholog_qualifier => $qualifiers);
+        }
+
+        if ($date) {
+          $self->store_feature_relationshipprop($feature_rel, date => $date);
         }
 
         if ($reference) {
