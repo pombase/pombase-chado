@@ -17,7 +17,8 @@ my $term_mapping_filename = shift;
 
 my $ua = LWP::UserAgent->new();
 
-my $request = HTTP::Request->new(GET => "http://snapshot.geneontology.org/products/upstream_and_raw_data/noctua_pombase.gpad.gz");
+my $request = HTTP::Request->new(GET => "https://snapshot.geneontology.org/products/upstream_and_raw_data/noctua_pombase.gpad.gz");
+$request->header("user-agent" => "evil");
 my $response = $ua->request($request);
 
 my $gpad_contents = undef;
@@ -26,7 +27,8 @@ if ($response->is_success()) {
   my $gunzip = new Compress::Raw::Zlib::Inflate(WindowBits => WANT_GZIP);
   my $status = $gunzip->inflate($response->content(), $gpad_contents);
 } else {
-  die "can't download noctua_pombase.gpad.gz\n";
+  die "can't download noctua_pombase.gpad.gz: ",
+    $response->status_line(), "\n";
 }
 
 if (!$gpad_contents || length $gpad_contents == 0) {
