@@ -138,55 +138,120 @@ WHERE r.subject_id = s.feature_id
   my $ortholog_temp = "
 CREATE TEMP TABLE ortholog_list AS
 SELECT distinct $main_feature.feature_id, $main_feature.uniquename as o_un,
-                $other_org_feature.$other_org_identifier_field_name as s_name
+                $other_org_feature.$other_org_identifier_field_name as s_name,
+                (select value FROM feature_relationshipprop p JOIN cvterm pt ON p.type_id = pt.cvterm_id WHERE p.feature_relationship_id = r.feature_relationship_id AND pt.name = 'ortholog_qualifier' LIMIT 1) AS s_qual
   FROM feature $main_feature
-  LEFT OUTER JOIN feature_relationship r
-    ON r.type_id = (select cvterm_id from cvterm where name = 'orthologous_to')
+  JOIN feature_relationship r
+    ON r.type_id in (select cvterm_id from cvterm where name = 'orthologous_to')
    AND $main_feature.feature_id = r.${main_feature}_id
   JOIN feature $other_org_feature
     ON $other_org_feature.feature_id = r.${other_org_feature}_id AND $main_feature.organism_id = ? AND $other_org_feature.organism_id = ?
  WHERE $main_feature.feature_id in (select feature_id from protein_coding_genes)";
 
   my $orthologs_query = "
-CREATE TEMP TABLE full_table AS
-SELECT o_un, s_name
+SELECT o_un, s_name, s_qual
   FROM ortholog_list
  UNION
-SELECT uniquename AS o_un, 'NONE' as s_name
+SELECT uniquename AS o_un, 'NONE' as s_name, null as s_qual
   FROM protein_coding_genes
  WHERE feature_id NOT IN (select feature_id from ortholog_list)
  ORDER BY o_un, s_name
 ";
 
-  my $query = "
-SELECT o_un, string_agg(CASE WHEN s_name IS NULL THEN 'NONE' ELSE s_name END, '|')
-  FROM full_table
- GROUP BY o_un
- ORDER BY o_un";
+  my $sth = $dbh->prepare($transposon_temp);
+  $sth->execute()
+    or die "Couldn't execute: " . $sth->errstr;
+
+  $sth = $dbh->prepare($protein_temp);
+  $sth->execute($self->organism()->organism_id())
+    or die "Couldn't execute: " . $sth->errstr;
+
+  $sth = $dbh->prepare($ortholog_temp);
+  $sth->execute($self->organism->organism_id(), $other_organism->organism_id())
+    or die "Couldn't execute: " . $sth->errstr;
+
+  $sth = $dbh->prepare($orthologs_query);
+  $sth->execute() or die "Couldn't execute: " . $sth->errstr;
+
+  my %non_fusion_genes = ();
+  my %fusion_genes = ();
+
+  my @table = ();
+
+  while (my @data = $sth->fetchrow_array()) {
+    my $o_uniquename = $data[0];
+    my $s_uniquename = $data[1];
+
+    my $s_qual = $data[2];
+
+    if (defined $s_qual) {
+      push @{$fusion_genes{$o_uniquename}}, {
+        uniquename => $s_uniquename,
+        qual => $s_qual,
+      };
+    } else {
+      push @{$non_fusion_genes{$o_uniquename}}, $s_uniquename;
+    }
+  }
+
+  for my $o_uniquename (keys %fusion_genes) {
+    my $o_uniquename_for_table = $o_uniquename;
+    my @s_data = sort {
+      $a->{uniquename} cmp $b->{uniquename};
+    } @{$fusion_genes{$o_uniquename}};
+
+    my $s_uniquenames = join '+',
+      map {
+        my $s_data = $_;
+        my $s_qual = $s_data->{qual};
+        my $s_uniquename = $s_data->{uniquename};
+
+        if ($s_qual =~ /(.*),(.*)/) {
+          my $gene_uniquename = $1;
+          my $end = $2;
+          if ($o_uniquename eq $gene_uniquename) {
+            if ($end =~ /^([NC])[\-_]term$/) {
+              $s_uniquename .= "($1)";
+            }
+          } else {
+            if ($s_uniquename eq $gene_uniquename) {
+              if ($end =~ /^([NC])[\-_]term$/) {
+                $o_uniquename_for_table .= "($1)";
+              }
+            }
+          }
+        }
+        $s_uniquename;
+      } @s_data;
+
+    push @table, [$o_uniquename_for_table, $s_uniquenames];
+  }
+
+  @table = sort {
+    $a->[1] cmp $b->[1]
+      ||
+    $a->[0] cmp $b->[0];
+  } @table;
+
+  my @non_fusion_genes_table = ();
+
+  for my $o_uniquename (keys %non_fusion_genes) {
+    my @s_data = sort @{$non_fusion_genes{$o_uniquename}};
+    my $s_uniquenames = join '|', @s_data;
+    push @non_fusion_genes_table, [$o_uniquename, $s_uniquenames];
+  }
+
+  @non_fusion_genes_table = sort {
+    $a->[0] cmp $b->[0];
+  } @non_fusion_genes_table;
+
+  push @table, @non_fusion_genes_table;
 
   my $it = do {
-    my $sth = $dbh->prepare($transposon_temp);
-    $sth->execute()
-      or die "Couldn't execute: " . $sth->errstr;
-
-    $sth = $dbh->prepare($protein_temp);
-    $sth->execute($self->organism()->organism_id())
-      or die "Couldn't execute: " . $sth->errstr;
-
-    $sth = $dbh->prepare($ortholog_temp);
-    $sth->execute($self->organism->organism_id(), $other_organism->organism_id())
-      or die "Couldn't execute: " . $sth->errstr;
-
-    $sth = $dbh->prepare($orthologs_query);
-    $sth->execute() or die "Couldn't execute: " . $sth->errstr;
-
-    $sth = $dbh->prepare($query);
-    $sth->execute() or die "Couldn't execute: " . $sth->errstr;
-
     iterator {
-      my @data = $sth->fetchrow_array();
-      if (@data) {
-        return [@data];
+      my $current = shift @table;
+      if (defined $current) {
+        return $current;
       } else {
         return undef;
       }
