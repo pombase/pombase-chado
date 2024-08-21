@@ -181,9 +181,12 @@ sub load {
       next;
     }
 
-    if (defined $reference && $reference !~ /:/) {
-      warn qq|line $.: "$reference" doesn't look like a reference\n|;
-      next;
+    if (defined $reference) {
+      $reference = trim($reference);
+      if ($reference !~ /:|^$/) {
+        warn qq|line $.: "$reference" doesn't look like a reference\n|;
+        next;
+      }
     }
 
     my %org2_identifiers = ();
