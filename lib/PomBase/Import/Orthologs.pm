@@ -168,6 +168,9 @@ sub load {
 
   ROW: while (my $columns_ref = $csv->getline_hr($fh)) {
     my $org1_identifier = trim($columns_ref->{"org1_identifier"});
+
+    next if $org1_identifier =~ /^#/;
+
     my $org2_identifiers = $columns_ref->{"org2_identifiers"};
     my $qualifiers = $columns_ref->{"qualifiers"};
     my $reference = $columns_ref->{"reference"};
