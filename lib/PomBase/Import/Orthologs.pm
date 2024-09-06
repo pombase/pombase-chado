@@ -139,7 +139,7 @@ sub BUILD
  Usage   : $ortholog_import->load($fh);
  Function: Load orthologs in tab-delimited format from a file handle.
            The input must have two columns.  Column 1 has the gene
-           identifiers of the first organism.  Columns 2 has a comma
+           identifiers of the first organism.  Column 2 has a comma
            separated list of the identifiers of ortholous genes in
            organism 2.
  Args    : $fh - a file handle
