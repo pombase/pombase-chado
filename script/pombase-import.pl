@@ -31,6 +31,7 @@ my %input_types = (
   'generic-cvtermprop' => 'PomBase::Import::GenericCvtermprop',
   'canto-json' => 'PomBase::Import::Canto',
   orthologs => 'PomBase::Import::Orthologs',
+  paralogs => 'PomBase::Import::Paralogs',
   quantitative => 'PomBase::Import::Quantitative',
   qualitative => 'PomBase::Import::Qualitative',
   modification => 'PomBase::Import::Modification',
