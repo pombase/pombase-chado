@@ -119,7 +119,7 @@ for my $gocam_id (keys %all_details) {
 
   print "requesting details of $gocam_id from API\n";
 
-  $request = HTTP::Request->new(GET => "https://api.geneontology.org/api/go-cam/$gocam_id");
+  $request = HTTP::Request->new(GET => "https://api.geneontology.xyz/gocam/gomodel:$gocam_id/raw");
   $request->header("accept" => "application/json");
   $request->header("user-agent" => "evil");
   $response = $ua->request($request);
