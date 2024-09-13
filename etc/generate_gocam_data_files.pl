@@ -17,62 +17,32 @@ my $term_mapping_filename = shift;
 
 my $ua = LWP::UserAgent->new();
 
-my $request = HTTP::Request->new(GET => "https://snapshot.geneontology.org/products/upstream_and_raw_data/noctua_pombase.gpad.gz");
-$request->header("user-agent" => "evil");
+my $request = HTTP::Request->new(GET => "http://barista.berkeleybop.org/search//models?offset=0&limit=50&group=http://www.pombase.org&state=production&expand&debug");
+$request->header("user-agent" => "Evil");
+$request->header("Accept" => "application/json");
+
 my $response = $ua->request($request);
 
-my $gpad_contents = undef;
+my $contents = undef;
 
 if ($response->is_success()) {
-  my $gunzip = new Compress::Raw::Zlib::Inflate(WindowBits => WANT_GZIP);
-  my $status = $gunzip->inflate($response->content(), $gpad_contents);
+  $contents = $response->content();
 } else {
-  die "can't download noctua_pombase.gpad.gz: ",
+  die "can't download from Noctua: ",
     $response->status_line(), "\n";
 }
 
-if (!$gpad_contents || length $gpad_contents == 0) {
-  die "noctua_pombase.gpad.gz is empty\n";
+if (!$contents || length $contents == 0) {
+  die "no contents\n";
 }
+
+my $noctua_result = decode_json $contents;;
 
 my %all_details = ();
 
-for my $gpad_line (split /\n/, $gpad_contents) {
-  if ($gpad_line =~ /^!/) {
-    if ($gpad_line =~ '!gpad-version: (.*)') {
-      if ($1 ne '1.2') {
-        die "wrong GPAD version, need 1.2 got: $gpad_line";
-      }
-    }
-    next;
-  }
-
-  my ($db, $object_id, $qual, $go_term, $reference, $evidence, $with_from,
-      $interacting_taxon_id, $date, $assigned_by, $extension, $properties) = split /\t/, $gpad_line;
-
-  my @attrs = ();
-
-  if ($properties) {
-    @attrs = split /\|/, $properties;
-  }
-
-  my $gocam_id;
-
-  map {
-    if (/noctua-model-id=gomodel:(.*)/) {
-      $gocam_id = $1;
-    }
-  } @attrs;
-
-  if (!defined $gocam_id) {
-    die "no noctua-model-id in properties: $gpad_line";
-  }
-
-  if (!grep { $_ eq $object_id } @{$all_details{$gocam_id}->{genes} // []}) {
-    push @{$all_details{$gocam_id}->{genes}}, $object_id;
-  }
+for my $model_detail (@{$noctua_result->{models}}) {
+  $all_details{$model_detail->{id} =~ s/gomodel:(.*)/$1/r} = {};
 }
-
 
 sub type_id_of_individual
 {
@@ -89,25 +59,28 @@ sub type_id_of_individual
   return $type_id;
 }
 
-sub get_process_terms
+sub get_process_terms_and_genes
 {
   my $model_details = shift;
 
-  my @process_terms = ();
+  my %process_terms = ();
+  my %genes = ();
 
   for my $individual (@{$model_details->{individuals} // []}) {
     my $type_id = type_id_of_individual($individual);
 
+    if ($type_id =~ /^PomBase:(.*)$/) {
+      $genes{$1} = 1;
+    }
+
     if (grep {
       $_->{id} eq 'GO:0008150'
     } @{$individual->{'root-type'} // []}) {
-      if (!grep { $_ eq $type_id } @process_terms) {
-        push @process_terms, $type_id;
-      }
+      $process_terms{$type_id} = 1;
     }
   }
 
-  return @process_terms;
+  return ([keys %process_terms], [keys %genes]);
 }
 
 my $term_count = 0;
@@ -144,11 +117,12 @@ for my $gocam_id (keys %all_details) {
     $all_details{$gocam_id}->{title} = $model_title;
   }
 
-  my @process_terms = get_process_terms($api_model);
+  my ($process_terms, $genes) = get_process_terms_and_genes($api_model);
 
-  $term_count += scalar(@process_terms);
+  $term_count += scalar(@$process_terms);
 
-  $all_details{$gocam_id}->{process_terms} = \@process_terms;
+  $all_details{$gocam_id}->{process_terms} = $process_terms;
+  $all_details{$gocam_id}->{genes} = $genes;
 }
 
 for my $gocam_id (@api_failed_ids) {
