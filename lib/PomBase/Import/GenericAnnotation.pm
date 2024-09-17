@@ -109,7 +109,7 @@ sub load {
 
   my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
 
-  $csv->column_names(qw(systematic_id feature_name term_id evidence_code publication_id date qualifiers extension));
+  $csv->column_names(qw(systematic_id feature_name term_id evidence_code publication_id date qualifiers extension assigned_by));
 
   my $null_pub = $self->find_or_create_pub('null');
 
@@ -141,6 +141,7 @@ sub load {
     my $publication_id = trim($columns{"publication_id"});
     my $date = trim($columns{"date"});
     my $qualifiers = trim($columns{"qualifiers"});
+    my $assigned_by = trim($columns{"assigned_by"});
 
     my $extension = undef;
     if (@fields >= 7) {
@@ -247,6 +248,9 @@ sub load {
       }
       if ($date) {
         $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
+      }
+      if ($assigned_by) {
+        $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by', $assigned_by);
       }
     };
 
