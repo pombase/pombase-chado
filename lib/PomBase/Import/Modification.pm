@@ -66,6 +66,7 @@ has verbose => (is => 'ro');
 has options => (is => 'ro', isa => 'ArrayRef');
 has organism_taxonid => (is => 'rw', init_arg => undef);
 has organism => (is => 'rw', init_arg => undef);
+has assigned_by => (is => 'rw', init_arg => undef);
 has extension_processor => (is => 'ro', init_arg => undef, lazy => 1,
                             builder => '_build_extension_processor');
 
@@ -81,6 +82,15 @@ sub _build_extension_processor {
 sub BUILD {
   my $self = shift;
 
+  my $assigned_by = undef;
+
+  my @opt_config = ("assigned-by=s" => \$assigned_by);
+
+  if (!GetOptionsFromArray($self->options(), @opt_config)) {
+    croak "option parsing failed";
+  }
+
+  $self->assigned_by($assigned_by);
 }
 
 sub load {
@@ -88,6 +98,8 @@ sub load {
   my $fh = shift;
 
   my $file_name = $self->file_name_of_fh($fh);
+
+  my $assigned_by = $self->assigned_by();
 
   my $chado = $self->chado();
 
@@ -184,6 +196,10 @@ sub load {
 
     if (defined $date) {
       $self->add_feature_cvtermprop($feature_cvterm, 'date', $date);
+    }
+
+    if (defined $assigned_by) {
+      $self->add_feature_cvtermprop($feature_cvterm, 'assigned_by', $assigned_by);
     }
 
     if (defined $extension) {
