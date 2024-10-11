@@ -208,6 +208,14 @@ EOQ
 
     print $row_string, "\n";
   }
+
+  if (@feature_cvterm_ids_to_delete > 0) {
+    my $bind_bit = join ",", (('?') x scalar(@feature_cvterm_ids_to_delete));
+
+    my $sth = $dbh->prepare("delete from feature_cvterm where feature_cvterm_id in ($bind_bit)");
+    $sth->execute(@feature_cvterm_ids_to_delete);
+  }
+
 }
 
 1;
