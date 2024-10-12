@@ -86,7 +86,8 @@ sub retrieve {
   my $sql = q/
 select fc.feature_cvterm_id, gene.uniquename, gene.name, db.name || ':' || x.accession as psimodid,
        evprop.value as evidence, resprop.value as residue,
-       pub.uniquename as pmid, dateprop.value as date
+       pub.uniquename as pmid, dateprop.value as date,
+       assigned_by_prop.value as assigned_by
   from pombase_feature_cvterm_ext_resolved_terms fc
   join feature transcript on transcript.feature_id = fc.feature_id
   join feature_relationship gene_rel on transcript.feature_id = gene_rel.subject_id
@@ -104,6 +105,9 @@ select fc.feature_cvterm_id, gene.uniquename, gene.name, db.name || ':' || x.acc
   left outer join feature_cvtermprop dateprop on
        fc.feature_cvterm_id = dateprop.feature_cvterm_id and
        dateprop.type_id in (select cvterm_id from cvterm where name = 'date')
+  left outer join feature_cvtermprop assigned_by_prop on
+       fc.feature_cvterm_id = assigned_by_prop.feature_cvterm_id and
+       assigned_by_prop.type_id in (select cvterm_id from cvterm where name = 'assigned_by')
  where base_cv_name = 'PSI-MOD' AND gene.organism_id = / . $self->organism()->organism_id();
 
   my $dbh = $chado->storage()->dbh();
@@ -118,7 +122,7 @@ select fc.feature_cvterm_id, gene.uniquename, gene.name, db.name || ':' || x.acc
 
     iterator {
       my ($feature_cvterm_id, $gene_uniquename, $gene_name, $psimodid,
-          $evidence, $residue, $pmid, $date) = $sth->fetchrow_array();
+          $evidence, $residue, $pmid, $date, $assigned_by) = $sth->fetchrow_array();
       if (defined $feature_cvterm_id) {
         if (!$feature_cvterms{$feature_cvterm_id}) {
           die $feature_cvterm_id;
@@ -126,7 +130,8 @@ select fc.feature_cvterm_id, gene.uniquename, gene.name, db.name || ':' || x.acc
         my ($extensions) = $self->make_gaf_extension($feature_cvterms{$feature_cvterm_id});
         return [$gene_uniquename, $gene_name // '', $psimodid,
                 $evidence // '', $residue // '',
-                $extensions // '', $pmid, $taxonid, $date // ''];
+                $extensions // '', $pmid, $taxonid, $date // '',
+                $assigned_by // ''];
     } else {
         return undef;
       }
