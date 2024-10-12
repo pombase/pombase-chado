@@ -178,7 +178,7 @@ EOQ
     if (defined $secondary_annotations) {
       for my $secondary_annotation (@$secondary_annotations) {
         $secondary_annotations_to_delete{$secondary_annotation} =
-          [$pmid, $gene_uniquename, $term_name, $residue];
+          [$gene_uniquename, $term_name, $residue, $pmid];
       }
     }
 
@@ -187,7 +187,7 @@ EOQ
     if (defined $secondary_annotations) {
       for my $secondary_annotation (@$secondary_annotations) {
         $secondary_annotations_to_delete{$secondary_annotation} =
-          ['', $gene_uniquename, $term_name, $residue];
+          [$gene_uniquename, $term_name, $residue, ''];
       }
     }
   }
@@ -195,7 +195,7 @@ EOQ
   my $delete_count = scalar(keys %secondary_annotations_to_delete);
   warn "deleting $delete_count modifications\n";
 
-  print "pmid\tgene\tterm_name\tresidue\n";
+  print "gene\tterm_name\tresidue\tpmid\n";
 
   my @feature_cvterm_ids_to_delete = ();
 
