@@ -79,7 +79,11 @@ sub _fix_term
   if ($termid =~ /^([A-Z]+)_(\d+)$/) {
     return "$1:$2";
   } else {
-    return $termid
+    if ($termid eq 'part_of') {
+      return 'BFO:0000050';
+    } else {
+      return $termid
+    }
   }
 }
 
