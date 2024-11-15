@@ -105,7 +105,7 @@ sub BUILD {
 
   my $orthologs_rs = $chado->resultset('Sequence::FeatureRelationship')
     ->search({
-      -or => {
+      -or => [
         -and => {
           'subject.organism_id' => $dest_organism->organism_id(),
           'object.organism_id' => $human->organism_id(),
@@ -114,7 +114,7 @@ sub BUILD {
           'subject.organism_id' => $human->organism_id(),
           'object.organism_id' => $dest_organism->organism_id(),
         },
-      }
+      ]
     }, { join => ['subject', 'object'] });
 
   my %human_ortholog_map = ();
