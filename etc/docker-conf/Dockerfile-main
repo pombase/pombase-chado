@@ -106,8 +106,8 @@ RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
      npm install -g yarn; \
      yarn; \
-     ./etc/build_app.sh $target && cp -r dist/* /var/www/html/ && \
-     cp dist/assets/$database_name/* /var/www/html/assets/) && \
+     ./etc/build_app.sh $target && cp -r dist/browser/* /var/www/html/ && \
+     cp dist/browser/assets/$database_name/* /var/www/html/assets/) && \
      rm -rf /pombase/pombase-website /pombe/.npm-global
 
 COPY genome_changelog/gene_characterisation_status/results/figure.svg /var/www/html/assets/gene_characterisation_status_figure.svg
