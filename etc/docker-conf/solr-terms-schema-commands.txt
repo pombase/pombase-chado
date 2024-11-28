@@ -3,9 +3,9 @@
 {"add-field-type":{"name":"intField","class":"solr.IntPointField"}}
 {"add-field":{"name":"cv_name","type":"idField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"name","type":"textField","omitTermFreqAndPositions":"false","indexed":"true","stored":"true"}}
-{"add-field":{"name":"name_str_field","type":"idField","indexed":"true","stored":"false"}}
+{"add-field":{"name":"name_str_field","type":"idField","indexed":"true","stored":"true"}}
 {"add-field":{"name":"exact_synonyms","type":"textField","multiValued":"true","indexed":"true","stored":"true"}}
-{"add-field":{"name":"exact_synonyms_str_field","type":"idField","multiValued":"true","indexed":"true","stored":"false"}}
+{"add-field":{"name":"exact_synonyms_str_field","type":"idField","multiValued":"true","indexed":"true","stored":"true"}}
 {"add-field":{"name":"exact_synonym_words","type":"textField","multiValued":"false","indexed":"true","stored":"true"}}
 {"add-field":{"name":"narrow_synonyms","type":"textField","multiValued":"true","indexed":"true","stored":"true"}}
 {"add-field":{"name":"narrow_synonym_words","type":"textField","multiValued":"false","indexed":"true","stored":"true"}}
