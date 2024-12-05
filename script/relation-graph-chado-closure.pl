@@ -220,11 +220,11 @@ INSERT INTO cvtermpath (subject_id, object_id, cv_id, pathdistance, type_id)
  (WITH cvs AS
    (SELECT cv_id FROM cvterm WHERE cvterm_id IN (SELECT distinct(subject_id) AS cvterm_id FROM cvtermpath
      UNION SELECT distinct(object_id) AS cvterm_id FROM cvtermpath))
-  SELECT cvterm_id, cvterm_id, 10, 0,
+  SELECT cvterm_id, cvterm_id, cvterm.cv_id, 0,
          (SELECT cvterm_id
             FROM cvterm t
             JOIN cv ON cv.cv_id = t.cv_id
-           WHERE t.name = 'is_a' and cv.name = 'local')
+           WHERE t.name = 'is_a' and cv.name in ('autocreated', 'local'))
          FROM cvterm WHERE cvterm.cv_id IN (SELECT cv_id FROM cvs));
 EOF
 
