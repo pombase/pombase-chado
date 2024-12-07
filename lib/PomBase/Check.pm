@@ -54,6 +54,7 @@ with 'PomBase::Role::ChadoUser';
 
 has config_field => (is => 'ro');
 has website_config => (is => 'ro');
+has xref_config => (is => 'ro');
 has output_prefix => (is => 'ro');
 
 sub _write_query {
@@ -199,7 +200,8 @@ sub run {
     my $obj = $module->new(config => $self->config(),
                            chado => $self->chado(),
                            check_config => $check_config,
-                           website_config => $self->website_config());
+                           website_config => $self->website_config(),
+                           xref_config => $self->xref_config());
 
     if (!$obj->check() && !$check_config->{no_fail}) {
       my $output_text = '';

@@ -19,10 +19,10 @@ use PomBase::Config;
 
 my $query_only = 0;
 
-if (@ARGV != 8) {
+if (@ARGV != 9) {
   die <<"EOF";
 $0: needs eight arguments:
-  eg. $0 config_file config_field website_config database_host database_name user_name password output_prefix
+  eg. $0 config_file config_field website_config xref_config database_host database_name user_name password output_prefix
 
   - reads queries from the config file
   - run each query
@@ -38,6 +38,7 @@ EOF
 my $config_file = shift;
 my $config_field = shift;
 my $website_config_filename = shift;
+my $xref_config_filename = shift;
 my $host = shift;
 my $database = shift;
 my $username = shift;
@@ -59,9 +60,23 @@ my $website_config_text = '';
 
 my $website_config = JSON->new()->decode($website_config_text);
 
+open my $xref_config_fh, '<', $xref_config_filename or
+  die "can't open $xref_config_filename: $!\n";
+
+my $xref_config_text = '';
+{
+  local $/ = undef;
+  $xref_config_text = <$xref_config_fh>;
+}
+
+my $xref_config = JSON->new()->decode($xref_config_text);
+
+
+
 my $check = PomBase::Check->new(chado => $chado, config => $config,
                                 config_field => $config_field,
                                 output_prefix => $output_prefix,
-                                website_config => $website_config);
+                                website_config => $website_config,
+                                xref_config => $xref_config);
 
 exit $check->run();
