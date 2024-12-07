@@ -76,5 +76,5 @@ EOQ
 
   $self->output_text($output_text);
 
-  return 0;
+  return length($output_text) == 0;
 }
