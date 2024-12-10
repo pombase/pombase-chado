@@ -78,7 +78,7 @@ while (defined (my $line = <$complex_portal_file>)) {
         if (defined $pombe_id) {
           print $pombe_to_complex_id_mapping_file "$pombe_id\t$complex_portal_acc\t$complex_portal_pubmed_id\n";
         } else {
-          die "$complex_portal_filename:$.: can't find pombe ID for $1\n";
+          warn "$complex_portal_filename:$.: can't find pombe ID for $1\n";
         }
       }
     } else {
