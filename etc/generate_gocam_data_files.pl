@@ -14,10 +14,11 @@ use JSON qw|decode_json encode_json|;
 
 my $gene_mapping_filename = shift;
 my $term_mapping_filename = shift;
+my $model_directory = shift;
 
 my $ua = LWP::UserAgent->new();
 
-my $request = HTTP::Request->new(GET => "http://barista.berkeleybop.org/search//models?offset=0&limit=50&group=http://www.pombase.org&state=production&expand&debug");
+my $request = HTTP::Request->new(GET => "https://live-go-cam.geneontology.io/product/json/provider-to-model.json");
 $request->header("user-agent" => "Evil");
 $request->header("Accept" => "application/json");
 
@@ -28,7 +29,7 @@ my $contents = undef;
 if ($response->is_success()) {
   $contents = $response->content();
 } else {
-  die "can't download from Noctua: ",
+  die "can't download metadata: ",
     $response->status_line(), "\n";
 }
 
@@ -36,12 +37,18 @@ if (!$contents || length $contents == 0) {
   die "no contents\n";
 }
 
-my $noctua_result = decode_json $contents;;
+my $metadata_result = decode_json $contents;;
 
 my %all_details = ();
 
-for my $model_detail (@{$noctua_result->{models}}) {
-  $all_details{$model_detail->{id} =~ s/gomodel:(.*)/$1/r} = {};
+my $pombe_data = $metadata_result->{"http://www.pombase.org"};
+
+if (!$pombe_data) {
+  die "no pombe data found\n";
+}
+
+for my $id (@{$pombe_data}) {
+  $all_details{$id} = {};
 }
 
 sub type_id_of_individual
@@ -92,9 +99,9 @@ for my $gocam_id (keys %all_details) {
 
   print "requesting details of $gocam_id from API\n";
 
-  $request = HTTP::Request->new(GET => "https://api.geneontology.xyz/gocam/gomodel:$gocam_id/raw");
+  $request = HTTP::Request->new(GET => "https://live-go-cam.geneontology.io/product/json/low-level/$gocam_id.json");
   $request->header("accept" => "application/json");
-  $request->header("user-agent" => "evil");
+  $request->header("user-agent" => "Evil");
   $response = $ua->request($request);
 
   if (!$response->is_success()) {
@@ -103,7 +110,16 @@ for my $gocam_id (keys %all_details) {
     next;
   }
 
-  my $api_model = decode_json $response->content();
+  my $content = $response->content();
+
+  open my $model_out, '>', "$model_directory/gomodel:$gocam_id.json"
+    or die "can't open $model_directory/$gocam_id.json for writing: $?\n";
+
+  print $model_out $content;
+
+  close $model_out or die;
+
+  my $api_model = decode_json $content;
 
   map {
     if ($_->{key} && $_->{key} eq 'title') {
