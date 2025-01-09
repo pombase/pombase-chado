@@ -40,6 +40,7 @@ my %input_types = (
   'references-file' => 'PomBase::Import::ReferencesFile',
   'kegg-pathway' => 'PomBase::Import::KEGGMapping',
   'names-and-products' => 'PomBase::Import::NameAndProduct',
+  'go-cam-json' => 'PomBase::Import::GoCamJson',
 );
 
 sub usage
