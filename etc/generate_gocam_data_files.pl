@@ -14,9 +14,10 @@ use JSON qw|decode_json encode_json|;
 
 my $gene_mapping_filename = shift;
 my $term_mapping_filename = shift;
+my $go_cam_json_filename = shift;
 my $model_directory = shift;
 
-my $ua = LWP::UserAgent->new();
+my $ua = LWP::UserAgent->new(keep_alive => 1);
 
 my $request = HTTP::Request->new(GET => "https://live-go-cam.geneontology.io/product/json/provider-to-model.json");
 $request->header("user-agent" => "Evil");
@@ -37,7 +38,7 @@ if (!$contents || length $contents == 0) {
   die "no contents\n";
 }
 
-my $metadata_result = decode_json $contents;;
+my $metadata_result = decode_json $contents;
 
 my %all_details = ();
 
@@ -92,11 +93,9 @@ sub get_process_terms_and_genes
 
 my $term_count = 0;
 
-my @api_failed_ids = ();
+my @failed_ids = ();
 
 for my $gocam_id (keys %all_details) {
-  my $model_title;
-
   print "requesting details of $gocam_id from API\n";
 
   $request = HTTP::Request->new(GET => "https://live-go-cam.geneontology.io/product/json/low-level/$gocam_id.json");
@@ -106,7 +105,7 @@ for my $gocam_id (keys %all_details) {
 
   if (!$response->is_success()) {
     print "  request failed: ", $response->status_line(), " - skipping\n";
-    push @api_failed_ids, $gocam_id;
+    push @failed_ids, $gocam_id;
     next;
   }
 
@@ -121,27 +120,51 @@ for my $gocam_id (keys %all_details) {
 
   my $api_model = decode_json $content;
 
+  my %model_annotations = ();
+
   map {
-    if ($_->{key} && $_->{key} eq 'title') {
-      $model_title = $_->{value};
-    }
+    push @{$model_annotations{$_->{key}}}, $_->{value};
   } @{$api_model->{annotations} // []};
+
+  my $model_title = undef;
+
+  if (exists $model_annotations{title}) {
+    $model_title = $model_annotations{title}->[0];
+  }
+
+  my @contributors = ();
+
+  if (exists $model_annotations{contributor}) {
+    @contributors = map {
+      s|.*orcid.org/||;
+      $_
+    } @{$model_annotations{contributor}};
+  }
 
   if ($model_title) {
     $model_title =~ s/\n/ /g;
     $model_title =~ s/[\t ]+/ /g;
+    $model_title =~ s/^\s+//;
+    $model_title =~ s/\s+$//;
     $all_details{$gocam_id}->{title} = $model_title;
   }
 
   my ($process_terms, $genes) = get_process_terms_and_genes($api_model);
 
+  if (!@$genes) {
+    print "$gocam_id has no pombe genes, skipping\n";
+    push @failed_ids, $gocam_id;
+    next;
+  }
+
   $term_count += scalar(@$process_terms);
 
   $all_details{$gocam_id}->{process_terms} = $process_terms;
   $all_details{$gocam_id}->{genes} = $genes;
+  $all_details{$gocam_id}->{contributors} = \@contributors;
 }
 
-for my $gocam_id (@api_failed_ids) {
+for my $gocam_id (@failed_ids) {
   delete $all_details{$gocam_id};
 }
 
@@ -177,3 +200,7 @@ for my $gocam_id (sort keys %all_details) {
 
 close $gene_output_file;
 close $term_output_file;
+
+open my $go_cam_json_file, '>', $go_cam_json_filename or die;
+print $go_cam_json_file encode_json \%all_details, "\n";
+close $go_cam_json_file;
