@@ -132,6 +132,11 @@ for my $gocam_id (keys %all_details) {
     $model_title = $model_annotations{title}->[0];
   }
 
+  if (exists $model_annotations{date}) {
+    my $model_date = $model_annotations{date}->[0];
+    $all_details{$gocam_id}->{date} = $model_date;
+  }
+
   my @contributors = ();
 
   if (exists $model_annotations{contributor}) {
