@@ -1,5 +1,5 @@
 # -*- dockerfile -*-
-FROM pombase/web-base:v80
+FROM pombase/web-base:v80 AS buildbase
 ARG version
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
@@ -125,6 +125,11 @@ COPY --chown=pombase:pombase conf/start_all.sh start_all.sh
 COPY --chown=pombase:pombase conf/docker-healthcheck docker-healthcheck
 
 RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
+
+FROM scratch
+COPY --from=buildbase / /
+
+WORKDIR /pombase
 
 USER root
 
