@@ -95,6 +95,8 @@ my $term_count = 0;
 
 my @failed_ids = ();
 
+my $json_encoder = JSON->new()->utf8()->canonical(1);
+
 for my $gocam_id (keys %all_details) {
   print "requesting details of $gocam_id from API\n";
 
@@ -110,21 +112,20 @@ for my $gocam_id (keys %all_details) {
   }
 
   my $content = $response->content();
+  my $decoded_model = decode_json $content;
 
   open my $model_out, '>', "$model_directory/gomodel:$gocam_id.json"
     or die "can't open $model_directory/$gocam_id.json for writing: $?\n";
 
-  print $model_out $content;
+  print $model_out $json_encoder->encode($decoded_model);
 
   close $model_out or die;
-
-  my $api_model = decode_json $content;
 
   my %model_annotations = ();
 
   map {
     push @{$model_annotations{$_->{key}}}, $_->{value};
-  } @{$api_model->{annotations} // []};
+  } @{$decoded_model->{annotations} // []};
 
   my $model_title = undef;
 
@@ -154,7 +155,7 @@ for my $gocam_id (keys %all_details) {
     $all_details{$gocam_id}->{title} = $model_title;
   }
 
-  my ($process_terms, $genes) = get_process_terms_and_genes($api_model);
+  my ($process_terms, $genes) = get_process_terms_and_genes($decoded_model);
 
   if (!@$genes) {
     print "$gocam_id has no pombe genes, skipping\n";
@@ -207,5 +208,5 @@ close $gene_output_file;
 close $term_output_file;
 
 open my $go_cam_json_file, '>', $go_cam_json_filename or die;
-print $go_cam_json_file encode_json \%all_details, "\n";
+print $go_cam_json_file $json_encoder->encode(\%all_details), "\n";
 close $go_cam_json_file;
