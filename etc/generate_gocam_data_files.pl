@@ -95,7 +95,7 @@ sub get_process_terms_and_genes
     }
   }
 
-  return ([keys %process_terms], [keys %genes]);
+  return ([sort keys %process_terms], [sort keys %genes]);
 }
 
 my $term_count = 0;
@@ -175,7 +175,7 @@ for my $gocam_id (keys %all_details) {
 
   $all_details{$gocam_id}->{process_terms} = $process_terms;
   $all_details{$gocam_id}->{genes} = $genes;
-  $all_details{$gocam_id}->{contributors} = \@contributors;
+  $all_details{$gocam_id}->{contributors} = [sort @contributors];
 }
 
 for my $gocam_id (@failed_ids) {
