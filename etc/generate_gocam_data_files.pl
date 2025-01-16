@@ -70,6 +70,7 @@ sub type_id_of_individual
 sub get_process_terms_and_genes
 {
   my $model_details = shift;
+  my $model_title = shift;
 
   my %process_terms = ();
   my %genes = ();
@@ -85,6 +86,12 @@ sub get_process_terms_and_genes
       $_->{id} eq 'GO:0008150'
     } @{$individual->{'root-type'} // []}) {
       $process_terms{$type_id} = 1;
+    }
+  }
+
+  if ($model_title) {
+    for my $go_termid ($model_title =~ /\((GO:\d+)\)/g) {
+      $process_terms{$go_termid} = 1;
     }
   }
 
@@ -155,7 +162,8 @@ for my $gocam_id (keys %all_details) {
     $all_details{$gocam_id}->{title} = $model_title;
   }
 
-  my ($process_terms, $genes) = get_process_terms_and_genes($decoded_model);
+  my ($process_terms, $genes) =
+    get_process_terms_and_genes($decoded_model, $model_title);
 
   if (!@$genes) {
     print "$gocam_id has no pombe genes, skipping\n";
