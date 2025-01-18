@@ -160,6 +160,11 @@ sub load {
       $self->store_featureprop($gocam_feature, 'gocam_contributor',
                                $gocam_contributor);
     }
+
+    for my $title_term (@{$details->{title_terms} // []}) {
+      $self->store_featureprop($gocam_feature, 'gocam_title_termid',
+                               $title_term);
+    }
   }
 }
 
