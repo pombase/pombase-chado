@@ -73,6 +73,7 @@ sub get_process_terms_and_genes
   my $model_title = shift;
 
   my %process_terms = ();
+  my %title_terms = ();
   my %genes = ();
 
   for my $individual (@{$model_details->{individuals} // []}) {
@@ -92,10 +93,11 @@ sub get_process_terms_and_genes
   if ($model_title) {
     for my $go_termid ($model_title =~ /\((GO:\d+)\)/g) {
       $process_terms{$go_termid} = 1;
+      $title_terms{$go_termid} = 1;
     }
   }
 
-  return ([sort keys %process_terms], [sort keys %genes]);
+  return ([sort keys %title_terms], [sort keys %process_terms], [sort keys %genes]);
 }
 
 my $term_count = 0;
@@ -162,7 +164,7 @@ for my $gocam_id (keys %all_details) {
     $all_details{$gocam_id}->{title} = $model_title;
   }
 
-  my ($process_terms, $genes) =
+  my ($title_terms, $process_terms, $genes) =
     get_process_terms_and_genes($decoded_model, $model_title);
 
   if (!@$genes) {
@@ -173,6 +175,7 @@ for my $gocam_id (keys %all_details) {
 
   $term_count += scalar(@$process_terms);
 
+  $all_details{$gocam_id}->{title_terms} = $title_terms;
   $all_details{$gocam_id}->{process_terms} = $process_terms;
   $all_details{$gocam_id}->{genes} = $genes;
   $all_details{$gocam_id}->{contributors} = [sort @contributors];
