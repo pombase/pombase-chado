@@ -91,7 +91,7 @@ sub get_process_terms_and_genes
   }
 
   if ($model_title) {
-    for my $go_termid ($model_title =~ /\((GO:\d+)\)/g) {
+    for my $go_termid ($model_title =~ /\(\s*(GO:\d+)\s*\)/g) {
       $process_terms{$go_termid} = 1;
       $title_terms{$go_termid} = 1;
     }
