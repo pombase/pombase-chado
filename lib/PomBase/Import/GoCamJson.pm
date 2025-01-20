@@ -125,6 +125,39 @@ sub store_model_genes {
   }
 }
 
+sub store_modified_genes {
+  my $self = shift;
+  my $gocam_feature = shift;
+  my $modified_gene_pro_terms = shift;
+
+  my $chado = $self->chado();
+
+  for my $pro_termid (@$modified_gene_pro_terms) {
+    my $pro_term = $self->find_cvterm_by_term_id($pro_termid);
+
+    if (!defined $pro_term) {
+      die "can't find PRO term for $pro_termid\n";
+    }
+
+    my $first_prop = $pro_term->cvtermprops()
+      ->search({ 'type.name' => 'pombase_gene_id' },
+               { join => 'type' })
+      ->first();
+
+    if (!defined $first_prop) {
+      die "can't find pombase_gene_id property for $pro_termid\n";
+    }
+
+    my $pro_term_gene_uniquename = $first_prop->value();
+
+    my $gene_feature =
+      $self->find_chado_feature($pro_term_gene_uniquename, 1, 0,
+                                $self->organism(), ['gene']);
+
+    $self->store_feature_rel($gene_feature, $gocam_feature, 'part_of');
+  }
+}
+
 sub load {
   my $self = shift;
   my $fh = shift;
@@ -150,6 +183,7 @@ sub load {
                            $organism);
 
     $self->store_model_genes($gocam_feature, $details->{genes});
+    $self->store_modified_genes($gocam_feature, $details->{modified_gene_pro_terms});
     $self->store_process_terms($gocam_feature, $details->{process_terms});
 
     if (my $gocam_date = $details->{date}) {
