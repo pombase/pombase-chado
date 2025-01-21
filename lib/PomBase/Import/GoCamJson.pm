@@ -96,13 +96,49 @@ sub BUILD
 sub store_process_terms {
   my $self = shift;
   my $gocam_feature = shift;
+  my $title_termids = shift;
   my $process_terms = shift;
 
   my $chado = $self->chado();
 
-  for my $process_term_id (@$process_terms) {
+  if (@$title_termids ==  0) {
+    warn $gocam_feature->uniquename(), " has no terms in the title " .
+      "so won't be attached to any cvterms in Chado\n";
+    return;
+  }
+
+  my @title_terms =
+    map {
+      $self->find_cvterm_by_term_id($_);
+    } @$title_termids;
+
+ PROCESS_TERM:
+  for my $process_termid (@$process_terms) {
     my $process_term =
-      $self->find_cvterm_by_term_id($process_term_id);
+      $self->find_cvterm_by_term_id($process_termid);
+
+    my $is_title_term_child = 0;
+
+    for my $title_term (@title_terms) {
+      my $rs = $self->chado()->resultset('Cv::Cvtermpath')
+        ->search({ pathdistance => { '>=' => 0 },
+                   subject_id => $process_term->cvterm_id(),
+                   'type.name' => { -in => ['is_a', 'part_of'] },
+                   object_id => $title_term->cvterm_id(),
+                 },
+                 {
+                   join => 'type',
+                 });
+
+      if ($rs->count() > 0) {
+        $is_title_term_child = 1;
+        last;
+      }
+    }
+
+    if (!$is_title_term_child) {
+      next PROCESS_TERM;
+    }
 
     $self->create_feature_cvterm($gocam_feature, $process_term,
                                  $self->null_pub(), 0);
@@ -184,7 +220,7 @@ sub load {
 
     $self->store_model_genes($gocam_feature, $details->{genes});
     $self->store_modified_genes($gocam_feature, $details->{modified_gene_pro_terms});
-    $self->store_process_terms($gocam_feature, $details->{process_terms});
+    $self->store_process_terms($gocam_feature, $details->{title_terms}, $details->{process_terms});
 
     if (my $gocam_date = $details->{date}) {
       $self->store_featureprop($gocam_feature, 'gocam_date', $gocam_date);
