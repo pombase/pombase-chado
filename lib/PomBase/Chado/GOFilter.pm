@@ -229,6 +229,7 @@ sub process {
     'GO_REF:0000044',  # UniProtKB-SubCell
     'GO_REF:0000117',  # ARBA
     'GO_REF:0000118',  # TreeGrafter
+    'GO_REF:0000107',  # Transfer of annotation with Compara
   );
 
   for my $code (reverse @codes) {
