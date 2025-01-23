@@ -239,6 +239,8 @@ sub process {
       for my $go_ref (reverse @iea_go_refs) {
         $self->process_one_evidence_code($code, $go_ref);
       }
+      # filter any IEA annotations that aren't configured
+      $self->process_one_evidence_code($code);
     } else {
       $self->process_one_evidence_code($code);
     }
