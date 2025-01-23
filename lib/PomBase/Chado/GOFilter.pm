@@ -220,6 +220,8 @@ sub process {
   );
 
   my @iea_go_refs = (
+    'GO_REF:0000108',  # inter-ontology links
+    'GO_REF:0000115',  # Rfam
     'GO_REF:0000116',  # RHEA
     'GO_REF:0000003',  # EC
     'GO_REF:0000041',  # UniPathway
