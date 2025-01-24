@@ -46,6 +46,7 @@ use IO::Handle;
 
 use Moose;
 
+use List::Util qw(uniq);
 use Text::CSV;
 use Getopt::Long qw(GetOptionsFromArray);
 
@@ -298,6 +299,7 @@ sub load {
     }
 
     my $db_object_id = $columns{"DB_object_id"};
+    my $db_object_type = $columns{"DB_object_type"};
     my $db_object_symbol = $columns{"DB_object_symbol"};
     my $qualifier = $columns{"Qualifier"};
 
@@ -453,6 +455,8 @@ sub load {
 
     map { s/\s+$//; s/^\s+//; } @synonyms;
 
+    @synonyms = uniq @synonyms;
+
     my $uniquename = undef;
 
     my $organism = $self->find_organism_by_taxonid($taxonid);
@@ -486,15 +490,44 @@ sub load {
       }
     }
 
-    if (!defined $gene_feature) {
+    my @gene_features = ();
+
+    if (defined $gene_feature) {
+      push @gene_features, $gene_feature;
+    } else {
+      if ($db_object_type =~ /rna/i) {
+        # special case for RNAcentral IDs
+        for my $synonym (@synonyms) {
+          for my $filter_taxonid (@taxon_filter) {
+            if ($synonym =~ /^(URS[\dA-F]+)_$filter_taxonid/) {
+              my $ursid = $1;
+              my $rs = $self->chado()->resultset("Sequence::Featureprop")
+                ->search({ 'type.name' => 'rnacentral_identifier',
+                           'value' => $ursid },
+                         { join => ['type'] })
+                ->search_related('feature');
+
+              while (defined (my $rna_gene_feature = $rs->next())) {
+                push @gene_features, $rna_gene_feature;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (scalar(@gene_features) == 0) {
       warn "line ", $fh->input_line_number(), ": gene feature not found, ",
         "none of the identifiers (@synonyms) from this annotation ",
         "match a systematic ID in Chado - skipping\n";
       next;
     }
 
-    for my $feature ($self->get_transcripts_of_gene($gene_feature)) {
+    my @transcript_features = map {
+      $self->get_transcripts_of_gene($_)
+    } @gene_features;
 
+    for my $feature (@transcript_features) {
       my @pubs = map {
         my $db_reference = $_;
         $self->find_or_create_pub($db_reference);
