@@ -117,6 +117,10 @@ COPY --chown=pombase:pombase conf/docker-healthcheck docker-healthcheck
 
 RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
 
+RUN (cd /pombase; jbrowse create jbrowse2; \
+     jbrowse add-assembly /pombase/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz --name pombe_v1 --load copy --type bgzipFasta --out jbrowse2
+)
+
 RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
      npm install -g yarn; \
