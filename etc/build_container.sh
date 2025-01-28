@@ -35,6 +35,7 @@ rsync -acvPHS --delete-after $dump_dir/web-json $container_dir/
 rsync -acvPHS --delete-after $dump_dir/misc $container_dir/
 rsync -acvPHS --delete-after $dump_dir/gff $container_dir/
 rsync -acvPHS --delete-after $dump_dir/fasta/chromosomes/ $container_dir/chromosome_fasta/
+rsync -acvPHS --delete-after $dump_dir/fasta/bgzip_chromosomes $container_dir/
 
 cp $dump_dir/api_maps.sqlite3.zst $container_dir/
 
