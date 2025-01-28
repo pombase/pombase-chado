@@ -70,6 +70,30 @@ COPY --chown=pombase:pombase trackList.json /pombase/jbrowse/data/trackList.json
 COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/pombase-website/minimal_jbrowse_track_list.json
 COPY --chown=pombase:pombase jbrowse_track_metadata.csv /pombase/jbrowse/data/jbrowse_track_metadata.csv
 
+RUN mkdir /pombase/.npm-global; npm config set prefix "/pombase/.npm-global"
+
+ENV PATH="/pombase/.npm-global/bin:$PATH"
+
+
+RUN (cd /var/www/html/jbrowse; \
+    ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/*_all_chromosomes.fa.gz \
+      --trackLabel 'refseqs' --key 'DNA sequence'; \
+    ./bin/flatfile-to-json.pl --gff /pombase/gff/*_all_chromosomes_forward_strand.gff3 \
+      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'Forward strand features'; \
+    ./bin/flatfile-to-json.pl --gff /pombase/gff/*_all_chromosomes_reverse_strand.gff3 \
+      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'Reverse strand features')
+
+COPY --chown=pombase:pombase conf/circus.ini.template circus.ini.template
+COPY --chown=pombase:pombase conf/start_all.sh start_all.sh
+COPY --chown=pombase:pombase conf/docker-healthcheck docker-healthcheck
+
+RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
+
+RUN (cd /pombase; jbrowse create jbrowse2; \
+     jbrowse add-assembly /pombase/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz --name pombe_v1 --load copy --type bgzipFasta --out jbrowse2; \
+     cd jbrowse2; jbrowse add-track /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes.gff3 --load copy --name "Genes" --category "Genes" --config '{"renderer": {"type": "SvgFeatureRenderer"}}'; \
+     ln -s /pombase/jbrowse2 /var/www/html/)
+
 RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json \
     /pombase/data_files)
@@ -97,28 +121,6 @@ RUN cd ./solr-8.11.2/; ./bin/solr start -force -m 4g && \
     ./bin/post -c docs -type application/json -d < /pombase/pombase-website/src/app/config/docs.json && \
     ./bin/solr stop && \
     rm -rf /var/www/html/api/v1/dataset/latest/data/solr_data
-
-RUN mkdir /pombase/.npm-global; npm config set prefix "/pombase/.npm-global"
-
-ENV PATH="/pombase/.npm-global/bin:$PATH"
-
-
-RUN (cd /var/www/html/jbrowse; \
-    ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/*_all_chromosomes.fa.gz \
-      --trackLabel 'refseqs' --key 'DNA sequence'; \
-    ./bin/flatfile-to-json.pl --gff /pombase/gff/*_all_chromosomes_forward_strand.gff3 \
-      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'Forward strand features'; \
-    ./bin/flatfile-to-json.pl --gff /pombase/gff/*_all_chromosomes_reverse_strand.gff3 \
-      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'Reverse strand features')
-
-COPY --chown=pombase:pombase conf/circus.ini.template circus.ini.template
-COPY --chown=pombase:pombase conf/start_all.sh start_all.sh
-COPY --chown=pombase:pombase conf/docker-healthcheck docker-healthcheck
-
-RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
-
-RUN (cd /pombase; jbrowse create jbrowse2; \
-     jbrowse add-assembly /pombase/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz --name pombe_v1 --load copy --type bgzipFasta --out jbrowse2)
 
 RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
