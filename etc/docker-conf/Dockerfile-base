@@ -1,6 +1,6 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v81 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v82 .
 # in pombase-chado
 FROM bitnami/minideb:bookworm
 
@@ -26,7 +26,7 @@ RUN apt install -y python3-django python3-django-allauth python3-tornado \
     pipx gunicorn python3-seaborn python3-numpy python3-pandas \
     python3-matplotlib python3-regex
 
-RUN npm install --silent --unsafe-perm -g @angular/cli
+RUN npm install --silent --unsafe-perm -g @angular/cli @jbrowse/cli
 
 RUN apt-get -y install libperlio-gzip-perl libgd-perl libjson-perl libtext-csv-perl libyaml-perl && apt-get clean
 RUN curl -L http://cpanmin.us | perl - --self-upgrade
