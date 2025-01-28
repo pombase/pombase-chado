@@ -1,6 +1,7 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v80 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v81 .
+# in pombase-chado
 FROM bitnami/minideb:bookworm
 
 LABEL maintainer="Kim Rutherford <kim@pombase.org>"
