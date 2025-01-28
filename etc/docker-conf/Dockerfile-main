@@ -103,16 +103,6 @@ RUN mkdir /pombase/.npm-global; npm config set prefix "/pombase/.npm-global"
 ENV PATH="/pombase/.npm-global/bin:$PATH"
 
 
-RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
-     cp etc/update_vars.sh /pombase/ && \
-     npm install -g yarn; \
-     yarn; \
-     ./etc/build_app.sh $target && cp -r dist/browser/* /var/www/html/ && \
-     cp dist/browser/assets/$database_name/* /var/www/html/assets/) && \
-     rm -rf /pombase/pombase-website /pombe/.npm-global
-
-COPY genome_changelog/gene_characterisation_status/results/figure.svg /var/www/html/assets/gene_characterisation_status_figure.svg
-
 RUN (cd /var/www/html/jbrowse; \
     ./bin/prepare-refseqs.pl --fasta /pombase/chromosome_fasta/*_all_chromosomes.fa.gz \
       --trackLabel 'refseqs' --key 'DNA sequence'; \
@@ -126,6 +116,16 @@ COPY --chown=pombase:pombase conf/start_all.sh start_all.sh
 COPY --chown=pombase:pombase conf/docker-healthcheck docker-healthcheck
 
 RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
+
+RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
+     cp etc/update_vars.sh /pombase/ && \
+     npm install -g yarn; \
+     yarn; \
+     ./etc/build_app.sh $target && cp -r dist/browser/* /var/www/html/ && \
+     cp dist/browser/assets/$database_name/* /var/www/html/assets/) && \
+     rm -rf /pombase/pombase-website /pombe/.npm-global
+
+COPY genome_changelog/gene_characterisation_status/results/figure.svg /var/www/html/assets/gene_characterisation_status_figure.svg
 
 FROM scratch
 COPY --from=buildbase / /
