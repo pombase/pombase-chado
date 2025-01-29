@@ -91,7 +91,9 @@ RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
 
 RUN (cd /pombase; jbrowse create jbrowse2; \
      jbrowse add-assembly /pombase/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz --name pombe_v1 --load copy --type bgzipFasta --out jbrowse2; \
-     cd jbrowse2; jbrowse add-track /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes.gff3 --load copy --name "Genes" --category "Genes" --config '{"renderer": {"type": "SvgFeatureRenderer"}}'; \
+     cd jbrowse2; \
+     jbrowse add-track /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_forward_strand.gff3 --load copy --name "Forward strand" --category "Genes" --config '{"renderer": {"type": "SvgFeatureRenderer"}}'; \
+     jbrowse add-track /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_reverse_strand.gff3 --load copy --name "Reverse strand" --category "Genes" --config '{"renderer": {"type": "SvgFeatureRenderer"}}'; \
      ln -s /pombase/jbrowse2 /var/www/html/)
 
 RUN (cd pombase-website; \
