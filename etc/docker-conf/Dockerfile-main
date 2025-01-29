@@ -48,6 +48,7 @@ COPY --chown=pombase:pombase api_maps.sqlite3.zst /pombase/
 
 COPY --chown=pombase:pombase pombase-website/etc/website-database-schema.sql /pombase/
 COPY --chown=pombase:pombase pombase-website/etc/make_website_db_in_container.sh /pombase/
+COPY --chown=pombase:pombase container_scripts/setup_jbrowse2_in_container.sh /pombase/
 
 COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
 
@@ -89,11 +90,7 @@ COPY --chown=pombase:pombase conf/docker-healthcheck docker-healthcheck
 
 RUN (cd /var/www/html/jbrowse; ./bin/generate-names.pl)
 
-RUN (cd /pombase; jbrowse create jbrowse2; \
-     jbrowse add-assembly /pombase/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz --name pombe_v1 --load copy --type bgzipFasta --out jbrowse2; \
-     cd jbrowse2; \
-     jbrowse add-track /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_forward_strand.gff3 --load copy --name "Forward strand" --category "Genes" --config '{"renderer": {"type": "SvgFeatureRenderer"}}'; \
-     jbrowse add-track /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_reverse_strand.gff3 --load copy --name "Reverse strand" --category "Genes" --config '{"renderer": {"type": "SvgFeatureRenderer"}}'; \
+RUN (cd /pombase; ./setup_jbrowse2_in_container.sh; \
      ln -s /pombase/jbrowse2 /var/www/html/)
 
 RUN (cd pombase-website; \
