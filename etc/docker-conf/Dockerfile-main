@@ -35,7 +35,7 @@ COPY --chown=pombase:pombase curation/data_files /pombase/curation-data-files
 
 COPY --chown=pombase:pombase web-json /var/www/html/web-json
 COPY --chown=pombase:pombase misc/sitemap.txt /var/www/html/
-COPY --chown=pombase:pombase misc/gene_expression_table.tsv /pombase/misc/
+COPY --chown=pombase:pombase misc/htp_gene_expression_table.tsv /pombase/misc/
 COPY --chown=pombase:pombase gff /pombase/gff
 COPY --chown=pombase:pombase chromosome_fasta /pombase/chromosome_fasta
 COPY --chown=pombase:pombase bgzip_chromosomes /pombase/bgzip_chromosomes
