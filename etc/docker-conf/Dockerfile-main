@@ -70,7 +70,6 @@ COPY --chown=pombase:pombase pombase-website /pombase/pombase-website
 COPY --chown=pombase:pombase trackList.json /pombase/jbrowse/data/trackList.json
 COPY --chown=pombase:pombase minimal_jbrowse_track_list.json /pombase/pombase-website/minimal_jbrowse_track_list.json
 COPY --chown=pombase:pombase jbrowse_track_metadata.csv /pombase/jbrowse/data/jbrowse_track_metadata.csv
-COPY --chown=pombase:pombase jbrowse2_config.csv /pombase/jbrowse2/config.json
 
 RUN mkdir /pombase/.npm-global; npm config set prefix "/pombase/.npm-global"
 
@@ -97,6 +96,8 @@ RUN (cd /pombase; ./setup_jbrowse2_in_container.sh; \
 RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json \
     /pombase/data_files)
+
+COPY --chown=pombase:pombase jbrowse2_config.csv /pombase/jbrowse2/config.json
 
 RUN cd ./solr-8.11.2/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
