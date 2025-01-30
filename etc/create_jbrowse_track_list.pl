@@ -129,6 +129,8 @@ sub maybe_add_jbrowse2_track
     ],
     metadata => {
       pmid => $row->{pmed_id},
+      first_author => $row->{first_author},
+      study_id => $row->{study_id},
       growth_phase_or_response => $row->{growth_phase_or_response},
       assayed_gene_product => $row->{assayed_gene_product},
       background => $row->{background},
