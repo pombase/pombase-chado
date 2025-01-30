@@ -97,7 +97,7 @@ RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json \
     /pombase/data_files)
 
-COPY --chown=pombase:pombase jbrowse2_config.csv /pombase/jbrowse2/config.json
+COPY --chown=pombase:pombase jbrowse2_config.json /pombase/jbrowse2/config.json
 
 RUN cd ./solr-8.11.2/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
