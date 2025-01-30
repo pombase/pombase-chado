@@ -47,7 +47,8 @@ rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $co
 $SCRIPT_PATH/create_jbrowse_track_list.pl $container_dir/pombase-config/website/trackListTemplate.json \
    $container_dir/pombase-config/website/jbrowse_track_metadata.csv \
    $container_dir/trackList.json $container_dir/jbrowse_track_metadata.csv \
-   $container_dir/minimal_jbrowse_track_list.json
+   $container_dir/minimal_jbrowse_track_list.json \
+   $container_dir/jbrowse2_config.json
 
 echo building container ...
 docker build --progress=plain -f conf/Dockerfile-main --build-arg database_name=pombase --build-arg target=$target -t=pombase/web:$version-$target .

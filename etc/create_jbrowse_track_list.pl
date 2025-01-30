@@ -15,6 +15,9 @@ my $track_metadata_csv = shift;
 my $output_track_json_filename = shift;
 my $output_track_metadata_csv = shift;
 my $small_track_list_json_filename = shift;
+my $jbrowse2_config_filename = shift;
+
+my $assembly_name = "pombe_v1";
 
 open my $track_json_fh, '<', $track_json_filename or die;
 
@@ -27,6 +30,133 @@ my $track_json_text = '';
 }
 
 my @small_track_list_json = ();
+
+my $internal_datasets_url = "https://www.pombase.org/internal_datasets";
+
+my %jbrowse2_config = (
+  assemblies => [
+    {
+      name => $assembly_name,
+      sequence => {
+        type => "ReferenceSequenceTrack",
+        trackId => "pombe_v1-ReferenceSequenceTrack",
+        adapter => {
+          type => "BgzipFastaAdapter",
+          fastaLocation => {
+            uri => "$internal_datasets_url/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz",
+            locationType => "UriLocation"
+          },
+          faiLocation => {
+            uri => "$internal_datasets_url/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz.fai",
+            locationType => "UriLocation"
+          },
+          gziLocation => {
+            uri => "$internal_datasets_url/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz.gzi",
+            locationType => "UriLocation"
+          }
+        }
+      }
+    }
+  ],
+  configuration => {},
+  connections => [],
+  defaultSession => {
+    name => "New Session"
+  },
+  tracks => [
+    {
+      type => "FeatureTrack",
+      trackId => "Schizosaccharomyces_pombe_all_chromosomes_forward_strand",
+      name => "Forward strand",
+      adapter => {
+        type => "Gff3Adapter",
+        gffLocation => {
+          uri => "Schizosaccharomyces_pombe_all_chromosomes_forward_strand.gff3",
+          locationType => "UriLocation"
+        }
+      },
+      category => [
+        "Genes"
+      ],
+      assemblyNames => [
+        $assembly_name,
+      ],
+      renderer => {
+        type => "SvgFeatureRenderer"
+      }
+    },
+    {
+      type => "FeatureTrack",
+      trackId => "Schizosaccharomyces_pombe_all_chromosomes_reverse_strand",
+      name => "Reverse strand",
+      adapter => {
+        type => "Gff3Adapter",
+        gffLocation => {
+          uri => "Schizosaccharomyces_pombe_all_chromosomes_reverse_strand.gff3",
+          locationType => "UriLocation"
+        }
+      },
+      category => [
+        "Genes"
+      ],
+      assemblyNames => [
+        $assembly_name,
+      ],
+      renderer => {
+        type => "SvgFeatureRenderer"
+      }
+    },
+],
+);
+
+sub maybe_add_jbrowse2_track
+{
+  my $row = shift;
+
+  return unless defined $jbrowse2_config_filename;
+
+  my $track_id = $row->{pmed_id} . '-' .
+    ($row->{source_url} =~ s|.*/(.*?)\.\w+$|$1|r);
+
+  my %track_conf = (
+    name => $row->{label},
+    trackId => $track_id,
+    category => [
+      $row->{data_type},
+    ],
+    assemblyNames => [
+      $assembly_name
+    ],
+    metadata => {
+      pmid => $row->{pmed_id},
+      growth_phase_or_response => $row->{growth_phase_or_response},
+      assayed_gene_product => $row->{assayed_gene_product},
+      background => $row->{background},
+      conditions => $row->{conditions},
+      assay_type => $row->{assay_type},
+      data_type => $row->{data_type},
+      alleles => $row->{alleles},
+      mutants => $row->{'mutant(s)'},
+      comment => $row->{comment},
+      source_url => $row->{source_url},
+    }
+  );
+
+  if (lc $row->{data_file_type} eq 'bigwig') {
+    $track_conf{type} = 'QuantitativeTrack';
+    $track_conf{adapter} = {
+      type => "BigWigAdapter",
+      bigWigLocation => {
+        uri => $row->{source_url},
+        locationType => "UriLocation"
+      }
+    };
+  } else {
+    return;
+  }
+
+  push @{$jbrowse2_config{tracks}}, \%track_conf;
+}
 
 my $track_json = decode_json($track_json_text);
 
@@ -63,6 +193,8 @@ while (my $row = $csv->getline_hr ($fh)) {
   $csv->print($out_csv_fh, \@out_row);
 
   next if $row->{label} =~ /(Forward|Reverse) strand features|DNA sequence/;
+
+  maybe_add_jbrowse2_track($row, $assembly_name);
 
   my $store_class = undef;
 
@@ -190,3 +322,11 @@ print $out_small_json_fh $json->encode(\@small_track_list_json);
 
 close $out_small_json_fh;
 
+if (defined $jbrowse2_config_filename) {
+  open my $jbrowse2_config_fh, '>', $jbrowse2_config_filename
+    or die "can't write $jbrowse2_config_filename";
+
+  print $jbrowse2_config_fh $json->encode(\%jbrowse2_config);
+
+  close $jbrowse2_config_fh;
+}
