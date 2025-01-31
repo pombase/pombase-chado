@@ -213,6 +213,26 @@ sub maybe_add_jbrowse2_track
     return;
   }
 
+ if (lc $row->{data_file_type} eq 'vcf') {
+    $track_conf{type} = "VariantTrack";
+    $track_conf{adapter} = {
+      type => "VcfTabixAdapter",
+      vcfGzLocation => {
+        uri => $row->{source_url},
+        locationType => "UriLocation"
+      },
+      index => {
+        location => {
+          uri => $row->{source_url} . ".tbi",
+          locationType => "UriLocation"
+        },
+        indexType => "TBI"
+      }
+    };
+    push @{$jbrowse2_config{tracks}}, \%track_conf;
+    return;
+  }
+
   if (lc $row->{data_file_type} eq 'bed') {
     $track_conf{type} = 'FeatureTrack';
     $track_conf{adapter} = {
