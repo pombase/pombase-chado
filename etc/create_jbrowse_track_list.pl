@@ -106,7 +106,7 @@ my %jbrowse2_config = (
         type => "SvgFeatureRenderer"
       }
     },
-],
+  ],
 );
 
 sub maybe_add_jbrowse2_track
@@ -154,7 +154,25 @@ sub maybe_add_jbrowse2_track
       }
     };
   } else {
-    return;
+    if (lc $row->{data_file_type} eq 'gff') {
+      $track_conf{type} = 'FeatureTrack';
+      $track_conf{adapter} = {
+        type => "Gff3TabixAdapter",
+        gffGzLocation => {
+          uri => $row->{source_url},
+          locationType => "UriLocation"
+        },
+        index => {
+          location => {
+            uri => $row->{source_url} . ".tbi",
+            locationType => "UriLocation"
+          },
+          indexType => "TBI"
+        }
+      };
+    } else {
+      return;
+    }
   }
 
   push @{$jbrowse2_config{tracks}}, \%track_conf;
