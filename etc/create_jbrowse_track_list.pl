@@ -32,6 +32,7 @@ my $track_json_text = '';
 my @small_track_list_json = ();
 
 my $internal_datasets_url = "https://www.pombase.org/internal_datasets";
+my $chromosome_fasta_url = "$internal_datasets_url/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz";
 
 my %jbrowse2_config = (
   assemblies => [
@@ -43,15 +44,15 @@ my %jbrowse2_config = (
         adapter => {
           type => "BgzipFastaAdapter",
           fastaLocation => {
-            uri => "$internal_datasets_url/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz",
+            uri => $chromosome_fasta_url,
             locationType => "UriLocation"
           },
           faiLocation => {
-            uri => "$internal_datasets_url/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz.fai",
+            uri => "$chromosome_fasta_url.fai",
             locationType => "UriLocation"
           },
           gziLocation => {
-            uri => "$internal_datasets_url/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz.gzi",
+            uri => "$chromosome_fasta_url.gzi",
             locationType => "UriLocation"
           }
         }
@@ -177,6 +178,41 @@ sub maybe_add_jbrowse2_track
     return;
   }
 
+  if (lc $row->{data_file_type} eq 'rnaseq') {
+    $track_conf{type} = "AlignmentsTrack";
+    $track_conf{adapter} = {
+      type => "BamAdapter",
+      bamLocation => {
+        uri => $row->{source_url},
+        locationType => "UriLocation"
+      },
+      index => {
+        location => {
+          uri => $row->{source_url} . ".bai",
+          locationType => "UriLocation"
+        },
+        indexType => "BAI"
+      },
+      sequenceAdapter => {
+        type => "BgzipFastaAdapter",
+        fastaLocation => {
+          uri => $chromosome_fasta_url,
+          locationType => "UriLocation"
+        },
+        faiLocation => {
+          uri => "$chromosome_fasta_url.fai",
+          locationType => "UriLocation"
+        },
+        gziLocation => {
+          uri => "$chromosome_fasta_url.gzi",
+          locationType => "UriLocation"
+        },
+      }
+    };
+    push @{$jbrowse2_config{tracks}}, \%track_conf;
+    return;
+  }
+
   if (lc $row->{data_file_type} eq 'bed') {
     $track_conf{type} = 'FeatureTrack';
     $track_conf{adapter} = {
@@ -196,7 +232,6 @@ sub maybe_add_jbrowse2_track
     push @{$jbrowse2_config{tracks}}, \%track_conf;
     return;
   }
-
 }
 
 my $track_json = decode_json($track_json_text);
