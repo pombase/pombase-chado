@@ -76,6 +76,9 @@ my %jbrowse2_config = (
           locationType => "UriLocation"
         }
       },
+      formatDetails => {
+        feature => "jexl:{ GenePage: '<a href=\"/gene/'+feature.id+'\">'+(feature.name || feature.id)+'</a>'}",
+      },
       category => [
         "Genes"
       ],
@@ -96,6 +99,9 @@ my %jbrowse2_config = (
           uri => "Schizosaccharomyces_pombe_all_chromosomes_reverse_strand.gff3",
           locationType => "UriLocation"
         }
+      },
+      formatDetails => {
+        feature => "jexl:{ GenePage: '<a href=\"/gene/'+feature.id+'\">'+(feature.name || feature.id)+'</a>'}",
       },
       category => [
         "Genes"
