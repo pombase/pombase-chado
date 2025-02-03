@@ -59,6 +59,12 @@ my %jbrowse2_config = (
       }
     }
   ],
+  plugins => [
+    {
+      name => "PomBasePlugin",
+      umdLoc => { uri => "PomBasePlugin.js" }
+    }
+  ],
   configuration => {},
   connections => [],
   defaultSession => {
@@ -86,7 +92,12 @@ my %jbrowse2_config = (
         $assembly_name,
       ],
       renderer => {
-        type => "SvgFeatureRenderer"
+        type => "SvgFeatureRenderer",
+        color1 => "jexl:featureColor(feature)",
+        height => "jexl:featureHeight(feature)",
+        labels => {
+          fontSize => "jexl:featureLabelFontSize(feature)",
+        },
       }
     },
     {
@@ -110,7 +121,12 @@ my %jbrowse2_config = (
         $assembly_name,
       ],
       renderer => {
-        type => "SvgFeatureRenderer"
+        type => "SvgFeatureRenderer",
+        color1 => "jexl:featureColor(feature)",
+        height => "jexl:featureHeight(feature)",
+        labels => {
+          fontSize => "jexl:featureLabelFontSize(feature)",
+        },
       }
     },
   ],
