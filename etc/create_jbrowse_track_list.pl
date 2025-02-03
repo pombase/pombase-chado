@@ -91,14 +91,20 @@ my %jbrowse2_config = (
       assemblyNames => [
         $assembly_name,
       ],
-      renderer => {
-        type => "SvgFeatureRenderer",
-        color1 => "jexl:featureColor(feature)",
-        height => "jexl:featureHeight(feature)",
-        labels => {
-          fontSize => "jexl:featureLabelFontSize(feature)",
+      displays => [
+        {
+          type => "LinearBasicDisplay",
+          displayId => "Schizosaccharomyces_pombe_all_chromosomes_forward_strand-LinearBasicDisplay",
+          renderer => {
+            type => "SvgFeatureRenderer",
+            color1 => "jexl:featureColor(feature)",
+            height => "jexl:featureHeight(feature)",
+            labels => {
+              fontSize => "jexl:featureLabelFontSize(feature)",
+            },
+          }
         },
-      }
+      ]
     },
     {
       type => "FeatureTrack",
@@ -120,14 +126,20 @@ my %jbrowse2_config = (
       assemblyNames => [
         $assembly_name,
       ],
-      renderer => {
-        type => "SvgFeatureRenderer",
-        color1 => "jexl:featureColor(feature)",
-        height => "jexl:featureHeight(feature)",
-        labels => {
-          fontSize => "jexl:featureLabelFontSize(feature)",
+      displays => [
+        {
+          type => "LinearBasicDisplay",
+          displayId => "Schizosaccharomyces_pombe_all_chromosomes_reverse_strand-LinearBasicDisplay",
+          renderer => {
+            type => "SvgFeatureRenderer",
+            color1 => "jexl:featureColor(feature)",
+            height => "jexl:featureHeight(feature)",
+            labels => {
+              fontSize => "jexl:featureLabelFontSize(feature)",
+            },
+          }
         },
-      }
+      ],
     },
   ],
 );
