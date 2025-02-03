@@ -30,6 +30,7 @@ cp -r genome_changelog/results/pombase_tables data_files
  ln -sf pombase-logo-tiny.png logo-tiny.png)
 
 cp pombase-website/etc/setup_jbrowse2_in_container.sh $container_dir/container_scripts/
+cp pombase-website/etc/PomBasePlugin.js $container_dir/
 
 rsync -aL --delete-after --exclude '*~' $SCRIPT_PATH/docker-conf/ conf/
 
