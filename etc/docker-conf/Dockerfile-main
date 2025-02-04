@@ -99,7 +99,8 @@ RUN if [ $database_name = 'pombase' ]; \
     then \
     (cd /pombase/jbrowse2; \
      ln -s /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_*_strand.gff3 .; \
-     jbrowse text-index --exclude=CDS,five_prime_UTR,intron,lncRNA,mRNA,pseudogenic_transcript,rRNA,snRNA,sncRNA,snoRNA,tRNA,three_prime_UTR); \
+     jbrowse text-index --tracks=Schizosaccharomyces_pombe_all_chromosomes_forward_strand,Schizosaccharomyces_pombe_all_chromosomes_reverse_strand \
+         --exclude=CDS,five_prime_UTR,intron,lncRNA,mRNA,pseudogenic_transcript,rRNA,snRNA,sncRNA,snoRNA,tRNA,three_prime_UTR); \
     fi
 
 RUN (cd pombase-website; \
