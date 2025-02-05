@@ -98,10 +98,13 @@ COPY --chown=pombase:pombase PomBasePlugin.js /pombase/jbrowse2/
 RUN if [ $database_name = 'pombase' ]; \
     then \
     (cd /pombase/jbrowse2; \
-     ln -s /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_*_strand.gff3 .; \
-     jbrowse text-index --tracks=Schizosaccharomyces_pombe_all_chromosomes_forward_strand,Schizosaccharomyces_pombe_all_chromosomes_reverse_strand \
-         --exclude=CDS,five_prime_UTR,intron,lncRNA,mRNA,pseudogenic_transcript,rRNA,snRNA,sncRNA,snoRNA,tRNA,three_prime_UTR); \
+     ln -s /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_*_strand.gff3 .); \
     fi
+
+# Index temporarily moved to: https://www.pombase.org/internal_datasets/jbrowse2_trix/
+# See: https://github.com/GMOD/jbrowse-components/issues/4814
+#     jbrowse text-index --tracks=Schizosaccharomyces_pombe_all_chromosomes_forward_strand,Schizosaccharomyces_pombe_all_chromosomes_reverse_strand \
+#         --exclude=CDS,five_prime_UTR,intron,lncRNA,mRNA,pseudogenic_transcript,rRNA,snRNA,sncRNA,snoRNA,tRNA,three_prime_UTR
 
 RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json \

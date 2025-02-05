@@ -70,6 +70,27 @@ my %jbrowse2_config = (
   defaultSession => {
     name => "New Session"
   },
+  aggregateTextSearchAdapters => [
+    {
+      type => "TrixTextSearchAdapter",
+      textSearchAdapterId => "pombe_v1-index",
+      ixFilePath => {
+        uri => "$internal_datasets_url/jbrowse2_trix/pombe_v1.ix",
+        locationType => "UriLocation"
+      },
+      ixxFilePath => {
+        uri => "$internal_datasets_url/jbrowse2_trix/pombe_v1.ixx",
+        locationType => "UriLocation"
+      },
+      metaFilePath => {
+        uri => "$internal_datasets_url/jbrowse2_trix/pombe_v1_meta.json",
+        locationType => "UriLocation"
+      },
+      assemblyNames => [
+        "pombe_v1"
+      ]
+    }
+  ],
   tracks => [
     {
       type => "FeatureTrack",
