@@ -34,6 +34,10 @@ my @small_track_list_json = ();
 my $internal_datasets_url = "https://www.pombase.org/internal_datasets";
 my $chromosome_fasta_url = "$internal_datasets_url/bgzip_chromosomes/Schizosaccharomyces_pombe_all_chromosomes.fa.gz";
 
+my %feature_format_details = (
+  feature => "jexl:{ gene_page: '<a href=\"/gene/'+feature.id+'\">'+(feature.name || feature.id)+'</a>',  id: '<a href=\"/gene/'+feature.id+'\">'+feature.id+'</a>'}"
+);
+
 my %jbrowse2_config = (
   assemblies => [
     {
@@ -103,9 +107,7 @@ my %jbrowse2_config = (
           locationType => "UriLocation"
         }
       },
-      formatDetails => {
-        feature => "jexl:{ GenePage: '<a href=\"/gene/'+feature.id+'\">'+(feature.name || feature.id)+'</a>'}",
-      },
+      formatDetails => \%feature_format_details,
       category => [
         "Genes"
       ],
@@ -138,9 +140,7 @@ my %jbrowse2_config = (
           locationType => "UriLocation"
         }
       },
-      formatDetails => {
-        feature => "jexl:{ GenePage: '<a href=\"/gene/'+feature.id+'\">'+(feature.name || feature.id)+'</a>'}",
-      },
+      formatDetails => \%feature_format_details,
       category => [
         "Genes"
       ],
