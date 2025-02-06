@@ -31,6 +31,7 @@ RUN mkdir -p /var/www/html/api/v1/dataset/latest/; ln -s /pombase/jbrowse /var/w
 RUN mkdir /pombase/misc
 
 COPY --chown=pombase:pombase curation/data_files /pombase/curation-data-files
+COPY --chown=pombase:pombase PB_references.txt /pombase/
 
 COPY --chown=pombase:pombase web-json /var/www/html/web-json
 COPY --chown=pombase:pombase misc/sitemap.txt /var/www/html/
@@ -108,7 +109,7 @@ RUN if [ $database_name = 'pombase' ]; \
 
 RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json \
-    /pombase/data_files)
+    /pombase/data_files /pombase/PB_references.txt)
 
 RUN cd ./solr-8.11.2/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \
