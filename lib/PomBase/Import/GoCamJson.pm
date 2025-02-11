@@ -107,15 +107,28 @@ sub store_process_terms {
     return;
   }
 
-  my @title_terms =
-    map {
-      $self->find_cvterm_by_term_id($_);
-    } @$title_termids;
+  my @title_terms = ();
+
+  for my $title_termid (@$title_termids) {
+    my $title_term = $self->find_cvterm_by_term_id($title_termid);
+    if (defined $title_term) {
+      push @title_terms, $title_term;
+    } else {
+      warn "can't find term $title_termid in title of GO-CAM: ",
+          $gocam_feature->uniquename(), "\n";
+    }
+  }
 
  PROCESS_TERM:
   for my $process_termid (@$process_terms) {
     my $process_term =
       $self->find_cvterm_by_term_id($process_termid);
+
+    if (!defined $process_term) {
+      warn "can't find process term for $process_termid in model: ",
+        $gocam_feature->uniquename(), "\n";
+      next PROCESS_TERM;
+    }
 
     my $is_title_term_child = 0;
 
