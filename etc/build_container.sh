@@ -42,6 +42,7 @@ rsync -acvPHS --delete-after $dump_dir/fasta/bgzip_chromosomes $container_dir/
 
 cp $dump_dir/api_maps.sqlite3.zst $container_dir/
 cp $dump_dir/pombe-embl/supporting_files/PB_references.txt $container_dir/
+cp $dump_dir/pombe-embl/supporting_files/*.svg $container_dir/
 
 mkdir -p $container_dir/feature_sequences
 rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $container_dir/feature_sequences/peptide.fa.gz

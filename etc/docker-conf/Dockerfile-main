@@ -95,6 +95,7 @@ RUN (cd /pombase; ./setup_jbrowse2_in_container.sh; \
 
 COPY --chown=pombase:pombase jbrowse2_config.json /pombase/jbrowse2/config.json
 COPY --chown=pombase:pombase PomBasePlugin.js /pombase/jbrowse2/
+COPY --chown=pombase:pombase *.svg /var/www/html/assets/
 
 RUN if [ $database_name = 'pombase' ]; \
     then \
