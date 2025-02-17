@@ -19,7 +19,9 @@ df = pd.read_csv(file)
 
 df['date'] = pd.to_datetime(df['date']).map(lambda dt: dt.strftime('%Y-%m'))
 
-fig = plt.figure()
+default_dpi=600
+figsize=(8,5)
+fig, ax = plt.subplots(dpi=default_dpi, figsize=figsize)
 
 ax = df.plot(kind='line', x='date', y=type + 's')
 
