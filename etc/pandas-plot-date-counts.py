@@ -26,6 +26,7 @@ fig, ax = plt.subplots(dpi=default_dpi, figsize=figsize)
 ax = df.plot(ax=ax, kind='line', x='date', y=type + 's')
 
 plt.subplots_adjust(bottom=0.18)
+plt.grid(color='0.85')
 
 ax.tick_params(axis='x', labelrotation = 45)
 
