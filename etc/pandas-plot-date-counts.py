@@ -23,7 +23,7 @@ default_dpi=600
 figsize=(8,5)
 fig, ax = plt.subplots(dpi=default_dpi, figsize=figsize)
 
-ax = df.plot(kind='line', x='date', y=type + 's')
+ax = df.plot(ax=ax, kind='line', x='date', y=type + 's')
 
 plt.subplots_adjust(bottom=0.18)
 
