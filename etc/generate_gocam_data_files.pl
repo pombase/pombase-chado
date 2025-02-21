@@ -129,13 +129,6 @@ for my $gocam_id (keys %all_details) {
   my $content = $response->content();
   my $decoded_model = decode_json $content;
 
-  open my $model_out, '>', "$model_directory/gomodel:$gocam_id.json"
-    or die "can't open $model_directory/$gocam_id.json for writing: $?\n";
-
-  print $model_out $json_encoder->encode($decoded_model);
-
-  close $model_out or die;
-
   my %model_annotations = ();
 
   map {
@@ -186,6 +179,13 @@ for my $gocam_id (keys %all_details) {
   $all_details{$gocam_id}->{genes} = $genes;
   $all_details{$gocam_id}->{modified_gene_pro_terms} = $modified_gene_pro_terms;
   $all_details{$gocam_id}->{contributors} = [sort @contributors];
+
+  open my $model_out, '>', "$model_directory/gomodel:$gocam_id.json"
+    or die "can't open $model_directory/$gocam_id.json for writing: $?\n";
+
+  print $model_out $json_encoder->encode($decoded_model);
+
+  close $model_out or die;
 }
 
 for my $gocam_id (@failed_ids) {
