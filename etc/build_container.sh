@@ -22,6 +22,7 @@ cd $container_dir
 (cd genome_changelog; git pull)
 rm -rf data_files
 cp -r genome_changelog/results/pombase_tables data_files
+cp $dump_dir/misc/gocam_model_holes_table.tsv data_files
 
 (cd pombase-website; cp src/pombase/index.html src)
 (cd pombase-website/src/assets
