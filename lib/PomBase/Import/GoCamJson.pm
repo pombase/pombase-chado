@@ -158,6 +158,31 @@ sub store_process_terms {
   }
 }
 
+sub store_complex_terms {
+  my $self = shift;
+  my $gocam_feature = shift;
+  my $complex_terms = shift;
+
+  my $chado = $self->chado();
+
+ COMPLEX_TERM:
+  for my $complex_termid (@$complex_terms) {
+    next unless $complex_termid =~ /^GO:/;
+
+    my $complex_term =
+      $self->find_cvterm_by_term_id($complex_termid);
+
+    if (!defined $complex_term) {
+      warn "can't find complex term for $complex_termid in model: ",
+        $gocam_feature->uniquename(), "\n";
+      next COMPLEX_TERM;
+    }
+
+    $self->create_feature_cvterm($gocam_feature, $complex_term,
+                                 $self->null_pub(), 0);
+  }
+}
+
 sub store_model_genes {
   my $self = shift;
   my $gocam_feature = shift;
@@ -234,6 +259,7 @@ sub load {
     $self->store_model_genes($gocam_feature, $details->{genes});
     $self->store_modified_genes($gocam_feature, $details->{modified_gene_pro_terms});
     $self->store_process_terms($gocam_feature, $details->{title_terms}, $details->{process_terms});
+    $self->store_complex_terms($gocam_feature, $details->{complex_terms});
 
     if (my $gocam_date = $details->{date}) {
       $self->store_featureprop($gocam_feature, 'gocam_date', $gocam_date);
