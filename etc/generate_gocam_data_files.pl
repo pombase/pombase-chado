@@ -73,6 +73,7 @@ sub get_process_terms_and_genes
   my $model_title = shift;
 
   my %process_terms = ();
+  my %complex_terms = ();
   my %title_terms = ();
   my %genes = ();
   my %modified_gene_pro_terms = ();
@@ -93,6 +94,12 @@ sub get_process_terms_and_genes
     } @{$individual->{'root-type'} // []}) {
       $process_terms{$type_id} = 1;
     }
+
+    if (grep {
+      $_->{id} eq 'GO:0032991'
+    } @{$individual->{'root-type'} // []}) {
+      $complex_terms{$type_id} = 1;
+    }
   }
 
   if ($model_title) {
@@ -102,7 +109,7 @@ sub get_process_terms_and_genes
     }
   }
 
-  return ([sort keys %title_terms], [sort keys %process_terms],
+  return ([sort keys %title_terms], [sort keys %process_terms], [sort keys %complex_terms],
           [sort keys %genes], [sort keys %modified_gene_pro_terms]);
 }
 
@@ -164,7 +171,8 @@ for my $gocam_id (keys %all_details) {
     $all_details{$gocam_id}->{title} = $model_title;
   }
 
-  my ($title_terms, $process_terms, $genes, $modified_gene_pro_terms) =
+  my ($title_terms, $process_terms, $complex_terms, $genes,
+      $modified_gene_pro_terms) =
     get_process_terms_and_genes($decoded_model, $model_title);
 
   if (!@$genes) {
@@ -177,6 +185,7 @@ for my $gocam_id (keys %all_details) {
 
   $all_details{$gocam_id}->{title_terms} = $title_terms;
   $all_details{$gocam_id}->{process_terms} = $process_terms;
+  $all_details{$gocam_id}->{complex_terms} = $complex_terms;
   $all_details{$gocam_id}->{genes} = $genes;
   $all_details{$gocam_id}->{modified_gene_pro_terms} = $modified_gene_pro_terms;
   $all_details{$gocam_id}->{contributors} = [sort @contributors];
