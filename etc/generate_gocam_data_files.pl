@@ -160,6 +160,7 @@ for my $gocam_id (keys %all_details) {
     $model_title =~ s/[\t ]+/ /g;
     $model_title =~ s/^\s+//;
     $model_title =~ s/\s+$//;
+    $model_title =~ s/\(\s*(GO:\d\d\d\d+)\s*\)/($1)/g;
     $all_details{$gocam_id}->{title} = $model_title;
   }
 
