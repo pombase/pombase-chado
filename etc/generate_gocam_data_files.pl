@@ -95,7 +95,8 @@ sub get_process_terms_and_genes
       $process_terms{$type_id} = 1;
     }
 
-    if (grep {
+    if ($type_id =~ /^GO:/ &&
+        grep {
       $_->{id} eq 'GO:0032991'
     } @{$individual->{'root-type'} // []}) {
       $complex_terms{$type_id} = 1;
