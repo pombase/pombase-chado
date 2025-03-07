@@ -40,87 +40,17 @@ if (!$contents || length $contents == 0) {
 
 my $metadata_result = decode_json $contents;
 
-my %all_details = ();
-
 my $pombe_data = $metadata_result->{"http://www.pombase.org"};
 
 if (!$pombe_data) {
   die "no pombe data found\n";
 }
 
-for my $id (@{$pombe_data}) {
-  $all_details{$id} = {};
-}
-
-sub type_id_of_individual
-{
-  my $individual = shift;
-
-  my $type_id;
-
-  map {
-    if ($_->{type} eq 'class') {
-      $type_id = $_->{id};
-    }
-  } @{$individual->{type} // []};
-
-  return $type_id;
-}
-
-sub get_process_terms_and_genes
-{
-  my $model_details = shift;
-  my $model_title = shift;
-
-  my %process_terms = ();
-  my %complex_terms = ();
-  my %title_terms = ();
-  my %genes = ();
-  my %modified_gene_pro_terms = ();
-
-  for my $individual (@{$model_details->{individuals} // []}) {
-    my $type_id = type_id_of_individual($individual);
-
-    if ($type_id =~ /^(PR:\d\d\d\d\d+)$/) {
-      $modified_gene_pro_terms{$1} = 1;
-    }
-
-    if ($type_id =~ /^PomBase:(.*)$/) {
-      $genes{$1} = 1;
-    }
-
-    if (grep {
-      $_->{id} eq 'GO:0008150'
-    } @{$individual->{'root-type'} // []}) {
-      $process_terms{$type_id} = 1;
-    }
-
-    if ($type_id =~ /^GO:/ &&
-        grep {
-      $_->{id} eq 'GO:0032991'
-    } @{$individual->{'root-type'} // []}) {
-      $complex_terms{$type_id} = 1;
-    }
-  }
-
-  if ($model_title) {
-    for my $go_termid ($model_title =~ /\(\s*(GO:\d+)\s*\)/g) {
-      $process_terms{$go_termid} = 1;
-      $title_terms{$go_termid} = 1;
-    }
-  }
-
-  return ([sort keys %title_terms], [sort keys %process_terms], [sort keys %complex_terms],
-          [sort keys %genes], [sort keys %modified_gene_pro_terms]);
-}
-
-my $term_count = 0;
-
 my @failed_ids = ();
 
 my $json_encoder = JSON->new()->utf8()->canonical(1);
 
-for my $gocam_id (keys %all_details) {
+for my $gocam_id (@{$pombe_data}) {
   print "requesting details of $gocam_id from API\n";
 
   $request = HTTP::Request->new(GET => "https://live-go-cam.geneontology.io/product/json/low-level/$gocam_id.json");
@@ -137,59 +67,15 @@ for my $gocam_id (keys %all_details) {
   my $content = $response->content();
   my $decoded_model = decode_json $content;
 
-  my %model_annotations = ();
-
   map {
-    push @{$model_annotations{$_->{key}}}, $_->{value};
+    if ($_->{key} eq 'title' &&
+        $_->{value} =~ /\(Dmel\)/) {
+      # temporary hack, see:
+      #   https://github.com/geneontology/minerva/issues/503
+      warn "Skipping Dmel model: ", $gocam_id, "\n";
+      next;
+    }
   } @{$decoded_model->{annotations} // []};
-
-  my $model_title = undef;
-
-  if (exists $model_annotations{title}) {
-    $model_title = $model_annotations{title}->[0];
-  }
-
-  if (exists $model_annotations{date}) {
-    my $model_date = $model_annotations{date}->[0];
-    $all_details{$gocam_id}->{date} = $model_date;
-  }
-
-  my @contributors = ();
-
-  if (exists $model_annotations{contributor}) {
-    @contributors = map {
-      s|.*orcid.org/||;
-      $_
-    } @{$model_annotations{contributor}};
-  }
-
-  if ($model_title) {
-    $model_title =~ s/\n/ /g;
-    $model_title =~ s/[\t ]+/ /g;
-    $model_title =~ s/^\s+//;
-    $model_title =~ s/\s+$//;
-    $model_title =~ s/\(\s*(GO:\d\d\d\d+)\s*\)/($1)/g;
-    $all_details{$gocam_id}->{title} = $model_title;
-  }
-
-  my ($title_terms, $process_terms, $complex_terms, $genes,
-      $modified_gene_pro_terms) =
-    get_process_terms_and_genes($decoded_model, $model_title);
-
-  if (!@$genes) {
-    print "$gocam_id has no pombe genes, skipping\n";
-    push @failed_ids, $gocam_id;
-    next;
-  }
-
-  $term_count += scalar(@$process_terms);
-
-  $all_details{$gocam_id}->{title_terms} = $title_terms;
-  $all_details{$gocam_id}->{process_terms} = $process_terms;
-  $all_details{$gocam_id}->{complex_terms} = $complex_terms;
-  $all_details{$gocam_id}->{genes} = $genes;
-  $all_details{$gocam_id}->{modified_gene_pro_terms} = $modified_gene_pro_terms;
-  $all_details{$gocam_id}->{contributors} = [sort @contributors];
 
   open my $model_out, '>', "$model_directory/gomodel:$gocam_id.json"
     or die "can't open $model_directory/$gocam_id.json for writing: $?\n";
@@ -199,24 +85,31 @@ for my $gocam_id (keys %all_details) {
   close $model_out or die;
 }
 
-for my $gocam_id (@failed_ids) {
-  delete $all_details{$gocam_id};
-}
+open (my $gocam_tool_fh, '-|:encoding(UTF-8)', "/var/pomcur/bin/pombase-gocam-tool make-chado-data $model_directory/*.json")
+  or die "couldn't open pipe to pombase-gocam-tool: $!";
 
-if ($term_count < 10) {
-  die "internal error: missing many process terms - not writing\n";
-}
+my $chado_data_string = do {
+  local $/ = undef;
+  <$gocam_tool_fh>;
+};
 
-
-if (scalar (keys %all_details) < 10) {
-  die "internal error: missing many models - not writing\n";
-}
+my $chado_data = decode_json $chado_data_string;
 
 open my $gene_output_file, '>', $gene_mapping_filename or die;
 open my $term_output_file, '>', $term_mapping_filename or die;
 
-for my $gocam_id (sort keys %all_details) {
-  my $model_details = $all_details{$gocam_id};
+for my $gocam_id (sort keys %$chado_data) {
+  my $model_details = $chado_data->{$gocam_id};
+
+  if ($model_details->{title}) {
+    # could have been done in pombase-gocam-tool, but much
+    # easier in Perl
+    $model_details->{title} =~ s/\n/ /g;
+    $model_details->{title} =~ s/[\t ]+/ /g;
+    $model_details->{title} =~ s/^\s+//;
+    $model_details->{title} =~ s/\s+$//;
+    $model_details->{title} =~ s/\(\s*(GO:\d\d\d\d+)\s*\)/($1)/g;
+  }
 
   my $gocam = $gocam_id;
 
@@ -237,5 +130,5 @@ close $gene_output_file;
 close $term_output_file;
 
 open my $go_cam_json_file, '>', $go_cam_json_filename or die;
-print $go_cam_json_file $json_encoder->encode(\%all_details), "\n";
+print $go_cam_json_file $json_encoder->encode($chado_data), "\n";
 close $go_cam_json_file;
