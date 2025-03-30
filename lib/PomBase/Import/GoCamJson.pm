@@ -191,11 +191,13 @@ sub store_model_genes {
   my $chado = $self->chado();
 
   for my $gene_uniquename (@$genes) {
-    my $gene_feature =
+    my $feature =
       $self->find_chado_feature($gene_uniquename, 1, 0,
-                                $self->organism(), ['gene']);
+                                $self->organism(), ['gene', 'mRNA']);
 
-    $self->store_feature_rel($gene_feature, $gocam_feature, 'part_of');
+    if ($feature->type()->name() eq 'gene') {
+      $self->store_feature_rel($feature, $gocam_feature, 'part_of');
+    }
   }
 }
 
