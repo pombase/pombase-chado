@@ -12,6 +12,9 @@ use Compress::Zlib;
 use Data::Dumper;
 use JSON qw|decode_json encode_json|;
 
+use utf8;
+use open ':std', ':encoding(UTF-8)';
+
 my $gene_mapping_filename = shift;
 my $term_mapping_filename = shift;
 my $go_cam_json_filename = shift;
