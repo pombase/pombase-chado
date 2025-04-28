@@ -664,7 +664,12 @@ sub process_one_annotation {
         ();
       } else {
         grep {
-          defined($_)
+          if (defined($_)) {
+            1;
+          } else {
+            warn "ignoring extension: $rel_name($detail) on $feature_uniquename $extension_copy\n";
+            0;
+          }
         }
         map {
           $self->_process_identifier($feature_uniquename, $rel_name, $cv_name, $_);
@@ -677,7 +682,15 @@ sub process_one_annotation {
 
   push @extensions,
     grep {
-      defined($_)
+      if (defined($_)) {
+        1;
+      } else {
+        warn "ignoring extension: ",
+          $_->{rel_name} . '(' . $_->{rangeValue} . ")",
+          " on $feature_uniquename from ",
+          (join ",", @$extensions), "\n";
+        0;
+      }
     }
     map {
       my $rel_name = $_->{relation};
