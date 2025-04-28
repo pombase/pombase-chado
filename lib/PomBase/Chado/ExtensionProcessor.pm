@@ -540,9 +540,14 @@ sub _process_identifier {
   my $self = shift;
   my $feature_uniquename = shift;
   my $rel_name = shift;
+  my $cv_name = shift;
   my $arg = shift;
 
   my $identifier = trim($arg);
+
+  if ($cv_name eq 'biological_process' && $identifier =~ /^UniProtKB:/) {
+    return undef;
+  }
 
   my $nested_extension_bit = undef;
   if ($identifier =~ /(.+?)(\^.*)/) {
@@ -646,6 +651,8 @@ sub process_one_annotation {
 
   my @extension_qualifiers = sort split /,/, $extension_copy;
 
+  my $cv_name = $featurecvterm->cvterm()->cv()->name();
+
   my @extensions = map {
     my $bit = _unreplace_commas($_);
     if ($bit =~ /^\s*(\w+)\((.+)\)\s*$/) {
@@ -656,8 +663,11 @@ sub process_one_annotation {
         $self->_store_residue($featurecvterm, $detail);
         ();
       } else {
+        grep {
+          defined($_)
+        }
         map {
-          $self->_process_identifier($feature_uniquename, $rel_name, $_);
+          $self->_process_identifier($feature_uniquename, $rel_name, $cv_name, $_);
         } split /\|/, $detail;
       }
     } else {
@@ -666,11 +676,14 @@ sub process_one_annotation {
   } @extension_qualifiers;
 
   push @extensions,
+    grep {
+      defined($_)
+    }
     map {
       my $rel_name = $_->{relation};
       my $value = $_->{rangeValue};
 
-      $self->_process_identifier($feature_uniquename, $rel_name, $value);
+      $self->_process_identifier($feature_uniquename, $rel_name, $cv_name, $value);
     } @$extensions;
 
   if (@extensions) {
