@@ -597,17 +597,12 @@ sub _process_identifier {
           } else {
           my $organism = $self->find_organism_by_taxonid($self->config()->{taxonid});
           my $ref_feature = undef;
+
           try {
             # try gene name/uniquename with no prefix
             $ref_feature =
               $self->find_chado_feature($identifier, 1, 1, $organism,
-                                        ['gene', 'pseudogene']);
-          };
-
-          try {
-            # maybe it's a transcript?  eg. "SPAC17G6.02c.2"
-            $ref_feature =
-              $self->find_chado_feature($identifier, 0, 0, $organism, ['mRNA']);
+                                        ['gene', 'pseudogene', 'mRNA']);
           };
 
           if ($ref_feature) {
