@@ -667,7 +667,7 @@ sub process_one_annotation {
           if (defined($_)) {
             1;
           } else {
-            warn "ignoring extension: $rel_name($detail) on $feature_uniquename $extension_copy\n";
+            warn "line $.: ignoring extension: $rel_name($detail) on $feature_uniquename $extension_copy\n";
             0;
           }
         }
@@ -685,7 +685,7 @@ sub process_one_annotation {
       if (defined($_)) {
         1;
       } else {
-        warn "ignoring extension: ",
+        warn "line $.: ignoring extension: ",
           $_->{rel_name} . '(' . $_->{rangeValue} . ")",
           " on $feature_uniquename from ",
           (join ",", @$extensions), "\n";
