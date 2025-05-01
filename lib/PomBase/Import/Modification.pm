@@ -166,11 +166,10 @@ sub load {
     next unless defined $feature;
 
     if (defined $gene_name && defined $feature->name() &&
-        $feature->name() ne $gene_name) {
+        ($feature->name() ne $gene_name || $feature->name() ne "$gene_name.1")) {
       warn qq(gene name "$gene_name" from the input file doesn't match ) .
         qq(the gene name for $systematic_id from Chado ") . $feature->name() .
         qq("\n);
-      next;
     }
     my $pub = $self->find_or_create_pub($pubmedid);
 
