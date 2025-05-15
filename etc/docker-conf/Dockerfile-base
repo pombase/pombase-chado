@@ -1,7 +1,7 @@
 # -*- dockerfile -*-
 # recreate with:
 #   docker pull bitnami/minideb:bookworm
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v83 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v84 .
 # in pombase-chado
 FROM bitnami/minideb:bookworm
 
