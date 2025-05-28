@@ -72,7 +72,122 @@ my %jbrowse2_config = (
   configuration => {},
   connections => [],
   defaultSession => {
-    name => "New Session"
+    "drawerPosition" => "right",
+    "drawerWidth" => 384,
+    "widgets" => {
+      "GridBookmark" => {
+        "id" => "GridBookmark",
+        "type" => "GridBookmarkWidget"
+      },
+      "hierarchicalTrackSelector" => {
+        "id" => "hierarchicalTrackSelector",
+        "type" => "HierarchicalTrackSelectorWidget",
+        "view" => "aY9idd8f2C2kSUvXuKVup",
+        "faceted" => {
+          "filterText" => "",
+          "showSparse" => $JSON::false,
+          "showFilters" => $JSON::true,
+          "showOptions" => $JSON::false,
+          "panelWidth" => 400
+        }
+      }
+    },
+    "activeWidgets" => {
+      "hierarchicalTrackSelector" => "hierarchicalTrackSelector"
+    },
+    "minimized" => $JSON::false,
+    "id" => "JWpCwnCeYbRXMEjEe5pU7",
+    "name" => "New Session 5/28/2025, 8:10:23 PM",
+    "margin" => 0,
+    "views" => [
+      {
+        "id" => "aY9idd8f2C2kSUvXuKVup",
+        "minimized" => $JSON::false,
+        "type" => "LinearGenomeView",
+        "offsetPx" => 52,
+        "bpPerPx" => 93.86789039167218,
+        "displayedRegions" => [
+          {
+            "reversed" => $JSON::false,
+            "refName" => "I",
+            "start" => 0,
+            "end" => 5579133,
+            "assemblyName" => "pombe_v1"
+          }
+        ],
+        "tracks" => [
+          {
+            "id" => "xMs68Mq59h7_nLGenDzwh",
+            "type" => "ReferenceSequenceTrack",
+            "configuration" => "pombe_v1-ReferenceSequenceTrack",
+            "minimized" => $JSON::false,
+            "pinned" => $JSON::false,
+            "displays" => [
+              {
+                "id" => "782oEcUAfTCYkfDWJvlsr",
+                "type" => "LinearReferenceSequenceDisplay",
+                "heightPreConfig" => 50,
+                "configuration" => "pombe_v1-ReferenceSequenceTrack-LinearReferenceSequenceDisplay",
+                "showForward" => $JSON::true,
+                "showReverse" => $JSON::true,
+                "showTranslation" => $JSON::true
+              }
+            ]
+          },
+          {
+            "id" => "W6JWqFYv06JSil2RogXwn",
+            "type" => "FeatureTrack",
+            "configuration" => "Schizosaccharomyces_pombe_all_chromosomes_forward_strand",
+            "minimized" => $JSON::false,
+            "pinned" => $JSON::false,
+            "displays" => [
+              {
+                "id" => "MuOc9eKVHC7EMUoOMdJ3W",
+                "type" => "LinearBasicDisplay",
+                "heightPreConfig" => 224,
+                "configuration" => "Schizosaccharomyces_pombe_all_chromosomes_forward_strand-LinearBasicDisplay"
+              }
+            ]
+          },
+          {
+            "id" => "2e7HCYG0ZE2Bx7rSASPv9",
+            "type" => "FeatureTrack",
+            "configuration" => "Schizosaccharomyces_pombe_all_chromosomes_reverse_strand",
+            "minimized" => $JSON::false,
+            "pinned" => $JSON::false,
+            "displays" => [
+              {
+                "id" => "KIl1sI_k-47WCVHEgw7eU",
+                "type" => "LinearBasicDisplay",
+                "heightPreConfig" => 237,
+                "configuration" => "Schizosaccharomyces_pombe_all_chromosomes_reverse_strand-LinearBasicDisplay"
+              }
+            ]
+          }
+        ],
+        "hideHeader" => $JSON::false,
+        "hideHeaderOverview" => $JSON::false,
+        "hideNoTracksActive" => $JSON::false,
+        "trackSelectorType" => "hierarchical",
+        "showCenterLine" => $JSON::false,
+        "showCytobandsSetting" => $JSON::true,
+        "trackLabels" => "",
+        "showGridlines" => $JSON::true,
+        "highlight" => [],
+        "colorByCDS" => $JSON::false,
+        "showTrackOutlines" => $JSON::true,
+        "bookmarkHighlightsVisible" => $JSON::true,
+        "bookmarkLabelsVisible" => $JSON::true
+      }
+    ],
+    "stickyViewHeaders" => $JSON::true,
+    "sessionTracks" => [],
+    "sessionAssemblies" => [],
+    "temporaryAssemblies" => [],
+    "connectionInstances" => [],
+    "sessionConnections" => [],
+    "focusedViewId" => "aY9idd8f2C2kSUvXuKVup",
+    "sessionPlugins" => []
   },
   aggregateTextSearchAdapters => [
     {
