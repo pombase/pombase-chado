@@ -159,8 +159,8 @@ sub load {
       next;
     }
 
-    if (@$columns_ref < 19) {
-      warn "needed 19 columns, got ", scalar(@$columns_ref),
+    if (@$columns_ref < 15) {
+      warn "needed 15 columns, got ", scalar(@$columns_ref),
         " in Monarch input file line $., ignoring\n";
       next;
     }
