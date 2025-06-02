@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 
-# driver for code that processes or fixes data in Chado, without needing
-# external files
+# driver for code that processes or fixes data in Chado
 
 use strict;
 use warnings;
@@ -141,6 +140,7 @@ my %process_modules = (
   'add-missing-allele-names' => 'PomBase::Chado::AddMissingAlleleNames',
   'fix-allele-names' => 'PomBase::Chado::FixAlleleNames',
   'infer-paralogs' => 'PomBase::Chado::InferParalogs',
+  'reciprocal-modifications' => 'PomBase::Chado::ReciprocalModifications',
 );
 
 my $process_module = $process_modules{$process_type};

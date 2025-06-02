@@ -47,15 +47,7 @@ use PomBase::Chado;
 requires 'chado';
 requires 'config';
 
-=head2 make_gaf_extension
-
- Usage   : my ($extension_text, $parent_term) = $self->make_gaf_extension($feature_cvterm);
- Function: If the FeatureCvterm has a Cvterm with an extension, return
-           the "column 16" extension text for the term and the parent
-           (GO) term, otherwise return an empty list.
-
-=cut
-sub make_gaf_extension {
+sub get_ext_parts {
   my $self = shift;
   my $feature_cvterm = shift;
 
@@ -123,7 +115,24 @@ sub make_gaf_extension {
              ||
            $a->{detail} cmp $b->{detail} } @parents;
 
-  my $extension_text = join ",", map { $_->{rel_type_name} . "(" . $_->{detail} . ")" } @parents;
+  return (\@parents, $isa_parent_term);
+}
+
+=head2 make_gaf_extension
+
+ Usage   : my ($extension_text, $parent_term) = $self->make_gaf_extension($feature_cvterm);
+ Function: If the FeatureCvterm has a Cvterm with an extension, return
+           the "column 16" extension text for the term and the parent
+           (GO) term, otherwise return an empty list.
+
+=cut
+sub make_gaf_extension {
+  my $self = shift;
+  my $feature_cvterm = shift;
+
+  my ($parents, $isa_parent_term) = $self->get_ext_parts($feature_cvterm);
+
+  my $extension_text = join ",", map { $_->{rel_type_name} . "(" . $_->{detail} . ")" } @$parents;
 
   return ($extension_text, $isa_parent_term);
 }
