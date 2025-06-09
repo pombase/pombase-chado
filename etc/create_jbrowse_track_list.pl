@@ -282,12 +282,10 @@ my %jbrowse2_config = (
 
 sub maybe_add_jbrowse2_track
 {
+  my $track_id = shift;
   my $row = shift;
 
   return unless defined $jbrowse2_config_filename;
-
-  my $track_id = $row->{pmed_id} . '-' .
-    ($row->{source_url} =~ s|.*/(.*?)\.\w+$|$1|r);
 
   my %track_conf = (
     name => $row->{label},
@@ -460,7 +458,10 @@ while (my $row = $csv->getline_hr ($fh)) {
 
   next if $row->{label} =~ /(Forward|Reverse) strand features|DNA sequence/;
 
-  maybe_add_jbrowse2_track($row, $assembly_name);
+  my $track_id = $row->{pmed_id} . '-' .
+    ($row->{source_url} =~ s|.*/(.*?)\.\w+$|$1|r);
+
+  maybe_add_jbrowse2_track($track_id, $row, $assembly_name);
 
   my $store_class = undef;
 
@@ -531,6 +532,7 @@ while (my $row = $csv->getline_hr ($fh)) {
 
     if ($pmed_id) {
       push @small_track_list_json, {
+        track_id => $track_id,
         pmed_id => $pmed_id,
         label => $row->{label},
         growth_phase_or_response => $row->{growth_phase_or_response},
