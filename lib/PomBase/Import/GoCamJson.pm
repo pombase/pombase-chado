@@ -187,6 +187,7 @@ sub store_model_genes {
   my $self = shift;
   my $gocam_feature = shift;
   my $genes = shift;
+  my $rel_name = shift;
 
   my $chado = $self->chado();
 
@@ -196,7 +197,7 @@ sub store_model_genes {
                                 $self->organism(), ['gene', 'mRNA']);
 
     if ($feature->type()->name() eq 'gene') {
-      $self->store_feature_rel($feature, $gocam_feature, 'part_of');
+      $self->store_feature_rel($feature, $gocam_feature, $rel_name);
     }
   }
 }
@@ -205,6 +206,7 @@ sub store_modified_genes {
   my $self = shift;
   my $gocam_feature = shift;
   my $modified_gene_pro_terms = shift;
+  my $rel_name = shift;
 
   my $chado = $self->chado();
 
@@ -230,7 +232,7 @@ sub store_modified_genes {
       $self->find_chado_feature($pro_term_gene_uniquename, 1, 0,
                                 $self->organism(), ['gene']);
 
-    $self->store_feature_rel($gene_feature, $gocam_feature, 'part_of');
+    $self->store_feature_rel($gene_feature, $gocam_feature, $rel_name);
   }
 }
 
@@ -258,8 +260,10 @@ sub load {
       $self->store_feature("$gocam_id", $title, [], 'gocam_model',
                            $organism);
 
-    $self->store_model_genes($gocam_feature, $details->{genes});
-    $self->store_modified_genes($gocam_feature, $details->{modified_gene_pro_terms});
+    $self->store_model_genes($gocam_feature, $details->{genes}, 'enables_gocam_activity');
+    $self->store_model_genes($gocam_feature, $details->{target_genes}, 'gocam_target_gene');
+    $self->store_modified_genes($gocam_feature, $details->{modified_gene_pro_terms}, 'enables_gocam_activity');
+    $self->store_modified_genes($gocam_feature, $details->{modified_target_gene_pro_terms}, 'gocam_target_gene');
     $self->store_process_terms($gocam_feature, $details->{title_terms}, $details->{process_terms});
     $self->store_complex_terms($gocam_feature, $details->{complex_terms});
 
