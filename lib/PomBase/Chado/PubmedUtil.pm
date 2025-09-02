@@ -336,7 +336,13 @@ sub parse_pubmed_xml
 
       if ($pubmed_data && $pubmed_data->{History} &&
             $pubmed_data->{History}->{PubMedPubDate}) {
-        for my $pubmed_pub_date (@{$pubmed_data->{History}->{PubMedPubDate}}) {
+        my $pubmed_pub_dates = $pubmed_data->{History}->{PubMedPubDate};
+
+        if (ref $pubmed_pub_dates ne 'ARRAY') {
+          $pubmed_pub_dates = [$pubmed_pub_dates];
+        }
+
+        for my $pubmed_pub_date (@{$pubmed_pub_dates}) {
           if ($pubmed_pub_date->{PubStatus} && $pubmed_pub_date->{PubStatus} eq 'entrez') {
             if (defined $pubmed_pub_date->{Year} && defined $pubmed_pub_date->{Month} &&
                   defined $pubmed_pub_date->{Day}) {
