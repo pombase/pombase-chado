@@ -97,7 +97,9 @@ sub _load_cvterms {
         $cvterm_name = $cvterm_conf;
       }
 
-      $cvterm_name =~ s/ /_/g;
+      if ($cv_name ne 'PomBase gene characterisation status') {
+        $cvterm_name =~ s/ /_/g;
+      }
 
       my $cvterm =
         $chado->resultset('Cv::Cvterm')
