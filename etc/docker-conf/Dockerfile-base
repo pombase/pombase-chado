@@ -1,7 +1,7 @@
 # -*- dockerfile -*-
 # recreate with:
 #   docker pull debian:bookworm
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v85 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v86 .
 # in pombase-chado
 FROM debian:bookworm
 
