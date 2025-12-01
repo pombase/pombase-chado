@@ -67,7 +67,11 @@ my %jbrowse2_config = (
     {
       name => "PomBasePlugin",
       umdLoc => { uri => "PomBasePlugin.js" }
-    }
+    },
+    {
+      name => "Protein3d",
+      url => "https://jbrowse.org/plugins/jbrowse-plugin-protein3d/dist/jbrowse-plugin-protein3d.umd.production.min.js"
+    },
   ],
   configuration => {},
   connections => [],
