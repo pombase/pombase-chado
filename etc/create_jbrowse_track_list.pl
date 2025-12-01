@@ -72,6 +72,10 @@ my %jbrowse2_config = (
       name => "Protein3d",
       url => "https://jbrowse.org/plugins/jbrowse-plugin-protein3d/dist/jbrowse-plugin-protein3d.umd.production.min.js"
     },
+    {
+      name => "MsaView",
+      url => "https://jbrowse.org/plugins/jbrowse-plugin-msaview/dist/jbrowse-plugin-msaview.umd.production.min.js"
+    },
   ],
   configuration => {},
   connections => [],
