@@ -466,8 +466,12 @@ while (my $row = $csv->getline_hr ($fh)) {
 
   next if $row->{label} =~ /(Forward|Reverse) strand features|DNA sequence/;
 
-  my $track_id = $row->{pmed_id} . '-' .
+  my $track_id =
     ($row->{source_url} =~ s|.*/(.*?)\.\w+$|$1|r);
+
+  if ($row->{pmed_id}) {
+    $track_id = $row->{pmed_id} . '-' . $track_id;
+  }
 
   maybe_add_jbrowse2_track($track_id, $row, $assembly_name);
 
