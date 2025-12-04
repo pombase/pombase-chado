@@ -469,6 +469,8 @@ while (my $row = $csv->getline_hr ($fh)) {
   my $track_id =
     ($row->{source_url} =~ s|.*/(.*?)\.\w+$|$1|r);
 
+  $track_id =~ s/\./_/g;
+
   if ($row->{pmed_id}) {
     $track_id = $row->{pmed_id} . '-' . $track_id;
   }
