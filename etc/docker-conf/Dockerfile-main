@@ -54,6 +54,8 @@ COPY --chown=pombase:pombase pombase-python-web /pombase/pombase-python-web
 
 COPY --chown=pombase:pombase main_config.json /pombase/main_config.json
 COPY --chown=pombase:pombase testimonials.json /pombase/testimonials.json
+COPY --chown=pombase:pombase spotlights.json /pombase/spotlights.json
+COPY --chown=pombase:pombase explore.json /pombase/explore.json
 RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/web-json data)
 
 RUN chown -R pombase:pombase /var/www/html

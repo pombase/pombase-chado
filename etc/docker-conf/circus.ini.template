@@ -14,7 +14,7 @@ singleton = True
 
 [watcher:pombase-server]
 cmd = /pombase/bin/pombase-server
-args = -c /pombase/main_config.json --testimonials /pombase/testimonials.json -d /pombase/api_maps.sqlite3 -m /var/www/html/web-json/api_maps.json.zst -w /var/www/html/ --site-db="postgresql://<<database_name>>:<<database_name>>@$(CIRCUS.ENV.HOST_IP_ADDRESS)/<<database_name>>-website"
+args = -c /pombase/main_config.json --testimonials /pombase/testimonials.json --spotlight-config /pombase/spotlights.json --explore-config /pombase/explore.json -d /pombase/api_maps.sqlite3 -m /var/www/html/web-json/api_maps.json.zst -w /var/www/html/ --site-db="postgresql://<<database_name>>:<<database_name>>@$(CIRCUS.ENV.HOST_IP_ADDRESS)/<<database_name>>-website"
 copy_env = True
 working_dir = .
 warmup_delay = 0
