@@ -175,10 +175,16 @@ sub load {
     $self->add_feature_cvtermprop($feature_cvterm, 'annotation_throughput_type',
                                   'high throughput');
 
+    if ($evidence_code eq 'Unknown') {
+      my $line = join "\t", @$columns_ref;
+      warn qq|evidence code is "Unknown" on line $.:\n$line\n|;
+    }
+
     my $evidence_config = $self->config()->{evidence_types}->{$evidence_code};
     if (!defined $evidence_config) {
       die qq(unknown evidence code "$evidence_code"\n);
     }
+
     my $long_evidence = $evidence_config->{name};
     $self->add_feature_cvtermprop($feature_cvterm, 'evidence', $long_evidence);
 
