@@ -19,6 +19,7 @@ my $gene_mapping_filename = shift;
 my $term_mapping_filename = shift;
 my $go_cam_json_filename = shift;
 my $model_directory = shift;
+my $gocam_py_directory = shift;
 
 my $ua = LWP::UserAgent->new(keep_alive => 1);
 
@@ -86,6 +87,22 @@ for my $gocam_id (@{$pombe_data}) {
   print $model_out $json_encoder->encode($decoded_model);
 
   close $model_out or die;
+
+  $request = HTTP::Request->new(GET => "https://live-go-cam.geneontology.io/product/yaml/go-cam/$gocam_id.yaml");
+  $request->header("accept" => "application/yaml");
+  $response = $ua->request($request);
+
+  if (!$response->is_success()) {
+    print "  request for YAML failed: ", $response->status_line(), " - skipping\n";
+    push @failed_ids, $gocam_id;
+    next;
+  }
+
+  my $yaml_content = $response->content();
+  open my $yaml_out, '>', "$gocam_py_directory/$gocam_id.yaml"
+    or die "can't open $gocam_py_directory/$gocam_id.yaml for writing: $?\n";
+  print $yaml_out $yaml_content;
+  close $yaml_out or die;
 }
 
 open (my $gocam_tool_fh, '-|:encoding(UTF-8)', "/var/pomcur/bin/pombase-gocam-tool make-chado-data $model_directory/*.json")
