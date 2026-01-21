@@ -114,7 +114,7 @@ sub store_process_terms {
     if (defined $title_term) {
       push @title_terms, $title_term;
     } else {
-      warn "can't find term $title_termid in title of GO-CAM: ",
+      warn qq|can't find term for "$title_termid" in title of GO-CAM: |,
           $gocam_feature->uniquename(), "\n";
     }
   }
