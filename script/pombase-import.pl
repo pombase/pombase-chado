@@ -9,6 +9,7 @@ use Moose;
 use Getopt::Long qw(:config pass_through);
 use lib qw(lib);
 use utf8::all;
+use open ':encoding(utf8)';
 
 my $dry_run = 0;
 my $verbose = 0;
