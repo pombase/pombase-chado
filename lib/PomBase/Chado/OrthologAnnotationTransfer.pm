@@ -158,9 +158,9 @@ sub process {
 
   my $dt = DateTime->now();
 
-  open my $fh, '<-' or die;
+  open my $fh, '<-:encoding(UTF-8)' or die;
 
-  my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
+  my $csv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1, binary => 1 });
 
   my @column_names = qw(DB DB_object_id DB_object_symbol Qualifier GO_id DB_reference Evidence_code With_or_from Aspect DB_object_name DB_object_synonym DB_object_type Taxon Date Assigned_by Annotation_extension Gene_product_form_id);
 
