@@ -48,6 +48,8 @@ use Text::CSV;
 
 use Getopt::Long qw(GetOptionsFromArray);
 
+use open qw( :std :encoding(UTF-8) );
+
 with 'PomBase::Role::ChadoUser';
 with 'PomBase::Role::ConfigUser';
 with 'PomBase::Role::DbQuery';
