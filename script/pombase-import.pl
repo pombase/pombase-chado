@@ -42,6 +42,7 @@ my %input_types = (
   'kegg-pathway' => 'PomBase::Import::KEGGMapping',
   'names-and-products' => 'PomBase::Import::NameAndProduct',
   'go-cam-json' => 'PomBase::Import::GoCamJson',
+  'complementation' => 'PomBase::Import::Complementation',
 );
 
 sub usage
