@@ -56,7 +56,23 @@ sub check {
   my $output_text = '';
 
   my $query = <<"EOQ";
-select with_p.value, array_to_string(array (SELECT sess_p.value FROM feature_cvtermprop sess_p JOIN cvterm sess_pt ON sess_p.type_id = sess_pt.cvterm_id WHERE fc.feature_cvterm_id = sess_p.feature_cvterm_id AND sess_pt.name = 'canto_session'), ','), array_to_string(array (SELECT sess_p.value FROM feature_cvtermprop sess_p JOIN cvterm sess_pt ON sess_p.type_id = sess_pt.cvterm_id WHERE fc.feature_cvterm_id = sess_p.feature_cvterm_id AND sess_pt.name = 'source_file'), ',') from feature_cvterm fc join feature_cvtermprop with_p on fc.feature_cvterm_id = with_p.feature_cvterm_id join cvterm with_p_type on with_p_type.cvterm_id = with_p.type_id where with_p_type.name = 'with';
+SELECT with_p.value,
+       array_to_string(array
+                         (SELECT sess_p.value
+                          FROM feature_cvtermprop sess_p
+                          JOIN cvterm sess_pt ON sess_p.type_id = sess_pt.cvterm_id
+                          WHERE fc.feature_cvterm_id = sess_p.feature_cvterm_id
+                            AND sess_pt.name = 'canto_session'), ','),
+       array_to_string(array
+                         (SELECT sess_p.value
+                          FROM feature_cvtermprop sess_p
+                          JOIN cvterm sess_pt ON sess_p.type_id = sess_pt.cvterm_id
+                          WHERE fc.feature_cvterm_id = sess_p.feature_cvterm_id
+                            AND sess_pt.name = 'source_file'), ',')
+FROM feature_cvterm fc
+JOIN feature_cvtermprop with_p ON fc.feature_cvterm_id = with_p.feature_cvterm_id
+JOIN cvterm with_p_type ON with_p_type.cvterm_id = with_p.type_id
+WHERE with_p_type.name = 'with';
 EOQ
 
   my $dbh = $chado->storage()->dbh();
