@@ -102,13 +102,10 @@ COPY --chown=pombase:pombase PomBasePlugin.js /pombase/jbrowse2/
 RUN if [ $database_name = 'pombase' ]; \
     then \
     (cd /pombase/jbrowse2; \
-     ln -s /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_*_strand.gff3 .); \
+     ln -s /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes_*_strand.gff3 .; \
+     jbrowse text-index --tracks=Schizosaccharomyces_pombe_all_chromosomes_forward_strand,Schizosaccharomyces_pombe_all_chromosomes_reverse_strand \
+       --exclude=CDS,five_prime_UTR,intron,lncRNA,mRNA,pseudogenic_transcript,rRNA,snRNA,sncRNA,snoRNA,tRNA,three_prime_UTR); \
     fi
-
-# Index temporarily moved to: https://www.pombase.org/internal_datasets/jbrowse2_trix/
-# See: https://github.com/GMOD/jbrowse-components/issues/4814
-#     jbrowse text-index --tracks=Schizosaccharomyces_pombe_all_chromosomes_forward_strand,Schizosaccharomyces_pombe_all_chromosomes_reverse_strand \
-#         --exclude=CDS,five_prime_UTR,intron,lncRNA,mRNA,pseudogenic_transcript,rRNA,snRNA,sncRNA,snoRNA,tRNA,three_prime_UTR
 
 RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json \
@@ -143,7 +140,7 @@ RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
      npm install -g yarn; \
      yarn; \
      ./etc/build_app.sh $target && cp -r dist/browser/* /var/www/html/ && \
-     cp dist/browser/assets/$database_name/* /var/www/html/assets/) && \
+     cp -r dist/browser/assets/$database_name/* /var/www/html/assets/) && \
      rm -rf /pombase/pombase-website /pombe/.npm-global
 
 COPY --chown=pombase:pombase genome_changelog/gene_characterisation_status/results/figure.svg /var/www/html/assets/gene_characterisation_status_figure.svg
