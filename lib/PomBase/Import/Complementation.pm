@@ -126,6 +126,7 @@ sub load {
     my $symbol = trim($columns{"symbol"});
     my $detail = trim($columns{$complementation_type});
     my $full_or_partial = trim($columns{"full_or_partial"});
+    my $evidence_code = trim($columns{"evidence"});
     my $publication_id = trim($columns{"reference"});
 
     my @pubs = ();
@@ -167,6 +168,18 @@ sub load {
       if ($full_or_partial) {
         $self->add_feature_cvtermprop($feature_cvterm, 'qualifier',
                                       $full_or_partial);
+      }
+
+      my $long_evidence = undef;
+      if ($evidence_code) {
+        $long_evidence = $self->config()->{evidence_types}->{$evidence_code}->{name};
+        if (!$long_evidence) {
+          $long_evidence = $evidence_code;
+        }
+      }
+
+      if ($long_evidence) {
+        $self->add_feature_cvtermprop($feature_cvterm, 'evidence', $long_evidence);
       }
 
       if (@pubs > 1) {
