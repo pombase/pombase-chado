@@ -16,7 +16,13 @@ die "needs an argument\n" unless @ARGV > 0;
 my $date = shift;
 my $file_name = shift;
 
-open my $fh, '<', $file_name or die "can't open $file_name\n";
+my $fh;
+
+if (!defined $file_name || $file_name eq '-') {
+  open $fh, '<&STDIN' or die "can't open STDIN";
+} else {
+  open $fh, '<', $file_name or die "can't open $file_name\n";
+}
 
 $csv->column_names($csv->getline($fh));
 
