@@ -85,11 +85,16 @@ for my $removed_id (keys %removed_joins) {
 }
 
 if (@removed_list) {
-  print "Removed joins $date:\n\n";
-  for my $removed_ids (@removed_list) {
-    print " https://www.pombase.org/gocam/pombase-view/docs/$removed_ids\n";
-  }
 
-  print "\n";
+  if (@removed_list < 100) {
+    print "Removed joins $date:\n\n";
+    for my $removed_ids (@removed_list) {
+      print " https://www.pombase.org/gocam/pombase-view/docs/$removed_ids\n";
+    }
+
+    print "\n";
+  } else {
+    # file format change so there are a lot of spurious removals
+  }
 }
 
