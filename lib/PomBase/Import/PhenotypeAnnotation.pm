@@ -452,7 +452,7 @@ sub load {
 
       my $allele;
 
-      if ($ploidiness eq 'haploid') {
+      if (!defined $ploidiness || $ploidiness eq 'haploid') {
         ($genotype_feature, $allele) =
           $self->get_genotype_for_allele($background_description, $allele_data, $expression);
       } else {
