@@ -55,7 +55,7 @@ my @failed_ids = ();
 my $json_encoder = JSON->new()->utf8()->canonical(1);
 
 for my $gocam_id (@{$pombe_data}) {
-  print "requesting details of $gocam_id from API\n";
+  print "requesting details of $gocam_id from JSON API\n";
 
   $request = HTTP::Request->new(GET => "https://live-go-cam.geneontology.io/product/json/low-level/$gocam_id.json");
   $request->header("accept" => "application/json");
@@ -87,6 +87,8 @@ for my $gocam_id (@{$pombe_data}) {
   print $model_out $json_encoder->encode($decoded_model);
 
   close $model_out or die;
+
+  print "requesting details of $gocam_id from gocam-py YAML API\n";
 
   $request = HTTP::Request->new(GET => "https://live-go-cam.geneontology.io/product/yaml/go-cam/$gocam_id.yaml");
   $request->header("accept" => "application/yaml");
