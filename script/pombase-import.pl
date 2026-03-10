@@ -43,6 +43,7 @@ my %input_types = (
   'names-and-products' => 'PomBase::Import::NameAndProduct',
   'go-cam-json' => 'PomBase::Import::GoCamJson',
   'complementation' => 'PomBase::Import::Complementation',
+  'legacy-controlled-curation' => 'PomBase::Import::LegacyControlledCuration',
 );
 
 sub usage
