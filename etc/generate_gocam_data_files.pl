@@ -101,6 +101,10 @@ for my $gocam_id (@{$pombe_data}) {
   }
 
   my $yaml_content = $response->content();
+
+  # temporary fix for: https://github.com/geneontology/gocam-py/issues/178
+  $yaml_content =~ s/^\s*-\s*provenances:\n\s*-\s*\{\}\n//mg;
+
   open my $yaml_out, '>', "$gocam_py_directory/$gocam_id.yaml"
     or die "can't open $gocam_py_directory/$gocam_id.yaml for writing: $?\n";
   print $yaml_out $yaml_content;
