@@ -50,6 +50,42 @@ if (!$pombe_data) {
   die "no pombe data found\n";
 }
 
+my %provider_id_map = ();
+for my $id (@{$pombe_data}) {
+  $provider_id_map{"gomodel:$id.json"} = 1;
+  $provider_id_map{"$id.yaml"} = 1;
+}
+
+opendir DIR, "$model_directory" or
+  die "can't open $model_directory for reading";
+
+while (defined (my $file = readdir DIR)) {
+  if ($file !~ /\.json$/) {
+    next;
+  }
+  if (!$provider_id_map{$file}) {
+    warn "removing $model_directory/$file\n";
+    unlink("$model_directory/$file");
+  }
+}
+
+closedir DIR;
+
+opendir DIR, "$gocam_py_directory" or
+  die "can't open $gocam_py_directory for reading";
+
+while (defined (my $file = readdir DIR)) {
+  if ($file !~ /\.yaml$/) {
+    next;
+  }
+  if (!$provider_id_map{$file}) {
+    warn "removing $gocam_py_directory/$file\n";
+    unlink("$gocam_py_directory/$file");
+  }
+}
+
+closedir DIR;
+
 my @failed_ids = ();
 
 my $json_encoder = JSON->new()->utf8()->canonical(1);
