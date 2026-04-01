@@ -193,7 +193,7 @@ EOQ
     my $secondary_row = $secondary_assigner_annotations{$key};
 
     if (defined $secondary_row) {
-      push @secondary_annotations_to_delete, $secondary_row;
+      push @secondary_annotations_to_delete, [@$secondary_row];
     }
   }
 
