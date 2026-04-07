@@ -39,6 +39,8 @@ while (defined (my $line = $fh->getline())) {
     die;
   }
 
+  next if $line =~ /CHEBI:/;
+
   if (!$csv->parse($line)) {
     die "Parse error at line $.: ", $csv->error_input(), "\n";
   }
