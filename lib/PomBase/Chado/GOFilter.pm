@@ -212,11 +212,11 @@ sub process {
     'inferred by curator',
     'inferred from sequence orthology',
     'inferred from sequence or structural similarity',
-    'inferred from sequence model',
     'traceable author statement',
     'non-traceable author statement',
     'inferred from expression pattern',
     'inferred from electronic annotation',
+    'inferred from sequence model',
   );
 
   my @iea_go_refs = (
