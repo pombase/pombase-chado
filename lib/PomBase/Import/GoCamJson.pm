@@ -185,6 +185,7 @@ sub store_complex_terms {
 
 sub store_model_genes {
   my $self = shift;
+  my $gocam_id = shift;
   my $gocam_feature = shift;
   my $genes = shift;
   my $rel_name = shift;
@@ -194,10 +195,16 @@ sub store_model_genes {
   for my $gene_uniquename (@$genes) {
     my $feature =
       $self->find_chado_feature($gene_uniquename, 1, 0,
-                                $self->organism(), ['gene', 'mRNA']);
+                                $self->organism(), ['gene', 'mRNA', 'pseudogene']);
 
-    if ($feature->type()->name() eq 'gene') {
+    my $feature_type_name = $feature->type()->name();
+
+    if ($feature_type_name eq 'gene') {
       $self->store_feature_rel($feature, $gocam_feature, $rel_name);
+    } else {
+      if ($feature_type_name eq 'pseudogene') [
+        warn "pseudogene in $gocam_id: $gene_uniquename\n";
+      }
     }
   }
 }
@@ -260,8 +267,8 @@ sub load {
       $self->store_feature("$gocam_id", $title, [], 'gocam_model',
                            $organism);
 
-    $self->store_model_genes($gocam_feature, $details->{genes}, 'enables_gocam_activity');
-    $self->store_model_genes($gocam_feature, $details->{target_genes}, 'gocam_target_gene');
+    $self->store_model_genes($gocam_id, $gocam_feature, $details->{genes}, 'enables_gocam_activity');
+    $self->store_model_genes($gocam_id, $gocam_feature, $details->{target_genes}, 'gocam_target_gene');
     $self->store_modified_genes($gocam_feature, $details->{modified_gene_pro_terms}, 'enables_gocam_activity');
     $self->store_modified_genes($gocam_feature, $details->{modified_target_gene_pro_terms}, 'gocam_target_gene');
     $self->store_process_terms($gocam_feature, $details->{title_terms}, $details->{process_terms});
