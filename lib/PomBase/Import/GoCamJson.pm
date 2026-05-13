@@ -202,7 +202,7 @@ sub store_model_genes {
     if ($feature_type_name eq 'gene') {
       $self->store_feature_rel($feature, $gocam_feature, $rel_name);
     } else {
-      if ($feature_type_name eq 'pseudogene') [
+      if ($feature_type_name eq 'pseudogene') {
         warn "pseudogene in $gocam_id: $gene_uniquename\n";
       }
     }
