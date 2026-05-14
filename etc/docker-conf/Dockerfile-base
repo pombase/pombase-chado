@@ -1,11 +1,11 @@
 # -*- dockerfile -*-
 # recreate with:
 #   docker pull debian:bookworm
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v90 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v91 .
 # in pombase-chado
 FROM debian:bookworm
 
-LABEL maintainer="Kim Rutherford <kim@pombase.org>"
+LABEL maintainer="Kim Rutherford <kmr@pombase.org>"
 
 RUN mkdir /downloads; mkdir /pombase
 RUN groupadd -g 1000 pombase && \
