@@ -1,9 +1,9 @@
 # -*- dockerfile -*-
 # recreate with:
-#   docker pull debian:bookworm
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v91 .
+#   docker pull debian:trixie
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v92 .
 # in pombase-chado
-FROM debian:bookworm
+FROM debian:trixie
 
 LABEL maintainer="Kim Rutherford <kmr@pombase.org>"
 
