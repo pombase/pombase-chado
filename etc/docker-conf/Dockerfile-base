@@ -1,7 +1,7 @@
 # -*- dockerfile -*-
 # recreate with:
 #   docker pull debian:trixie
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v93 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v94 .
 # in pombase-chado
 FROM debian:trixie
 
