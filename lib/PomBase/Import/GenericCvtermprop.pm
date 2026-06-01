@@ -59,16 +59,24 @@ with 'PomBase::Role::CvtermpropStorer';
 has termid_column => (is => 'rw', init_arg => undef);
 has property_name => (is => 'rw', init_arg => undef);
 has property_value_column => (is => 'rw', init_arg => undef);
+has separator_char => (is => 'rw', init_arg => undef);
+has chebi_cvterms => (is => 'rw', init_arg => undef);
+has ignore_missing_cvterms => (is => 'rw', init_arg => undef);
 
 sub BUILD {
   my $self = shift;
   my $property_name = undef;
   my $termid_column = undef;
   my $property_value_column = undef;
+  my $separator_char = "\t";
+  my %chebi_cvterms = ();
+  my $ignore_missing_cvterms = 0;
 
   my @opt_config = ("property-name=s" => \$property_name,
                     "termid-column=s" => \$termid_column,
                     "property-value-column=s" => \$property_value_column,
+                    "separator-char=s" => \$separator_char,
+                    "ignore-missing-cvterms" => \$ignore_missing_cvterms,
                   );
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
@@ -92,6 +100,21 @@ sub BUILD {
   }
 
   $self->property_name($property_name);
+
+  $self->separator_char($separator_char);
+
+  if ($ignore_missing_cvterms) {
+    my $chebi_dbxref_rs = $self->chado()->resultset('General::Dbxref')
+      ->search({ 'db.name' => 'CHEBI', cvterm => { -not => undef } }, { join => ['db', 'cvterm'] });
+
+    while (defined (my $dbxref = $chebi_dbxref_rs->next())) {
+      $chebi_cvterms{"CHEBI:" . $dbxref->accession()} = 1;
+    }
+  }
+
+  $self->ignore_missing_cvterms($ignore_missing_cvterms);
+
+  $self->chebi_cvterms(\%chebi_cvterms);
 }
 
 sub load {
@@ -103,9 +126,13 @@ sub load {
 
   my $property_name = $self->property_name();
 
-  my $tsv = Text::CSV->new({ sep_char => "\t", allow_loose_quotes => 1 });
+  my $sep_char = $self->separator_char();
+  my $chebi_cvterms = $self->chebi_cvterms();
+  my $ignore_missing_cvterms = $self->ignore_missing_cvterms();
 
-  while (my $columns_ref = $tsv->getline($fh)) {
+  my $reader = Text::CSV->new({ sep_char => $sep_char, allow_loose_quotes => 1 });
+
+  while (my $columns_ref = $reader->getline($fh)) {
     my $col_count = scalar(@$columns_ref);
 
     next if $col_count == 0;
@@ -128,6 +155,10 @@ sub load {
     }
 
     my $termid = $columns_ref->[$self->termid_column() - 1];
+
+    if ($ignore_missing_cvterms && !exists $chebi_cvterms->{$termid}) {
+      next;
+    }
 
     my $cvterm = $self->find_cvterm_by_term_id($termid);
 
