@@ -1,7 +1,7 @@
 # -*- dockerfile -*-
 # recreate with:
 #   docker pull debian:trixie
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v94 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v95 .
 # in pombase-chado
 FROM debian:trixie
 
@@ -25,7 +25,7 @@ RUN apt-get -y update && \
 RUN apt-get -y update && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
 RUN apt install -y python3-django python3-django-allauth python3-tornado \
     pipx gunicorn python3-seaborn python3-numpy python3-pandas \
-    python3-matplotlib python3-regex
+    python3-matplotlib python3-regex libsqlite3-dev
 
 RUN npm install --silent --unsafe-perm -g @angular/cli @jbrowse/cli
 
