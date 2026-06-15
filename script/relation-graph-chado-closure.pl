@@ -13,12 +13,10 @@ if (@ARGV < 4) {
   die <<"EOF";
 $0: ERROR: needs four or more arguments
 
-This script is a wrapper for owltools with the --save-closure-for-chado
-option.  The terms from the ontology files must be present in Chado
-before running this script.
-
-The OBO file arguments are passed to owltools and the output is stored in
-the cvtermpath table via a temporary table.
+This script is a wrapper for the relation-graph tool.  The terms from
+the ontology files must be present in Chado before running this
+script.  The output is stored in the cvtermpath table via a temporary
+table.
 
 Usage:
   $0 host database_name username password obo_file_name [obo_file_name ...]
@@ -41,7 +39,7 @@ my $line_re = qr|
   <\Q$PURL_PREFIX\E/([^/]+)>
 |x;
 
-my $temp_table_name = "owltools_closure_temp";
+my $temp_table_name = "relation_graph_closure_temp";
 
 my @column_defs =
   ([qw|subj_db_id INTEGER REFERENCES db(db_id)|], [qw(subj_accession text)], [qw(rel_termid text)],
@@ -104,14 +102,14 @@ for my $filename (@filenames) {
   warn "processing: $filename_full_path\n";
 
   system ("cd /var/pomcur/external/relation-graph-1.1; ./bin/relation-graph --ontology-file $filename_full_path --non-redundant-output-file /dev/null --redundant-output-file $temp_filename --mode rdf --output-subclasses true --reflexive-subclasses false --equivalence-as-subclass false") == 0
-    or die "can't open pipe from owltools: $?";
+    or die "can't open pipe from relation-graph: $?";
 
-  open my $owltools_out, '<', $temp_filename
-    or die "can't open owltools output from $temp_filename: $!\n";
+  open my $relation_graph_out, '<', $temp_filename
+    or die "can't open relation-graph output from $temp_filename: $!\n";
 
   my %db_warnings = ();
 
-  while (defined (my $line = <$owltools_out>)) {
+  while (defined (my $line = <$relation_graph_out>)) {
     chomp $line;
 
     if ($line =~ m|http://identifiers.org/hgnc|) {
@@ -178,7 +176,7 @@ for my $filename (@filenames) {
     }
   }
 
-  close $owltools_out or die "can't close pipe from owltools: $!";
+  close $relation_graph_out or die "can't close pipe from relation-graph: $!";
 
   if (!$dbh->pg_putcopyend()) {
     die $dbh->errstr();
