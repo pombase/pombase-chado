@@ -126,7 +126,7 @@ LEFT OUTER JOIN feature_cvterm fc ON fc.feature_id = transcript.feature_id
 LEFT OUTER JOIN cvterm product_cvterm ON product_cvterm.cvterm_id = fc.cvterm_id AND
                 product_cvterm.cv_id IN (SELECT cv_id from cv where cv.name = ?)
 WHERE ( ( organism.organism_id = ? OR organism.organism_id = ? )
-        AND feature_type.name = 'gene'
+        AND (feature_type.name = 'gene' OR feature_type.name = 'pseudogene')
         AND rel_type.name = 'part_of');
 EOF
 
