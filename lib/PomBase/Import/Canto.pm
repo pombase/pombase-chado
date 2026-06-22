@@ -523,6 +523,10 @@ sub _store_ontology_annotation {
                                   evidence => $long_evidence);
     $self->add_feature_cvtermprop($feature_cvterm,
                                   curator_name => $curator->{name});
+    if ($curator->{curator_orcid}) {
+      $self->add_feature_cvtermprop($feature_cvterm,
+                                    curator_orcid => $curator->{curator_orcid});
+    }
     $self->add_feature_cvtermprop($feature_cvterm,
                                   community_curated => $community_curated_flag);
     $self->add_feature_cvtermprop($feature_cvterm,
