@@ -125,8 +125,8 @@ sub store_process_terms {
       $self->find_cvterm_by_term_id($process_termid);
 
     if (!defined $process_term) {
-      warn "can't find process term for $process_termid in model: ",
-        $gocam_feature->uniquename(), "\n";
+      warn "can't find process term $process_termid in Chado, from model: ",
+        $gocam_feature->uniquename(), " - it might be obsolete\n";
       next PROCESS_TERM;
     }
 
