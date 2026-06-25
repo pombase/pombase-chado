@@ -142,6 +142,8 @@ sub _read_pubs {
 sub retrieve {
   my $self = shift;
 
+  print "interactor_a\tinteractor_b\tinteractor_a_taxon\tinteractor_b_taxon\tevidence_code\tpubmed_id\tscore\tmodification\tphenotypes\tcomment\n";
+
   my $chado = $self->chado();
 
   my $org_taxonid = $self->organism_taxonid();
