@@ -253,7 +253,7 @@ sub process {
 
     my $ext_name = $conf->{extension_name};
 
-    print qq|checking "$activity_parent_term_name $ext_name" vs "$mod_parent_term_name"\n|;
+    print qq|checking "$activity_parent_term_name" [$ext_name] "$mod_parent_term_name"\n|;
 
     my ($missing_act, $missing_mod) =
       $self->check_activity($activity_parent_term_name, $mod_parent_term_name, $conf);
