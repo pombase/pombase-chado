@@ -85,7 +85,9 @@ RUN (cd /var/www/html/jbrowse; \
     ./bin/flatfile-to-json.pl --gff /pombase/gff/*_all_chromosomes_forward_strand.gff3 \
       --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'Forward strand features'; \
     ./bin/flatfile-to-json.pl --gff /pombase/gff/*_all_chromosomes_reverse_strand.gff3 \
-      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'Reverse strand features')
+      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'Reverse strand features'; \
+    ./bin/flatfile-to-json.pl --gff /pombase/gff/Schizosaccharomyces_pombe_all_chromosomes.gff3 \
+      --maxLookback 9999999 --trackType CanvasFeatures --trackLabel 'Confirmed introns')
 
 COPY --chown=pombase:pombase conf/circus.ini.template circus.ini.template
 COPY --chown=pombase:pombase conf/start_all.sh start_all.sh

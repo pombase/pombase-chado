@@ -264,6 +264,39 @@ my %jbrowse2_config = (
         },
       ],
     },
+    {
+      type => "FeatureTrack",
+      trackId => "Schizosaccharomyces_pombe_confirmed_introns",
+      name => "Confirmed introns",
+      adapter => {
+        type => "Gff3Adapter",
+        gffLocation => {
+          uri => "Schizosaccharomyces_pombe_confirmed_introns.gff3",
+          locationType => "UriLocation"
+        }
+      },
+      formatDetails => \%feature_format_details,
+      category => [
+        "Genes"
+      ],
+      assemblyNames => [
+        $assembly_name,
+      ],
+      displays => [
+        {
+          type => "LinearBasicDisplay",
+          displayId => "Schizosaccharomyces_pombe_confirmed_introns-LinearBasicDisplay",
+          renderer => {
+            type => "SvgFeatureRenderer",
+            color1 => "jexl:featureColor(feature)",
+            height => "jexl:featureHeight(feature)",
+            labels => {
+              fontSize => "jexl:featureLabelFontSize(feature)",
+            },
+          }
+        },
+      ],
+    }
   ],
 );
 
