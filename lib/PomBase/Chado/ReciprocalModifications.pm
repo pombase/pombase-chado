@@ -104,8 +104,8 @@ sub BUILD {
       mf_id => $mf_id,
     );
 
-    $mf_to_mod_mapping{$mf_name} = \%mapping_conf;
-    $mod_to_mf_mapping{$mod_name} = \%mapping_conf;
+    push @{$mf_to_mod_mapping{$mf_name}}, \%mapping_conf;
+    push @{$mod_to_mf_mapping{$mod_name}}, \%mapping_conf;
   }
 
   $self->mf_to_mod_mapping(\%mf_to_mod_mapping);
@@ -247,8 +247,8 @@ EOQ
 sub process {
   my $self = shift;
 
-  for my $activity_parent_term_name (keys %{$self->mf_to_mod_mapping()}) {
-    my $conf = $self->mf_to_mod_mapping()->{$activity_parent_term_name};
+  for my $activity_parent_term_name (sort keys %{$self->mf_to_mod_mapping()}) {
+   for my $conf (@{$self->mf_to_mod_mapping()->{$activity_parent_term_name}}) {
     my $mod_parent_term_name = $conf->{mod_name};
 
     my $ext_name = $conf->{extension_name};
@@ -263,6 +263,7 @@ sub process {
     }
 
     print "\n";
+   }
   }
 }
 
