@@ -130,13 +130,12 @@ sub check_activity {
 SELECT feature_cvterm_id
 FROM pombase_feature_cvterm_ext_resolved_terms fc
 WHERE cvterm_name like '%[%'
-  AND (base_cvterm_name = '$act_parent_term_name'
-  OR base_cvterm_id IN
+  AND base_cvterm_id IN
     (SELECT subject_id FROM cvtermpath WHERE object_id IN
          (SELECT cvterm_id FROM cvterm
           WHERE (name = '$act_parent_term_name'))
        AND type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'is_a')
-       AND pathdistance > 0))
+       AND pathdistance >= 0)
 
 -- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:23770679' OR uniquename = 'PMID:18057023' OR uniquename = 'PMID:21540296')
 
@@ -173,13 +172,12 @@ EOQ
 SELECT feature_cvterm_id
 FROM pombase_feature_cvterm_ext_resolved_terms fc
 WHERE cvterm_name like '%[%'
-  AND (base_cvterm_name = '$mod_parent_term_name'
-  OR base_cvterm_id IN
+  AND base_cvterm_id IN
     (SELECT subject_id FROM cvtermpath WHERE object_id IN
          (SELECT cvterm_id FROM cvterm
-          WHERE (name = '$act_parent_term_name'))
+          WHERE (name = '$mod_parent_term_name'))
        AND type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'is_a')
-       AND pathdistance > 0))
+       AND pathdistance >= 0)
 
 -- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:23770679' OR uniquename = 'PMID:18057023' OR uniquename = 'PMID:21540296')
 
