@@ -246,22 +246,22 @@ sub process {
   my $self = shift;
 
   for my $activity_parent_term_name (sort keys %{$self->mf_to_mod_mapping()}) {
-   for my $conf (@{$self->mf_to_mod_mapping()->{$activity_parent_term_name}}) {
-    my $mod_parent_term_name = $conf->{mod_name};
+    for my $conf (@{$self->mf_to_mod_mapping()->{$activity_parent_term_name}}) {
+      my $mod_parent_term_name = $conf->{mod_name};
 
-    my $ext_name = $conf->{extension_name};
+      my $ext_name = $conf->{extension_name};
 
-    print qq|checking "$activity_parent_term_name" [$ext_name] "$mod_parent_term_name"\n|;
+      print qq|checking "$activity_parent_term_name" [$ext_name] "$mod_parent_term_name"\n|;
 
-    my ($missing_act, $missing_mod) =
-      $self->check_activity($activity_parent_term_name, $mod_parent_term_name, $conf);
+      my ($missing_act, $missing_mod) =
+        $self->check_activity($activity_parent_term_name, $mod_parent_term_name, $conf);
 
-    if ($missing_act == 0 && $missing_mod == 0) {
-      print "no missing activities or modifications\n";
+      if ($missing_act == 0 && $missing_mod == 0) {
+        print "no missing activities or modifications\n";
+      }
+
+      print "\n";
     }
-
-    print "\n";
-   }
   }
 }
 
