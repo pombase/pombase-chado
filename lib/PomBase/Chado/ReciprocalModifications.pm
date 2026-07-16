@@ -60,13 +60,20 @@ has options => (is => 'ro', isa => 'ArrayRef', required => 1);
 
 has mod_to_mf_mapping => (is => 'rw', init_arg => undef);
 has mf_to_mod_mapping => (is => 'rw', init_arg => undef);
+has missing_activities_file => (is => 'rw', init_arg => undef);
+has missing_modifications_file => (is => 'rw', init_arg => undef);
+has parent_map => (is => 'rw', init_arg => undef);
 
 sub BUILD {
   my $self = shift;
 
   my $mapping_file = undef;
+  my $missing_activities_file = undef;
+  my $missing_modifications_file = undef;
 
-  my @opt_config = ('mapping-file=s' => \$mapping_file);
+  my @opt_config = ('mapping-file=s' => \$mapping_file,
+                    'missing-activites-file=s' => \$missing_activities_file,
+                    'missing-modifications-file=s' => \$missing_modifications_file);
 
   my @options_copy = @{$self->options()};
 
@@ -76,6 +83,14 @@ sub BUILD {
 
   if (!$mapping_file) {
     die "missing argument: --mapping-file\n";
+  }
+
+  if (!$missing_activities_file) {
+    die "missing argument: --missing-activites-file\n";
+  }
+
+  if (!$missing_modifications_file) {
+    die "missing argument: --missing-modifications-file\n";
   }
 
   open my $mapping_file_fh, '<', $mapping_file
@@ -110,12 +125,43 @@ sub BUILD {
 
   $self->mf_to_mod_mapping(\%mf_to_mod_mapping);
   $self->mod_to_mf_mapping(\%mod_to_mf_mapping);
+
+  $self->missing_activities_file($missing_activities_file);
+  $self->missing_modifications_file($missing_modifications_file);
+}
+
+sub get_props {
+  my $self = shift;
+  my $fc = shift;
+
+  my $evidence_code = '';
+  my $date = '';
+
+  my $rs = $fc->feature_cvtermprops()
+    ->search({ -or => [ 'type.name' => 'evidence', 'type.name' => 'date' ] },
+             { join => 'type' });
+
+  while (defined (my $prop = $rs->next())) {
+    if ($prop->type()->name() eq 'evidence') {
+      $evidence_code = $prop->value();
+
+      if ($evidence_code eq 'tryptic phosphopeptide mapping assay evidence used in automatic assertion' ||
+          $evidence_code eq 'experimental evidence') {
+        $evidence_code = 'Inferred from Experiment';
+      }
+    } else {
+      $date = $prop->value();
+    }
+  }
+
+  return ($evidence_code, $date);
 }
 
 sub check_activity {
   my $self = shift;
   my $act_parent_term_name = shift =~ s/'/''/gr;
   my $mod_parent_term_name = shift =~ s/'/''/gr;
+  my $missing_activities = shift;
   my $conf = shift;
 
   my $chado = $self->chado();
@@ -123,13 +169,15 @@ sub check_activity {
 
   my $db_name = $self->config()->{database_name};
 
+  my $conf_ext_name = $conf->{extension_name};
+
   my $missing_mod = 0;
   my $missing_act = 0;
 
   my $sql = <<"EOQ";
 SELECT feature_cvterm_id
 FROM pombase_feature_cvterm_ext_resolved_terms fc
-WHERE cvterm_name like '%[%'
+WHERE cvterm_name like '%[$conf_ext_name%'
   AND base_cvterm_id IN
     (SELECT subject_id FROM cvtermpath WHERE object_id IN
          (SELECT cvterm_id FROM cvterm
@@ -137,8 +185,7 @@ WHERE cvterm_name like '%[%'
        AND type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'is_a')
        AND pathdistance >= 0)
 
--- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:23770679' OR uniquename = 'PMID:18057023' OR uniquename = 'PMID:21540296')
-
+-- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:23770679' OR uniquename = 'PMID:18057023' OR uniquename = 'PMID:28552615')
 
 ORDER BY cvterm_name
 EOQ
@@ -152,6 +199,11 @@ EOQ
 
   my %activity_genes_and_targets = ();
 
+#  warn "$act_parent_term_name <-> $mod_parent_term_name\n";
+#
+#  warn "starting activity query\n";
+#  warn "  count: ", $feature_cvterm_rs->count(), "\n";
+
   while (defined (my $fc = $feature_cvterm_rs->next())) {
     my ($ext_parts, $parent_cvterm) = $self->get_ext_parts($fc);
 
@@ -163,7 +215,7 @@ EOQ
       if ($ext_part->{rel_type_name} eq 'has_input') {
         my $target = $ext_part->{detail} =~ s/^$db_name://r;
         my $key = "$pub_uniquename-$feature_uniquename-$target";
-        $activity_genes_and_targets{$key} = 1;
+        push @{$activity_genes_and_targets{$key}}, $fc;
       }
     }
   }
@@ -171,7 +223,7 @@ EOQ
   $sql = <<"EOQ";
 SELECT feature_cvterm_id
 FROM pombase_feature_cvterm_ext_resolved_terms fc
-WHERE cvterm_name like '%[%'
+WHERE cvterm_name like '%[$conf_ext_name%'
   AND base_cvterm_id IN
     (SELECT subject_id FROM cvtermpath WHERE object_id IN
          (SELECT cvterm_id FROM cvterm
@@ -179,7 +231,7 @@ WHERE cvterm_name like '%[%'
        AND type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'is_a')
        AND pathdistance >= 0)
 
--- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:23770679' OR uniquename = 'PMID:18057023' OR uniquename = 'PMID:21540296')
+-- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:23770679' OR uniquename = 'PMID:18057023' OR uniquename = 'PMID:28552615')
 
 
 ORDER BY cvterm_name
@@ -202,12 +254,12 @@ EOQ
     my $pub_uniquename = $fc->pub()->uniquename();
 
     for my $ext_part (@$ext_parts) {
-      if ($ext_part->{rel_type_name} eq $conf->{extension_name}) {
+      if ($ext_part->{rel_type_name} eq $conf_ext_name) {
         my $ext_name = $ext_part->{detail} =~ s/^$db_name://r;
         my $key = "$pub_uniquename-$feature_uniquename-$ext_name-" .
           $ext_part->{rel_type_name};
 
-        $mod_genes_and_ext{$key} = 1;
+        push @{$mod_genes_and_ext{$key}}, $fc;
       }
     }
   }
@@ -227,15 +279,32 @@ EOQ
   }
 
   for my $key (keys %mod_genes_and_ext) {
-    my ($pub, $mod_gene, $ext_name) = split /-/, $key;
+    my ($pub, $mod_gene, $gene_in_ext, $ext_rel) = split /-/, $key;
 
-    my $act_key = "$pub-$ext_name-$mod_gene";
+    my $act_key = "$pub-$gene_in_ext-$mod_gene";
 
     if (defined $activity_genes_and_targets{$act_key}) {
 #      print "found activity: $pub $ext_name modifies($mod_gene)\n";
     } else {
       $missing_act++;
-      print "missing activity: $pub $ext_name modifies($mod_gene)\n";
+      print "missing activity: $pub $gene_in_ext $ext_rel($mod_gene)\n";
+
+      my $mf_id = $conf->{mf_id};
+      my @fcs = @{$mod_genes_and_ext{$key}};
+      my $inferred_ext = "has_input($mod_gene)";
+
+      for my $fc (@fcs) {
+        my ($evidence_code, $date) = $self->get_props($fc);
+
+        push @{$missing_activities}, {
+          gene => $gene_in_ext,
+          term_id => $mf_id,
+          pub => $pub,
+          evidence_code => $evidence_code,
+          date => $date,
+          extension => $inferred_ext
+        };
+      }
     }
   }
 
@@ -244,6 +313,8 @@ EOQ
 
 sub process {
   my $self = shift;
+
+  my @missing_activities = ();
 
   for my $activity_parent_term_name (sort keys %{$self->mf_to_mod_mapping()}) {
     for my $conf (@{$self->mf_to_mod_mapping()->{$activity_parent_term_name}}) {
@@ -254,7 +325,8 @@ sub process {
       print qq|checking "$activity_parent_term_name" [$ext_name] "$mod_parent_term_name"\n|;
 
       my ($missing_act, $missing_mod) =
-        $self->check_activity($activity_parent_term_name, $mod_parent_term_name, $conf);
+        $self->check_activity($activity_parent_term_name, $mod_parent_term_name,
+                              \@missing_activities, $conf);
 
       if ($missing_act == 0 && $missing_mod == 0) {
         print "no missing activities or modifications\n";
@@ -263,6 +335,45 @@ sub process {
       print "\n";
     }
   }
+
+  my $missing_activities_file = $self->missing_activities_file();
+  open my $missing_activities_fh, '>', $missing_activities_file or
+    die "can't open $missing_activities_file for writing\n";
+
+  my %seen_missing_activities = ();
+
+  for my $missing_activity (@missing_activities) {
+    my $gene = $missing_activity->{gene};
+    my $term_id = $missing_activity->{term_id};
+    my $pub = $missing_activity->{pub};
+    my $evidence_code = $missing_activity->{evidence_code};
+    my $extension = $missing_activity->{extension};
+    my $date = $missing_activity->{date};
+
+    my $key = join "-=-", $gene, $term_id, $pub, $evidence_code, $extension;
+
+    if ($seen_missing_activities{$key} &&
+        $date gt $seen_missing_activities{$key}->{date} ||
+        !$seen_missing_activities{$key})
+      {
+        $seen_missing_activities{$key} = $missing_activity;
+      }
+  }
+
+  for my $key (sort keys %seen_missing_activities) {
+    my $missing_activity = $seen_missing_activities{$key};
+
+    my $gene = $missing_activity->{gene};
+    my $term_id = $missing_activity->{term_id};
+    my $pub = $missing_activity->{pub};
+    my $evidence_code = $missing_activity->{evidence_code};
+    my $extension = $missing_activity->{extension};
+    my $date = $missing_activity->{date};
+
+    print $missing_activities_fh "PomBase\t$gene\t\t\t$term_id\t$pub\t$evidence_code\t\tX\t\t\tprotein\ttaxon:4896\t$date\tPomBase\t$extension\t\n";
+  }
+
+  close $missing_activities_fh or die;
 }
 
 1;
