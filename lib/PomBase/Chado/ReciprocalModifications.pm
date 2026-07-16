@@ -62,7 +62,7 @@ has mod_to_mf_mapping => (is => 'rw', init_arg => undef);
 has mf_to_mod_mapping => (is => 'rw', init_arg => undef);
 has missing_activities_file => (is => 'rw', init_arg => undef);
 has missing_modifications_file => (is => 'rw', init_arg => undef);
-has parent_map => (is => 'rw', init_arg => undef);
+has child_map => (is => 'rw', init_arg => undef);
 
 sub BUILD {
   my $self = shift;
@@ -128,6 +128,42 @@ sub BUILD {
 
   $self->missing_activities_file($missing_activities_file);
   $self->missing_modifications_file($missing_modifications_file);
+
+  $self->child_map($self->make_child_map());
+}
+
+sub make_child_map {
+  my $self = shift;
+
+  my $chado_dbh = $self->chado()->storage()->dbh();
+
+  my $query = <<'EOQ';
+SELECT 'GO:' || s_x.accession subject_term_id,
+       pt.name AS relation,
+       'GO:' || o_x.accession object_term_id
+FROM cvtermpath p
+JOIN cvterm s ON s.cvterm_id = p.subject_id
+JOIN dbxref s_x ON s_x.dbxref_id = s.dbxref_id
+JOIN cvterm o ON o.cvterm_id = p.object_id
+JOIN dbxref o_x ON o_x.dbxref_id = o.dbxref_id
+JOIN cv s_cv ON s.cv_id = s_cv.cv_id
+JOIN cvterm pt ON p.type_id = pt.cvterm_id
+WHERE s_cv.name = 'molecular_function'
+  AND pathdistance > 0
+  AND pt.name = 'is_a';
+EOQ
+
+  my $sth = $chado_dbh->prepare($query);
+  $sth->execute();
+
+  my %child_map = ();
+
+  while (my ($subject_term_id, $relation_name, $object_term_id) =
+         $sth->fetchrow_array()) {
+    push @{$child_map{$object_term_id}}, $subject_term_id;
+  }
+
+  return \%child_map;
 }
 
 sub get_props {
@@ -311,6 +347,34 @@ EOQ
   return ($missing_act, $missing_mod);
 }
 
+sub is_redundant {
+  my $self = shift;
+  my $test_annotation = shift;
+  my $other_annotations = shift;
+
+  my $child_terms = $self->child_map()->{$test_annotation->{term_id}};
+
+  if (!defined $child_terms) {
+    # no child term
+    return 0;
+  }
+
+  my @child_terms = @$child_terms;
+
+  for my $child_term (@child_terms) {
+    if ($child_term eq $test_annotation->{term_id}) {
+      next;
+    }
+    for my $other_annotation (@$other_annotations) {
+      if ($other_annotation->{term_id} eq $child_term) {
+        return 1;
+      }
+    }
+  }
+
+  return 0;
+}
+
 sub process {
   my $self = shift;
 
@@ -360,17 +424,37 @@ sub process {
       }
   }
 
-  for my $key (sort keys %seen_missing_activities) {
-    my $missing_activity = $seen_missing_activities{$key};
+  my %grouped_mf = ();
 
+  for my $missing_activity (values %seen_missing_activities) {
     my $gene = $missing_activity->{gene};
-    my $term_id = $missing_activity->{term_id};
     my $pub = $missing_activity->{pub};
     my $evidence_code = $missing_activity->{evidence_code};
     my $extension = $missing_activity->{extension};
     my $date = $missing_activity->{date};
 
-    print $missing_activities_fh "PomBase\t$gene\t\t\t$term_id\t$pub\t$evidence_code\t\tX\t\t\tprotein\ttaxon:4896\t$date\tPomBase\t$extension\t\n";
+    my $group_key = join "-=-", $gene, $pub, $evidence_code, $extension;
+
+    push @{$grouped_mf{$group_key}}, $missing_activity;
+  }
+
+  for my $grouped_mf_group (values %grouped_mf) {
+    my @grouped_mf_group = @$grouped_mf_group;
+
+    for my $missing_activity (@grouped_mf_group) {
+      if ($self->is_redundant($missing_activity, \@grouped_mf_group)) {
+        next;
+      }
+
+      my $gene = $missing_activity->{gene};
+      my $term_id = $missing_activity->{term_id};
+      my $pub = $missing_activity->{pub};
+      my $evidence_code = $missing_activity->{evidence_code};
+      my $extension = $missing_activity->{extension};
+      my $date = $missing_activity->{date};
+
+      print $missing_activities_fh "PomBase\t$gene\t\t\t$term_id\t$pub\t$evidence_code\t\tX\t\t\tprotein\ttaxon:4896\t$date\tPomBase\t$extension\t\n";
+    }
   }
 
   close $missing_activities_fh or die;
