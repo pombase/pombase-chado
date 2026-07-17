@@ -138,17 +138,19 @@ sub make_child_map {
   my $chado_dbh = $self->chado()->storage()->dbh();
 
   my $query = <<'EOQ';
-SELECT 'GO:' || s_x.accession subject_term_id,
+SELECT s_db.name || ':' || s_x.accession subject_term_id,
        pt.name AS relation,
-       'GO:' || o_x.accession object_term_id
+       o_db.name || ':' || o_x.accession object_term_id
 FROM cvtermpath p
 JOIN cvterm s ON s.cvterm_id = p.subject_id
 JOIN dbxref s_x ON s_x.dbxref_id = s.dbxref_id
+JOIN db s_db ON s_db.db_id = s_x.db_id
 JOIN cvterm o ON o.cvterm_id = p.object_id
 JOIN dbxref o_x ON o_x.dbxref_id = o.dbxref_id
+JOIN db o_db ON o_db.db_id = o_x.db_id
 JOIN cv s_cv ON s.cv_id = s_cv.cv_id
 JOIN cvterm pt ON p.type_id = pt.cvterm_id
-WHERE s_cv.name = 'molecular_function'
+WHERE s_cv.name in ('molecular_function', 'PSI-MOD')
   AND pathdistance > 0
   AND pt.name = 'is_a';
 EOQ
