@@ -322,7 +322,7 @@ EOQ
 
       my $mod_id = $conf->{mod_id};
       my @fcs = @{$activity_genes_and_targets{$key}};
-      my $inferred_ext = "$ext_name($activity_gene)";
+      my $inferred_ext = "$ext_name(PomBase:$activity_gene)";
 
       for my $fc (@fcs) {
         my ($evidence_code, $eco_evidence, $date) = $self->get_props($fc);
@@ -352,7 +352,7 @@ EOQ
 
       my $mf_id = $conf->{mf_id};
       my @fcs = @{$mod_genes_and_ext{$key}};
-      my $inferred_ext = "has_input($mod_gene)";
+      my $inferred_ext = "has_input(PomBase:$mod_gene)";
 
       for my $fc (@fcs) {
         my ($evidence_code, $eco_evidence, $date) = $self->get_props($fc);
@@ -400,10 +400,66 @@ sub is_redundant {
   return 0;
 }
 
+sub print_missing {
+  my $self = shift;
+  my $missing_fh = shift;
+  my $missing = shift;
+  my $printer = shift;
+
+  my @missing = @$missing;
+
+  my %seen_missing = ();
+
+  for my $missing_annotation (@missing) {
+    my $gene = $missing_annotation->{gene};
+    my $term_id = $missing_annotation->{term_id};
+    my $pub = $missing_annotation->{pub};
+    my $evidence_code = $missing_annotation->{evidence_code};
+    my $extension = $missing_annotation->{extension};
+    my $date = $missing_annotation->{date};
+
+    my $key = join "-=-", $gene, $term_id, $pub, $evidence_code, $extension;
+
+    if ($seen_missing{$key} &&
+        $date gt $seen_missing{$key}->{date} ||
+        !$seen_missing{$key})
+      {
+        $seen_missing{$key} = $missing_annotation;
+      }
+  }
+
+  my %grouped_mf = ();
+
+  for my $missing_annotation (values %seen_missing) {
+    my $gene = $missing_annotation->{gene};
+    my $pub = $missing_annotation->{pub};
+    my $evidence_code = $missing_annotation->{evidence_code};
+    my $extension = $missing_annotation->{extension};
+    my $date = $missing_annotation->{date};
+
+    my $group_key = join "-=-", $gene, $pub, $evidence_code, $extension;
+
+    push @{$grouped_mf{$group_key}}, $missing_annotation;
+  }
+
+  for my $grouped_mf_group (values %grouped_mf) {
+    my @grouped_mf_group = @$grouped_mf_group;
+
+    for my $missing_annotation (@grouped_mf_group) {
+      if ($self->is_redundant($missing_annotation, \@grouped_mf_group)) {
+        next;
+      }
+
+      $printer->($missing_fh, $missing_annotation);
+    }
+  }
+}
+
 sub process {
   my $self = shift;
 
   my @missing_activities = ();
+  my @missing_modifications = ();
 
   for my $activity_parent_term_name (sort keys %{$self->mf_to_mod_mapping()}) {
     for my $conf (@{$self->mf_to_mod_mapping()->{$activity_parent_term_name}}) {
@@ -415,7 +471,7 @@ sub process {
 
       my ($missing_act, $missing_mod) =
         $self->check_activity($activity_parent_term_name, $mod_parent_term_name,
-                              \@missing_activities, $conf);
+                              \@missing_activities, \@missing_modifications, $conf);
 
       if ($missing_act == 0 && $missing_mod == 0) {
         print "no missing activities or modifications\n";
@@ -429,60 +485,51 @@ sub process {
   open my $missing_activities_fh, '>', $missing_activities_file or
     die "can't open $missing_activities_file for writing\n";
 
-  my %seen_missing_activities = ();
+  my $mf_printer = sub {
+    my $fh = shift;
+    my $missing_annotation = shift;
 
-  for my $missing_activity (@missing_activities) {
-    my $gene = $missing_activity->{gene};
-    my $term_id = $missing_activity->{term_id};
-    my $pub = $missing_activity->{pub};
-    my $evidence_code = $missing_activity->{evidence_code};
-    my $extension = $missing_activity->{extension};
-    my $date = $missing_activity->{date};
+    my $gene = $missing_annotation->{gene};
+    my $term_id = $missing_annotation->{term_id};
+    my $pub = $missing_annotation->{pub};
+    my $evidence_code = $missing_annotation->{evidence_code};
+    my $extension = $missing_annotation->{extension};
+    my $date = $missing_annotation->{date};
 
-    my $key = join "-=-", $gene, $term_id, $pub, $evidence_code, $extension;
+    print $fh "PomBase\t$gene\t\t\t$term_id\t$pub\t$evidence_code\t\tX\t\t\tprotein\ttaxon:4896\t$date\tPomBase\t$extension\t\n";
+  };
 
-    if ($seen_missing_activities{$key} &&
-        $date gt $seen_missing_activities{$key}->{date} ||
-        !$seen_missing_activities{$key})
-      {
-        $seen_missing_activities{$key} = $missing_activity;
-      }
-  }
-
-  my %grouped_mf = ();
-
-  for my $missing_activity (values %seen_missing_activities) {
-    my $gene = $missing_activity->{gene};
-    my $pub = $missing_activity->{pub};
-    my $evidence_code = $missing_activity->{evidence_code};
-    my $extension = $missing_activity->{extension};
-    my $date = $missing_activity->{date};
-
-    my $group_key = join "-=-", $gene, $pub, $evidence_code, $extension;
-
-    push @{$grouped_mf{$group_key}}, $missing_activity;
-  }
-
-  for my $grouped_mf_group (values %grouped_mf) {
-    my @grouped_mf_group = @$grouped_mf_group;
-
-    for my $missing_activity (@grouped_mf_group) {
-      if ($self->is_redundant($missing_activity, \@grouped_mf_group)) {
-        next;
-      }
-
-      my $gene = $missing_activity->{gene};
-      my $term_id = $missing_activity->{term_id};
-      my $pub = $missing_activity->{pub};
-      my $evidence_code = $missing_activity->{evidence_code};
-      my $extension = $missing_activity->{extension};
-      my $date = $missing_activity->{date};
-
-      print $missing_activities_fh "PomBase\t$gene\t\t\t$term_id\t$pub\t$evidence_code\t\tX\t\t\tprotein\ttaxon:4896\t$date\tPomBase\t$extension\t\n";
-    }
-  }
+  $self->print_missing($missing_activities_fh, \@missing_activities,
+                       $mf_printer);
 
   close $missing_activities_fh or die;
+
+  my $missing_modifications_file = $self->missing_modifications_file();
+  open my $missing_modifications_fh, '>', $missing_modifications_file or
+    die "can't open $missing_modifications_file for writing\n";
+
+  my $mod_printer = sub {
+    my $fh = shift;
+    my $missing_annotation = shift;
+
+    my $gene = $missing_annotation->{gene};
+    my $term_id = $missing_annotation->{term_id};
+    my $pub = $missing_annotation->{pub};
+    my $evidence_code = $missing_annotation->{evidence_code};
+    my $extension = $missing_annotation->{extension};
+    my $date = $missing_annotation->{date};
+
+    if ($date =~ /^(\d\d\d\d)(\d\d)(\d\d)$/) {
+      $date = "$1-$2-$3";
+    }
+
+    print $fh "$gene\t\t$term_id\t$evidence_code\t\t$extension\t$pub\t4896\t$date\n";
+  };
+
+  $self->print_missing($missing_modifications_fh, \@missing_modifications,
+                       $mod_printer);
+
+  close $missing_modifications_fh;
 }
 
 1;
