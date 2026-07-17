@@ -213,7 +213,7 @@ sub check_activity {
   my $sql = <<"EOQ";
 SELECT feature_cvterm_id
 FROM pombase_feature_cvterm_ext_resolved_terms fc
-WHERE cvterm_name like '%[$conf_ext_name%'
+WHERE cvterm_name like '%[has_input%'
   AND base_cvterm_id IN
     (SELECT subject_id FROM cvtermpath WHERE object_id IN
          (SELECT cvterm_id FROM cvterm
