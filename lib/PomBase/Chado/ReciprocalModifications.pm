@@ -205,6 +205,7 @@ sub check_activity {
   my $act_parent_term_name = shift =~ s/'/''/gr;
   my $mod_parent_term_name = shift =~ s/'/''/gr;
   my $missing_activities = shift;
+  my $missing_modifications = shift;
   my $conf = shift;
 
   my $chado = $self->chado();
@@ -318,6 +319,23 @@ EOQ
     } else {
       $missing_mod++;
       print "missing modification: $pub $target $ext_name($activity_gene)\n";
+
+      my $mod_id = $conf->{mod_id};
+      my @fcs = @{$activity_genes_and_targets{$key}};
+      my $inferred_ext = "$ext_name($activity_gene)";
+
+      for my $fc (@fcs) {
+        my ($evidence_code, $eco_evidence, $date) = $self->get_props($fc);
+
+        push @{$missing_modifications}, {
+          gene => $target,
+          term_id => $mod_id,
+          pub => $pub,
+          evidence_code => $eco_evidence,
+          date => $date,
+          extension => $inferred_ext
+        };
+      }
     }
   }
 
