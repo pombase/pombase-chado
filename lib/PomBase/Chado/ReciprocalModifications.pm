@@ -173,10 +173,11 @@ sub get_props {
   my $fc = shift;
 
   my $evidence_code = '';
+  my $eco_evidence = '';
   my $date = '';
 
   my $rs = $fc->feature_cvtermprops()
-    ->search({ -or => [ 'type.name' => 'evidence', 'type.name' => 'date' ] },
+    ->search({ -or => [ 'type.name' => 'evidence', 'type.name' => 'eco_evidence', 'type.name' => 'date' ] },
              { join => 'type' });
 
   while (defined (my $prop = $rs->next())) {
@@ -188,11 +189,15 @@ sub get_props {
         $evidence_code = 'Inferred from Experiment';
       }
     } else {
-      $date = $prop->value();
+      if ($prop->type()->name() eq 'eco_evidence') {
+        $eco_evidence = $prop->value();
+      } else {
+        $date = $prop->value();
+      }
     }
   }
 
-  return ($evidence_code, $date);
+  return ($evidence_code, $eco_evidence, $date);
 }
 
 sub check_activity {
@@ -332,7 +337,7 @@ EOQ
       my $inferred_ext = "has_input($mod_gene)";
 
       for my $fc (@fcs) {
-        my ($evidence_code, $date) = $self->get_props($fc);
+        my ($evidence_code, $eco_evidence, $date) = $self->get_props($fc);
 
         push @{$missing_activities}, {
           gene => $gene_in_ext,
