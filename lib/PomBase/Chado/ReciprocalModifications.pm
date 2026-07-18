@@ -229,7 +229,7 @@ WHERE cvterm_name like '%[has_input%'
        AND type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'is_a')
        AND pathdistance >= 0)
 
--- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:23770679' OR uniquename = 'PMID:18057023' OR uniquename = 'PMID:28552615')
+-- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:36650056')
 
 ORDER BY cvterm_name
 EOQ
@@ -275,8 +275,7 @@ WHERE cvterm_name like '%[$conf_ext_name%'
        AND type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'is_a')
        AND pathdistance >= 0)
 
--- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:23770679' OR uniquename = 'PMID:18057023' OR uniquename = 'PMID:28552615')
-
+-- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:36650056')
 
 ORDER BY cvterm_name
 EOQ
@@ -289,6 +288,10 @@ EOQ
              });
 
   my %mod_genes_and_ext = ();
+
+# warn "$act_parent_term_name <-> $mod_parent_term_name\n";
+# warn "starting modification query\n";
+# warn "  count: ", $feature_cvterm_rs->count(), "\n";
 
   while (defined (my $fc = $feature_cvterm_rs->next())) {
     my ($ext_parts, $parent_cvterm) = $self->get_ext_parts($fc);
