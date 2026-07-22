@@ -108,6 +108,7 @@ sub _store_interaction_helper {
   my $canto_session = $args{canto_session};
   my $annotation_throughput_type = $args{annotation_throughput_type};
   my $annotation_date = $args{annotation_date};
+  my $submitter_comment = $args{submitter_comment};
   my $notes = $args{notes} // [];
   my $is_inferred = $args{is_inferred};
   my @notes = @$notes;
@@ -177,6 +178,9 @@ sub _store_interaction_helper {
   }
   if (defined $annotation_throughput_type) {
     $self->store_feature_relationshipprop($rel, annotation_throughput_type => $annotation_throughput_type);
+  }
+  if (defined $submitter_comment) {
+    $self->store_feature_relationshipprop($rel, submitter_comment => $submitter_comment);
   }
   if (@notes) {
     for my $note (@notes) {

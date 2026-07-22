@@ -174,6 +174,7 @@ sub _store_interaction_annotation {
   my $canto_session = $args{canto_session};
   my $session_genes = $args{session_genes};
   my $annotation_throughput_type = $args{annotation_throughput_type};
+  my $submitter_comment = $args{submitter_comment};
 
   my $organism = $feature_a->organism();
 
@@ -195,6 +196,7 @@ sub _store_interaction_annotation {
         creation_date => $creation_date,
         curator => $curator,
         canto_session => $canto_session,
+        submitter_comment => $submitter_comment,
       );
     }
   };
@@ -865,6 +867,7 @@ sub _process_feature {
                                              curator => $curator,
                                              changed_by => $changed_by_json,
                                              session_genes => $session_genes,
+                                             submitter_comment => $submitter_comment,
                                              %useful_session_data);
       } else {
         die "no interacting_genes data found in interaction annotation\n";
