@@ -323,6 +323,10 @@ EOQ
       $missing_mod++;
       print "missing modification: $pub $target $ext_name($activity_gene)\n";
 
+      if ($target =~ /^PR:/) {
+        next;
+      }
+
       my $mod_id = $conf->{mod_id};
       my @fcs = @{$activity_genes_and_targets{$key}};
       my $inferred_ext = "$ext_name(PomBase:$activity_gene)";
@@ -352,6 +356,10 @@ EOQ
     } else {
       $missing_act++;
       print "missing activity: $pub $gene_in_ext $ext_rel($mod_gene)\n";
+
+      if ($gene_in_ext =~ /^PR:/) {
+        next;
+      }
 
       my $mf_id = $conf->{mf_id};
       my @fcs = @{$mod_genes_and_ext{$key}};
