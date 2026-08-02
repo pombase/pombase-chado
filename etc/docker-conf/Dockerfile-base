@@ -1,7 +1,7 @@
 # -*- dockerfile -*-
 # recreate with:
 #   docker pull debian:trixie
-#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v95 .
+#   docker build -f etc/docker-conf/Dockerfile-base -t=pombase/web-base:v96 .
 # in pombase-chado
 FROM debian:trixie
 
@@ -25,11 +25,12 @@ RUN apt-get -y update && \
 RUN apt-get -y update && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
 RUN apt install -y python3-django python3-django-allauth python3-tornado \
     pipx gunicorn python3-seaborn python3-numpy python3-pandas \
-    python3-matplotlib python3-regex libsqlite3-dev
+    python3-matplotlib python3-regex libsqlite3-dev \
+    libperlio-gzip-perl libgd-perl libjson-perl libtext-csv-perl libyaml-perl \
+    libxml-rss-perl && apt-get clean
 
 RUN npm install --silent --unsafe-perm -g @angular/cli @jbrowse/cli
 
-RUN apt-get -y install libperlio-gzip-perl libgd-perl libjson-perl libtext-csv-perl libyaml-perl && apt-get clean
 RUN curl -L http://cpanmin.us | perl - --self-upgrade
 
 RUN curl -L https://github.com/jgm/pandoc/releases/download/3.1.13/pandoc-3.1.13-1-amd64.deb > /tmp/pandoc-3.1.13-1-amd64.deb && \
