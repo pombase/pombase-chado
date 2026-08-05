@@ -253,7 +253,7 @@ sub load {
 
  LINE:
   while (defined (my $line = $fh->getline())) {
-    next if $line =~ /^\s*!/;
+    next if $line =~ /^\s*[!#]/;
 
     if (!$csv->parse($line)) {
       die "line $.: Parse error: ", $csv->error_input(), "\n";
