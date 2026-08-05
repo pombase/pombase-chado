@@ -167,7 +167,7 @@ sub load {
     my $proc = sub {
       my $cv = $self->get_cv($cv_name);
       if (!defined $cv) {
-        die qq|line $.: can't find CV name "$cv_name"\n|;
+        die qq|can't find CV name "$cv_name"\n|;
       }
 
       my $cvterm = $self->find_or_create_cvterm($cv, $term_name);
@@ -239,7 +239,7 @@ sub load {
     catch {
       chomp $_;
       warn "line ", $fh->input_line_number(), ": ($_)\n";
-      warn "  $line\n";
+      warn "  contents of line: $line\n";
     }
   }
 }
