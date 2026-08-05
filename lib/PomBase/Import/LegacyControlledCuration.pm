@@ -144,8 +144,8 @@ sub load {
     my $qualifier = trim($columns{"qualifier"});
     my $residue = trim($columns{"residue"});
     my $term_name = trim($columns{"term"}) =~ s/  +/ /gr;
-    my $with = trim($columns{"with"});
-    my $annotation_extension = trim($columns{"annotation_extension"});
+    my $with = trim($columns{"with"} // '');
+    my $annotation_extension = trim($columns{"annotation_extension"} // '');
 
     if ($cv_name eq 'gene_ex') {
       if ($feature_type eq 'mRNA') {
