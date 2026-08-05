@@ -137,7 +137,7 @@ sub load {
     my $file_name = trim($columns{"file_name"});
     my $systematic_id = trim($columns{"systematic_id"});
     my $feature_type = trim($columns{"feature_type"});
-    my $cv_name = trim($columns{"cv_name"});
+    my $cv_name = trim($columns{"cv_name"}) =~ s/ /_/gr;
     my $date = trim($columns{"date"});
     my $db_xref = trim($columns{"db_xref"});
     my $evidence_code = trim($columns{"evidence"});
