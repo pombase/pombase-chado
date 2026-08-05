@@ -165,7 +165,12 @@ sub load {
     }
 
     my $proc = sub {
-      my $cvterm = $self->find_or_create_cvterm($cv_name, $term_name);
+      my $cv = $self->get_cv($cv_name);
+      if (!defined $cv) {
+        die qq|line $.: can't find CV name "$cv_name"\n|;
+      }
+
+      my $cvterm = $self->find_or_create_cvterm($cv, $term_name);
 
       my $pub;
 
@@ -232,7 +237,9 @@ sub load {
       $chado->txn_do($proc);
     }
     catch {
+      chomp $_;
       warn "line ", $fh->input_line_number(), ": ($_)\n";
+      warn "  $line\n";
     }
   }
 }
