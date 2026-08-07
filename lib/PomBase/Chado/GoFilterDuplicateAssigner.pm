@@ -197,18 +197,20 @@ EOQ
     }
   }
 
-  print "term_name\tterm_id\tcv_name\tfeature\tevidence\twith\tfrom\tgene_product_form_id\tqualifier\tpmid\n";
+  if (@secondary_annotations_to_delete) {
+    print "term_name\tterm_id\tcv_name\tfeature\tevidence\twith\tfrom\tgene_product_form_id\tqualifier\tpmid\n";
 
-  my @feature_cvterm_ids_to_delete = ();
+    my @feature_cvterm_ids_to_delete = ();
 
-  for my $row_to_delete (@secondary_annotations_to_delete) {
-    my $feature_cvterm_id = shift @$row_to_delete;
+    for my $row_to_delete (@secondary_annotations_to_delete) {
+      my $feature_cvterm_id = shift @$row_to_delete;
 
-    push @feature_cvterm_ids_to_delete, $feature_cvterm_id;
+      push @feature_cvterm_ids_to_delete, $feature_cvterm_id;
 
-    my $row_string = join "\t", @$row_to_delete;
+      my $row_string = join "\t", @$row_to_delete;
 
-    print $row_string, "\n";
+      print $row_string, "\n";
+    }
   }
 
   my $delete_count = scalar(@feature_cvterm_ids_to_delete);
