@@ -210,7 +210,7 @@ EOQ
   }
 
   if ($missing_count == 0) {
-    die "No missing reciprocal IPI annotations were added\n";
+    warn "No missing reciprocal IPI annotations were added\n";
   } else {
     print "Added $missing_count missing reciprocal IPI annotations\n";
   }
