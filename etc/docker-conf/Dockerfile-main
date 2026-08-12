@@ -22,7 +22,7 @@ RUN mkdir bin
 RUN (curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable && \
      . "$HOME/.cargo/env" && \
      (cd pombase-chado-json; rustup default stable; cargo build --release --bin pombase-server && cp target/release/pombase-server /pombase/bin/) && \
-     rm -r $HOME/.rustup $HOME/.cargo)
+     rm -r $HOME/.rustup $HOME/.cargo $HOME/pombase-chado-json)
 
 USER root
 
