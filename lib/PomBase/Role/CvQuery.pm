@@ -188,7 +188,7 @@ sub find_cvterm_by_name {
     $cv = $self->get_cv($cv_name);
 
     if (!defined $cv) {
-      croak "no cv found with name '$cv_name'\n";
+      croak "no cv found with name '$cv_name' when looking for '$term_name'\n";
     }
   }
 
