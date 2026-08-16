@@ -557,6 +557,11 @@ sub _process_identifier {
   }
 
   my $database_name = $self->config()->{database_name};
+  my $db_prefix = $database_name;
+
+  if ($database_name eq 'FlyQuery') {
+    $db_prefix = 'FB';
+  }
 
   my $term_id = undef;
   my $term = undef;
@@ -567,14 +572,14 @@ sub _process_identifier {
       die "can't find term with ID: $term_id\n";
     }
   } else {
-    if ($identifier =~ /^($database_name|GeneDB_?Spombe):([\w\d\.\-]+)$/i) {
+    if ($identifier =~ /^($db_prefix|GeneDB_?Spombe):([\w\d\.\-]+)$/i) {
       $identifier = $2;
-      my $organism = $self->find_organism_by_common_name('pombe');
+      my $organism = $self->find_organism_by_taxonid($self->config()->{taxonid});
       try {
         my $ref_feature =
           $self->find_chado_feature($identifier, 1, 1, $organism,
                                     ['gene', 'pseudogene', 'promoter']);
-        $identifier = 'PomBase:' . $ref_feature->uniquename();
+        $identifier = $db_prefix . ':' . $ref_feature->uniquename();
       } catch {
         chomp (my $message = $_);
         warn "in extension for $feature_uniquename, can't find " .
@@ -602,7 +607,6 @@ sub _process_identifier {
               die qq|modified_residue relation value must be an AA followed by a position, eg. "A21", not: $identifier\n|;
             }
           } else {
-          my $organism = $self->find_organism_by_taxonid($self->config()->{taxonid});
           my $ref_feature = undef;
 
           try {
@@ -613,7 +617,7 @@ sub _process_identifier {
           };
 
           if ($ref_feature) {
-            $identifier = $database_name . ':' . $ref_feature->uniquename();
+            $identifier = $db_prefix . ':' . $ref_feature->uniquename();
           } else {
             die "in annotation extension for $feature_uniquename, can't " .
               qq|parse identifier in "$rel_name($identifier)"\n|;
