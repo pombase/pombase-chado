@@ -565,6 +565,9 @@ sub _process_identifier {
 
   my $term_id = undef;
   my $term = undef;
+
+  my $organism = $self->find_organism_by_taxonid($self->config()->{taxonid});
+
   if ($identifier =~ /^(\w+):(\d+)$/) {
     $term_id = $identifier;
     $term = $self->find_cvterm_by_term_id($term_id);
@@ -574,7 +577,6 @@ sub _process_identifier {
   } else {
     if ($identifier =~ /^($db_prefix|GeneDB_?Spombe):([\w\d\.\-]+)$/i) {
       $identifier = $2;
-      my $organism = $self->find_organism_by_taxonid($self->config()->{taxonid});
       try {
         my $ref_feature =
           $self->find_chado_feature($identifier, 1, 1, $organism,
