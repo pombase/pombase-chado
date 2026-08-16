@@ -556,6 +556,8 @@ sub _process_identifier {
     $nested_extension_bit = $2;
   }
 
+  my $database_name = $self->config()->{database_name};
+
   my $term_id = undef;
   my $term = undef;
   if ($identifier =~ /^(\w+):(\d+)$/) {
@@ -565,7 +567,7 @@ sub _process_identifier {
       die "can't find term with ID: $term_id\n";
     }
   } else {
-    if ($identifier =~ /^(PomBase|GeneDB_?Spombe):([\w\d\.\-]+)$/i) {
+    if ($identifier =~ /^($database_name|GeneDB_?Spombe):([\w\d\.\-]+)$/i) {
       $identifier = $2;
       my $organism = $self->find_organism_by_common_name('pombe');
       try {
@@ -611,8 +613,7 @@ sub _process_identifier {
           };
 
           if ($ref_feature) {
-            $identifier =
-              $self->config()->{database_name} . ':' . $ref_feature->uniquename();
+            $identifier = $database_name . ':' . $ref_feature->uniquename();
           } else {
             die "in annotation extension for $feature_uniquename, can't " .
               qq|parse identifier in "$rel_name($identifier)"\n|;
