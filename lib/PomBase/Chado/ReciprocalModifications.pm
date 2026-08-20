@@ -334,6 +334,10 @@ EOQ
       for my $fc (@fcs) {
         my ($evidence_code, $eco_evidence, $date) = $self->get_props($fc);
 
+        if (!$eco_evidence) {
+          warn "missing ECO for: $evidence_code\n";
+        }
+
         push @{$missing_modifications}, {
           gene => $target,
           term_id => $mod_id,
