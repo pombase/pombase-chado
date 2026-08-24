@@ -229,7 +229,7 @@ WHERE cvterm_name like '%[has_input%'
        AND type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'is_a')
        AND pathdistance >= 0)
 
--- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:36650056')
+-- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:27984725')
 
 ORDER BY cvterm_name
 EOQ
@@ -275,7 +275,7 @@ WHERE cvterm_name like '%[$conf_ext_name%'
        AND type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'is_a')
        AND pathdistance >= 0)
 
--- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:36650056')
+-- AND fc.pub_id IN (SELECT pub_id FROM pub WHERE uniquename = 'PMID:27984725')
 
 ORDER BY cvterm_name
 EOQ
@@ -321,7 +321,6 @@ EOQ
 #      print "found modification: $pub $target $ext_name($activity_gene)\n";
     } else {
       $missing_mod++;
-      print "missing modification: $pub $target $ext_name($activity_gene)\n";
 
       if ($target =~ /^PR:/) {
         next;
@@ -359,7 +358,6 @@ EOQ
 #      print "found activity: $pub $ext_name modifies($mod_gene)\n";
     } else {
       $missing_act++;
-      print "missing activity: $pub $gene_in_ext $ext_rel($mod_gene)\n";
 
       if ($gene_in_ext =~ /^PR:/) {
         next;
@@ -482,17 +480,9 @@ sub process {
 
       my $ext_name = $conf->{extension_name};
 
-      print qq|checking "$activity_parent_term_name" [$ext_name] "$mod_parent_term_name"\n|;
-
       my ($missing_act, $missing_mod) =
         $self->check_activity($activity_parent_term_name, $mod_parent_term_name,
                               \@missing_activities, \@missing_modifications, $conf);
-
-      if ($missing_act == 0 && $missing_mod == 0) {
-        print "no missing activities or modifications\n";
-      }
-
-      print "\n";
     }
   }
 
@@ -514,8 +504,7 @@ sub process {
     print $fh "PomBase\t$gene\t\t\t$term_id\t$pub\t$evidence_code\t\tX\t\t\tprotein\ttaxon:4896\t$date\tPomBase\t$extension\t\n";
   };
 
-  $self->print_missing($missing_activities_fh, \@missing_activities,
-                       $mf_printer);
+  $self->print_missing($missing_activities_fh, \@missing_activities, $mf_printer);
 
   close $missing_activities_fh or die;
 
