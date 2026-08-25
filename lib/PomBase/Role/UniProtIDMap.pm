@@ -82,7 +82,7 @@ sub _build_uniprot_id_map {
     }
 
     if (!$prefix) {
-      $prefix = $self->config()->{database_name};
+      $prefix = $self->config()->{database_prefix};
     }
 
     $uniquename = "$prefix:$uniquename";
