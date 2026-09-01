@@ -148,7 +148,7 @@ sub load {
     my $annotation_extension = trim($columns{"annotation_extension"} // '');
 
     if ($cv_name eq 'gene_ex') {
-      if ($feature_type eq 'mRNA') {
+      if ($feature_type eq 'mRNA' && $term_name !~ /^RNA /) {
         $cv_name = 'PomGeneExProt';
       } else {
         $cv_name = 'PomGeneExRNA';
