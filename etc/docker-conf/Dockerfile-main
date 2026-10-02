@@ -32,7 +32,7 @@ RUN mkdir /pombase/misc
 
 COPY --chown=pombase:pombase curation/data_files /pombase/curation-data-files
 COPY --chown=pombase:pombase PB_references.txt /pombase/
-
+COPY --chown=pombase:pombase pombase_script_settings.json /pombase/pombase_script_settings.json
 COPY --chown=pombase:pombase web-json /var/www/html/web-json
 COPY --chown=pombase:pombase misc/sitemap.txt /var/www/html/
 COPY --chown=pombase:pombase misc/htp_gene_expression_table.tsv /pombase/misc/
@@ -111,7 +111,7 @@ RUN if [ $database_name = 'pombase' ]; \
 
 RUN (cd pombase-website; \
     ./etc/update_generated_files.sh /pombase/main_config.json \
-      /pombase/data_files /pombase/PB_references.txt)
+      /pombase/data_files /pombase/PB_references.txt /pombase/pombase_script_settings.json)
 
 RUN cd ./solr-8.11.2/; ./bin/solr start -force -m 4g && \
     ./bin/solr create_core -force -c terms && \

@@ -19,6 +19,7 @@ cd $container_dir
 (cd curation; git pull)
 (cd pombase-chado-json; git pull)
 (cd pombase-python-web; git pull)
+(cd pombase-scripts; git pull)
 (cd genome_changelog; git pull)
 rm -rf data_files
 cp -r genome_changelog/results/pombase_tables data_files
@@ -44,6 +45,7 @@ rsync -acvPHS --delete-after $dump_dir/fasta/bgzip_chromosomes $container_dir/
 cp $dump_dir/api_maps.sqlite3.zst $container_dir/
 cp $dump_dir/pombe-embl/supporting_files/PB_references.txt $container_dir/
 cp $dump_dir/pombe-embl/supporting_files/*.svg $container_dir/
+cp pombase-scripts/settings.json $container_dir/pombase_script_settings.json
 
 mkdir -p $container_dir/feature_sequences
 rsync -acvPHS --delete-after $dump_dir/fasta/feature_sequences/peptide.fa.gz $container_dir/feature_sequences/peptide.fa.gz
