@@ -84,20 +84,27 @@ has options => (is => 'ro', isa => 'ArrayRef');
 has extension_processor => (is => 'ro', init_arg => undef, lazy_build => 1);
 
 has throughput_type => (is => 'rw', init_arg => undef);
+has source_file_name => (is => 'rw', init_arg => undef);
+has load_comment_column => (is => 'rw', init_arg => undef);
 
 sub BUILD
 {
   my $self = shift;
 
   my $throughput_type = undef;
+  my $source_file_name = undef;
+  my $load_comment_column = 0;
 
-  my @opt_config = ("throughput-type=s" => \$throughput_type);
+  my @opt_config = ("throughput-type=s" => \$throughput_type,
+                    'source-file-name=s' => \$source_file_name,
+                    "load-comment-column" => \$load_comment_column);
 
   if (!GetOptionsFromArray($self->options(), @opt_config)) {
     croak "option parsing failed";
   }
 
   if (defined $throughput_type) {
+    $throughput_type =~ s/[\-_]/ /g;
     if ($throughput_type ne 'high throughput' && $throughput_type ne 'low throughput') {
       die "unknown --throughput-type argument: $throughput_type";
     }
@@ -107,6 +114,15 @@ sub BUILD
   }
 
   $self->throughput_type($throughput_type);
+
+  if ($source_file_name) {
+    $source_file_name =~ s/^\s+//;
+    $source_file_name =~ s/\s+$//;
+
+    $self->source_file_name($source_file_name);
+  }
+
+  $self->load_comment_column($load_comment_column);
 }
 
 sub _build_extension_processor {
@@ -138,6 +154,8 @@ sub _store_annotation {
   my $long_evidence = shift;
   my $conditions = shift;
   my $allele_variant = shift;
+  my $annotation_comment = shift;
+  my $file_name = shift;
 
   my @split_ext_parts = ("");
 
@@ -162,6 +180,16 @@ sub _store_annotation {
     if ($allele_variant) {
       $self->add_feature_cvtermprop($feature_cvterm, 'allele_variant',
                                     $allele_variant);
+    }
+
+    if ($annotation_comment) {
+      $self->add_feature_cvtermprop($feature_cvterm, 'submitter_comment',
+                                    $annotation_comment);
+    }
+
+    if ($file_name) {
+      $self->add_feature_cvtermprop($feature_cvterm, 'source_file',
+                                    $file_name);
     }
 
     my @extension_bits = ();
@@ -244,7 +272,7 @@ sub load {
   my $self = shift;
   my $fh = shift;
 
-  my $file_name = $self->file_name_of_fh($fh);
+  my $file_name = $self->source_file_name() || $self->file_name_of_fh($fh);
 
   my $chado = $self->chado();
   my $config = $self->config();
@@ -255,8 +283,13 @@ sub load {
                         parental_strain strain_background genotype_description
                         gene_name allele_name allele_synonym allele_type
                         evidence conditions penetrance severity extension
-                        reference taxon date ploidy allele_variant
-                        illegal_extra_column));
+                        reference taxon date));
+
+  if ($self->load_comment_column()) {
+    push @col_names, qw(annotation_comment illegal_extra_column);
+  } else {
+    push @col_names, qw(ploidy allele_variant illegal_extra_column);
+  }
 
   my %stored_alleles = ();
 
@@ -333,6 +366,8 @@ sub load {
     my $ploidiness = $columns_ref->{"ploidy"} || "haploid";
 
     my $allele_variant = $columns_ref->{"allele_variant"};
+
+    my $annotation_comment = $columns_ref->{"annotation_comment"};
 
     my $proc = sub {
       my $organism = $self->find_organism_by_taxonid($taxonid);
@@ -488,7 +523,8 @@ sub load {
 
       $self->_store_annotation($genotype_feature, $cvterm, $pub, $date, $extension,
                                $penetrance, $severity, $long_evidence,
-                               $conditions, $allele_variant);
+                               $conditions, $allele_variant, $annotation_comment,
+                               $file_name);
 
       $self->increment_ref_annotation_count($reference);
     };
