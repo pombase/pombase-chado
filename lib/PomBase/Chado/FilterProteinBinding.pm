@@ -89,8 +89,11 @@ bindings AS
    WHERE t.name = 'protein binding'
      AND pt.name = 'with'
      AND rel_type.name = 'part_of'
-     AND gene_type.name = 'gene'),
-annotation_to_delete AS
+     AND gene_type.name = 'gene'
+     AND fc.feature_cvterm_id NOT IN
+       (SELECT feature_cvterm_id FROM feature_cvtermprop
+        WHERE type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'residue'))),
+     annotation_to_delete AS
   (SELECT feature_cvterm_id
    FROM bindings
    JOIN physical_interactions interaction ON bindings.gene = interaction.gene1
