@@ -141,6 +141,7 @@ my %process_modules = (
   'fix-allele-names' => 'PomBase::Chado::FixAlleleNames',
   'infer-paralogs' => 'PomBase::Chado::InferParalogs',
   'reciprocal-modifications' => 'PomBase::Chado::ReciprocalModifications',
+  'filter-binding-annotations' => 'PomBase::Chado::FilterProteinBinding',
 );
 
 my $process_module = $process_modules{$process_type};
