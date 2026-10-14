@@ -45,15 +45,19 @@ sub _make_interaction_table
 
   my $query = <<'EOQ';
 CREATE TEMP TABLE physical_interactions AS
-SELECT subj.uniquename as gene1, 'PomBase:' || obj.uniquename as gene2
+SELECT subj.uniquename as gene1, pub.uniquename AS pub_uniquename, 'PomBase:' || obj.uniquename as gene2
 FROM feature_relationship rel
+JOIN feature_relationship_pub rel_pub on rel_pub.feature_relationship_id = rel.feature_relationship_id
+JOIN pub ON rel_pub.pub_id = pub.pub_id
 JOIN cvterm TYPE ON type.cvterm_id = rel.type_id
 JOIN feature subj ON subj.feature_id = rel.subject_id
 JOIN feature obj ON obj.feature_id = rel.object_id
 WHERE type.name = 'interacts_physically'
 UNION
-SELECT obj.uniquename as gene1, 'PomBase:' || subj.uniquename as gene2
+SELECT obj.uniquename as gene1, pub.uniquename AS pub_uniquename, 'PomBase:' || subj.uniquename as gene2
 FROM feature_relationship rel
+JOIN feature_relationship_pub rel_pub on rel_pub.feature_relationship_id = rel.feature_relationship_id
+JOIN pub ON rel_pub.pub_id = pub.pub_id
 JOIN cvterm TYPE ON type.cvterm_id = rel.type_id
 JOIN feature subj ON subj.feature_id = rel.subject_id
 JOIN feature obj ON obj.feature_id = rel.object_id
@@ -76,8 +80,9 @@ sub process {
   my $query = <<'EOQ';
 WITH
 bindings AS
-  (SELECT fc.feature_cvterm_id, gene.uniquename AS gene, p.value AS with_gene
+  (SELECT fc.feature_cvterm_id, gene.uniquename AS gene, pub.uniquename AS pub_uniquename, p.value AS with_gene
    FROM feature_cvterm fc
+   JOIN pub ON fc.pub_id = pub.pub_id
    JOIN feature_cvtermprop p ON p.feature_cvterm_id = fc.feature_cvterm_id
    JOIN cvterm pt ON p.type_id = pt.cvterm_id
    JOIN feature transcript ON transcript.feature_id = fc.feature_id
@@ -97,7 +102,8 @@ bindings AS
   (SELECT feature_cvterm_id
    FROM bindings
    JOIN physical_interactions interaction ON bindings.gene = interaction.gene1
-   AND bindings.with_gene = interaction.gene2)
+     AND bindings.with_gene = interaction.gene2
+     AND bindings.pub_uniquename = interaction.pub_uniquename)
 DELETE
 FROM feature_cvterm
 WHERE feature_cvterm_id IN
