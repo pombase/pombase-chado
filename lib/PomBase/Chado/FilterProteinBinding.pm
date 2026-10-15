@@ -97,7 +97,10 @@ bindings AS
      AND gene_type.name = 'gene'
      AND fc.feature_cvterm_id NOT IN
        (SELECT feature_cvterm_id FROM feature_cvtermprop
-        WHERE type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'residue'))),
+        WHERE type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'residue'))
+     AND fc.feature_cvterm_id NOT IN
+       (SELECT feature_cvterm_id FROM feature_cvtermprop
+        WHERE type_id IN (SELECT cvterm_id FROM cvterm WHERE name = 'gene_product_form_id'))),
      annotation_to_delete AS
   (SELECT feature_cvterm_id
    FROM bindings
