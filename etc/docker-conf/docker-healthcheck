@@ -1,13 +1,13 @@
 #!/bin/sh -
 
 (curl -s -f http://localhost:8500/ && \
- curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/ref/nov' \
+ curl -s -f 'http://localhost:8500/api/v2/dataset/latest/complete/ref/nov' \
    -H 'accept: application/json, text/plain, */*' | jq . | grep -i citation && \
- curl -s -f 'http://localhost:8500/api/v1/dataset/latest/complete/term/(molecular_function%20OR%20cellular_component)/enzyme%20binding' \
+ curl -s -f 'http://localhost:8500/api/v2/dataset/latest/complete/term/(molecular_function%20OR%20cellular_component)/enzyme%20binding' \
    -H 'accept: application/json, text/plain, */*' | jq . | grep -i 'binding to' && \
- (curl -s -f 'http://localhost:8500/api/v1/dataset/latest/data/gene/SPBC11B10.09' | jq .;
-  curl -s -f 'http://localhost:8500/api/v1/dataset/latest/data/gene/SJAG_03048' | jq .;
-  curl -s -f 'http://localhost:8500/api/v1/dataset/latest/data/gene/FBgn0004107' | jq .;
+ (curl -s -f 'http://localhost:8500/api/v2/dataset/latest/data/gene/SPBC11B10.09' | jq .;
+  curl -s -f 'http://localhost:8500/api/v2/dataset/latest/data/gene/SJAG_03048' | jq .;
+  curl -s -f 'http://localhost:8500/api/v2/dataset/latest/data/gene/FBgn0004107' | jq .;
    ) | grep -i 'cyclin-dependent protein serine/threonine kinase' && \
  curl -s -f http://localhost:8983/ && \
  curl -s -f http://localhost:8999/motifsearch/ping/ || exit 1) > /dev/null

@@ -26,7 +26,7 @@ RUN (curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --p
 
 USER root
 
-RUN mkdir -p /var/www/html/api/v1/dataset/latest/; ln -s /pombase/jbrowse /var/www/html/jbrowse
+RUN mkdir -p /var/www/html/api/v2/dataset/latest/; ln -s /pombase/jbrowse /var/www/html/jbrowse
 
 RUN mkdir /pombase/misc
 
@@ -56,7 +56,7 @@ COPY --chown=pombase:pombase main_config.json /pombase/main_config.json
 COPY --chown=pombase:pombase testimonials.json /pombase/testimonials.json
 COPY --chown=pombase:pombase spotlights.json /pombase/spotlights.json
 COPY --chown=pombase:pombase explore.json /pombase/explore.json
-RUN (cd /var/www/html/api/v1/dataset/latest; ln -s /var/www/html/web-json data)
+RUN (cd /var/www/html/api/v2/dataset/latest; ln -s /var/www/html/web-json data)
 
 RUN chown -R pombase:pombase /var/www/html
 
@@ -129,13 +129,13 @@ RUN cd ./solr-8.11.2/; ./bin/solr start -force -m 4g && \
     while read command; do curl -X POST -H 'Content-type:application/json' -d "$command" http://localhost:8983/solr/genes/schema; done < /pombase/solr-genes-schema-commands.txt && \
     while read command; do curl -X POST -H 'Content-type:application/json' -d "$command" http://localhost:8983/solr/alleles/schema; done < /pombase/solr-alleles-schema-commands.txt && \
     while read command; do curl -X POST -H 'Content-type:application/json' -d "$command" http://localhost:8983/solr/docs/schema; done < /pombase/solr-docs-schema-commands.txt && \
-    gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/terms.json.gz | ./bin/post -c terms -type application/json -d && \
-    gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/references.json.gz | ./bin/post -c refs -type application/json -d && \
-    gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/genes.json.gz | ./bin/post -c genes -type application/json -d && \
-    gzip -d < /var/www/html/api/v1/dataset/latest/data/solr_data/alleles.json.gz | ./bin/post -c alleles -type application/json -d && \
+    gzip -d < /var/www/html/api/v2/dataset/latest/data/solr_data/terms.json.gz | ./bin/post -c terms -type application/json -d && \
+    gzip -d < /var/www/html/api/v2/dataset/latest/data/solr_data/references.json.gz | ./bin/post -c refs -type application/json -d && \
+    gzip -d < /var/www/html/api/v2/dataset/latest/data/solr_data/genes.json.gz | ./bin/post -c genes -type application/json -d && \
+    gzip -d < /var/www/html/api/v2/dataset/latest/data/solr_data/alleles.json.gz | ./bin/post -c alleles -type application/json -d && \
     ./bin/post -c docs -type application/json -d < /pombase/pombase-website/src/app/config/docs.json && \
     ./bin/solr stop && \
-    rm -rf /var/www/html/api/v1/dataset/latest/data/solr_data
+    rm -rf /var/www/html/api/v2/dataset/latest/data/solr_data
 
 RUN (cd pombase-website; ln -fs /pombase/main_config.json .; \
      cp etc/update_vars.sh /pombase/ && \
