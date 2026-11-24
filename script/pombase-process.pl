@@ -142,6 +142,7 @@ my %process_modules = (
   'infer-paralogs' => 'PomBase::Chado::InferParalogs',
   'reciprocal-modifications' => 'PomBase::Chado::ReciprocalModifications',
   'filter-binding-annotations' => 'PomBase::Chado::FilterProteinBinding',
+  'remove-duplicate-interactions' => 'PomBase::Chado::RemoveDuplicateInteractions',
 );
 
 my $process_module = $process_modules{$process_type};
