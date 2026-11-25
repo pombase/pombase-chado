@@ -166,6 +166,8 @@ sub process {
                 { feature_relationship_pubs => 'pub' } ],
     });
 
+  my $count = 0;
+
   while (defined (my $interaction = $interaction_rs->next())) {
     my $interactor_a = $interaction->subject()->uniquename();
     my $interactor_a_name = $interaction->subject()->name();
@@ -186,10 +188,13 @@ sub process {
 
     if ($result) {
       $interaction->delete();
+      $count++;
     }
   }
 
   $guard->commit();
+
+  print "removed $count redundant interactions\n";
 }
 
 1;
